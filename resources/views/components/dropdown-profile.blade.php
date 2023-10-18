@@ -39,7 +39,7 @@
                     <a class="font-medium text-sm text-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center py-1 px-3"
                         href="{{ route('logout') }}" @click.prevent="$root.submit();" @focus="open = true"
                         @focusout="open = false">
-                        {{ __('Sign Out') }}
+                        {{ __('Keluar') }}
                     </a>
                 </form>
             </li>
