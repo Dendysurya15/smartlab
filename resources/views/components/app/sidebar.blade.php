@@ -64,19 +64,21 @@
                 <ul class="mt-3">
                     {{-- Dashboard --}}
                     <li
-                        class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if(in_array(Request::segment(1), ['inbox'])){{ 'bg-slate-900' }}@endif">
-                        <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if(in_array(Request::segment(1), ['inbox'])){{ 'hover:text-slate-200' }}@endif"
-                            href="#0">
+                        class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if(in_array(Request::segment(1), ['dashboard'])){{ 'bg-slate-900' }}@endif">
+                        <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if(in_array(Request::segment(1), ['dashboard'])){{ 'hover:text-slate-200' }}@endif"
+                            href="{{route('dashboard')}}">
                             <div class="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="shrink-0 h-6 w-6" height="1em"
                                     viewBox="0 0 512 512">
                                     <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                                     <path
-                                        class="fill-current @if(in_array(Request::segment(1), ['inbox'])){{ 'text-indigo-500' }}@else{{ 'text-slate-600' }}@endif"
+                                        class="fill-current @if(in_array(Request::segment(1), ['dashboard'])){{ 'text-emerald-500' }}@else{{ 'text-slate-600' }}@endif"
                                         d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zm64 64V416H224V160H64zm384 0H288V416H448V160z" />
+                                    {{--
                                     <path
-                                        class="fill-current @if(in_array(Request::segment(1), ['inbox'])){{ 'text-indigo-300' }}@else{{ 'text-slate-400' }}@endif"
+                                        class="fill-current @if(in_array(Request::segment(1), ['dashboard'])){{ 'text-emerald-300' }}@else{{ 'text-slate-400' }}@endif"
                                         d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zm64 64V416H224V160H64zm384 0H288V416H448V160z" />
+                                    --}}
                                 </svg>
                                 {{-- <svg class="shrink-0 h-6 w-6" viewBox="0 0 24 24">
                                     <path
@@ -92,9 +94,9 @@
                         </a>
                     </li>
                     <!-- Tracking Sampel -->
-                    <li class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if(in_array(Request::segment(1), ['dashboard'])){{ 'bg-slate-900' }}@endif"
-                        x-data="{ open: {{ in_array(Request::segment(1), ['dashboard']) ? 1 : 0 }} }">
-                        <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if(in_array(Request::segment(1), ['dashboard'])){{ 'hover:text-slate-200' }}@endif"
+                    <li class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if(in_array(Request::segment(1), ['history_sampel', 'input_progress'])){{ 'bg-slate-900' }}@endif"
+                        x-data="{ open: {{ in_array(Request::segment(1), ['history_sampel', 'input_progress']) ? 1 : 0 }} }">
+                        <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if(in_array(Request::segment(1), ['history_sampel.index','input_progress.index'])){{ 'hover:text-slate-200' }}@endif"
                             href="#0" @click.prevent="sidebarExpanded ? open = !open : sidebarExpanded = true">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
@@ -102,7 +104,7 @@
                                         viewBox="0 0 512 512">
                                         <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                                         <path
-                                            class="fill-current @if(in_array(Request::segment(1), ['dashboard'])){{ 'text-emerald-600' }}@else{{ 'text-emerald-400' }}@endif"
+                                            class="fill-current @if(in_array(Request::segment(1), ['history_sampel', 'input_progress'])){{ 'text-emerald-600' }}@else{{ 'text-slate-400' }}@endif"
                                             d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
 
                                     </svg>
@@ -124,7 +126,7 @@
                                 <!-- Icon -->
                                 <div
                                     class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 @if(in_array(Request::segment(1), ['dashboard'])){{ 'rotate-180' }}@endif"
+                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 @if(in_array(Request::segment(1), ['history_sampel.index','input_progress.index'])){{ 'rotate-180' }}@endif"
                                         :class="open ? 'rotate-180' : 'rotate-0'" viewBox="0 0 12 12">
                                         <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
                                     </svg>
@@ -132,19 +134,19 @@
                             </div>
                         </a>
                         <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                            <ul class="pl-9 mt-1 @if(!in_array(Request::segment(1), ['dashboard'])){{ 'hidden' }}@endif"
+                            <ul class="pl-9 mt-1 @if(!in_array(Request::segment(1), ['history_sampel.index', 'input_progress.index'])){{ 'hidden' }}@endif"
                                 :class="open ? '!block' : 'hidden'">
                                 <li class="mb-1 last:mb-0">
-                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('dashboard')){{ '!text-emerald-500' }}@endif"
-                                        href="{{ route('dashboard') }}">
+                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('input_progress.index')){{ '!text-emerald-500' }}@endif"
+                                        href="{{ route('input_progress.index') }}">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Input
                                             Progress</span>
                                     </a>
                                 </li>
                                 <li class="mb-1 last:mb-0">
-                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('analytics')){{ '!text-indigo-500' }}@endif"
-                                        href="#0">
+                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('history_sampel.index')){{ '!text-emerald-500' }}@endif"
+                                        href="{{route('history_sampel.index')}}">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">History</span>
                                     </a>
