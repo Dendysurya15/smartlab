@@ -2,28 +2,15 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
         <div
             class="col-span-full xl:col-span-6 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
-            <header class="flex px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-                <h2 class="font-bold text-slate-800 dark:text-slate-100">INPUT PENGERJAAN PROGRESS SAMPEL BARU</h2>
+            <header class="flex px-5 py-4 bg-slate-800 border-b border-slate-100 dark:border-slate-700">
+                <h2 class="font-bold text-slate-200 dark:text-slate-100">INPUT PENGERJAAN PROGRESS SAMPEL BARU</h2>
             </header>
             <div class="p-5">
-                <!--
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
--->
-                <form>
+                <form action="{{route('input_progress.store')}}" method="POST" enctype="multipart/form-data">
+                    @csrf
                     <div class="space-y-12">
                         <div class="border-b border-gray-900/10 pb-12">
-                            <h2 class="text-base font-semibold leading-7 text-gray-900">Informasi Sampel dan Pelanggan
+                            <h2 class="text-base font-semibold leading-7 text-gray-900">Informasi Sampel & Pelanggan
                             </h2>
                             <p class="mt-1 text-sm leading-6 text-gray-600">Peringatan untuk crosscheck ulang seluruh
                                 data yang ingin akan dimasukkan ke sistem!</p>
@@ -35,8 +22,12 @@
                                         Penerimaan</label>
                                     <div class="mt-2">
                                         <input type="date" name="tanggal_penerimaan" id="tanggal_penerimaan"
+                                            value="{{ old('tanggal_penerimaan', \Carbon\Carbon::now()->toDateString()) }}"
                                             autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        @error('tanggal_penerimaan')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -44,98 +35,131 @@
                                     <label for="last-name"
                                         class="block text-sm font-medium leading-6 text-gray-900">Jenis Sampel</label>
                                     <div class="mt-2">
-                                        <select id="country" name="country" autocomplete="country-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                            <option>United States</option>
-                                            <option>Canada</option>
-                                            <option>Mexico</option>
+                                        <select id="jns_sam" name="jns_sam" autocomplete="jns_sam"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                            @foreach ($jenis_sampel as $key => $item)
+                                            <option value="{{ $item }}" @if (old('jns_sam')===$item) selected @endif>
+                                                ({{ $key }}) {{ $item }}
+                                            </option>
+                                            @endforeach
+
                                         </select>
+                                        @error('jns_sam')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
-
-
 
                                 <div class="sm:col-span-2">
                                     <label for="last-name"
                                         class="block text-sm font-medium leading-6 text-gray-900">Asal Sampel</label>
                                     <div class="mt-2">
-                                        <select id="country" name="country" autocomplete="country-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                            <option>Internal</option>
-                                            <option>Eksternal</option>
+                                        <select id="asal_sam" name="asal_sam" autocomplete="asal_sam"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                            <option value="Internal" @if (old('asal_sam')==='Internal' ) selected
+                                                @endif>Internal</option>
+                                            <option value="Eksternal" @if (old('asal_sam')==='Eksternal' ) selected
+                                                @endif>Eksternal</option>
                                         </select>
+                                        @error('asal_sam')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="tanggal_penerimaan"
-                                        class="block text-sm font-medium leading-6 text-gray-900">Nomor Kupa</label>
+                                    <label for="no_kupa" class="block text-sm font-medium leading-6 text-gray-900">Nomor
+                                        Kupa</label>
                                     <div class="mt-2">
-                                        <input type="number" name="tanggal_penerimaan" id="tanggal_penerimaan"
-                                            autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        <input type="number" name="no_kupa" id="no_kupa" autocomplete="given-name"
+                                            value="{{ old('no_kupa') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        @error('no_kupa')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="tanggal_penerimaan"
-                                        class="block text-sm font-medium leading-6 text-gray-900">Nomor Lab</label>
+                                    <label for="no_lab" class="block text-sm font-medium leading-6 text-gray-900">Nomor
+                                        Lab</label>
                                     <div class="mt-2">
-                                        <input type="text" name="tanggal_penerimaan" id="tanggal_penerimaan"
-                                            autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        <input type="text" name="no_lab" id="no_lab" autocomplete="given-name"
+                                            value="{{ old('no_lab') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        @error('no_lab')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="tanggal_penerimaan"
+                                    <label for="nama_pelanggan"
                                         class="block text-sm font-medium leading-6 text-gray-900">Nama Pengirim</label>
                                     <div class="mt-2">
-                                        <input type="text" name="tanggal_penerimaan" id="tanggal_penerimaan"
-                                            autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        <input type="text" name="nama_pelanggan" id="nama_pelanggan"
+                                            value="{{ old('nama_pelanggan') }}" autocomplete="given-name"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+                                            {{-- placeholder="Nama Pelanggan" --}}>
+                                        @error('nama_pelanggan')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="tanggal_penerimaan"
+                                    <label for="departemen"
                                         class="block text-sm font-medium leading-6 text-gray-900">Nama Departemen /
                                         Perusahaan</label>
                                     <div class="mt-2">
-                                        <input type="text" name="tanggal_penerimaan" id="tanggal_penerimaan"
-                                            autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        <input type="text" name="departemen" id="departemen" autocomplete="given-name"
+                                            value="{{ old('departemen') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        @error('departemen')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="tanggal_penerimaan"
+                                    <label for="kode_sampel"
                                         class="block text-sm font-medium leading-6 text-gray-900">Kode Sampel</label>
                                     <div class="mt-2">
-                                        <input type="text" name="tanggal_penerimaan" id="tanggal_penerimaan"
-                                            autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        <input type="text" name="kode_sampel" id="kode_sampel" autocomplete="given-name"
+                                            value="{{ old('kode_sampel') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        @error('kode_sampel')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="tanggal_penerimaan"
+                                    <label for="no_surat"
                                         class="block text-sm font-medium leading-6 text-gray-900">Nomor Surat
                                     </label>
                                     <div class="mt-2">
-                                        <input type="text" name="tanggal_penerimaan" id="tanggal_penerimaan"
-                                            autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        <input type="text" name="no_surat" id="no_surat" autocomplete="given-name"
+                                            value="{{ old('no_surat') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                                        @error('no_surat')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="tanggal_penerimaan"
+                                    <label for="estimasi"
                                         class="block text-sm font-medium leading-6 text-gray-900">Estimasi Kupa</label>
                                     <div class="mt-2">
-                                        <input type="date" name="tanggal_penerimaan" id="tanggal_penerimaan"
-                                            autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        <input type="date" name="estimasi" id="estimasi" autocomplete="given-name"
+                                            value="{{ old('estimasi') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                                        @error('estimasi')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -143,22 +167,76 @@
                                     <label for="last-name"
                                         class="block text-sm font-medium leading-6 text-gray-900">Tujuan</label>
                                     <div class="mt-2">
-                                        <select id="country" name="country" autocomplete="country-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                            <option>Internal</option>
-                                            <option>Eksternal</option>
-                                        </select>
+                                        <input type="text" name="tujuan" id="tujuan" autocomplete="given-name"
+                                            value="{{ old('tujuan') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        @error('tujuan')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
+
                                 <div class="sm:col-span-2">
-                                    <label for="tanggal_penerimaan"
-                                        class="block text-sm font-medium leading-6 text-gray-900">Parameter
+                                    <label for="" class="block text-sm font-medium leading-6 text-gray-900">Parameter
                                         Analisis</label>
                                     <div class="mt-2">
-                                        <input type="date" name="tanggal_penerimaan" id="tanggal_penerimaan"
-                                            autocomplete="given-name"
-                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+
+                                        {{-- <select name="countries" id="countries" multiple
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                            <option value="1">Afghanistan</option>
+                                            <option value="2">Australia</option>
+                                            <option value="3">Germany</option>
+                                            <option value="4">Canada</option>
+                                            <option value="5">Russia</option>
+                                        </select> --}}
+
+                                        <div x-data @tags-update=""
+                                            data-tags='@json(old("parameter_analisis") ? explode(";", old("parameter_analisis")) : [])'
+                                            class="block w-full rounded-md border-0  text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                            <div x-data="tagSelect()" x-init="init('parentEl')"
+                                                @click.away="clearSearch()" @keydown.escape="clearSearch()">
+                                                <div class="relative" @keydown.enter.prevent="addTag(textInput)">
+                                                    <input x-model="textInput" x-ref="textInput"
+                                                        @input="search($event.target.value)"
+                                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                        placeholder="Masukkan Parameter">
+                                                    <div :class="[open ? 'block' : 'hidden']">
+                                                        <div class="absolute z-40 left-0 mt-2 w-full">
+                                                            <div class="py-1 text-sm bg-white rounded shadow-lg ">
+                                                                <a @click.prevent="addTag(textInput)"
+                                                                    class="block py-1 px-5 cursor-pointer hover:bg-slate-200 hover:text-white">Tambah
+                                                                    Parameter "<span class="font-semibold"
+                                                                        x-text="textInput"></span>"</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <input type="hidden" name="parameter_analisis"
+                                                        id="parameter_analisis" value="{{old('parameter_analisis')}}">
+
+                                                    <!-- selections -->
+                                                    <template x-for="(tag, index) in tags">
+                                                        <div
+                                                            class="bg-slate-800 text-slate-200 inline-flex items-center text-sm rounded mt-2 mr-1">
+                                                            <span class="ml-2 mr-1 leading-relaxed truncate max-w-xs"
+                                                                x-text="tag"></span>
+                                                            <button @click.prevent="removeTag(index)"
+                                                                class="w-6 h-8 inline-block align-middle text-gray-500 hover:text-gray-600 focus:outline-none">
+                                                                <svg class="w-6 h-6 fill-current mx-auto"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    viewBox="0 0 24 24">
+                                                                    <path fill-rule="evenodd"
+                                                                        d="M15.78 14.36a1 1 0 0 1-1.42 1.42l-2.82-2.83-2.83 2.83a1 1 0 1 1-1.42-1.42l2.83-2.82L7.3 8.7a1 1 0 0 1 1.42-1.42l2.83 2.83 2.82-2.83a1 1 0 0 1 1.42 1.42l-2.83 2.83 2.83 2.82z" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </template>
+                                                    @error('parameter_analisis')
+                                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -182,7 +260,7 @@
                                             <!-- End of Conditional SVG or Image -->
                                             <div class="mt-4 text-sm leading-6 text-gray-600">
                                                 <label for="file-upload"
-                                                    class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                                    class="relative cursor-pointer rounded-md bg-white font-semibold text-emerald-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-emerald-600 focus-within:ring-offset-2 hover:text-emerald-500">
                                                     <span>Upload a file</span>
                                                     <input id="file-upload" name="file-upload" type="file"
                                                         class="sr-only">
@@ -219,6 +297,75 @@
     </div>
 </x-app-layout>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+  // Get the value of parameter_analisis directly from the hidden input
+  const parameterAnalisis = document.getElementById('parameter_analisis').value;
+
+  // Now you can use the parameterAnalisis variable in your JavaScript code
+  console.log('Old parameter_analisis value:', parameterAnalisis);
+});
+
+    function tagSelect() {
+  return {
+    open: false,
+    textInput: '',
+    tags: [],
+    init() {
+      this.tags = JSON.parse(this.$el.parentNode.getAttribute('data-tags'));
+    },
+    addTag(tag) {
+      tag = tag.trim();
+      if (tag != "" && !this.hasTag(tag)) {
+        this.tags.push(tag);
+        this.updateTagsInput();
+      }
+      this.clearSearch();
+      this.$refs.textInput.focus();
+      this.fireTagsUpdateEvent();
+    },
+    fireTagsUpdateEvent() {
+      this.$el.dispatchEvent(new CustomEvent('tags-update', {
+        detail: { tags: this.tags },
+        bubbles: true,
+      }));
+    },
+    hasTag(tag) {
+      var tag = this.tags.find(e => {
+        return e.toLowerCase() === tag.toLowerCase();
+      });
+      return tag != undefined;
+    },
+    removeTag(index) {
+      this.tags.splice(index, 1);
+      this.updateTagsInput();
+      this.fireTagsUpdateEvent();
+    },
+    search(q) {
+      if (q.includes(",")) {
+        q.split(",").forEach(function (val) {
+          this.addTag(val);
+        }, this);
+      }
+      this.toggleSearch();
+    },
+    clearSearch() {
+      this.textInput = '';
+      this.toggleSearch();
+    },
+    toggleSearch() {
+      this.open = this.textInput != '';
+    },
+    updateTagsInput() {
+      const tagsInput = document.getElementById('parameter_analisis');
+      const hiddenInputValue = document.getElementById('hiddenInputValue');
+      if (tagsInput) {
+        tagsInput.value = this.tags.join(';');
+      }
+    }
+  }
+}
+
+
     const fileInput = document.getElementById('file-upload');
     const imageContainer = document.getElementById('image-container');
     const removeButton = document.getElementById('remove-button');
@@ -251,4 +398,5 @@
             </svg>`;
         removeButton.style.display = 'none';
     });
+    // new MultiSelectTag('countries')  // id
 </script>

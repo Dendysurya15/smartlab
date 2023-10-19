@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InputProgressRequest;
+use App\Models\JenisSampel;
 use Illuminate\Http\Request;
 
 class InputProgress extends Controller
@@ -14,7 +16,12 @@ class InputProgress extends Controller
     public function index()
     {
         //
-        return view('pages/inputProgress/index');
+        $jns_sampel = JenisSampel::pluck('nama', 'kode');
+
+
+        return view('pages/inputProgress/index', [
+            'jenis_sampel' => $jns_sampel
+        ]);
     }
 
     /**
@@ -25,6 +32,7 @@ class InputProgress extends Controller
     public function create()
     {
         //
+
     }
 
     /**
@@ -33,9 +41,13 @@ class InputProgress extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(InputProgressRequest $request)
     {
         //
+        $validated = $request->validated();
+
+        // dd('nais');
+        dd($request);
     }
 
     /**
