@@ -91,7 +91,7 @@ final class HistorySampelTabel extends PowerGridComponent
             ->addColumn('tanggal_penerimaan_formatted', fn (TrackSampel $model) => Carbon::parse($model->tanggal_penerimaan)->format('d/m/Y H:i:s'))
             ->addColumn('jenis_sample')
 
-           /** Example of custom column using a closure **/
+            /** Example of custom column using a closure **/
             ->addColumn('jenis_sample_lower', fn (TrackSampel $model) => strtolower(e($model->jenis_sample)))
 
             ->addColumn('asal_sampel')
@@ -119,11 +119,11 @@ final class HistorySampelTabel extends PowerGridComponent
     |
     */
 
-     /**
-      * PowerGrid Columns.
-      *
-      * @return array<int, Column>
-      */
+    /**
+     * PowerGrid Columns.
+     *
+     * @return array<int, Column>
+     */
     public function columns(): array
     {
         return [
@@ -224,25 +224,25 @@ final class HistorySampelTabel extends PowerGridComponent
      * @return array<int, Button>
      */
 
-    /*
+
     public function actions(): array
     {
-       return [
-           Button::make('edit', 'Edit')
-               ->class('bg-indigo-500 cursor-pointer text-white px-3 py-2.5 m-1 rounded text-sm')
-               ->route('track-sampel.edit', function(\App\Models\TrackSampel $model) {
-                    return $model->id;
-               }),
+        return [
+            Button::make('edit', 'Edit')
+                ->class('bg-indigo-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
+                ->route('history_sampel.edit', function (\App\Models\TrackSampel $model) {
+                    return ['history_sampel' => $model->id];
+                }),
 
-           Button::make('destroy', 'Delete')
-               ->class('bg-red-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-               ->route('track-sampel.destroy', function(\App\Models\TrackSampel $model) {
-                    return $model->id;
-               })
-               ->method('delete')
+            Button::make('destroy', 'Delete')
+                ->class('bg-gray-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
+                ->route('history_sampel.destroy', function (\App\Models\TrackSampel $model) {
+                    return ['history_sampel' => $model->id];
+                })
+                ->method('delete')
         ];
     }
-    */
+
 
     /*
     |--------------------------------------------------------------------------

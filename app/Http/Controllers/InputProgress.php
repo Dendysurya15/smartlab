@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\InputProgressRequest;
 use App\Models\JenisSampel;
+use App\Models\TrackSampel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InputProgress extends Controller
 {
@@ -43,11 +46,56 @@ class InputProgress extends Controller
      */
     public function store(InputProgressRequest $request)
     {
-        //
-        $validated = $request->validated();
+        $userId = 1;
+        if (auth()->check()) {
+            $user = auth()->user();
+            $userId = $user->id;
+        }
 
-        // dd('nais');
-        dd($request);
+        // Get the current time in the local time zone
+        $current = Carbon::now();
+
+        $current = $current->format('Y-m-d H:i:s');
+
+        $jns_sampel = JenisSampel::where('nama', $request->input('jns_sam'))->first();
+
+        try {
+            DB::beginTransaction(); // Start a database transaction
+
+            $trackSampel = new TrackSampel();
+            $trackSampel->tanggal_penerimaan = $request->input('tanggal_penerimaan');
+            $trackSampel->jenis_sample = $jns_sampel->id;
+            $trackSampel->asal_sampel = $request->input('asal_sam');
+            $trackSampel->nomor_kupa = $request->input('no_kupa');
+            $trackSampel->nama_pengirim = $request->input('nama_pelanggan');
+            $trackSampel->departemen = $request->input('departemen');
+            $trackSampel->kode_sample = $request->input('kode_sampel');
+            $trackSampel->nomor_surat = $request->input('no_surat');
+            $trackSampel->estimasi = $request->input('estimasi');
+            $trackSampel->tujuan = $request->input('tujuan');
+            $trackSampel->parameter_analisis = $request->input('parameter_analisis');
+            $trackSampel->admin = $userId;
+            $trackSampel->progress = 4;
+            $trackSampel->last_update = $current;
+            $trackSampel->no_hp = $request->input('no_hp');
+            $trackSampel->email = $request->input('email');
+            // Handle the file upload
+            if ($request->hasFile('file-upload')) {
+                $file = $request->file('file-upload');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('uploads', $fileName, 'public');
+                $trackSampel->foto_sample = $fileName;
+            }
+            $trackSampel->save();
+
+            DB::commit(); // Commit the database transaction
+
+            return redirect()->route('input_progress.index')->with('success', 'Record has been stored.');
+        } catch (\Exception $e) {
+            DB::rollBack(); // Roll back the database transaction in case of an error
+
+            return redirect()->back()->with('error', 'An error occurred while storing the record: ' . $e->getMessage());
+        }
     }
 
     /**

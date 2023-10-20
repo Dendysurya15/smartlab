@@ -9,7 +9,7 @@ class TrackSampel extends Model
 {
     use HasFactory;
     protected $table = 'track_sample';
-
+    public $timestamps = false;
     protected $fillable = [
         'tanggal_penerimaan',
         'jenis_sample',
@@ -18,6 +18,7 @@ class TrackSampel extends Model
         'nama_pengirim',
         'departemen',
         'kode_sample',
+        'nomor_surat',
         'estimasi',
         'tujuan',
         'parameter_analisis',

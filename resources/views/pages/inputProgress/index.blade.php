@@ -5,6 +5,11 @@
             <header class="flex px-5 py-4 bg-slate-800 border-b border-slate-100 dark:border-slate-700">
                 <h2 class="font-bold text-slate-200 dark:text-slate-100">INPUT PENGERJAAN PROGRESS SAMPEL BARU</h2>
             </header>
+            @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+            @endif
             <div class="p-5">
                 <form action="{{route('input_progress.store')}}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -240,6 +245,33 @@
                                     </div>
                                 </div>
 
+                                <div class="sm:col-span-2">
+                                    <label for="last-name"
+                                        class="block text-sm font-medium leading-6 text-gray-900">Nomor Hp</label>
+                                    <div class="mt-2">
+                                        <input type="text" name="no_hp" id="no_hp" autocomplete="given-name"
+                                            value="{{ old('no_hp') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        @error('no_hp')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="sm:col-span-2">
+                                    <label for="last-name"
+                                        class="block text-sm font-medium leading-6 text-gray-900">Email Departemen /
+                                        Perusahaan</label>
+                                    <div class="mt-2">
+                                        <input type="email" name="email" id="email" autocomplete="given-name"
+                                            value="{{ old('email') }}"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        @error('email')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+
                                 <div class="col-span-full">
                                     <label for="cover-photo"
                                         class="block text-sm font-medium leading-6 text-gray-900">Upload Foto
@@ -263,16 +295,20 @@
                                                     class="relative cursor-pointer rounded-md bg-white font-semibold text-emerald-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-emerald-600 focus-within:ring-offset-2 hover:text-emerald-500">
                                                     <span>Upload a file</span>
                                                     <input id="file-upload" name="file-upload" type="file"
-                                                        class="sr-only">
+                                                        class="sr-only" accept=".png, .jpg, .jpeg, .jpg">
                                                 </label>
                                                 <p class="pl-1">or drag and drop</p>
-                                                <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                                                <p class="text-xs  leading-5 text-gray-600">PNG, JPG, GIF
+                                                    up to 10MB</p>
                                                 <!-- Remove button -->
                                                 <div class="flex justify-center mt-2">
                                                     <button id="remove-button" type="button"
                                                         class="text-sm font-semibold leading-6 text-red-600 cursor-pointer"
                                                         style="display: none;">Remove Image</button>
                                                 </div>
+                                                @error('file-upload')
+                                                <div class="text-red-500">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>

@@ -36,8 +36,8 @@ class InputProgressRequest extends FormRequest
             'estimasi' => 'required|date',
             'tujuan' => 'required|string',
             'parameter_analisis' => 'required',
-            // 'parameter_analisis.*' => 'string', // Each parameter in the array should be a string
-            // 'file-upload' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'email' => 'required',
+            'file-upload' => 'max:7000',
         ];
     }
 
@@ -56,6 +56,7 @@ class InputProgressRequest extends FormRequest
             'estimasi.required' => 'Estimasi Kupa  Tidak Boleh Kosong.',
             'tujuan.required' => 'Tujuan Tidak Boleh Kosong.',
             'parameter_analisis.required' => 'Parameter Analisis Tidak Boleh Kosong.',
+            'email.required' => 'Email Tidak Boleh Kosong',
             // Add custom messages for other rules as needed
         ];
     }
