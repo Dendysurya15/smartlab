@@ -31,23 +31,30 @@ class TrackSampelController extends Controller
             $id_jns_sample = $query->jenis_sample;
             $jnsSample = JenisSampel::find($id_jns_sample);
             $progress_id = $query->progress;
-            if ($jnsSample) {
+            $last_updates = $query->last_update;
+
+            if ($jnsSample && $last_updates) {
                 $kumpulan_progress = explode(',', $jnsSample->progress);
+                $update_progress = explode(', ', $last_updates);
 
                 $progress_arr = [];
-                foreach ($kumpulan_progress as $value) {
+                $jam_progress_arr = [];
+                foreach ($kumpulan_progress as $key => $value) {
                     $progress_arr[] = $queryProgressPengerjaan[$value];
+                    $jam_progress_arr[] = $update_progress[$key];
                     if ($value == $progress_id) {
                         break;
                     }
                 }
+                array_multisort($progress_arr, $jam_progress_arr);
                 $query->progress = $progress_arr;
+                $query->last_update = $jam_progress_arr;
             } else {
                 echo 'JenisSample not found.';
             }
-            $date = Carbon::parse($query->last_update);
-            $formattedDate = $date->format('Y-m-d H:i');
-            $query->last_update = tanggal_indo($formattedDate);
+            // $date = Carbon::parse($query->last_update);
+            // $formattedDate = $date->format('Y-m-d H:i');
+            // $query->last_update = 'tanggal_indo($formattedDate)';
         }
 
         return response()->json($query);

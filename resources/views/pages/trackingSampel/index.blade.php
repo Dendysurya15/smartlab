@@ -201,7 +201,9 @@
                             ulElement.innerHTML = '';
                             kode_track_hasil.textContent = response.kode_track;
                             var arr_progress = response.progress;
-
+                            var arr_last_update = response.last_update;
+                            
+                            var inc = 0
                             arr_progress.forEach(element => {
                                 const li = document.createElement('li');
                                 li.classList.add('flex', 'items-start', 'space-x-3');
@@ -227,7 +229,7 @@
                                 p.textContent = element;
                                 const p2 = document.createElement('p');
                                 p2.classList.add('mb-2', 'text-sm', 'text-slate-600', 'font-medium', 'italic');
-                                p2.textContent = response.last_update;
+                                p2.textContent = arr_last_update[inc];
 
                                 // Append the SVG and text content to the li element
                                 div.appendChild(p);
@@ -237,6 +239,7 @@
 
                                 // Append the li element to the ul
                                 ulElement.appendChild(li);
+                                inc++
                             });
                         } else {
                             resultElement.style.display = 'none';
