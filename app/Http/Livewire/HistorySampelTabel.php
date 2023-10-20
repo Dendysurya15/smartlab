@@ -30,7 +30,9 @@ final class HistorySampelTabel extends PowerGridComponent
             Exportable::make('export')
                 ->striped()
                 ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
+            Header::make()
+                ->showToggleColumns()
+                ->showSearchInput(),
             Footer::make()
                 ->showPerPage()
                 ->showRecordCount(),
@@ -127,7 +129,7 @@ final class HistorySampelTabel extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
+            Column::make('Id', 'id')->sortable(),
             Column::make('Tanggal penerimaan', 'tanggal_penerimaan_formatted', 'tanggal_penerimaan')
                 ->sortable(),
 
@@ -179,9 +181,9 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Foto sample', 'foto_sample')
-                ->sortable()
-                ->searchable(),
+            // Column::make('Foto sample', 'foto_sample')
+            //     ->sortable()
+            //     ->searchable(),
 
         ];
     }
@@ -194,19 +196,19 @@ final class HistorySampelTabel extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::datetimepicker('tanggal_penerimaan'),
-            Filter::inputText('jenis_sample')->operators(['contains']),
-            Filter::inputText('asal_sampel')->operators(['contains']),
-            Filter::inputText('nama_pengirim')->operators(['contains']),
-            Filter::inputText('departemen')->operators(['contains']),
-            Filter::inputText('kode_sample')->operators(['contains']),
-            Filter::datetimepicker('estimasi'),
-            Filter::inputText('tujuan')->operators(['contains']),
-            Filter::inputText('parameter_analisis')->operators(['contains']),
-            Filter::inputText('progress')->operators(['contains']),
-            Filter::datetimepicker('last_update'),
-            Filter::inputText('no_hp')->operators(['contains']),
-            Filter::inputText('email')->operators(['contains']),
+            // Filter::datetimepicker('tanggal_penerimaan'),
+
+            // Filter::inputText('asal_sampel')->operators(['contains']),
+            // Filter::inputText('nama_pengirim')->operators(['contains']),
+            // Filter::inputText('departemen')->operators(['contains']),
+            // Filter::inputText('kode_sample')->operators(['contains']),
+            // Filter::datetimepicker('estimasi'),
+            // Filter::inputText('tujuan')->operators(['contains']),
+            // Filter::inputText('parameter_analisis')->operators(['contains']),
+            // Filter::inputText('progress')->operators(['contains']),
+            // Filter::datetimepicker('last_update'),
+            // Filter::inputText('no_hp')->operators(['contains']),
+            // Filter::inputText('email')->operators(['contains']),
         ];
     }
 
@@ -228,18 +230,31 @@ final class HistorySampelTabel extends PowerGridComponent
     public function actions(): array
     {
         return [
-            Button::make('edit', 'Edit')
-                ->class('bg-indigo-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-                ->route('history_sampel.edit', function (\App\Models\TrackSampel $model) {
-                    return ['history_sampel' => $model->id];
-                }),
+            // Button::make('edit', view('icons.edit-icon'))
+            //     ->class('bg-slate-200 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
+            //     ->route('history_sampel.edit', function (\App\Models\TrackSampel $model) {
+            //         return ['history_sampel' => $model->id];
+            //     }),
+            // Button::make('edit', view('icons.edit-icon'))
+            //     ->class('bg-slate-800 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
+            //     ->route('history_sampel.edit', function (\App\Models\TrackSampel $model) {
+            //         return ['history_sampel' => $model->id];
+            //     }),
+            Button::make('edit', view('icons.edit-icon'))
+                ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
+                ->route('history_sampel.edit', fn (\App\Models\TrackSampel $model) => ['history_sampel' => $model->id]),
 
-            Button::make('destroy', 'Delete')
-                ->class('bg-gray-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-                ->route('history_sampel.destroy', function (\App\Models\TrackSampel $model) {
-                    return ['history_sampel' => $model->id];
-                })
-                ->method('delete')
+            // Button::make('edit', view('icons.edit-icon'))
+            //     ->class('bg-slate-800 cursor-pointer text-white px-3 py-2.5 m-1 rounded text-sm')
+            //     ->route('history_sampel.edit', fn (\App\Models\TrackSampel $model) => ['history_sampel' => $model->id])
+
+
+            // Button::make('destroy', 'Delete')
+            //     ->class('bg-gray-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
+            //     ->route('history_sampel.destroy', function (\App\Models\TrackSampel $model) {
+            //         return ['history_sampel' => $model->id];
+            //     })
+            //     ->method('delete')
         ];
     }
 

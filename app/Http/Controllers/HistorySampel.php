@@ -59,6 +59,8 @@ class HistorySampel extends Controller
     public function edit($id)
     {
         //
+
+        return view('pages/historySampel/edit');
     }
 
     /**

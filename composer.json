@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
@@ -12,7 +15,7 @@
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.12",
-        "power-components/livewire-powergrid": "^4.9"
+        "power-components/livewire-powergrid": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -27,7 +30,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

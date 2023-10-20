@@ -28,5 +28,12 @@ class TrackSampel extends Model
         'no_hp',
         'email',
         'foto_sample',
+        'kode'
     ];
+
+    // Define the "belongs to" relationship with JenisSample
+    public function jenisSample()
+    {
+        return $this->belongsTo(JenisSampel::class, 'jenis_sample', 'id');
+    }
 }
