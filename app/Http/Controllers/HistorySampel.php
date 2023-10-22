@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TrackSampel;
 use Illuminate\Http\Request;
 
 class HistorySampel extends Controller
@@ -58,7 +59,8 @@ class HistorySampel extends Controller
      */
     public function edit($id)
     {
-        //
+        $query = TrackSampel::find($id);
+        return view('pages/historySampel/edit', ['sampel' => $query]);
     }
 
     /**

@@ -5,6 +5,7 @@ use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistorySampel;
 use App\Http\Controllers\InputProgress;
+use App\Http\Controllers\TrackSampelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +19,8 @@ use App\Http\Controllers\InputProgress;
 */
 
 Route::redirect('/', 'login');
-
+Route::get('tracking_sampel', [TrackSampelController::class, 'index']);
+Route::post('search_sampel_progress', [TrackSampelController::class, 'search'])->name('search_sampel_progress');
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // Route for the getting the data feed
