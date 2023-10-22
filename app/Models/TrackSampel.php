@@ -36,4 +36,9 @@ class TrackSampel extends Model
     {
         return $this->belongsTo(JenisSampel::class, 'jenis_sample', 'id');
     }
+
+    public function progressSampel()
+    {
+        return $this->belongsTo(ProgressPengerjaan::class, 'progress');
+    }
 }

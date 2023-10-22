@@ -91,11 +91,9 @@ final class HistorySampelTabel extends PowerGridComponent
         return PowerGrid::columns()
             ->addColumn('id')
             ->addColumn('tanggal_penerimaan_formatted', fn (TrackSampel $model) => Carbon::parse($model->tanggal_penerimaan)->format('d/m/Y H:i:s'))
-            ->addColumn('jenis_sample')
-
-            /** Example of custom column using a closure **/
-            ->addColumn('jenis_sample_lower', fn (TrackSampel $model) => strtolower(e($model->jenis_sample)))
-
+            ->addColumn('jenis_sample', function (TrackSampel $model) {
+                return $model->jenisSample->nama;
+            })
             ->addColumn('asal_sampel')
             ->addColumn('nomor_kupa')
             ->addColumn('nama_pengirim')
@@ -104,8 +102,15 @@ final class HistorySampelTabel extends PowerGridComponent
             ->addColumn('estimasi_formatted', fn (TrackSampel $model) => Carbon::parse($model->estimasi)->format('d/m/Y H:i:s'))
             ->addColumn('tujuan')
             ->addColumn('parameter_analisis')
-            ->addColumn('progress')
-            ->addColumn('last_update_formatted', fn (TrackSampel $model) => Carbon::parse($model->last_update)->format('d/m/Y H:i:s'))
+            ->addColumn('progress', function (TrackSampel $model) {
+                return $model->progressSampel->nama ?? '-';
+            })
+            ->addColumn('last_update', function (TrackSampel $model) {
+                $lastUpdates = explode(', ', $model->last_update);
+                $lastUpdate = end($lastUpdates);
+                $formattedDate = Carbon::parse($lastUpdate)->format('d/m/Y H:i:s');
+                return $formattedDate;
+            })
             ->addColumn('admin')
             ->addColumn('no_hp')
             ->addColumn('email')
@@ -169,7 +174,7 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Last update', 'last_update_formatted', 'last_update')
+            Column::make('Last update', 'last_update')
                 ->sortable(),
 
             Column::make('Admin', 'admin'),
