@@ -6,8 +6,17 @@
                 <h2 class="font-bold text-slate-200 dark:text-slate-100">INPUT PENGERJAAN PROGRESS SAMPEL BARU</h2>
             </header>
             @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+
+            <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+                role="alert">
+                Record berhasil disimpan dengan kode track <span class="font-medium"> {{ session('success') }}</span>
+            </div>
+            @endif
+
+            @if(session('error'))
+            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-green-400"
+                role="alert">
+                <span class="font-medium"> {{ session('error') }}</span>
             </div>
             @endif
             <div class="p-5">
@@ -334,11 +343,7 @@
 </x-app-layout>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-  // Get the value of parameter_analisis directly from the hidden input
-  const parameterAnalisis = document.getElementById('parameter_analisis').value;
-
-  // Now you can use the parameterAnalisis variable in your JavaScript code
-  console.log('Old parameter_analisis value:', parameterAnalisis);
+  
 });
 
     function tagSelect() {

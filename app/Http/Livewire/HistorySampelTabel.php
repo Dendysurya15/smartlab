@@ -142,6 +142,10 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
+            Column::make('Kode Track', 'kode_track')
+                ->sortable()
+                ->searchable(),
+
             Column::make('Asal sampel', 'asal_sampel')
                 ->sortable()
                 ->searchable(),
@@ -186,9 +190,7 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            // Column::make('Foto sample', 'foto_sample')
-            //     ->sortable()
-            //     ->searchable(),
+
 
         ];
     }

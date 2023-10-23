@@ -32,4 +32,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
     Route::resource('input_progress', InputProgress::class);
     Route::resource('history_sampel', HistorySampel::class);
+    Route::get('get-progress-options', [HistorySampel::class, 'getProgressOptions']);
 });

@@ -85,7 +85,7 @@
                                 <div>
                                     <x-jet-label for="kode">{{ __('Kode') }} <span class="text-rose-500">*</span>
                                     </x-jet-label>
-                                    <x-jet-input id="kode" type="number" name="kode" :value="old('kode')" required
+                                    <x-jet-input id="kode" type="text" name="kode" :value="old('kode')" required
                                         autofocus autocomplete="kode" />
                                 </div>
                             </div>
@@ -199,7 +199,6 @@
                 if (xhr.status === 200) {
                     
                         const response = JSON.parse(xhr.responseText);
-                        console.log(response);
 
                         if (response && Object.keys(response).length > 0) {
                             resultEmptyElement.style.display = 'none';

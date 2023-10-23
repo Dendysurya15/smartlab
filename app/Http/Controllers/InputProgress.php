@@ -52,7 +52,11 @@ class InputProgress extends Controller
             $userId = $user->id;
         }
 
-        // Get the current time in the local time zone
+        do {
+            $randomCode = generateRandomCode();
+            $existingTrackSampel = TrackSampel::where('kode_Track', $randomCode)->first();
+        } while ($existingTrackSampel);
+
         $current = Carbon::now();
 
         $current = $current->format('Y-m-d H:i:s');
@@ -71,6 +75,7 @@ class InputProgress extends Controller
             $trackSampel->departemen = $request->input('departemen');
             $trackSampel->kode_sample = $request->input('kode_sampel');
             $trackSampel->nomor_surat = $request->input('no_surat');
+            $trackSampel->nomor_lab = $request->input('no_lab');
             $trackSampel->estimasi = $request->input('estimasi');
             $trackSampel->tujuan = $request->input('tujuan');
             $trackSampel->parameter_analisis = $request->input('parameter_analisis');
@@ -79,6 +84,7 @@ class InputProgress extends Controller
             $trackSampel->last_update = $current;
             $trackSampel->no_hp = $request->input('no_hp');
             $trackSampel->email = $request->input('email');
+            $trackSampel->kode_track = $randomCode;
             // Handle the file upload
             if ($request->hasFile('file-upload')) {
                 $file = $request->file('file-upload');
@@ -90,7 +96,7 @@ class InputProgress extends Controller
 
             DB::commit(); // Commit the database transaction
 
-            return redirect()->route('input_progress.index')->with('success', 'Record has been stored.');
+            return redirect()->route('input_progress.index')->with('success', $randomCode);
         } catch (\Exception $e) {
             DB::rollBack(); // Roll back the database transaction in case of an error
 
