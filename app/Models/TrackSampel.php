@@ -19,6 +19,7 @@ class TrackSampel extends Model
         'departemen',
         'kode_sample',
         'nomor_surat',
+        'nomor_lab',
         'estimasi',
         'tujuan',
         'parameter_analisis',

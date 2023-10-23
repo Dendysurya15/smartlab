@@ -42,3 +42,18 @@ if (!function_exists('tanggal_indo')) {
         return $tgl_indo;
     }
 }
+
+if (!function_exists('generateRandomCode')) {
+    function generateRandomCode($length = 8)
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Alphanumeric characters
+        $code = '';
+
+        // Generate a random code of the specified length
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $characters[rand(0, strlen($characters) - 1)];
+        }
+
+        return $code;
+    }
+}

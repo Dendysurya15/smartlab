@@ -39,22 +39,24 @@ class TrackSampelController extends Controller
 
                 $progress_arr = [];
                 $jam_progress_arr = [];
-                foreach ($kumpulan_progress as $key => $value) {
+
+                $count = min(count($kumpulan_progress), count($update_progress)); // Get the minimum size
+
+                for ($key = 0; $key < $count; $key++) {
+                    $value = $kumpulan_progress[$key];
                     $progress_arr[] = $queryProgressPengerjaan[$value];
                     $jam_progress_arr[] = $update_progress[$key];
                     if ($value == $progress_id) {
                         break;
                     }
                 }
+
                 array_multisort($progress_arr, $jam_progress_arr);
                 $query->progress = $progress_arr;
                 $query->last_update = $jam_progress_arr;
             } else {
                 echo 'JenisSample not found.';
             }
-            // $date = Carbon::parse($query->last_update);
-            // $formattedDate = $date->format('Y-m-d H:i');
-            // $query->last_update = 'tanggal_indo($formattedDate)';
         }
 
         return response()->json($query);
