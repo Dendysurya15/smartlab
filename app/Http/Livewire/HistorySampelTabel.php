@@ -91,14 +91,14 @@ final class HistorySampelTabel extends PowerGridComponent
         return PowerGrid::columns()
             ->addColumn('id')
             ->addColumn('tanggal_penerimaan_formatted', fn (TrackSampel $model) => Carbon::parse($model->tanggal_penerimaan)->format('d/m/Y H:i:s'))
-            ->addColumn('jenis_sample', function (TrackSampel $model) {
-                return $model->jenisSample->nama;
+            ->addColumn('jenis_sampel', function (TrackSampel $model) {
+                return $model->jenisSampel->nama;
             })
             ->addColumn('asal_sampel')
             ->addColumn('nomor_kupa')
             ->addColumn('nama_pengirim')
             ->addColumn('departemen')
-            ->addColumn('kode_sample')
+            ->addColumn('kode_sampel')
             ->addColumn('estimasi_formatted', fn (TrackSampel $model) => Carbon::parse($model->estimasi)->format('d/m/Y H:i:s'))
             ->addColumn('tujuan')
             ->addColumn('parameter_analisis')
@@ -114,7 +114,7 @@ final class HistorySampelTabel extends PowerGridComponent
             ->addColumn('admin')
             ->addColumn('no_hp')
             ->addColumn('email')
-            ->addColumn('foto_sample');
+            ->addColumn('foto_sampel');
     }
 
     /*
@@ -138,7 +138,7 @@ final class HistorySampelTabel extends PowerGridComponent
             Column::make('Tanggal penerimaan', 'tanggal_penerimaan_formatted', 'tanggal_penerimaan')
                 ->sortable(),
 
-            Column::make('Jenis sample', 'jenis_sample')
+            Column::make('Jenis sampel', 'jenis_sampel')
                 ->sortable()
                 ->searchable(),
 
@@ -159,7 +159,7 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Kode sample', 'kode_sample')
+            Column::make('Kode sampel', 'kode_sampel')
                 ->sortable()
                 ->searchable(),
 

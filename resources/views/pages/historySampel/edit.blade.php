@@ -62,9 +62,9 @@
 
 
                                     <div id="image-container">
-                                        @if($sampel->foto_sample)
-                                        <img src="{{ asset('storage/uploads/' . $sampel->foto_sample) }}"
-                                            alt="Sample Image">
+                                        @if($sampel->foto_sampel)
+                                        <img src="{{ asset('storage/uploads/' . $sampel->foto_sampel) }}"
+                                            alt="Sampel Image">
                                         @else
                                         <svg class="mx-auto h-50 w-50 text-gray-300" viewBox="0 0 24 24"
                                             fill="currentColor" aria-hidden="true">
@@ -77,7 +77,7 @@
                                     <div class="mt-4 text-sm leading-6 text-gray-600">
                                         <label for="file-upload"
                                             class="relative cursor-pointer rounded-md bg-white font-semibold text-emerald-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-emerald-600 focus-within:ring-offset-2 hover:text-emerald-500">
-                                            <span>{{$sampel->foto_sample}} </span>
+                                            <span>{{$sampel->foto_sampel}} </span>
 
                                         </label>
 
@@ -113,10 +113,10 @@
                             <div class="mt-2">
                                 <select id="asal_sam" name="asal_sam" autocomplete="asal_sam"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                    <option value="Internal" @if ($sampel->asal_sample === 'Internal') selected
+                                    <option value="Internal" @if ($sampel->asal_sampel === 'Internal') selected
                                         @endif>Internal
                                     </option>
-                                    <option value="Eksternal" @if ($sampel->asal_sample === 'Eksternal') selected
+                                    <option value="Eksternal" @if ($sampel->asal_sampel === 'Eksternal') selected
                                         @endif>Eksternal
                                     </option>
                                 </select>

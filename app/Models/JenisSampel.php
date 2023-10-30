@@ -9,5 +9,5 @@ class JenisSampel extends Model
 {
     use HasFactory;
 
-    protected $table = 'jenis_sample';
+    protected $table = 'jenis_sampel';
 }

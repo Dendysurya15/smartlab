@@ -8,16 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class TrackSampel extends Model
 {
     use HasFactory;
-    protected $table = 'track_sample';
+    protected $table = 'track_sampel';
     public $timestamps = false;
     protected $fillable = [
         'tanggal_penerimaan',
-        'jenis_sample',
+        'jenis_sampel',
         'asal_sampel',
         'nomor_kupa',
         'nama_pengirim',
         'departemen',
-        'kode_sample',
+        'kode_sampel',
+        'jumlah_sampel',
+        'kondisi_sampel',
+        'personel',
+        'alat',
+        'bahan',
+        'kemasan_sampel',
         'nomor_surat',
         'nomor_lab',
         'estimasi',
@@ -28,14 +34,15 @@ class TrackSampel extends Model
         'admin',
         'no_hp',
         'email',
-        'foto_sample',
-        'kode'
+        'foto_sampel',
+        'kode',
+        'skala_prioritas'
     ];
 
     // Define the "belongs to" relationship with JenisSample
-    public function jenisSample()
+    public function jenisSampel()
     {
-        return $this->belongsTo(JenisSampel::class, 'jenis_sample', 'id');
+        return $this->belongsTo(JenisSampel::class, 'jenis_sampel', 'id');
     }
 
     public function progressSampel()

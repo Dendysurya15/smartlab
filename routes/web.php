@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\HistorySampel;
-use App\Http\Controllers\InputProgress;
+use App\Http\Controllers\HistorySampelController;
+use App\Http\Controllers\InputProgressController;
 use App\Http\Controllers\TrackSampelController;
 
 /*
@@ -30,7 +30,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::fallback(function () {
         return view('pages/utility/404');
     });
-    Route::resource('input_progress', InputProgress::class);
-    Route::resource('history_sampel', HistorySampel::class);
-    Route::get('get-progress-options', [HistorySampel::class, 'getProgressOptions']);
+    Route::resource('input_progress', InputProgressController::class);
+    Route::resource('history_sampel', HistorySampelController::class);
+    Route::get('get-progress-options', [HistorySampelController::class, 'getProgressOptions']);
 });
