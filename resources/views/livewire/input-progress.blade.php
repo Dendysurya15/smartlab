@@ -40,7 +40,8 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Jenis
                             Sampel</label>
                         <div class="mt-2">
-                            <select id="jenis_sampel" wire:model="jenis_sampel" autocomplete="jenis_sampel"
+                            <select id="jenis_sampel" wire:model="jenis_sampel"
+                                wire:change="ChangeFieldParamAndNomorLab" autocomplete="jenis_sampel"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                 @foreach ($jenisSampelOptions as $item)
                                 <option value="{{$item->id}}">{{$item->nama}}
@@ -85,16 +86,27 @@
                         </div>
                     </div>
 
+
                     <div class="sm:col-span-2">
                         <label for="nomor_lab" class="block text-sm font-medium leading-6 text-gray-900">Nomor
                             Lab</label>
-                        <div class="mt-2">
-                            <input type="text" wire:model="nomor_lab" id="nomor_lab" autocomplete="given-name"
-                                value="{{ old('nomor_lab') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                            @error('nomor_lab')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                        <div class="mt-2 grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <input type="text" wire:model="nomor_lab_left" id="nomor_lab_left"
+                                    autocomplete="given-name"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                @error('nomor_lab_left')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="col-span-1">
+                                <input type="text" wire:model="nomor_lab_right" id="nomor_lab_right"
+                                    autocomplete="given-name"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                @error('nomor_lab_right')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
                     </div>
 
@@ -219,6 +231,21 @@
                     </div>
 
                     <div class="sm:col-span-2">
+                        <label for="tgl_pengantaran_sampel"
+                            class="block text-sm font-medium leading-6 text-gray-900">Tanggal Pengantaran Sampel
+                            Kupa</label>
+                        <div class="mt-2">
+                            <input type="date" wire:model="tgl_pengantaran_sampel" id="tgl_pengantaran_sampel"
+                                autocomplete="given-name" value="{{ old('tgl_pengantaran_sampel') }}"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                            @error('tgl_pengantaran_sampel')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-2">
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Tujuan</label>
                         <div class="mt-2">
                             <input type="text" wire:model="tujuan" id="tujuan" autocomplete="given-name"
@@ -230,6 +257,22 @@
                         </div>
                     </div>
 
+                    <div class="sm:col-span-2">
+                        <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Skala Prioritas
+                            Sampel</label>
+                        <div class="mt-2">
+                            <select id="skala_prioritas" wire:model="skala_prioritas" autocomplete="skala_prioritas"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                <option value="Normal" @if (old('skala_prioritas')==='Normal' ) selected @endif>
+                                    Normal</option>
+                                <option value="Tinggi" @if (old('skala_prioritas')==='Tinggi' ) selected @endif>
+                                    Tinggi</option>
+                            </select>
+                            @error('skala_prioritas')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
                     <div class="sm:col-span-2">
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Nomor
                             Hp</label>
@@ -257,63 +300,49 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-2">
-                        <div class="flex h-6 items-center">
-                            <input id="personel" wire:model="personel" type="checkbox"
-                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                    <div class="sm:col-span-3">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="col-span-1">
+                                <div class="flex h-6 items-center">
+                                    <input id="personel" wire:model="personel" type="checkbox"
+                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                </div>
+                                <div class="text-sm leading-6">
+                                    <label for="personel" class="font-medium text-gray-900">Personel</label>
+                                    <p class="text-gray-500 text-xs">(Tersedia dan Kompeten)</p>
+                                    @error('personel')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-span-1">
+                                <div class="flex h-6 items-center">
+                                    <input id="alat" wire:model="alat" type="checkbox"
+                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                </div>
+                                <div class="text-sm leading-6">
+                                    <label for="alat" class="font-medium text-gray-900">Alat</label>
+                                    <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
+                                    @error('alat')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-span-1">
+                                <div class="flex h-6 items-center">
+                                    <input id="bahan" wire:model="bahan" type="checkbox"
+                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                </div>
+                                <div class="text-sm leading-6">
+                                    <label for="bahan" class="font-medium text-gray-900">Bahan</label>
+                                    <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
+                                    @error('bahan')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-sm leading-6">
-                            <label for="personel" class="font-medium text-gray-900">Personel</label>
-                            <p class="text-gray-500">(Tersedia dan Kompeten)</p>
-                            @error('personel')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <div class="sm:col-span-2">
-                        <div class="flex h-6 items-center">
-                            <input id="alat" wire:model="alat" type="checkbox"
-                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                        </div>
-                        <div class="text-sm leading-6">
-                            <label for="alat" class="font-medium text-gray-900">Alat</label>
-                            <p class="text-gray-500">(Tersedia dan Baik)</p>
-                            @error('alat')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <div class="flex h-6 items-center">
-                            <input id="bahan" wire:model="bahan" type="checkbox"
-                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                        </div>
-                        <div class="text-sm leading-6">
-                            <label for="bahan" class="font-medium text-gray-900">Bahan</label>
-                            <p class="text-gray-500">(Tersedia dan Baik)</p>
-                            @error('bahan')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Skala Prioritas
-                            Sampel</label>
-                        <div class="mt-2">
-                            <select id="skala_prioritas" wire:model="skala_prioritas" autocomplete="skala_prioritas"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                <option value="Normal" @if (old('skala_prioritas')==='Normal' ) selected @endif>
-                                    Normal</option>
-                                <option value="Tinggi" @if (old('skala_prioritas')==='Tinggi' ) selected @endif>
-                                    Tinggi</option>
-                            </select>
-                            @error('skala_prioritas')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
                     </div>
 
                     <div class="col-span-full">
@@ -323,35 +352,21 @@
                             seluruh
                             data yang ingin akan dimasukkan ke sistem!</p>
                     </div>
+                    @foreach ($inputanParameter as $index =>$inputan)
 
-                    @foreach ($inputans as $index =>$inputan)
 
-                    <div class="sm:col-span-1">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Satuan
-                        </label>
-                        <div class="mt-2">
-                            <input type="text" name="inputans[{{$index}}][satuan_default]" autocomplete="given-name"
-                                wire:model="inputans.{{$index}}.satuan_default" placeholder="%, ppm, me/100gr"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
-                            @error('satuan')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
 
                     <div class="sm:col-span-1">
                         <label class="block text-sm font-medium leading-6 text-gray-900">Parameter
                             Analisis</label>
                         <div class="mt-2">
-                            <select name="inputans[{{$index}}][parameter_id]"
-                                wire:model="inputans.{{$index}}.parameter_id"
+                            <select name="inputanParameter[{{$index}}][parameter_id]"
+                                wire:model="inputanParameter.{{$index}}.parameter_id"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
-
-                                @foreach ($parameterAnalisisOptions as $item)
-                                <option value="{{$item->id}}">{{$item->nama}}</option>
+                                @foreach ($parameterAnalisisOptions as $id => $nama)
+                                <option value="{{ $id }}">{{ $nama }}</option>
                                 @endforeach
-
                             </select>
                             @error('asal_sam')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -359,11 +374,12 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-1">
+                    {{-- <div class="sm:col-span-1">
                         <label class="block text-sm font-medium leading-6 text-gray-900">Metode
                             Analisis</label>
                         <div class="mt-2">
-                            <select name="inputans[{{$index}}][metode_id]" wire:model="inputans.{{$index}}.metode_id"
+                            <select name="inputanParameter[{{$index}}][metode_id]"
+                                wire:model="inputanParameter.{{$index}}.metode_id"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
 
                                 @foreach ($metodeAnalisisOptions as $item)
@@ -377,13 +393,29 @@
                         </div>
                     </div>
                     <div class="sm:col-span-1">
+
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Satuan
+                        </label>
+                        <div class="mt-2">
+                            <input type="text" name="inputanParameter[{{$index}}][satuan_default]"
+                                autocomplete="given-name" wire:model="inputanParameter.{{$index}}.satuan_default"
+                                placeholder="%, ppm, me/100gr"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                            @error('satuan')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div> --}}
+                    <div class="sm:col-span-1">
                         <label for="jumlah_per_parameter"
                             class="block text-sm font-medium leading-6 text-gray-900">Jumlah
                             Sampel
                         </label>
                         <div class="mt-2">
-                            <input type="number" name="inputans[{{$index}}][jumlah_per_parameter]"
-                                autocomplete="given-name" wire:model="inputans.{{$index}}.jumlah_per_parameter" class=" block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset
+                            <input type="number" name="inputanParameter[{{$index}}][jumlah_per_parameter]"
+                                autocomplete="given-name" wire:model="inputanParameter.{{$index}}.jumlah_per_parameter"
+                                wire:change="getJumlahSampel" class=" block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset
                             ring-gray-300  focus:ring-2 focus:ring-inset focus:ring-emerald-600
                             sm:text-sm sm:leading-6">
 
@@ -403,7 +435,7 @@
                     </div>
 
                     @endforeach
-                    <div class="sm:col-span-2 flex flex-col justify-between">
+                    <div class="sm:col-span-6 flex flex-col justify-between">
                         <div class="mt-2">
                             <button
                                 class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
@@ -413,8 +445,121 @@
                     </div>
 
 
+                    <p class="sm:col-span-6">Rekap Biaya Per Parameter</p>
+                    @foreach ($biayaParameter as $index =>$item)
+                    <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25">
+                        <div class="grid grid-cols-5 gap-5">
+
+                            <div class="sm:col-span-2">
+
+                                <label class="block text-sm font-medium leading-6 text-gray-900">Nama parmeter </label>
+
+                                {{-- <div class="mt-2 relative">
+                                    <input type="text" name="biayaParameter[{{$index}}]['harga_sampel']"
+                                        autocomplete="given-name" wire:model="biayaParameter.{{$index}}.harga_sampel"
+                                        wire:change="updateHargaSampel" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset
+                                    ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm
+                                    sm:leading-6">
+                                    <span
+                                        class="absolute inset-y-0 right-0 pr-12 flex items-center text-gray-600 font-bold">X</span>
+                                    <span
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 font-bold">{{
+                                        $item['jumlah_sampel'] }}</span>
+                                </div> --}}
+
+                                <div class="mt-2">
+                                    nama metode analisisinya
+                                    <li>askdj</li>
+                                    <li>askdj</li>
+                                    <li>askdj</li>
+
+                                </div>
+                            </div>
+
+                            {{-- <div class="sm:col-span-1">
+                                <label class="block text-sm font-medium leading-6 text-gray-900">Sub Total</label>
+                                <div class="mt-2 ">
+                                    <input type="text" name="biayaParameter[{{$index}}][sub_total]"
+                                        autocomplete="given-name" wire:model="biayaParameter.{{$index}}.sub_total"
+                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                </div>
+                            </div> --}}
+
+                            <div class="sm:col-span-1">
+                                <label class="block text-sm font-medium leading-6 text-gray-900">Jumlah
+                                    Sampel</label>
+                                <div class="mt-2 ">
+                                    <input type="text" name="biayaParameter[{{$index}}][ppn]" autocomplete="given-name"
+                                        wire:model="biayaParameter.{{$index}}.ppn" placeholder="%, ppm, me/100gr"
+                                        wire:change="updatePPN"
+                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+
+                                </div>
+                                <label class="block text-sm font-medium leading-6 text-gray-900">Harga Per
+                                    Sampel</label>
+                                <div class="mt-2 ">
+                                    <input type="text" name="biayaParameter[{{$index}}][ppn]" autocomplete="given-name"
+                                        wire:model="biayaParameter.{{$index}}.ppn" placeholder="%, ppm, me/100gr"
+                                        wire:change="updatePPN"
+                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+
+                                </div>
+
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="block text-sm font-medium leading-6 text-gray-900">Sub Total</label>
+                                <div class="mt-2 ">
+                                    <input type="text" name="biayaParameter[{{$index}}][ppn]" autocomplete="given-name"
+                                        wire:model="biayaParameter.{{$index}}.ppn" placeholder="%, ppm, me/100gr"
+                                        wire:change="updatePPN"
+                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+
+                                </div>
+                                <label class="block text-sm font-medium leading-6 text-gray-900">PPN11%</label>
+                                <div class="mt-2 ">
+                                    <input type="text" name="biayaParameter[{{$index}}][total]"
+                                        autocomplete="given-name" wire:model="biayaParameter.{{$index}}.total"
+                                        placeholder="%, ppm, me/100gr"
+                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+
+                                </div>
+
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="block text-sm font-medium leading-6 text-gray-900">Total</label>
+                                <div class="mt-2 ">
+                                    <input type="text" name="biayaParameter[{{$index}}][ppn]" autocomplete="given-name"
+                                        wire:model="biayaParameter.{{$index}}.ppn" placeholder="%, ppm, me/100gr"
+                                        wire:change="updatePPN"
+                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+
+                                </div>
+
+                                <label class="block text-sm font-medium leading-6 text-gray-900">PPN11%</label>
+                                <div class="mt-2">
+                                    <button
+                                        class="rounded-md bg-red-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+                                        wire:click.prevent="removeParameter({{$index}})">Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                    @endforeach
+
+                    <p class="sm:col-span-6"></p>
                     <div class="col-span-full">
-                        <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Upload Foto
+                        <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Upload
+                            Foto
                             Sampel</label>
                         <div
                             class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">

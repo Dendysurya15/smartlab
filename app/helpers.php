@@ -43,6 +43,18 @@ if (!function_exists('tanggal_indo')) {
     }
 }
 
+if (!function_exists('formatNumber')) {
+function formatNumber($number) {
+    return number_format($number, 0, ',', '.');
+}
+}
+if (!function_exists('hitungPPN')) {
+    function hitungPPN($angka)
+    {
+        return ($angka * 11) / 100;
+    }
+}
+
 if (!function_exists('generateRandomCode')) {
     function generateRandomCode($length = 8)
     {
