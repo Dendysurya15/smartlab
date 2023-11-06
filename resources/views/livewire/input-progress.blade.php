@@ -1,7 +1,6 @@
 <div>
     @if ($successSubmit)
-    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
-        role="alert">
+    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
         Record berhasil disimpan dengan kode track<span class="font-medium"> {{$msgSuccess}}</span>
     </div>
     @endif
@@ -23,13 +22,10 @@
                 {{-- tanggal penerimaan --}}
                 <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-2">
-                        <label for="tanggal_penerimaan"
-                            class="block text-sm font-medium leading-6 text-gray-900">Tanggal
+                        <label for="tanggal_penerimaan" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
                             Penerimaan</label>
                         <div class="mt-2">
-                            <input type="date" wire:model="tanggal_penerimaan" id="tanggal_penerimaan"
-                                autocomplete="given-name"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="date" wire:model="tanggal_penerimaan" id="tanggal_penerimaan" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('tanggal_penerimaan')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -40,9 +36,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Jenis
                             Sampel</label>
                         <div class="mt-2">
-                            <select id="jenis_sampel" wire:model="jenis_sampel"
-                                wire:change="ChangeFieldParamAndNomorLab" autocomplete="jenis_sampel"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                            <select id="jenis_sampel" wire:model="jenis_sampel" wire:change="ChangeFieldParamAndNomorLab" autocomplete="jenis_sampel" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                 @foreach ($jenisSampelOptions as $item)
                                 <option value="{{$item->id}}">{{$item->nama}}
                                 </option>
@@ -59,8 +53,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Asal
                             Sampel</label>
                         <div class="mt-2">
-                            <select id="asal_sampel" wire:model="asal_sampel" autocomplete="asal_sampel"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                            <select id="asal_sampel" wire:model="asal_sampel" autocomplete="asal_sampel" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                 <option value="Internal" @if (old('asal_sampel')==='Internal' ) selected @endif>Internal
                                 </option>
                                 <option value="Eksternal" @if (old('asal_sampel')==='Eksternal' ) selected @endif>
@@ -77,9 +70,7 @@
                         <label for="nomor_kupa" class="block text-sm font-medium leading-6 text-gray-900">Nomor
                             Kupa</label>
                         <div class="mt-2">
-                            <input type="number" wire:model="nomor_kupa" id="nomor_kupa" autocomplete="given-name"
-                                value="{{ old('nomor_kupa') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="number" wire:model="nomor_kupa" id="nomor_kupa" autocomplete="given-name" value="{{ old('nomor_kupa') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('nomor_kupa')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -92,17 +83,13 @@
                             Lab</label>
                         <div class="mt-2 grid grid-cols-2 gap-4">
                             <div class="col-span-1">
-                                <input type="text" wire:model="nomor_lab_left" id="nomor_lab_left"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                <input type="text" wire:model="nomor_lab_left" id="nomor_lab_left" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 @error('nomor_lab_left')
                                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div class="col-span-1">
-                                <input type="text" wire:model="nomor_lab_right" id="nomor_lab_right"
-                                    autocomplete="given-name"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                <input type="text" wire:model="nomor_lab_right" id="nomor_lab_right" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 @error('nomor_lab_right')
                                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                 @enderror
@@ -114,10 +101,7 @@
                         <label for="nama_pengirim" class="block text-sm font-medium leading-6 text-gray-900">Nama
                             Pengirim</label>
                         <div class="mt-2">
-                            <input type="text" wire:model="nama_pengirim" id="nama_pengirim"
-                                value="{{ old('nama_pengirim') }}" autocomplete="given-name"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
-                                {{-- placeholder="Nama Pelanggan" --}}>
+                            <input type="text" wire:model="nama_pengirim" id="nama_pengirim" value="{{ old('nama_pengirim') }}" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6" {{-- placeholder="Nama Pelanggan" --}}>
                             @error('nama_pengirim')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -129,9 +113,7 @@
                             Departemen /
                             Perusahaan</label>
                         <div class="mt-2">
-                            <input type="text" wire:model="departemen" id="departemen" autocomplete="given-name"
-                                value="{{ old('departemen') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="text" wire:model="departemen" id="departemen" autocomplete="given-name" value="{{ old('departemen') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('departemen')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -142,9 +124,7 @@
                         <label for="kode_sampel" class="block text-sm font-medium leading-6 text-gray-900">Kode
                             Sampel</label>
                         <div class="mt-2">
-                            <input type="text" wire:model="kode_sampel" id="kode_sampel" autocomplete="given-name"
-                                value="{{ old('kode_sampel') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="text" wire:model="kode_sampel" id="kode_sampel" autocomplete="given-name" value="{{ old('kode_sampel') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('kode_sampel')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -158,9 +138,7 @@
                             Sampel
                         </label>
                         <div class="mt-2">
-                            <input type="text" wire:model="kemasan_sampel" id="kemasan_sampel" autocomplete="given-name"
-                                value="{{ old('kemasan_sampel') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="text" wire:model="kemasan_sampel" id="kemasan_sampel" autocomplete="given-name" value="{{ old('kemasan_sampel') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                             @error('kemasan_sampel')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -172,8 +150,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Kondisi
                             Sampel</label>
                         <div class="mt-2">
-                            <select id="kondisi_sampel" name="kondisi_sampel" autocomplete="kondisi_sampel"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                            <select id="kondisi_sampel" name="kondisi_sampel" autocomplete="kondisi_sampel" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                 <option value="Normal" @if (old('kondisi_sampel')==='Normal' ) selected @endif>
                                     Normal</option>
                                 <option value="Abnormal" @if (old('kondisi_sampel')==='Abnormal' ) selected @endif>
@@ -192,9 +169,7 @@
                             Sampel
                         </label>
                         <div class="mt-2">
-                            <input type="number" wire:model="jumlah_sampel" id="jumlah_sampel" autocomplete="given-name"
-                                value="{{ old('jumlah_sampel') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="number" wire:model="jumlah_sampel" id="jumlah_sampel" autocomplete="given-name" value="{{ old('jumlah_sampel') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                             @error('jumlah_sampel')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -206,9 +181,7 @@
                         <label for="nomor_surat" class="block text-sm font-medium leading-6 text-gray-900">Nomor Surat
                         </label>
                         <div class="mt-2">
-                            <input type="text" wire:model="nomor_surat" id="nomor_surat" autocomplete="given-name"
-                                value="{{ old('nomor_surat') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="text" wire:model="nomor_surat" id="nomor_surat" autocomplete="given-name" value="{{ old('nomor_surat') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                             @error('nomor_surat')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -220,9 +193,7 @@
                         <label for="estimasi" class="block text-sm font-medium leading-6 text-gray-900">Estimasi
                             Kupa</label>
                         <div class="mt-2">
-                            <input type="date" wire:model="estimasi" id="estimasi" autocomplete="given-name"
-                                value="{{ old('estimasi') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="date" wire:model="estimasi" id="estimasi" autocomplete="given-name" value="{{ old('estimasi') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                             @error('estimasi')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -231,13 +202,10 @@
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label for="tgl_pengantaran_sampel"
-                            class="block text-sm font-medium leading-6 text-gray-900">Tanggal Pengantaran Sampel
+                        <label for="tgl_pengantaran_sampel" class="block text-sm font-medium leading-6 text-gray-900">Tanggal Pengantaran Sampel
                             Kupa</label>
                         <div class="mt-2">
-                            <input type="date" wire:model="tgl_pengantaran_sampel" id="tgl_pengantaran_sampel"
-                                autocomplete="given-name" value="{{ old('tgl_pengantaran_sampel') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="date" wire:model="tgl_pengantaran_sampel" id="tgl_pengantaran_sampel" autocomplete="given-name" value="{{ old('tgl_pengantaran_sampel') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                             @error('tgl_pengantaran_sampel')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -248,9 +216,7 @@
                     <div class="sm:col-span-2">
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Tujuan</label>
                         <div class="mt-2">
-                            <input type="text" wire:model="tujuan" id="tujuan" autocomplete="given-name"
-                                value="{{ old('tujuan') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="text" wire:model="tujuan" id="tujuan" autocomplete="given-name" value="{{ old('tujuan') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('tujuan')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -261,8 +227,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Skala Prioritas
                             Sampel</label>
                         <div class="mt-2">
-                            <select id="skala_prioritas" wire:model="skala_prioritas" autocomplete="skala_prioritas"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                            <select id="skala_prioritas" wire:model="skala_prioritas" autocomplete="skala_prioritas" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                 <option value="Normal" @if (old('skala_prioritas')==='Normal' ) selected @endif>
                                     Normal</option>
                                 <option value="Tinggi" @if (old('skala_prioritas')==='Tinggi' ) selected @endif>
@@ -277,9 +242,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Nomor
                             Hp</label>
                         <div class="mt-2">
-                            <input type="text" wire:model="no_hp" id="no_hp" autocomplete="given-name"
-                                value="{{ old('no_hp') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="text" wire:model="no_hp" id="no_hp" autocomplete="given-name" value="{{ old('no_hp') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('no_hp')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -291,9 +254,7 @@
                             Departemen /
                             Perusahaan</label>
                         <div class="mt-2">
-                            <input type="email" wire:model="email" id="email" autocomplete="given-name"
-                                value="{{ old('email') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="email" wire:model="email" id="email" autocomplete="given-name" value="{{ old('email') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('email')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -304,8 +265,7 @@
                         <div class="grid grid-cols-3 gap-4">
                             <div class="col-span-1">
                                 <div class="flex h-6 items-center">
-                                    <input id="personel" wire:model="personel" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="personel" wire:model="personel" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="personel" class="font-medium text-gray-900">Personel</label>
@@ -317,8 +277,7 @@
                             </div>
                             <div class="col-span-1">
                                 <div class="flex h-6 items-center">
-                                    <input id="alat" wire:model="alat" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="alat" wire:model="alat" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="alat" class="font-medium text-gray-900">Alat</label>
@@ -330,8 +289,7 @@
                             </div>
                             <div class="col-span-1">
                                 <div class="flex h-6 items-center">
-                                    <input id="bahan" wire:model="bahan" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="bahan" wire:model="bahan" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="bahan" class="font-medium text-gray-900">Bahan</label>
@@ -342,8 +300,8 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
+
 
                     <div class="col-span-full">
                         <h2 class="text-base font-semibold leading-7 text-gray-900">Pengujian Sampel
@@ -352,280 +310,145 @@
                             seluruh
                             data yang ingin akan dimasukkan ke sistem!</p>
                     </div>
-                    @foreach ($inputanParameter as $index =>$inputan)
 
-
-
-
-                    <div class="sm:col-span-1">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Parameter
-                            Analisis</label>
-                        <div class="mt-2">
-                            <select name="inputanParameter[{{$index}}][parameter_id]"
-                                wire:model="inputanParameter.{{$index}}.parameter_id"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                @foreach ($parameterAnalisisOptions as $id => $nama)
-                                <option value="{{ $id }}">{{ $nama }}</option>
-                                @endforeach
-                            </select>
-                            @error('asal_sam')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                    <div class="sm:col-span-3">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="col-span-1 flex items-center"> <!-- Add the "flex items-center" class here -->
+                                <button class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="addParameter">
+                                    + Tambah Parameter
+                                </button>
+                            </div>
+                            <div class="col-span-2 mb-6">
+                                <p>Parameter Analisis</p>
+                                <select wire:model="val_parameter">
+                                    @foreach ($parameterAnalisisOptions as $key => $items)
+                                    <option value="{{$key}}">{{$items}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
-
-                    {{-- <div class="sm:col-span-1">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Metode
-                            Analisis</label>
-                        <div class="mt-2">
-                            <select name="inputanParameter[{{$index}}][metode_id]"
-                                wire:model="inputanParameter.{{$index}}.metode_id"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
-
-                                @foreach ($metodeAnalisisOptions as $item)
-                                <option value="{{$item->id}}">{{$item->nama}}</option>
-                                @endforeach
-
-                            </select>
-                            @error('asal_sam')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="sm:col-span-1">
-
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Satuan
-                        </label>
-                        <div class="mt-2">
-                            <input type="text" name="inputanParameter[{{$index}}][satuan_default]"
-                                autocomplete="given-name" wire:model="inputanParameter.{{$index}}.satuan_default"
-                                placeholder="%, ppm, me/100gr"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300  focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-
-                            @error('satuan')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div> --}}
-                    <div class="sm:col-span-1">
-                        <label for="jumlah_per_parameter"
-                            class="block text-sm font-medium leading-6 text-gray-900">Jumlah
-                            Sampel
-                        </label>
-                        <div class="mt-2">
-                            <input type="number" name="inputanParameter[{{$index}}][jumlah_per_parameter]"
-                                autocomplete="given-name" wire:model="inputanParameter.{{$index}}.jumlah_per_parameter"
-                                wire:change="getJumlahSampel" class=" block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset
-                            ring-gray-300  focus:ring-2 focus:ring-inset focus:ring-emerald-600
-                            sm:text-sm sm:leading-6">
-
-                            @error('jumlah_per_parameter')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-2 flex flex-col justify-between">
-                        <label class="block text-sm font-medium leading-6 text-gray-900"></label>
-                        <div class="mt-2">
-                            <button
-                                class="rounded-md bg-red-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-                                wire:click.prevent="removeParameter({{$index}})">Hapus</button>
-                        </div>
-                    </div>
-
-                    @endforeach
-                    <div class="sm:col-span-6 flex flex-col justify-between">
-                        <div class="mt-2">
-                            <button
-                                class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-                                wire:click.prevent="addParameter">
-                                + Tambah Parameter</button>
-                        </div>
-                    </div>
-
-
                     <p class="sm:col-span-6">Rekap Biaya Per Parameter</p>
-                    @foreach ($biayaParameter as $index =>$item)
-                    <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25">
-                        <div class="grid grid-cols-5 gap-5">
+
+                    <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
+                        @foreach ($formData as $index => $item)
+                        <div class="grid grid-cols-5 gap-5" wire:key="form-{{ $index }}">
 
                             <div class="sm:col-span-2">
 
-                                <label class="block text-sm font-medium leading-6 text-gray-900">Nama parmeter </label>
-
-                                {{-- <div class="mt-2 relative">
-                                    <input type="text" name="biayaParameter[{{$index}}]['harga_sampel']"
-                                        autocomplete="given-name" wire:model="biayaParameter.{{$index}}.harga_sampel"
-                                        wire:change="updateHargaSampel" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset
-                                    ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm
-                                    sm:leading-6">
-                                    <span
-                                        class="absolute inset-y-0 right-0 pr-12 flex items-center text-gray-600 font-bold">X</span>
-                                    <span
-                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 font-bold">{{
-                                        $item['jumlah_sampel'] }}</span>
-                                </div> --}}
-
+                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['nama_parameter']}} </label>
                                 <div class="mt-2">
-                                    nama metode analisisinya
-                                    <li>askdj</li>
-                                    <li>askdj</li>
-                                    <li>askdj</li>
-
+                                    @if (is_array($item['list_metode']))
+                                    @foreach ($item['list_metode'] as $data)
+                                    <li>{{ $data }}</li>
+                                    @endforeach
+                                    @else
+                                    <p>{{ $item['list_metode'] }}</p>
+                                    @endif
                                 </div>
                             </div>
-
-                            {{-- <div class="sm:col-span-1">
-                                <label class="block text-sm font-medium leading-6 text-gray-900">Sub Total</label>
-                                <div class="mt-2 ">
-                                    <input type="text" name="biayaParameter[{{$index}}][sub_total]"
-                                        autocomplete="given-name" wire:model="biayaParameter.{{$index}}.sub_total"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                                </div>
-                            </div> --}}
-
                             <div class="sm:col-span-1">
-                                <label class="block text-sm font-medium leading-6 text-gray-900">Jumlah
-                                    Sampel</label>
-                                <div class="mt-2 ">
-                                    <input type="text" name="biayaParameter[{{$index}}][ppn]" autocomplete="given-name"
-                                        wire:model="biayaParameter.{{$index}}.ppn" placeholder="%, ppm, me/100gr"
-                                        wire:change="updatePPN"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-
-
-                                </div>
-                                <label class="block text-sm font-medium leading-6 text-gray-900">Harga Per
-                                    Sampel</label>
-                                <div class="mt-2 ">
-                                    <input type="text" name="biayaParameter[{{$index}}][ppn]" autocomplete="given-name"
-                                        wire:model="biayaParameter.{{$index}}.ppn" placeholder="%, ppm, me/100gr"
-                                        wire:change="updatePPN"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-
-
-                                </div>
-
-                            </div>
-                            <div class="sm:col-span-1">
-                                <label class="block text-sm font-medium leading-6 text-gray-900">Sub Total</label>
-                                <div class="mt-2 ">
-                                    <input type="text" name="biayaParameter[{{$index}}][ppn]" autocomplete="given-name"
-                                        wire:model="biayaParameter.{{$index}}.ppn" placeholder="%, ppm, me/100gr"
-                                        wire:change="updatePPN"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-
-
-                                </div>
-                                <label class="block text-sm font-medium leading-6 text-gray-900">PPN11%</label>
-                                <div class="mt-2 ">
-                                    <input type="text" name="biayaParameter[{{$index}}][total]"
-                                        autocomplete="given-name" wire:model="biayaParameter.{{$index}}.total"
-                                        placeholder="%, ppm, me/100gr"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-
-
-                                </div>
-
-                            </div>
-                            <div class="sm:col-span-1">
-                                <label class="block text-sm font-medium leading-6 text-gray-900">Total</label>
-                                <div class="mt-2 ">
-                                    <input type="text" name="biayaParameter[{{$index}}][ppn]" autocomplete="given-name"
-                                        wire:model="biayaParameter.{{$index}}.ppn" placeholder="%, ppm, me/100gr"
-                                        wire:change="updatePPN"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-
-
-                                </div>
-
-                                <label class="block text-sm font-medium leading-6 text-gray-900">PPN11%</label>
+                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['jumlahsample']}} </label>
+                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
                                 <div class="mt-2">
-                                    <button
-                                        class="rounded-md bg-red-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-                                        wire:click.prevent="removeParameter({{$index}})">Hapus</button>
+
                                 </div>
+                                @else
+                                <div class="mt-2">
+                                    <input type="text" autocomplete="given-name" value="{{ $item['jumlah_sampel'] }}" wire:change="gethargasample({{ $index }})" wire:model="totalsamples.{{ $index }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                                </div>
+                                @endif
                             </div>
+                            <div class="sm:col-span-1">
+                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['hargassample']}}</label>
+                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
+                                <div class="mt-2">
+
+                                </div>
+                                @else
+                                <div class="mt-2">
+                                    <input type="text" autocomplete="given-name" value="{{ $item['harga_sampel'] }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                </div>
+                                @endif
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['subtotal']}}</label>
+                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
+                                <div class="mt-2">
+
+                                </div>
+                                @else
+                                <div class="mt-2">
+                                    <input type="text" autocomplete="given-name" value="{{ $item['sub_total'] }}" wire:model="formData.{{ $index }}.sub_total" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                </div>
+                                @endif
+                            </div>
+
                         </div>
-                    </div>
+                        @endforeach
 
-
-
-
-
-                    @endforeach
-
-                    <p class="sm:col-span-6"></p>
-                    <div class="col-span-full">
-                        <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Upload
-                            Foto
-                            Sampel</label>
-                        <div
-                            class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                            <div class="text-center flex flex-col items-center">
-                                <!-- Conditional SVG or Image -->
-                                <div id="image-container">
-                                    <svg class="mx-auto h-50 w-50 text-gray-300" viewBox="0 0 24 24" fill="currentColor"
-                                        aria-hidden="true">
-                                        <!-- Placeholder SVG content -->
-                                        <path fill-rule="evenodd"
-                                            d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <!-- End of Conditional SVG or Image -->
-                                <div class="mt-4 text-sm leading-6 text-gray-600">
-                                    @if ($foto_sampel)
-                                    <img class="mx-auto h-50 w-50" src="{{ $foto_sampel->temporaryUrl() }}"
-                                        alt="Preview Image">
-                                    {{-- @else
+                        <p class="sm:col-span-6"></p>
+                        <div class="col-span-full">
+                            <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Upload
+                                Foto
+                                Sampel</label>
+                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                                <div class="text-center flex flex-col items-center">
+                                    <!-- Conditional SVG or Image -->
+                                    <div id="image-container">
+                                        <svg class="mx-auto h-50 w-50 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                            <!-- Placeholder SVG content -->
+                                            <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <!-- End of Conditional SVG or Image -->
+                                    <div class="mt-4 text-sm leading-6 text-gray-600">
+                                        @if ($foto_sampel)
+                                        <img class="mx-auto h-50 w-50" src="{{ $foto_sampel->temporaryUrl() }}" alt="Preview Image">
+                                        {{-- @else
                                     <p class="text-red-500" wire:loading.remove>Invalid file type. Please select an
                                         image.</p> --}}
-                                    @endif
-                                    <label for="foto_sampel"
-                                        class="relative cursor-pointer rounded-md bg-white font-semibold text-emerald-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-emerald-600 focus-within:ring-offset-2 hover:text-emerald-500">
-                                        <span>Upload a file</span>
-                                        <input id="foto_sampel" wire:model="foto_sampel" type="file" class="sr-only"
-                                            accept=".png, .jpg, .jpeg, .jpg">
-                                    </label>
-                                    <p class="pl-1">or drag and drop</p>
-                                    <p class="text-xs  leading-5 text-gray-600">PNG, JPG, GIF up to 5MB</p>
+                                        @endif
+                                        <label for="foto_sampel" class="relative cursor-pointer rounded-md bg-white font-semibold text-emerald-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-emerald-600 focus-within:ring-offset-2 hover:text-emerald-500">
+                                            <span>Upload a file</span>
+                                            <input id="foto_sampel" wire:model="foto_sampel" type="file" class="sr-only" accept=".png, .jpg, .jpeg, .jpg">
+                                        </label>
+                                        <p class="pl-1">or drag and drop</p>
+                                        <p class="text-xs  leading-5 text-gray-600">PNG, JPG, GIF up to 5MB</p>
 
-                                    <!-- Image preview -->
+                                        <!-- Image preview -->
 
 
-                                    <!-- Remove button -->
-                                    @if ($foto_sampel)
-                                    <div class="flex justify-center mt-2">
-                                        <button id="remove-button" type="button" wire:click="resetFotoSampel"
-                                            class="text-sm font-semibold leading-6 text-red-600 cursor-pointer">Remove
-                                            Image</button>
+                                        <!-- Remove button -->
+                                        @if ($foto_sampel)
+                                        <div class="flex justify-center mt-2">
+                                            <button id="remove-button" type="button" wire:click="resetFotoSampel" class="text-sm font-semibold leading-6 text-red-600 cursor-pointer">Remove
+                                                Image</button>
+                                        </div>
+                                        @endif
+
+                                        @error('foto_sampel')
+                                        <div class="text-red-500">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    @endif
 
-                                    @error('foto_sampel')
-                                    <div class="text-red-500">{{ $message }}</div>
-                                    @enderror
+
                                 </div>
-
-
                             </div>
+
                         </div>
 
+
                     </div>
-
-
                 </div>
-            </div>
 
 
-            <div class="mt-6 flex items-center justify-end gap-x-6">
-                <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
-                <button type="submit"
-                    class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Simpan
-                    Progress</button>
-            </div>
+                <div class="mt-6 flex items-center justify-end gap-x-6">
+                    <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
+                    <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Simpan
+                        Progress</button>
+                </div>
     </form>
 </div>
 {{--

@@ -21,7 +21,7 @@ class InputProgress extends Component
     public $biayaParameter = [];
     public $parameterAnalisis = [];
     public $metodeAnalisis = [];
-    public $jenis_sampel;
+    public $jenis_sampel = 5;
     public $tanggal_penerimaan;
     public $asal_sampel;
     public $nomor_kupa;
@@ -47,12 +47,25 @@ class InputProgress extends Component
     public $email;
     public $foto_sampel;
     public $skala_prioritas;
+    public $hargaparameter;
     public $parameterAnalisisOptions = [];
+    public $hargasample = [0];
+    public $satuanparameter;
+    public $namaparameter;
+    public $analisisparameter = [0];
+    public $val_parameter;
+    public $totalsamples;
+    public $subtotal;
+    public $list_metode = [];
 
     public bool $successSubmit = false;
     public string $msgSuccess;
     public bool $errorSubmit = false;
     public string $msgError;
+
+
+    public $formData = [];
+
 
     protected $rules = [
         'tanggal_penerimaan' => 'required|date',
@@ -80,19 +93,88 @@ class InputProgress extends Component
         // 'email.email' => 'The Email Address format is not valid.',
 
     ];
+
+
+
     public function addParameter()
     {
-        $defaultParameterAnalisis = ParameterAnalisis::first();
+
+        if ($this->val_parameter == null) {
+            $defaultParameterAnalisis = ParameterAnalisis::Where('id_jenis_sampel', $this->jenis_sampel)->first();
+        } else {
+            $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
+        }
         $parameterAnalisisId = $defaultParameterAnalisis ? $defaultParameterAnalisis->id : null;
-        $defaultHarga = $defaultParameterAnalisis->harga;
         $defaultMetodeAnalisis = MetodeAnalisis::first();
+        // dd($defaultParameterAnalisis);
         $metodeAnalisisId = $defaultMetodeAnalisis ? $defaultMetodeAnalisis->id : null;
-        $jumlah_sampel_default = 1;
-        $sub_total = $defaultHarga * $jumlah_sampel_default;
-        $ppn = hitungPPN($sub_total);
-        $total = $sub_total + $ppn;
         $this->inputanParameter[] = ['satuan_default' => '', 'parameter_id' => $parameterAnalisisId, 'metode_id' => $metodeAnalisisId, 'jumlah_per_parameter' => 1];
-        $this->biayaParameter[] =   ['harga_sampel' => $defaultHarga, 'sub_total' => $sub_total, 'ppn' => hitungPPN($sub_total), 'jumlah_sampel' => 1, 'total' => $total];
+        $selectedJenisSampel = MetodeAnalisis::find($defaultParameterAnalisis->id);
+
+        // dd($selectedJenisSampel);
+        if ($selectedJenisSampel) {
+            $options = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
+            $this->hargaparameter = $options->first()->harga;
+            $this->satuanparameter = $options->first()->satuan;
+            $this->analisisparameter = $options->pluck('nama', 'id')->toArray();
+            $sub_total = $this->hargaparameter * 1;
+            $ppn = hitungPPN($sub_total);
+            $total = $sub_total + $ppn;
+        }
+
+
+        // dd($this->hargaparameter);
+        // $this->biayaParameter[] =   [
+
+        //     'nama_parameter' => $defaultParameterAnalisis->nama,
+        //     'jumlahsample' => 'Jumlah Sample',
+        //     'hargassample' => 'Harga Sample',
+        //     'subtotal' => 'Sub Total',
+        //     'list_metode' => $this->analisisparameter,
+        //     'jumlah_sampel' => 1,
+        //     'harga_sampel' =>  $this->hargaparameter,
+        //     'satuan' => '',
+        //     'sub_total' => $sub_total,
+        //     'ppn' => hitungPPN($sub_total),
+        //     'total' => $total
+        // ];
+        // dd($defaultParameterAnalisis->nama);
+        $newForm = [
+            'nama_parameter' => $defaultParameterAnalisis->nama,
+            'jumlahsample' => 'Jumlah Sample',
+            'hargassample' => 'Harga Sample',
+            'subtotal' => 'Sub Total',
+            'list_metode' => $this->analisisparameter,
+            'jumlah_sampel' => 1,
+            'harga_sampel' =>  $this->hargaparameter,
+            'satuan' => '',
+            'sub_total' => $sub_total,
+            'ppn' => hitungPPN($sub_total),
+            'total' => $total
+        ];
+
+        $this->formData[] = $newForm;
+    }
+
+    public function gethargasample($index)
+    {
+        $form = $this->formData[$index];
+
+        if ($this->val_parameter == null) {
+            $defaultParameterAnalisis = ParameterAnalisis::Where('id_jenis_sampel', $this->jenis_sampel)->first();
+        } else {
+            $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
+        }
+
+        $selectedJenisSampel = MetodeAnalisis::find($defaultParameterAnalisis->id);
+
+        if ($selectedJenisSampel) {
+            $options = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
+            $this->hargaparameter = $options->first()->harga;
+
+            $sub_totalx[$index] = $this->hargaparameter * $this->totalsamples[$index];
+            $this->formData[$index]['sub_total'] = $sub_totalx[$index];
+        }
     }
 
     public function updatedInputanParameter($value, $index)
@@ -128,7 +210,7 @@ class InputProgress extends Component
         $current = Carbon::now();
         $current = $current->format('y');
         $this->tanggal_penerimaan = Carbon::now()->toDateString();
-        $jumlah_sampel_default = 1;
+        $jumlah_sampel_default = 4;
         $this->jumlah_sampel = $jumlah_sampel_default;
         $this->kondisi_sampel = 'Normal';
         $this->asal_sampel = 'Internal';
@@ -147,17 +229,46 @@ class InputProgress extends Component
         $defaultHarga = '0';
         $defaultMetodeAnalisis = MetodeAnalisis::first();
         $metodeAnalisisId = $defaultMetodeAnalisis ? $defaultMetodeAnalisis->id : null;
-        $sub_total = $defaultHarga * $jumlah_sampel_default;
+        $sub_total = $this->hargaparameter * $jumlah_sampel_default;
+        // dd($this->hargaparameter);
         $ppn = hitungPPN($sub_total);
+
         $total = $sub_total + $ppn;
 
         $this->inputanParameter = [
             ['satuan_default' => '', 'parameter_id' => $parameterAnalisisId, 'metode_id' => $metodeAnalisisId, 'jumlah_per_parameter' => 1]
         ];
 
-        $this->biayaParameter = [
-            ['harga_sampel' => $defaultHarga, 'sub_total' => $sub_total, 'ppn' => hitungPPN($sub_total), 'jumlah_sampel' => 1, 'total' => $total]
+        // dd($this->parameterAnalisisOptions);
+        // $this->biayaParameter[] =   [
+        //     'nama_parameter' => '',
+        //     'jumlahsample' => '',
+        //     'hargassample' => '',
+        //     'list_metode' => '',
+        //     'subtotal' => '',
+        //     // 'jumlah_sampel' => '',
+        //     'harga_sampel' => $defaultHarga,
+        //     'satuan' => '',
+        //     'sub_total' => $sub_total,
+        //     'ppn' => hitungPPN($sub_total),
+        //     'total' => $total
+        // ];
+
+        $newForm = [
+            'nama_parameter' => '',
+            'jumlahsample' => '',
+            'hargassample' => '',
+            'list_metode' => '',
+            'subtotal' => '',
+            // 'jumlah_sampel' => '',
+            'harga_sampel' => $defaultHarga,
+            'satuan' => '',
+            'sub_total' => $sub_total,
+            'ppn' => hitungPPN($sub_total),
+            'total' => $total
         ];
+
+        $this->formData[] = $newForm;
     }
 
     public function ChangeFieldParamAndNomorLab()
@@ -170,8 +281,12 @@ class InputProgress extends Component
             $options = ParameterAnalisis::where('id_jenis_sampel', $this->jenis_sampel)->get();
 
             $this->parameterAnalisisOptions = $options->pluck('nama', 'id')->toArray();
+
+            // dd($this->parameterAnalisisOptions);
         }
     }
+
+
 
     public function updateHargaSampel()
     {
@@ -186,16 +301,7 @@ class InputProgress extends Component
         }
     }
 
-    public function updatePPN()
-    {
 
-
-        foreach ($this->inputanParameter as $index => $inputan) {
-            if (isset($this->biayaParameter[$index])) {
-                $this->biayaParameter[$index]['total'] = ($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']) + $this->biayaParameter[$index]['ppn'];
-            }
-        }
-    }
 
     public function getJumlahSampel()
     {
@@ -224,11 +330,37 @@ class InputProgress extends Component
         );
     }
 
+    public function updatePPN()
+    {
+
+
+
+        foreach ($this->inputanParameter as $index => $inputan) {
+            if (isset($this->biayaParameter[$index])) {
+                $ppn = (($this->hargaparameter * $this->biayaParameter[$index]['jumlah_sampel']) * 11) / 100;
+                $subtotal = ($this->hargaparameter * $this->biayaParameter[$index]['jumlah_sampel']);
+
+                $this->biayaParameter[$index]['sub_total'] = $subtotal;
+                $this->biayaParameter[$index]['ppn'] = $ppn;
+                $this->biayaParameter[$index]['total'] = $ppn + $subtotal;
+            }
+        }
+    }
+
+
+
     public function save()
     {
 
 
-        dd($this->inputanParameter, $this->biayaParameter);
+        dd(
+            $this->jenis_sampel,
+            $this->parameterAnalisisOptions,
+            $this->asal_sampel,
+            $this->nomor_kupa,
+            $this->nama_pengirim,
+            $this->departemen,
+        );
         $this->validate();
 
         $userId = 1;
