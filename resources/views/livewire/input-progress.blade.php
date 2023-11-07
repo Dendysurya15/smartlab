@@ -355,7 +355,20 @@
                                 </div>
                                 @else
                                 <div class="mt-2">
-                                    <input type="text" autocomplete="given-name" value="{{ $item['jumlah_sampel'] }}" wire:change="gethargasample({{ $index }})" wire:model="totalsamples.{{ $index }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                    <input type="text" autocomplete="given-name" wire:change="gethargasample({{ $index }})" wire:model="totalsamples.{{ $index }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                                </div>
+                                @endif
+
+
+                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['ppnjudul']}} </label>
+                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
+                                <div class="mt-2">
+
+                                </div>
+                                @else
+                                <div class="mt-2">
+                                    <input type="text" autocomplete="given-name" wire:model="formData.{{ $index }}.ppn" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                                 </div>
                                 @endif
@@ -371,6 +384,19 @@
                                     <input type="text" autocomplete="given-name" value="{{ $item['harga_sampel'] }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 </div>
                                 @endif
+
+
+                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['totaljudul']}} </label>
+                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
+                                <div class="mt-2">
+
+                                </div>
+                                @else
+                                <div class="mt-2">
+                                    <input type="text" autocomplete="given-name" wire:model="formData.{{ $index }}.totalharga" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                                </div>
+                                @endif
                             </div>
                             <div class="sm:col-span-1">
                                 <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['subtotal']}}</label>
@@ -380,11 +406,23 @@
                                 </div>
                                 @else
                                 <div class="mt-2">
-                                    <input type="text" autocomplete="given-name" value="{{ $item['sub_total'] }}" wire:model="formData.{{ $index }}.sub_total" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                    <input type="text" autocomplete="given-name" wire:model="formData.{{ $index }}.sub_total" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                </div>
+                                @endif
+
+                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['subtotal']}}</label>
+                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
+                                <div class="mt-2">
+
+                                </div>
+                                @else
+                                <div class="mt-2">
+                                    <button class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="removeParameter({{ $index }})">
+                                        Hapus Parameter
+                                    </button>
                                 </div>
                                 @endif
                             </div>
-
                         </div>
                         @endforeach
 
