@@ -8,6 +8,7 @@ use App\Models\ProgressPengerjaan;
 use App\Models\TrackSampel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HistorySampelController extends Controller
 {
@@ -65,7 +66,11 @@ class HistorySampelController extends Controller
     {
         $query = TrackSampel::find($id);
 
+
+        ($query);
+
         $jns_sampel = JenisSampel::all();
+        // dd($query);
 
         $progressStr = JenisSampel::find($query->jenis_sampel)->progress;
 
@@ -78,7 +83,52 @@ class HistorySampelController extends Controller
             $progressOptions[$queryProgress->id] = $queryProgress->nama;
         }
 
-        return view('pages/historySampel/edit', ['sampel' => $query, 'jenis_sampel' => $jns_sampel, 'progress_sampel' => $progressOptions]);
+
+        // dd($arr_progress, $progressOptions);
+
+
+
+
+        $getparams = $query->trackParameters;
+        // dd($query);
+
+        $newquery = DB::connection('mysql')
+            ->table('track_parameter')
+            ->select('track_parameter.*', 'parameter_analisis.nama')
+            ->join('track_sampel', 'track_sampel.parameter_analisisid', '=', 'track_parameter.id_tracksampel')
+            ->join('parameter_analisis', 'parameter_analisis.id', '=', 'track_parameter.id_parameter')
+            ->where('track_sampel.id', $id)
+            ->get();
+        // dd($newquery, $id);
+        $analisis = DB::connection('mysql')
+            ->table('metode_analisis')
+            ->select('metode_analisis.*')
+            ->get();
+
+
+        $newquery = json_decode($newquery, true);
+        $analisis = $analisis->groupBy(['id_parameter']);
+        $analisis = json_decode($analisis, true);
+        // dd($newquery, $analisis);
+
+        $list_metode = [];
+        foreach ($newquery as $key => $value) {
+            foreach ($analisis as $key2 => $value2) {
+                if ($value['id_parameter'] == $key2) {
+
+                    $list_metode[$key]['id'] =  $value['id'];
+                    $list_metode[$key]['jumlah'] =  $value['jumlah'];
+                    $list_metode[$key]['totalakhir'] =  $value['totalakhir'];
+                    $list_metode[$key]['id_tracksampel'] =  $value['id_tracksampel'];
+                    $list_metode[$key]['id_parameter'] =  $value['id_parameter'];
+                    $list_metode[$key]['nama'] =  $value['nama'];
+                    $list_metode[$key]['metodeanalisis'] =  $value2;
+                }
+            }
+        }
+        // dd($list_metode);
+
+        return view('pages/historySampel/edit', ['sampel' => $query, 'jenis_sampel' => $jns_sampel, 'progress_sampel' => $progressOptions, 'list_metode' => $list_metode]);
     }
 
     public function getProgressOptions(Request $request)

@@ -170,7 +170,7 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Parameter analisis', 'parameter_analisis')
+            Column::make('Parameter analisis', 'parameter_analisisid')
                 ->sortable()
                 ->searchable(),
 

@@ -49,4 +49,9 @@ class TrackSampel extends Model
     {
         return $this->belongsTo(ProgressPengerjaan::class, 'progress');
     }
+
+    public function trackParameters()
+    {
+        return $this->hasMany(TrackParameter::class, 'id_tracksampel', 'parameter_analisisid');
+    }
 }
