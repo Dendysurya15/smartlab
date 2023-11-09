@@ -242,7 +242,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Nomor
                             Hp</label>
                         <div class="mt-2">
-                            <input type="text" wire:model="no_hp" id="no_hp" autocomplete="given-name" value="{{ old('no_hp') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="number" wire:model="no_hp" id="no_hp" autocomplete="given-name" value="{{ old('no_hp') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('no_hp')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror

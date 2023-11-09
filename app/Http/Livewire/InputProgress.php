@@ -427,18 +427,21 @@ class InputProgress extends Component
 
 
 
-
-            $trackParameter = new  ();
+            $trackParameters = [];
 
             foreach ($formData as $key => $value) {
-                // dd($value);
-
-                $trackParameter->jumlah = $value['index'];
-                $trackParameter->totalakhir = $value['totalharga'];
-                $trackParameter->id_tracksampel = $commonRandomString;
-                $trackParameter->id_parameter = $value['id_parameter'];
+                $trackParameters[] = [
+                    'jumlah' => $value['index'],
+                    'totalakhir' => $value['totalharga'],
+                    'id_tracksampel' => $commonRandomString,
+                    'id_parameter' => $value['id_parameter'],
+                ];
             }
-            $trackParameter->save();
+
+            TrackParameter::insert($trackParameters);
+
+
+
 
             DB::commit();
 

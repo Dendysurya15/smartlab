@@ -9,4 +9,6 @@ class TrackParameter extends Model
 {
     use HasFactory;
     protected $table = 'track_parameter';
+
+    public $timestamps = false;
 }
