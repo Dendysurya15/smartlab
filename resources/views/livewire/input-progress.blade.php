@@ -36,7 +36,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Jenis
                             Sampel</label>
                         <div class="mt-2">
-                            <select id="jenis_sampel" wire:model="jenis_sampel" wire:change="ChangeFieldParamAndNomorLab" autocomplete="jenis_sampel" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                            <select id="jenis_sampel" wire:change="ChangeFieldParamAndNomorLab" autocomplete="jenis_sampel" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                 @foreach ($jenisSampelOptions as $item)
                                 <option value="{{$item->id}}">{{$item->nama}}
                                 </option>

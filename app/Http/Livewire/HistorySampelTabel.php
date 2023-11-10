@@ -251,17 +251,6 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
                 ->route('history_sampel.edit', fn (\App\Models\TrackSampel $model) => ['history_sampel' => $model->id]),
 
-            // Button::make('edit', view('icons.edit-icon'))
-            //     ->class('bg-slate-800 cursor-pointer text-white px-3 py-2.5 m-1 rounded text-sm')
-            //     ->route('history_sampel.edit', fn (\App\Models\TrackSampel $model) => ['history_sampel' => $model->id])
-
-
-            // Button::make('destroy', 'Delete')
-            //     ->class('bg-gray-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-            //     ->route('history_sampel.destroy', function (\App\Models\TrackSampel $model) {
-            //         return ['history_sampel' => $model->id];
-            //     })
-            //     ->method('delete')
         ];
     }
 

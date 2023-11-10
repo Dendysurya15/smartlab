@@ -67,7 +67,7 @@ class HistorySampelController extends Controller
         $query = TrackSampel::find($id);
 
 
-        ($query);
+        // ($query);
 
         $jns_sampel = JenisSampel::all();
         // dd($query);
