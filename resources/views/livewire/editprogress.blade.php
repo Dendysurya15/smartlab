@@ -169,6 +169,81 @@
 
 
 
+    <div class="sm:col-span-3">
+        <div class="grid grid-cols-4 gap-4"> <!-- Increased the number of columns for the delete button -->
+            <div class="col-span-1 flex items-center">
+                <button class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="addParameter">
+                    + Tambah Parameter
+                </button>
+            </div>
+
+            <div class="col-span-2 mb-6">
+                <p>Parameter Analisis</p>
+                <select wire:model="val_parameter">
+                    @foreach ($parameterAnalisisOptions as $key => $items)
+                    <option value="{{$key}}">{{$items}}</option>
+                    @endforeach
+                </select>
+            </div>
+
+        </div>
+    </div>
+    <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
+        @foreach($parameters as $index => $parameter)
+        <div class="grid grid-cols-5 gap-5 mt-4">
+
+            <div class="sm:col-span-2">
+
+                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['nama_parameter']}} </label>
+
+                <div class="mt-2 ml-6">
+                    @foreach ($parameter['parametersanalisis'] as $key => $data)
+                    <li>{{ $data }}</li>
+                    @endforeach
+                </div>
+
+            </div>
+            <div class="sm:col-span-1">
+                <label class="block text-sm font-medium leading-6 text-gray-900"> Jumlah Sampel</label>
+
+                <div class="mt-2">
+                    <input type="text" wire:model.defer="parameters.{{ $index }}.name" placeholder="Parameter Name">
+                </div>
+
+                <label class="block text-sm font-medium leading-6 text-gray-900"> 11% PPN </label>
+
+                <div class="mt-2">
+                    <input type="text" wire:model.defer="parameters.{{ $index }}.value" placeholder="Parameter Value">
+                </div>
+            </div>
+            <div class="sm:col-span-1">
+                <label class="block text-sm font-medium leading-6 text-gray-900"> Harga Sampel </label>
+
+                <div class="mt-2">
+                    <input type="text" wire:model.defer="parameters.{{ $index }}.value" placeholder="Parameter Value">
+                </div>
+                <label class="block text-sm font-medium leading-6 text-gray-900"> Total </label>
+
+                <div class="mt-2">
+                    <input type="text" wire:model.defer="parameters.{{ $index }}.value" placeholder="Parameter Value">
+                </div>
+            </div>
+            <div class="sm:col-span-1">
+                <label class="block text-sm font-medium leading-6 text-gray-900"> Sub Total </label>
+
+                <div class="mt-2">
+                    <input type="text" wire:model.defer="parameters.{{ $index }}.value" placeholder="Parameter Value">
+                </div>
+                <button class="text-red-500 mt-10" wire:click.prevent="removeParameter({{ $index }})">Remove</button>
+            </div>
+
+
+
+
+        </div>
+        @endforeach
+    </div>
+
     <div class="mt-6 flex items-center justify-end gap-x-6">
         <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
         <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Simpan
