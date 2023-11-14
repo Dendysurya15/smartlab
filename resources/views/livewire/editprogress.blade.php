@@ -193,14 +193,13 @@
                 <label class="block text-sm font-medium leading-6 text-gray-900"> Jumlah Sampel</label>
 
                 <div class="mt-2">
-                    <input type="text" value="{{$parameter['jumlah']}}" wire:change="totalsampelold" placeholder="Parameter jumlah">
+                    <input type="text" wire:model.defer="oldform.{{ $index }}.jumlah" wire:change="totalsampelold({{ $index }})" placeholder="Parameter jumlah">
                 </div>
 
-
-                <label class="block text-sm font-medium leading-6 text-gray-900"> 11%PPN</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900"> {{ $oldform[$index]['judulppn'] }}</label>
 
                 <div class="mt-2">
-                    <input type="text" value="{{$parameter['ppn']}}" placeholder="Parameter jumlah">
+                    <input type="text" wire:model.defer="oldform.{{ $index }}.ppn" wire:change="ppnold({{ $index }})" placeholder="Parameter jumlah">
                 </div>
 
 
@@ -209,13 +208,13 @@
                 <label class="block text-sm font-medium leading-6 text-gray-900"> Harga</label>
 
                 <div class="mt-2">
-                    <input type="text" value="{{$parameter['harga']}}" placeholder="Parameter jumlah">
+                    <input type="text" wire:model.defer="oldform.{{ $index }}.harga" placeholder="Parameter jumlah" disabled>
                 </div>
 
                 <label class="block text-sm font-medium leading-6 text-gray-900"> Total</label>
 
                 <div class="mt-2">
-                    <input type="text" value="{{$parameter['harga_total']}}" placeholder="Parameter jumlah">
+                    <input type="text" wire:model.defer="oldform.{{ $index }}.harga_total" placeholder="Parameter jumlah" disabled>
                 </div>
 
             </div>
@@ -223,7 +222,7 @@
                 <label class="block text-sm font-medium leading-6 text-gray-900"> Subtotal</label>
 
                 <div class="mt-2">
-                    <input type="text" value="{{$parameter['subtotal']}}" placeholder="Parameter jumlah">
+                    <input type="text" wire:model.defer="oldform.{{ $index }}.subtotal" placeholder="Parameter jumlah" disabled>
                 </div>
 
                 <button class="text-red-500 mt-10" wire:click.prevent="hapusItem({{ $index }})">Hapus</button>
@@ -264,19 +263,19 @@
                 <label class="block text-sm font-medium leading-6 text-gray-900"> Harga Sampel </label>
 
                 <div class="mt-2">
-                    <input type="text" wire:model.defer="parameters.{{ $index }}.harga" placeholder="Parameter Harga">
+                    <input type="text" wire:model.defer="parameters.{{ $index }}.harga" placeholder="Parameter Harga" disabled>
                 </div>
                 <label class="block text-sm font-medium leading-6 text-gray-900"> Total </label>
 
                 <div class="mt-2">
-                    <input type="text" wire:model.defer="parameters.{{ $index }}.total" placeholder="Parameter total">
+                    <input type="text" wire:model.defer="parameters.{{ $index }}.total" placeholder="Parameter total" disabled>
                 </div>
             </div>
             <div class="sm:col-span-1">
                 <label class="block text-sm font-medium leading-6 text-gray-900"> Sub Total </label>
 
                 <div class="mt-2">
-                    <input type="text" wire:model.defer="parameters.{{ $index }}.sub_total" placeholder="Parameter sub_total">
+                    <input type="text" wire:model.defer="parameters.{{ $index }}.sub_total" placeholder="Parameter sub_total" disabled>
                 </div>
                 <button class="text-red-500 mt-10" wire:click.prevent="removeParameter({{ $index }})">Hapus</button>
             </div>

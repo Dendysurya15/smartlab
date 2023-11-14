@@ -44,6 +44,7 @@ class Editprogress extends Component
     public $foto_sampel;
     public $email;
     public $estimasikupa;
+    public $parameterid;
     public $oldform = [];
     public $parameters = [];
 
@@ -92,7 +93,7 @@ class Editprogress extends Component
 
         $selectedJenisSampel = MetodeAnalisis::find($defaultParameterAnalisis->id);
 
-        // dd($selectedJenisSampel);
+        // dd($defaultParameterAnalisis);
         if ($selectedJenisSampel) {
             $options = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
             $this->hargaparameter = $options->first()->harga;
@@ -103,7 +104,7 @@ class Editprogress extends Component
             $total = $sub_total + $ppn;
             $defaultppn = 11;
         }
-        // dd($this->analisisparameter);
+        // dd($this->val_parameter);
 
         $this->parameters[] = [
             'jumlah' => 1,
@@ -114,7 +115,8 @@ class Editprogress extends Component
             'total' => $total,
             'ppn' => $ppn,
             'harga_ori' => $this->hargaparameter,
-            'judulppn' => $defaultppn . "% PPN", // Initialize 'judulppn' key
+            'judulppn' => $defaultppn . "% PPN",
+            'id_parameter' => $this->parameterid = $defaultParameterAnalisis->id
         ];
     }
 
@@ -131,6 +133,8 @@ class Editprogress extends Component
         $this->parameters[$index]['ppn'] = $ppn;
         $this->parameters[$index]['total'] = $total;
     }
+
+
     public function changeppn($index)
     {
         $form = $this->parameters[$index];
@@ -213,6 +217,8 @@ class Editprogress extends Component
 
         $trackform = [];
 
+        // dd($getTrack);
+
         foreach ($getTrack as $key => $value) {
             $parameters = [];
 
@@ -242,6 +248,8 @@ class Editprogress extends Component
                 'harga_total' => $value['totalakhir'],
                 'subtotal' => $subtotal,
                 'ppn' => $ppn,
+                'id_parameter' => $value['id_parameter'],
+                'judulppn' => "11% PPN",
             ];
         }
 
@@ -258,6 +266,38 @@ class Editprogress extends Component
         unset($this->oldform[$index]);
         // Re-index the array to maintain sequential keys
         $this->oldform = array_values($this->oldform);
+    }
+
+
+    public function totalsampelold($index)
+    {
+        $form = $this->oldform[$index];
+
+
+        $jumlahsample = $form['jumlah'];
+        $hargasampel = $form['harga'] * $jumlahsample;
+        $ppn = hitungPPN($hargasampel);
+        $total = $hargasampel + $ppn;
+
+        // Update the parameters array
+        $this->oldform[$index]['subtotal'] = $hargasampel;
+        $this->oldform[$index]['ppn'] = $ppn;
+        $this->oldform[$index]['harga_total'] = $total;
+
+        // dd($form);
+    }
+
+    public function ppnold($index)
+    {
+        $form = $this->oldform[$index];
+        $sub_total = $form['subtotal'];
+        $ppn = $form['ppn'];
+
+        $subtotal = ($sub_total * $ppn) / 100;
+        $total = $subtotal + $sub_total;
+
+        $this->oldform[$index]['harga_total'] = $total;
+        $this->oldform[$index]['judulppn'] = $ppn . "% PPN";
     }
 
     public function save()
@@ -278,7 +318,34 @@ class Editprogress extends Component
 
         $newupdate = $last_update . ',' . $timeupdate;
 
-        dd($oldparameteredit);
+        $trackid = $query->parameter_analisisid;
+
+
+        $querytrack = TrackParameter::where('id_tracksampel', $trackid)->get()->toArray();
+
+        $idold = [];
+
+        foreach ($querytrack as $key2 => $value2) {
+            $found = false;
+
+            foreach ($oldparameteredit as $key => $value) {
+                if ($value['id'] == $value2['id']) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $idold[] = $value2['id'];
+            }
+        }
+
+        // $idold will now contain the IDs that are not present in $oldparameteredit
+
+
+        // dd($ids);
+
+        // dd($idold, $querytrack, $oldparameteredit);
 
         try {
             DB::beginTransaction();
@@ -304,20 +371,39 @@ class Editprogress extends Component
             $trackSampel->last_update = $newupdate;
             $trackSampel->save();
 
-            // If you need to update related models, you can do it here
 
-            $trackParameters = [];
 
-            // foreach ($newparametersedit as $key => $value) {
-            //     $trackParameters[] = [
-            //         'jumlah' => $value['index'],
-            //         'totalakhir' => $value['totalharga'],
-            //         'id_tracksampel' => $commonRandomString,
-            //         'id_parameter' => $value['id_parameter'],
-            //     ];
-            // }
+            // Delete records based on the IDs
+            TrackParameter::whereIn('id', $idold)->delete();
 
-            TrackParameter::insert($trackParameters);
+            foreach ($oldparameteredit as $key => $value) {
+                // dd($value);
+                TrackParameter::where('id', $value['id'])->update([
+                    'jumlah' => $value['jumlah'],
+                    'totalakhir' => $value['harga_total'],
+                    'id_tracksampel' => $trackid,
+                    'id_parameter' => $value['id_parameter'],
+                ]);
+            }
+
+            // TrackParameter::update($oldParameters);
+
+            if ($newparametersedit != []) {
+                $trackParameters = [];
+
+                foreach ($newparametersedit as $key => $value) {
+                    $trackParameters[] = [
+                        'jumlah' => $value['jumlah'],
+                        'totalakhir' => $value['total'],
+                        'id_tracksampel' => $trackid,
+                        'id_parameter' => $value['id_parameter'],
+                    ];
+                }
+
+                TrackParameter::insert($trackParameters);
+            }
+
+
 
             DB::commit();
 
