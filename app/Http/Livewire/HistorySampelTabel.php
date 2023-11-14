@@ -106,7 +106,7 @@ final class HistorySampelTabel extends PowerGridComponent
                 return $model->progressSampel->nama ?? '-';
             })
             ->addColumn('last_update', function (TrackSampel $model) {
-                $lastUpdates = explode(', ', $model->last_update);
+                $lastUpdates = explode(',', $model->last_update);
                 $lastUpdate = end($lastUpdates);
                 $formattedDate = Carbon::parse($lastUpdate)->format('d/m/Y H:i:s');
                 return $formattedDate;

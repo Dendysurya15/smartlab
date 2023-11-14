@@ -258,6 +258,9 @@ class InputProgress extends Component
         ];
 
         $this->formData[] = $newForm;
+
+
+        $this->ChangeFieldParamAndNomorLab();
     }
 
     public function ChangeFieldParamAndNomorLab()

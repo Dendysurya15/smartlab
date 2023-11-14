@@ -36,7 +36,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Jenis
                             Sampel</label>
                         <div class="mt-2">
-                            <select id="jenis_sampel" wire:change="ChangeFieldParamAndNomorLab" autocomplete="jenis_sampel" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                            <select wire:model="jenis_sampel" wire:change="ChangeFieldParamAndNomorLab" autocomplete="jenis_sampel" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                 @foreach ($jenisSampelOptions as $item)
                                 <option value="{{$item->id}}">{{$item->nama}}
                                 </option>
@@ -311,23 +311,7 @@
                             data yang ingin akan dimasukkan ke sistem!</p>
                     </div>
 
-                    <div class="sm:col-span-3">
-                        <div class="grid grid-cols-3 gap-4">
-                            <div class="col-span-1 flex items-center"> <!-- Add the "flex items-center" class here -->
-                                <button class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="addParameter">
-                                    + Tambah Parameter
-                                </button>
-                            </div>
-                            <div class="col-span-2 mb-6">
-                                <p>Parameter Analisis</p>
-                                <select wire:model="val_parameter">
-                                    @foreach ($parameterAnalisisOptions as $key => $items)
-                                    <option value="{{$key}}">{{$items}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+
                     <p class="sm:col-span-6">Rekap Biaya Per Parameter</p>
 
                     <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
@@ -479,6 +463,24 @@
 
 
                     </div>
+
+                    <div class="sm:col-span-3">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="col-span-1 flex items-center"> <!-- Add the "flex items-center" class here -->
+                                <button class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="addParameter">
+                                    + Tambah Parameter
+                                </button>
+                            </div>
+                            <div class="col-span-2 mb-6">
+                                <p>Parameter Analisis</p>
+                                <select wire:model="val_parameter">
+                                    @foreach ($parameterAnalisisOptions as $key => $items)
+                                    <option value="{{$key}}">{{$items}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -494,12 +496,15 @@
     const fileInput = document.getElementById('foto_sampel');
     const imageContainer = document.getElementById('image-container');
     const removeButton = document.getElementById('remove-button');
+    
 
     fileInput.addEventListener('change', function() {
         const file = fileInput.files[0];
         if (file) {
             if (file.type.startsWith('image/')) {
                 const fileURL = URL.createObjectURL(file);
+
+                // console.log(fileURL);
                 imageContainer.innerHTML = `<img class="mx-auto h-50 w-50" src="${fileURL}" alt="Preview Image">`;
                 removeButton.style.display = 'block';
             } else {
