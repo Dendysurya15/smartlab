@@ -39,6 +39,7 @@ final class HistorySampelTabel extends PowerGridComponent
         ];
     }
 
+
     /*
     |--------------------------------------------------------------------------
     |  Datasource
@@ -55,6 +56,15 @@ final class HistorySampelTabel extends PowerGridComponent
     public function datasource(): Builder
     {
         return TrackSampel::query();
+    }
+
+    public function map($row): array
+    {
+        return [
+            'Custom Header 1' => $row->column1,
+            'Custom Header 2' => $row->column2,
+            // Add more custom headers as needed
+        ];
     }
 
     /*
@@ -237,16 +247,7 @@ final class HistorySampelTabel extends PowerGridComponent
     public function actions(): array
     {
         return [
-            // Button::make('edit', view('icons.edit-icon'))
-            //     ->class('bg-slate-200 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-            //     ->route('history_sampel.edit', function (\App\Models\TrackSampel $model) {
-            //         return ['history_sampel' => $model->id];
-            //     }),
-            // Button::make('edit', view('icons.edit-icon'))
-            //     ->class('bg-slate-800 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-            //     ->route('history_sampel.edit', function (\App\Models\TrackSampel $model) {
-            //         return ['history_sampel' => $model->id];
-            //     }),
+
             Button::make('edit', view('icons.edit-icon'))
                 ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
                 ->route('history_sampel.edit', fn (\App\Models\TrackSampel $model) => ['history_sampel' => $model->id]),
