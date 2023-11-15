@@ -56,6 +56,8 @@ class Editprogress extends Component
     public string $msgSuccess;
     public bool $errorSubmit = false;
     public string $msgError;
+    public $isExporting = false; // Add this property in your Livewire component
+
 
     public function render()
     {
@@ -304,6 +306,13 @@ class Editprogress extends Component
 
     public function save()
     {
+        if (!$this->isExporting) {
+            $this->processSave();
+        }
+    }
+
+    private function processSave()
+    {
         $id = $this->sample;
         $query = TrackSampel::find($id);
 
@@ -341,14 +350,6 @@ class Editprogress extends Component
                 $idold[] = $value2['id'];
             }
         }
-
-        // $idold will now contain the IDs that are not present in $oldparameteredit
-
-
-        // dd($ids);
-
-        // dd($idold, $querytrack, $oldparameteredit);
-
         try {
             DB::beginTransaction();
 
@@ -422,12 +423,11 @@ class Editprogress extends Component
     }
 
 
+
     public function exportExcel()
     {
-
+        $this->isExporting = true; // Set the flag to true when exporting Excel
         $id = $this->sample;
-        // dd($id);
-
-        return Excel::download(new FormDataExport($id), 'form_data.xlsx');
+        return Excel::download(new FormDataExport($id), 'Data_Lab.xlsx');
     }
 }
