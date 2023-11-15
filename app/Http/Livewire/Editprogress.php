@@ -14,6 +14,8 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\FormDataExport;
 
 class Editprogress extends Component
 {
@@ -417,5 +419,15 @@ class Editprogress extends Component
 
         // You can remove the following dd() statement if everything is working as expected
         // dd($trackSampel);
+    }
+
+
+    public function exportExcel()
+    {
+
+        $id = $this->sample;
+        // dd($id);
+
+        return Excel::download(new FormDataExport($id), 'form_data.xlsx');
     }
 }
