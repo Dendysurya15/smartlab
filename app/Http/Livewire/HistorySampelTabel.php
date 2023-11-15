@@ -58,14 +58,6 @@ final class HistorySampelTabel extends PowerGridComponent
         return TrackSampel::query();
     }
 
-    public function map($row): array
-    {
-        return [
-            'Custom Header 1' => $row->column1,
-            'Custom Header 2' => $row->column2,
-            // Add more custom headers as needed
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
