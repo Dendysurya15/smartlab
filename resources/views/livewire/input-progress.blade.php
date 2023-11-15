@@ -315,6 +315,57 @@
                     <p class="sm:col-span-6">Rekap Biaya Per Parameter</p>
 
                     <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
+
+                        <div class="col-span-full">
+                            <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Upload
+                                Foto
+                                Sampel</label>
+                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                                <div class="text-center flex flex-col items-center">
+                                    <!-- Conditional SVG or Image -->
+                                    <div id="image-container">
+                                        <svg class="mx-auto h-50 w-50 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                            <!-- Placeholder SVG content -->
+                                            <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <!-- End of Conditional SVG or Image -->
+                                    <div class="mt-4 text-sm leading-6 text-gray-600">
+                                        @if ($foto_sampel)
+                                        <img class="mx-auto h-50 w-50" src="{{ $foto_sampel->temporaryUrl() }}" alt="Preview Image">
+                                        {{-- @else
+                                    <p class="text-red-500" wire:loading.remove>Invalid file type. Please select an
+                                        image.</p> --}}
+                                        @endif
+                                        <label for="foto_sampel" class="relative cursor-pointer rounded-md bg-white font-semibold text-emerald-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-emerald-600 focus-within:ring-offset-2 hover:text-emerald-500">
+                                            <span>Upload a file</span>
+                                            <input id="foto_sampel" wire:model="foto_sampel" type="file" class="sr-only" accept=".png, .jpg, .jpeg, .jpg">
+                                        </label>
+                                        <p class="pl-1">or drag and drop</p>
+                                        <p class="text-xs  leading-5 text-gray-600">PNG, JPG, GIF up to 5MB</p>
+
+                                        <!-- Image preview -->
+
+
+                                        <!-- Remove button -->
+                                        @if ($foto_sampel)
+                                        <div class="flex justify-center mt-2">
+                                            <button id="remove-button" type="button" wire:click="resetFotoSampel" class="text-sm font-semibold leading-6 text-red-600 cursor-pointer">Remove
+                                                Image</button>
+                                        </div>
+                                        @endif
+
+                                        @error('foto_sampel')
+                                        <div class="text-red-500">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </div>
+
                         @foreach ($formData as $index => $item)
                         <div class="grid grid-cols-5 gap-5" wire:key="form-{{ $index }}">
 
@@ -411,55 +462,7 @@
                         @endforeach
 
                         <p class="sm:col-span-6"></p>
-                        <div class="col-span-full">
-                            <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Upload
-                                Foto
-                                Sampel</label>
-                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                                <div class="text-center flex flex-col items-center">
-                                    <!-- Conditional SVG or Image -->
-                                    <div id="image-container">
-                                        <svg class="mx-auto h-50 w-50 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                            <!-- Placeholder SVG content -->
-                                            <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <!-- End of Conditional SVG or Image -->
-                                    <div class="mt-4 text-sm leading-6 text-gray-600">
-                                        @if ($foto_sampel)
-                                        <img class="mx-auto h-50 w-50" src="{{ $foto_sampel->temporaryUrl() }}" alt="Preview Image">
-                                        {{-- @else
-                                    <p class="text-red-500" wire:loading.remove>Invalid file type. Please select an
-                                        image.</p> --}}
-                                        @endif
-                                        <label for="foto_sampel" class="relative cursor-pointer rounded-md bg-white font-semibold text-emerald-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-emerald-600 focus-within:ring-offset-2 hover:text-emerald-500">
-                                            <span>Upload a file</span>
-                                            <input id="foto_sampel" wire:model="foto_sampel" type="file" class="sr-only" accept=".png, .jpg, .jpeg, .jpg">
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
-                                        <p class="text-xs  leading-5 text-gray-600">PNG, JPG, GIF up to 5MB</p>
 
-                                        <!-- Image preview -->
-
-
-                                        <!-- Remove button -->
-                                        @if ($foto_sampel)
-                                        <div class="flex justify-center mt-2">
-                                            <button id="remove-button" type="button" wire:click="resetFotoSampel" class="text-sm font-semibold leading-6 text-red-600 cursor-pointer">Remove
-                                                Image</button>
-                                        </div>
-                                        @endif
-
-                                        @error('foto_sampel')
-                                        <div class="text-red-500">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-
-                                </div>
-                            </div>
-
-                        </div>
 
 
                     </div>

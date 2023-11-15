@@ -22,6 +22,7 @@ class Editprogress extends Component
 
     public $sample;
     public $tanggal;
+    public $estimasi;
     public $no_kupa;
     public $jenis_sampel;
     public $nomor_lab_left;
@@ -197,6 +198,7 @@ class Editprogress extends Component
         // dd($query);
 
         $this->tanggal = Carbon::parse($query->tanggal_penerimaan)->format('Y-m-d');
+        $this->estimasi = Carbon::parse($query->estimasi)->format('Y-m-d');
         $this->no_kupa = $query->nomor_kupa;
         $this->jenis_sampel = $query->jenis_sampel;
         $this->asal_sampel = $query->asal_sampel;
@@ -302,13 +304,6 @@ class Editprogress extends Component
 
         $this->oldform[$index]['harga_total'] = $total;
         $this->oldform[$index]['judulppn'] = $ppn . "% PPN";
-    }
-
-    public function save()
-    {
-        if (!$this->isExporting) {
-            $this->processSave();
-        }
     }
 
     private function processSave()
@@ -422,7 +417,12 @@ class Editprogress extends Component
         // dd($trackSampel);
     }
 
-
+    public function save()
+    {
+        if (!$this->isExporting) {
+            $this->processSave();
+        }
+    }
 
     public function exportExcel()
     {
