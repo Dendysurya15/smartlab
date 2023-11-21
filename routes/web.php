@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistorySampelController;
 use App\Http\Controllers\InputProgressController;
 use App\Http\Controllers\TrackSampelController;
+use App\Http\Controllers\SystemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,4 +37,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('exportexcel', function () {
         return view('excelView.exportotexcel');
     });
+
+    Route::resource('system', SystemController::class);
 });
