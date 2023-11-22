@@ -20,6 +20,7 @@ class Inputnewparameters extends Component
     public $parameters = [];
     public $metode = [];
     public $isDisabled = false;
+    public $datatables = [];
 
     public bool $successSubmit = false;
     public string $msgSuccess;
@@ -37,6 +38,16 @@ class Inputnewparameters extends Component
         return view('livewire.inputnewparameters', [
             'getparameters' => $getparameters
         ]);
+    }
+
+
+
+    public function deleteItem($id)
+    {
+        JenisSampel::find($id)->delete();
+        // Optional: Dispatch an event or perform any necessary actions after deletion.
+        // For example, emit an event to notify other components about the deletion.
+        $this->emit('itemDeleted');
     }
 
     public function deleteParameter($parameterIndex)
@@ -79,6 +90,18 @@ class Inputnewparameters extends Component
 
 
 
+    public function datatabel()
+    {
+        $this->datatables = ParameterAnalisis::where('id_jenis_sampel', $this->jenis_sampel)->get()->toArray();
+    }
+
+
+    public function mount()
+    {
+
+        $this->datatabel();
+    }
+
     public function addMetode($parameterIndex)
     {
 
@@ -120,6 +143,8 @@ class Inputnewparameters extends Component
     }
 
 
+
+
     public function save()
     {
         $allParameters = $this->parameters;
@@ -143,7 +168,7 @@ class Inputnewparameters extends Component
                 foreach ($methods as $methodIndex => $method) {
                     $this->validate([
                         "metode.$parameterIndex.$methodIndex.harga" => 'numeric|required',
-                        "metode.$parameterIndex.$methodIndex.namamethod" => 'required',
+                        "metode.$parameterIndex.$methodIndex.namame thod" => 'required',
                     ]);
                     // dd($method);
                     // Insert into metode_analisis table with the obtained parameter ID
