@@ -100,28 +100,21 @@ class InputProgress extends Component
     public function addParameter()
     {
 
-        if ($this->val_parameter == null) {
-            $defaultParameterAnalisis = ParameterAnalisis::Where('id_jenis_sampel', $this->jenis_sampel)->first();
-        } else {
-            $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
-        }
-        $parameterAnalisisId = $defaultParameterAnalisis ? $defaultParameterAnalisis->id : null;
-        $defaultMetodeAnalisis = MetodeAnalisis::first();
-        // dd($defaultParameterAnalisis);
-        $metodeAnalisisId = $defaultMetodeAnalisis ? $defaultMetodeAnalisis->id : null;
-        $this->inputanParameter[] = ['satuan_default' => '', 'parameter_id' => $parameterAnalisisId, 'metode_id' => $metodeAnalisisId, 'jumlah_per_parameter' => 1];
-        $selectedJenisSampel = MetodeAnalisis::find($defaultParameterAnalisis->id);
+        $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
 
-        // dd($selectedJenisSampel);
-        if ($selectedJenisSampel) {
-            $options = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
-            $this->hargaparameter = $options->first()->harga;
-            $this->satuanparameter = $options->first()->satuan;
-            $this->analisisparameter = $options->pluck('nama', 'id')->toArray();
-            $sub_total = $this->hargaparameter * 1;
-            $ppn = hitungPPN($sub_total);
-            $total = $sub_total + $ppn;
-        }
+
+
+        $options = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
+
+        // dd($options);
+        $this->hargaparameter = $options->first()->harga;
+        $this->satuanparameter = $options->first()->satuan;
+        $this->analisisparameter = $options->pluck('nama', 'id')->toArray();
+        $sub_total = $this->hargaparameter * 1;
+        $ppn = hitungPPN($sub_total);
+        $total = $sub_total + $ppn;
+        // dd($sub_total);
+
 
 
 

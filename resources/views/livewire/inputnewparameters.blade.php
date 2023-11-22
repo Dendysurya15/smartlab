@@ -1,5 +1,17 @@
 <div>
     <form wire:submit.prevent="save" method="POST" enctype="multipart/form-data">
+        @if ($successSubmit)
+        <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+            Record berhasil di simpan
+        </div>
+        @endif
+
+        @if ($errorSubmit)
+        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+            <span class="font-medium">{{ $msgError }}</span>
+        </div>
+        @endif
+        @method('PUT') {{-- This is used to specify that this is an update request --}}
         @csrf
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div class="col-span-1 md:col-span-1">
@@ -17,8 +29,6 @@
                     <button class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="addParameter">
                         + Tambah Parameter
                     </button>
-
-
                 </div>
             </div>
 
@@ -27,6 +37,10 @@
             @foreach($parameters as $parameterIndex => $parameter)
 
             <div class="sm:col-span-3 mt-4">
+                @error("parameters.$parameterIndex.methods")
+                <span class="text-red-500">Pastikan Semua Metode Terisi</span>
+                @enderror
+
                 <div class="col-span-1 md:col-span-1">
                     <div class="flex">
                         <div class="mt-2">
@@ -40,8 +54,9 @@
                             </button>
 
                             <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" wire:click.prevent="deleteParameter({{ $parameterIndex }})">
-                                - Parameter
+                                Hapus
                             </button>
+
                         </div>
                     </div>
                     @error("parameters.$parameterIndex.nama")
@@ -58,42 +73,41 @@
                         <div class="flex-1 sm:w-1/3">
                             <p>Masukan Metode Parameter: {{ $method['nama'] }}</p>
                         </div>
+
                         <!-- Metode A -->
                         <div class="flex-1 sm:w-1/3">
                             <label class="block text-sm font-medium leading-6 text-gray-900">Nama Metode</label>
                             <div class="mt-2">
                                 <input type="text" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.namamethod" placeholder="Masukan Nama Metode">
                             </div>
-                            <label class="block text-sm font-medium leading-6 text-gray-900">Harga</label>
-                            <div class="mt-2">
-                                <input type="text" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.harga" placeholder="Masukan Harga Metode">
-                            </div>
+                            @error("metode.$parameterIndex.$methodIndex.namamethod")
+                            <span class="text-red-500">Nama tidak boleh kosons</span>
+                            @enderror
 
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Harga</label>
+
+
+                            <div class="mt-2">
+                                <input type="number" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.harga" placeholder="Masukan Harga Metode">
+                            </div>
+                            @error("metode.$parameterIndex.$methodIndex.harga")
+                            <span class="text-red-500">Harga tidak boleh kosong</span>
+                            @enderror
                         </div>
+
 
                         <!-- Metode B -->
                         <div class="flex-1 sm:w-1/3 mt-4 sm:mt-0">
-                            <label class="block text-sm font-medium leading-6 text-gray-900">Nama Metode</label>
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Satuan</label>
                             <div class="mt-2">
-                                <input type="text" placeholder="Parameter Harga" disabled>
-                            </div>
-                            <label class="block text-sm font-medium leading-6 text-gray-900">Total</label>
-                            <div class="mt-2">
-                                <input type="text" placeholder="Parameter total" disabled>
-                            </div>
-                        </div>
-
-                        <!-- Metode C -->
-                        <div class="flex-1 sm:w-1/3 mt-4 sm:mt-0">
-                            <label class="block text-sm font-medium leading-6 text-gray-900">Metode C</label>
-                            <div class="mt-2">
-                                <input type="text" placeholder="Parameter Harga" disabled>
+                                <input type="text" placeholder="Satuan Metode" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.satuan">
                             </div>
                             <button class="bg-red-500 mt-4 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" wire:click.prevent="deleteMetode({{ $parameterIndex }}, {{ $methodIndex }})">
-                                _ Metode
+                                Hapus
                             </button>
                         </div>
-                        <!-- Add more metodes as needed -->
+
+
                     </div>
 
                     @endforeach
@@ -116,13 +130,3 @@
     </form>
 
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const namaParameterInput = document.getElementById('namaParameterInput');
-        const tambahMetodeButton = document.getElementById('tambahMetodeButton');
-
-        tambahMetodeButton.addEventListener('click', function() {
-            namaParameterInput.disabled = true;
-        });
-    });
-</script>

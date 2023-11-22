@@ -10,6 +10,8 @@ use App\Models\TrackSampel;
 use App\Models\ProgressPengerjaan;
 use App\Models\TrackParameter;
 use Termwind\Components\Dd;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class Inputnewparameters extends Component
 {
@@ -19,10 +21,13 @@ class Inputnewparameters extends Component
     public $metode = [];
     public $isDisabled = false;
 
+    public bool $successSubmit = false;
+    public string $msgSuccess;
+    public bool $errorSubmit = false;
+    public string $msgError;
 
-    protected $rules = [
-        'parameters.*.nama' => 'required' // Validate 'nama' field in all parameters
-    ];
+
+
 
     public function render()
     {
@@ -58,14 +63,11 @@ class Inputnewparameters extends Component
 
     public function addParameter()
     {
-        $this->validate();
 
-        // dd($this->jenis_sampel);
 
         $newParameter = [
             'nama' => '',
             'jenis_sampel' => $this->jenis_sampel,
-            'methods' => [],
         ];
 
         $this->parameters[] = $newParameter;
@@ -77,61 +79,78 @@ class Inputnewparameters extends Component
     public function addMetode($parameterIndex)
     {
 
+        // kolum validasi 
         $this->validate([
-            "parameters.$parameterIndex.nama" => 'required'
+            "parameters.$parameterIndex.nama" => 'required',
         ]);
+
 
         $nama = $this->parameters[$parameterIndex]['nama']; // Store the name
 
         $this->metode[$parameterIndex][] = [
             'nama' => $nama,
-            'harga' => 0, // Default value for harga
-            'namamethod' => '', // Default value for namamethod
+            'harga' => '',
+            'namamethod' => '',
+            'satuan' => '',
         ];
 
         // No need to modify the 'nama' value here
         $this->isDisabled = true;
     }
 
-
-
-
-    public function mount()
+    public function resetForm()
     {
-
-        // dd($getparameters);
-
-
+        $this->parameters = []; // Reset parameters array
+        $this->metode = []; // Reset metode array
+        $this->jenis_sampel = null; // Reset jenis_sampel or any other values you need to reset
     }
+
 
     public function save()
     {
         $allParameters = $this->parameters;
 
-        // dd($allParameters);
+        try {
+            foreach ($allParameters as $parameterIndex => $parameter) {
+                $nama = $parameter['nama'];
+                $jenis_sampel = $parameter['jenis_sampel'];
+                $methods = $this->metode[$parameterIndex] ?? [];
 
-        // Loop through parameters to gather the data
-        foreach ($allParameters as $parameterIndex => $parameter) {
-            // Access parameter nama and methods
-            // $nama = $parameter;
-            $nama = $parameter['nama'];
-            $jenis_sampel = $parameter['jenis_sampel'];
-            $methods = $this->metode[$parameterIndex] ?? [];
+                $this->validate([
+                    "parameters.$parameterIndex.nama" => 'required',
+                ]);
 
-            // dd($parameter);
-            // Do something with $nama and $methods (e.g., save to database, perform operations, etc.)
-            // For demonstration purposes, let's just output them
-            // dd("Parameter Nama: $nama");
+                // Insert into parameter_analisis table
+                $parameterModel = ParameterAnalisis::create([
+                    'nama' => $nama,
+                    'id_jenis_sampel' => $jenis_sampel,
+                ]);
 
-            $new_arr[] = [
-                'nama_parameter' => $nama,
-                'jenis_sampel' => $jenis_sampel,
-                'methods' => $methods
-            ];
-            // dd($nama, $methods);
+                foreach ($methods as $methodIndex => $method) {
+                    $this->validate([
+                        "metode.$parameterIndex.$methodIndex.harga" => 'numeric|required',
+                        "metode.$parameterIndex.$methodIndex.namamethod" => 'required',
+                    ]);
+                    // dd($method);
+                    // Insert into metode_analisis table with the obtained parameter ID
+                    MetodeAnalisis::create([
+                        'nama' => $method['namamethod'],
+                        'harga' => $method['harga'],
+                        'satuan' => $method['satuan'],
+                        'id_parameter' => $parameterModel->id,
+                    ]);
+                }
+            }
+            DB::commit();
+
+            $this->successSubmit = true;
+            $this->msgSuccess = "Data saved successfully!";
+
+            $this->resetForm();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
+            $this->errorSubmit = true;
         }
-        dd($new_arr);
-
-        // Perform any additional actions after handling the form data
     }
 }
