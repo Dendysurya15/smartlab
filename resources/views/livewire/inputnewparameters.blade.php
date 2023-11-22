@@ -45,6 +45,9 @@
                     <div class="flex">
                         <div class="mt-2">
                             <input type="text" wire:model="parameters.{{ $parameterIndex }}.nama" placeholder="Masukan Nama Parameter" @if($isDisabled) disabled @endif>
+                        </div>
+                        <div class="mt-2 ml-2">
+                            <input type="number" wire:change="totalsampel({{ $parameterIndex }})" wire:model="parameters.{{ $parameterIndex }}.hargaparams" placeholder="Masukan Harga">
 
                         </div>
                         <div class="ml-4 mt-2">
@@ -85,10 +88,8 @@
                             @enderror
 
                             <label class="block text-sm font-medium leading-6 text-gray-900">Harga</label>
-
-
                             <div class="mt-2">
-                                <input type="number" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.harga" placeholder="Masukan Harga Metode">
+                                <input type="number" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.harga" placeholder="Masukan Harga Metode" disabled>
                             </div>
                             @error("metode.$parameterIndex.$methodIndex.harga")
                             <span class="text-red-500">Harga tidak boleh kosong</span>

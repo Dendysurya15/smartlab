@@ -68,6 +68,7 @@ class Inputnewparameters extends Component
         $newParameter = [
             'nama' => '',
             'jenis_sampel' => $this->jenis_sampel,
+            'hargaparams' => '',
         ];
 
         $this->parameters[] = $newParameter;
@@ -75,6 +76,8 @@ class Inputnewparameters extends Component
         // Initialize the $isDisabled array for the newly added parameter
         $this->isDisabled = false; // Set the initial state to not disabled
     }
+
+
 
     public function addMetode($parameterIndex)
     {
@@ -85,17 +88,28 @@ class Inputnewparameters extends Component
         ]);
 
 
-        $nama = $this->parameters[$parameterIndex]['nama']; // Store the name
+        $nama = $this->parameters[$parameterIndex]['nama'];
+        $harga = $this->parameters[$parameterIndex]['hargaparams'];
 
         $this->metode[$parameterIndex][] = [
             'nama' => $nama,
-            'harga' => '',
+            'harga' => $harga,
             'namamethod' => '',
             'satuan' => '',
         ];
 
         // No need to modify the 'nama' value here
         $this->isDisabled = true;
+    }
+
+    public function totalsampel($parameterIndex)
+    {
+        $hargaparams = $this->parameters[$parameterIndex]['hargaparams'];
+
+        foreach ($this->metode[$parameterIndex] ?? [] as $methodIndex => $method) {
+            // Update the harga value for each method in the metode array
+            $this->metode[$parameterIndex][$methodIndex]['harga'] = $hargaparams;
+        }
     }
 
     public function resetForm()
