@@ -84,31 +84,22 @@ class Editprogress extends Component
     public function addParameter()
     {
 
-        if ($this->val_parameter == null) {
-            $defaultParameterAnalisis = ParameterAnalisis::Where('id_jenis_sampel', $this->jenis_sampel)->first();
-        } else {
-            $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
-        }
+        // dd($this->val_parameter);
+        $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
+
 
         // dd($defaultParameterAnalisis);
-        // Retrieve records where id_parameter is 1
-        $getanalisis = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
+        $options = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
 
-        $this->analisisparameter = $getanalisis->pluck('nama', 'id')->toArray();
 
-        $selectedJenisSampel = MetodeAnalisis::find($defaultParameterAnalisis->id);
+        $this->hargaparameter = $options->first()->harga;
+        $this->satuanparameter = $options->first()->satuan;
+        $this->analisisparameter = $options->pluck('nama', 'id')->toArray();
+        $sub_total = $this->hargaparameter * 1;
+        $ppn = hitungPPN($sub_total);
+        $total = $sub_total + $ppn;
+        $defaultppn = 11;
 
-        // dd($defaultParameterAnalisis);
-        if ($selectedJenisSampel) {
-            $options = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
-            $this->hargaparameter = $options->first()->harga;
-            $this->satuanparameter = $options->first()->satuan;
-            $this->analisisparameter = $options->pluck('nama', 'id')->toArray();
-            $sub_total = $this->hargaparameter * 1;
-            $ppn = hitungPPN($sub_total);
-            $total = $sub_total + $ppn;
-            $defaultppn = 11;
-        }
         // dd($this->val_parameter);
 
         $this->parameters[] = [
@@ -187,6 +178,7 @@ class Editprogress extends Component
             $this->parameterAnalisisOptions = $options->pluck('nama', 'id')->toArray();
             $this->prameterproggres = $options2->pluck('nama', 'id')->toArray();
             $this->get_progress = $trackprogres;
+            $this->val_parameter = $options->pluck('id')->first();
         }
     }
 

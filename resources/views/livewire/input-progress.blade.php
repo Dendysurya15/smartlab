@@ -390,7 +390,7 @@
                                 </div>
                                 @else
                                 <div class="mt-2">
-                                    <input type="text" autocomplete="given-name" wire:change="gethargasample({{ $index }})" wire:model="totalsamples.{{ $index }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                    <input type="number" autocomplete="given-name" wire:change="gethargasample({{ $index }})" wire:model="totalsamples.{{ $index }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                                 </div>
                                 @endif
@@ -416,7 +416,7 @@
                                 </div>
                                 @else
                                 <div class="mt-2">
-                                    <input type="text" autocomplete="given-name" value="{{ $item['harga_sampel'] }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                    <input type="number" autocomplete="given-name" value="{{ $item['harga_sampel'] }}" class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 </div>
                                 @endif
 
