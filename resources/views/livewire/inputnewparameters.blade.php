@@ -1,8 +1,11 @@
 <div>
 
+    <!-- here sshow the table  -->
 
-    <!-- table analisis delete  -->
 
+
+
+    <!-- end table  -->
     <table class="min-w-full divide-y divide-gray-200">
         <thead>
             <tr>
@@ -27,6 +30,7 @@
             @endforeach
         </tbody>
     </table>
+
 
 
 
@@ -159,7 +163,7 @@
         <div class="mt-6 flex items-center justify-end gap-x-6">
             <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
             <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Simpan
-                Progress</button>
+                Parameter</button>
         </div>
     </form>
 

@@ -29,7 +29,6 @@ class Inputnewparameters extends Component
 
 
 
-
     public function render()
     {
         $getparameters = JenisSampel::all()->toArray();
@@ -148,6 +147,8 @@ class Inputnewparameters extends Component
     public function save()
     {
         $allParameters = $this->parameters;
+        // $methods = $this->metode[$parameterIndex] ?? [];
+        // dd($allParameters);
 
         try {
             foreach ($allParameters as $parameterIndex => $parameter) {
@@ -155,6 +156,7 @@ class Inputnewparameters extends Component
                 $jenis_sampel = $parameter['jenis_sampel'];
                 $methods = $this->metode[$parameterIndex] ?? [];
 
+                // dd($methods;)
                 $this->validate([
                     "parameters.$parameterIndex.nama" => 'required',
                 ]);
@@ -168,7 +170,7 @@ class Inputnewparameters extends Component
                 foreach ($methods as $methodIndex => $method) {
                     $this->validate([
                         "metode.$parameterIndex.$methodIndex.harga" => 'numeric|required',
-                        "metode.$parameterIndex.$methodIndex.namame thod" => 'required',
+                        "metode.$parameterIndex.$methodIndex.namamethod" => 'required',
                     ]);
                     // dd($method);
                     // Insert into metode_analisis table with the obtained parameter ID
