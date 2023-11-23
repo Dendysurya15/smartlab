@@ -39,6 +39,10 @@ class Inputnewparameters extends Component
         ]);
     }
 
+    public function datatabel()
+    {
+        $this->emit('filterData', $this->jenis_sampel);
+    }
 
 
     public function deleteItem($id)
@@ -89,10 +93,6 @@ class Inputnewparameters extends Component
 
 
 
-    public function datatabel()
-    {
-        $this->datatables = ParameterAnalisis::where('id_jenis_sampel', $this->jenis_sampel)->get()->toArray();
-    }
 
 
     public function mount()

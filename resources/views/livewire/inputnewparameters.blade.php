@@ -1,38 +1,9 @@
 <div>
 
     <!-- here sshow the table  -->
+    <!-- <livewire:parameter-table /> -->
 
-
-
-
-    <!-- end table  -->
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead>
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Sample</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-            @foreach($datatables as $item)
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap">{{ $item['id'] }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ $item['nama'] }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ $item['id_jenis_sampel'] }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:bg-red-600" wire:click="deleteItem({{ $item['id'] }})">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-
-
+    <livewire:parameter-table :jenisSampel="$jenis_sampel" :key="$jenis_sampel" />
 
     <!-- form tambah metode analasis  -->
 
@@ -61,6 +32,8 @@
                         </option>
                         @endforeach
                     </select>
+
+
                 </div>
                 <div class="mt-2">
                     <button class="rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="addParameter">
