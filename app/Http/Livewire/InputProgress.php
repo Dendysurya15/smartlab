@@ -45,7 +45,8 @@ class InputProgress extends Component
     public $last_update;
     public $admin;
     public $no_hp;
-    public $email;
+    public $emailTo;
+    public $emailCC;
     public $foto_sampel;
     public $skala_prioritas;
     public $hargaparameter;
@@ -84,7 +85,7 @@ class InputProgress extends Component
         'estimasi' => 'required|date',
         'no_hp' => 'required|string',
         'tujuan' => 'required|string',
-        'email' => 'required|email', // Assuming it's an email field
+        // 'emailTo' => 'required|email', // Assuming it's an email field
         'foto_sampel' => 'max:5000',
     ];
 
