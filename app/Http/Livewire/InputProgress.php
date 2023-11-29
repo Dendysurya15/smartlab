@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Mail\EmailPelanggan;
 use App\Models\JenisSampel;
 use App\Models\MetodeAnalisis;
 use App\Models\ParameterAnalisis;
@@ -10,6 +11,7 @@ use App\Models\TrackParameter;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -46,7 +48,7 @@ class InputProgress extends Component
     public $admin;
     public $no_hp;
     public $emailTo;
-    public $emailCC;
+    public $emailCc;
     public $foto_sampel;
     public $skala_prioritas;
     public $hargaparameter;
@@ -132,9 +134,6 @@ class InputProgress extends Component
         $total = $sub_total + $ppn;
         // dd($sub_total);
 
-
-
-
         $newForm = [
             'nama_parameter' => $defaultParameterAnalisis->nama,
             'id_parameter' => $defaultParameterAnalisis->id,
@@ -150,10 +149,13 @@ class InputProgress extends Component
             'satuan' => '',
             'sub_total' => $sub_total,
             'ppn' => hitungPPN($sub_total),
-            'total' => $total
+            'totalharga' => $total
         ];
 
         $this->formData[] = $newForm;
+        foreach ($this->formData as $index => $inputan) {
+            $this->totalsamples[$index] = 1;
+        }
     }
 
 
@@ -256,7 +258,7 @@ class InputProgress extends Component
             'total' => $total
         ];
 
-        $this->formData[] = $newForm;
+        // $this->formData[] = $newForm;
 
 
         $this->ChangeFieldParamAndNomorLab();
@@ -264,19 +266,14 @@ class InputProgress extends Component
     }
 
 
-
-
-
     public function updateHargaSampel()
     {
-
-        foreach ($this->inputanParameter as $index => $inputan) {
-            if (isset($this->biayaParameter[$index])) {
-                $this->biayaParameter[$index]['jumlah_sampel'] = $inputan['jumlah_per_parameter'];
-                $this->biayaParameter[$index]['sub_total'] = $this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter'];
-                $this->biayaParameter[$index]['ppn'] = hitungPPN($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']);
-                $this->biayaParameter[$index]['total'] = ($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']) + hitungPPN($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']);
-            }
+        foreach ($this->formData as $index => $inputan) {
+            $curr_jumlah_sampel = $this->totalsamples[$index];
+            $curr_harga_sampel = $this->formData[$index]['harga_sampel'];
+            $curr_sub_total = $curr_jumlah_sampel * $curr_harga_sampel;
+            $this->formData[$index]['sub_total'] = $curr_sub_total;
+            $this->formData[$index]['ppn'] = hitungPPN($curr_sub_total);
         }
     }
 
@@ -311,18 +308,8 @@ class InputProgress extends Component
 
     public function updatePPN()
     {
-
-
-
-        foreach ($this->inputanParameter as $index => $inputan) {
-            if (isset($this->biayaParameter[$index])) {
-                $ppn = (($this->hargaparameter * $this->biayaParameter[$index]['jumlah_sampel']) * 11) / 100;
-                $subtotal = ($this->hargaparameter * $this->biayaParameter[$index]['jumlah_sampel']);
-
-                $this->biayaParameter[$index]['sub_total'] = $subtotal;
-                $this->biayaParameter[$index]['ppn'] = $ppn;
-                $this->biayaParameter[$index]['total'] = $ppn + $subtotal;
-            }
+        foreach ($this->formData as $index => $inputan) {
+            $this->formData[$index]['totalharga'] = $this->formData[$index]['ppn'] + $this->formData[$index]['sub_total'];
         }
     }
 
@@ -383,10 +370,15 @@ class InputProgress extends Component
         $commonRandomString = generateRandomString(rand(5, 10));
 
 
+
+        $recipients = array_email($this->emailTo);
+        $cc = array_email($this->emailCc);
+
         try {
             DB::beginTransaction();
 
             $trackSampel = new TrackSampel();
+
 
             $trackSampel->jenis_sampel = $this->jenis_sampel;
             $trackSampel->tanggal_penerimaan = $this->tanggal_penerimaan;
@@ -409,7 +401,8 @@ class InputProgress extends Component
             $trackSampel->last_update = $current;
             $trackSampel->admin = $userId;
             $trackSampel->no_hp = $this->no_hp;
-            $trackSampel->email = $this->email;
+            $trackSampel->emailTo = $this->emailTo;
+            $trackSampel->emailCc = $this->emailCc;
             $trackSampel->parameter_analisisid = $commonRandomString;
             $trackSampel->kode_track = $randomCode;
             $trackSampel->skala_prioritas = $this->skala_prioritas;
@@ -420,34 +413,44 @@ class InputProgress extends Component
                 $trackSampel->foto_sampel = $fileName;
             }
 
-            $trackSampel->save();
+            $saveResult = $trackSampel->save();
+
+            if ($saveResult) {
+
+                DB::commit();
+                $trackParameters = [];
+
+                foreach ($formData as $key => $value) {
+                    $trackParameters[] = [
+                        'jumlah' => $value['index'],
+                        'totalakhir' => $value['totalharga'],
+                        'id_tracksampel' => $commonRandomString,
+                        'id_parameter' => $value['id_parameter'],
+                    ];
+                }
+
+                TrackParameter::insert($trackParameters);
+                $this->successSubmit = true;
+                $this->msgSuccess = $randomCode;
+
+                $this->resetForm();
 
 
+                // try {
+                //     Mail::to($recipients)
+                //         ->cc($cc)
+                //         ->send(new EmailPelanggan());
 
-            $trackParameters = [];
-
-            foreach ($formData as $key => $value) {
-                $trackParameters[] = [
-                    'jumlah' => $value['index'],
-                    'totalakhir' => $value['totalharga'],
-                    'id_tracksampel' => $commonRandomString,
-                    'id_parameter' => $value['id_parameter'],
-                ];
+                //     return "Email sent successfully!";
+                // } catch (\Exception $e) {
+                //     return "Error: " . $e->getMessage();
+                // }
+            } else {
+                DB::rollBack();
+                $this->msgError = 'An error occurred while saving the data: ';
+                // Set the error flag
+                $this->errorSubmit = true;
             }
-
-            TrackParameter::insert($trackParameters);
-
-
-
-
-            DB::commit();
-
-            // session()->flash('successSubmit', $randomCode);
-            // $this->redirect('input_progress');
-            $this->successSubmit = true;
-            $this->msgSuccess = $randomCode;
-
-            $this->resetForm();
         } catch (Exception $e) {
             DB::rollBack();
             // session()->flash('errorSubmit', 'An error occurred while saving the data. ' .  $e->getMessage());
@@ -477,7 +480,8 @@ class InputProgress extends Component
             'last_update',
             'admin',
             'no_hp',
-            'email',
+            'emailTo',
+            'emailCc',
             'foto_sampel',
             'skala_prioritas'
         ]);

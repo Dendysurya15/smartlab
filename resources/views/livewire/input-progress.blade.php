@@ -171,7 +171,7 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Kondisi
                             Sampel</label>
                         <div class="mt-2">
-                            <select id="kondisi_sampel" name="kondisi_sampel" autocomplete="kondisi_sampel"
+                            <select id="kondisi_sampel" wire:model="kondisi_sampel" autocomplete="kondisi_sampel"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600  sm:text-sm sm:leading-6">
                                 <option value="Normal" @if (old('kondisi_sampel')==='Normal' ) selected @endif>
                                     Normal</option>
@@ -292,7 +292,7 @@
                                 <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Email
                                     (To) <span style="color:red">*</span></label>
                                 <div class="mt-2">
-                                    <input type="email" wire:model="emailTo" id="emailTo" autocomplete="given-name"
+                                    <input type="text" wire:model="emailTo" id="emailTo" autocomplete="given-name"
                                         value="{{ old('emailTo') }}"
                                         placeholder="Ex: Imam@gmail.com; Kiky@gmail.com. Beri tanda pemisah ';'"
                                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
@@ -305,11 +305,11 @@
                                 <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Email
                                     (Cc) <span style="color:red">*</span></label>
                                 <div class="mt-2">
-                                    <input type="email" wire:model="emailCC" id="emailCC" autocomplete="given-name"
-                                        value="{{ old('emailCC') }}"
+                                    <input type="text" wire:model="emailCc" id="emailCc" autocomplete="given-name"
+                                        value="{{ old('emailCc') }}"
                                         placeholder="Ex: Imam@gmail.com; Kiky@gmail.com. Beri tanda pemisah ';'"
                                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                                    @error('emailCC')
+                                    @error('emailCc')
                                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -402,9 +402,9 @@
                     </div>
 
                     <div class="sm:col-span-6">
-                        @if (count($formData) > 1)
+                        {{-- @if (count($formData) > 1)
                         <p class="sm:col-span-6">Rekap Biaya Per Parameter</p>
-                        @endif
+                        @endif --}}
 
                         @foreach ($formData as $index => $item)
 
@@ -415,23 +415,22 @@
                                 <label class="block text-sm font-medium leading-6 text-gray-900">
                                     {{$item['nama_parameter']}} </label>
                                 <div class="mt-2">
-                                    @if (is_array($item['list_metode']))
-                                    @foreach ($item['list_metode'] as $data)
-                                    <li>{{ $data }}</li>
-                                    @endforeach
-                                    @else
-                                    <p>{{ $item['list_metode'] }}</p>
-                                    @endif
+                                    <ul class="list-disc pl-4 text-sm">
+                                        @if (is_array($item['list_metode']))
+                                        @foreach ($item['list_metode'] as $data)
+                                        <li>{{ $data }}</li>
+                                        @endforeach
+                                        @else
+                                        <p>{{ $item['list_metode'] }}</p>
+                                        @endif
+                                    </ul>
                                 </div>
                             </div>
+
                             <div class="sm:col-span-1">
                                 <label class="block text-sm font-medium leading-6 text-gray-900">
                                     {{$item['jumlahsample']}} </label>
-                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
-                                <div class="mt-2">
 
-                                </div>
-                                @else
                                 <div class="mt-2">
                                     <input type="number" autocomplete="given-name"
                                         wire:change="gethargasample({{ $index }})"
@@ -439,75 +438,50 @@
                                         class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                                 </div>
-                                @endif
 
-
-                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['ppnjudul']}}
-                                </label>
-                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
+                                <label class="block text-sm font-medium leading-6 text-gray-900">
+                                    {{$item['subtotal']}}</label>
                                 <div class="mt-2">
-
+                                    <input type="text" autocomplete="given-name" disabled
+                                        wire:model="formData.{{ $index }}.sub_total"
+                                        class="block w-full rounded-md border-0 text-slate-400 font-semibold shadow-sm ring-1  ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 </div>
-                                @else
-                                <div class="mt-2">
-                                    <input type="text" autocomplete="given-name" wire:model="formData.{{ $index }}.ppn"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
-                                </div>
-                                @endif
                             </div>
                             <div class="sm:col-span-1">
                                 <label class="block text-sm font-medium leading-6 text-gray-900">
                                     {{$item['hargassample']}}</label>
-                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
                                 <div class="mt-2">
-
-                                </div>
-                                @else
-                                <div class="mt-2">
-                                    <input type="number" autocomplete="given-name" value="{{ $item['harga_sampel'] }}"
+                                    <input type="number" autocomplete="given-name" wire:change="updateHargaSampel()"
+                                        {{-- value="{{ $item['harga_sampel'] }}" --}}
+                                        wire:model="formData.{{ $index }}.harga_sampel"
                                         class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 </div>
-                                @endif
 
 
-                                <label class="block text-sm font-medium leading-6 text-gray-900">
-                                    {{$item['totaljudul']}} </label>
-                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
+
+                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['ppnjudul']}}
+                                </label>
+
                                 <div class="mt-2">
-
-                                </div>
-                                @else
-                                <div class="mt-2">
-                                    <input type="text" autocomplete="given-name"
-                                        wire:model="formData.{{ $index }}.totalharga"
+                                    <input type="text" autocomplete="given-name" wire:change="updatePPN()"
+                                        wire:model="formData.{{ $index }}.ppn"
                                         class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                                 </div>
-                                @endif
                             </div>
                             <div class="sm:col-span-1">
                                 <label class="block text-sm font-medium leading-6 text-gray-900">
-                                    {{$item['subtotal']}}</label>
-                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
-                                <div class="mt-2">
-
-                                </div>
-                                @else
+                                    {{$item['totaljudul']}} </label>
                                 <div class="mt-2">
                                     <input type="text" autocomplete="given-name"
-                                        wire:model="formData.{{ $index }}.sub_total"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        wire:model="formData.{{ $index }}.totalharga" disabled
+                                        class="block w-full rounded-md border-0 text-slate-400 font-semibold shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 </div>
-                                @endif
 
                                 <label class="block text-sm font-medium leading-6 text-gray-900">
                                     {{$item['subtotal']}}</label>
-                                @if(!isset($item['jumlah_sampel']) || $item['jumlah_sampel'] === null)
-                                <div class="mt-2">
 
-                                </div>
-                                @else
                                 <div class="mt-2">
                                     <button
                                         class="rounded-md bg-red-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
@@ -515,7 +489,6 @@
                                         Hapus Parameter
                                     </button>
                                 </div>
-                                @endif
                             </div>
                         </div>
                         @endforeach

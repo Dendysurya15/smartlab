@@ -33,7 +33,8 @@ class TrackSampel extends Model
         'last_update',
         'admin',
         'no_hp',
-        'email',
+        'emailTo',
+        'emailCc',
         'foto_sampel',
         'kode',
         'skala_prioritas'
