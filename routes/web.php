@@ -7,6 +7,8 @@ use App\Http\Controllers\HistorySampelController;
 use App\Http\Controllers\InputProgressController;
 use App\Http\Controllers\TrackSampelController;
 use App\Http\Controllers\SystemController;
+use App\Mail\EmailPelanggan;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +24,21 @@ use App\Http\Controllers\SystemController;
 Route::redirect('/', 'login');
 Route::get('tracking_sampel', [TrackSampelController::class, 'index']);
 Route::post('search_sampel_progress', [TrackSampelController::class, 'search'])->name('search_sampel_progress');
+
+// Route::get('send-email', function () {
+//     $recipients = ['dendysurya15@gmail.com'];
+//     $cc = ['valentinojaja@gmail.com'];
+
+//     try {
+//         Mail::to($recipients)
+//             ->cc($cc)
+//             ->send(new EmailPelanggan());
+
+//         return "Email sent successfully!";
+//     } catch (\Exception $e) {
+//         return "Error: " . $e->getMessage();
+//     }
+// });
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // Route for the getting the data feed
