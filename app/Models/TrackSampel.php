@@ -27,6 +27,7 @@ class TrackSampel extends Model
         'nomor_surat',
         'nomor_lab',
         'estimasi',
+        'tanggal_pengantaran',
         'tujuan',
         'parameter_analisis',
         'progress',

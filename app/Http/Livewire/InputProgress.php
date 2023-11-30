@@ -406,6 +406,7 @@ class InputProgress extends Component
             $trackSampel->parameter_analisisid = $commonRandomString;
             $trackSampel->kode_track = $randomCode;
             $trackSampel->skala_prioritas = $this->skala_prioritas;
+            $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
 
             if ($this->foto_sampel) {
                 $fileName = time() . '_' . $this->foto_sampel->getClientOriginalName();
