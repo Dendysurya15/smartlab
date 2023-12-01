@@ -12,6 +12,8 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
 
 
 class InputProgress extends Component
@@ -421,6 +423,31 @@ class InputProgress extends Component
 
             $trackSampel->save();
 
+
+            $message = "Hallo, tracking sample Anda dapat dicek di link ini: www-facebook.com dengan Kode Tracking: " . $randomCode;
+
+
+            $phoneNumber = preg_replace('/[^0-9]/', '', $this->no_hp);
+
+            // Check if the phone number starts with '08'
+            if (substr($phoneNumber, 0, 2) === '08') {
+                // Replace '08' with '628' to format the number to '+628xxxxx'
+                $phoneNumber = '62' . substr($phoneNumber, 2);
+            }
+
+            // Check if the phone number starts with '+628'
+            if (substr($phoneNumber, 0, 4) === '+628') {
+                // Remove the '+' to format the number to '628xxxxx'
+                $phoneNumber = substr($phoneNumber, 1);
+            }
+
+            // $client = new Client();
+            // $response = $client->post('http://localhost:3000/send-whatsapp', [
+            //     'json' => [
+            //         'number' => $phoneNumber,
+            //         'message' => $message,
+            //     ],
+            // ]);
 
 
             $trackParameters = [];
