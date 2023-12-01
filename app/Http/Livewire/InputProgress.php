@@ -441,13 +441,13 @@ class InputProgress extends Component
                 $phoneNumber = substr($phoneNumber, 1);
             }
 
-            // $client = new Client();
-            // $response = $client->post('http://localhost:3000/send-whatsapp', [
-            //     'json' => [
-            //         'number' => $phoneNumber,
-            //         'message' => $message,
-            //     ],
-            // ]);
+            $client = new Client();
+            $response = $client->post('http://localhost:3000/send-whatsapp', [
+                'json' => [
+                    'number' => $phoneNumber,
+                    'message' => $message,
+                ],
+            ]);
 
 
             $trackParameters = [];
