@@ -26,16 +26,24 @@ class TrackSampelController extends Controller
         $query = TrackSampel::where('kode_track', $kode_input)->first();
 
 
+
         if ($query) {
             $queryProgressPengerjaan = ProgressPengerjaan::pluck('nama', 'id')->toArray();
-            $id_jns_sample = $query->jenis_sample;
-            $jnsSample = JenisSampel::find($id_jns_sample);
+
+            $id_jns_sampel = $query->jenis_sampel;
+            $jnsSampel = JenisSampel::find($id_jns_sampel);
+
+
             $progress_id = $query->progress;
             $last_updates = $query->last_update;
 
-            if ($jnsSample && $last_updates) {
-                $kumpulan_progress = explode(',', $jnsSample->progress);
-                $update_progress = explode(', ', $last_updates);
+            // dd($last_updates);
+
+
+            if ($jnsSampel && $last_updates) {
+                $kumpulan_progress = explode(',', $jnsSampel->progress);
+                $update_progress = explode(',', $last_updates);
+                $update_progress = array_map('trim', $update_progress);
 
                 $progress_arr = [];
                 $jam_progress_arr = [];
@@ -51,13 +59,20 @@ class TrackSampelController extends Controller
                     }
                 }
 
+
+
                 array_multisort($progress_arr, $jam_progress_arr);
+
+
+
                 $query->progress = $progress_arr;
                 $query->last_update = $jam_progress_arr;
             } else {
                 echo 'JenisSample not found.';
             }
         }
+
+
 
         return response()->json($query);
     }
