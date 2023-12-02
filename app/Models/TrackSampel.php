@@ -52,13 +52,13 @@ class TrackSampel extends Model
         return $this->belongsTo(ProgressPengerjaan::class, 'progress');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'admin', 'id');
+    }
+
     public function trackParameters()
     {
         return $this->hasMany(TrackParameter::class, 'id_tracksampel', 'parameter_analisisid');
-    }
-
-    public function scopeSearch($query, $value)
-    {
-        // $query->where('name','like',"%{$value}%")->orWher
     }
 }

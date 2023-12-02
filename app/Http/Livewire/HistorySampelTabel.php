@@ -115,7 +115,9 @@ final class HistorySampelTabel extends PowerGridComponent
                 $formattedDate = Carbon::parse($lastUpdate)->format(' H:i d/m/Y');
                 return $formattedDate;
             })
-            ->addColumn('admin')
+            ->addColumn('admin', function (TrackSampel $model) {
+                return $model->user->name;
+            })
             ->addColumn('no_hp')
             ->addColumn('emailTo')
             ->addColumn('foto_sampel');
@@ -149,54 +151,44 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->searchable(),
 
             Column::make('Kode Track', 'kode_track')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
             Column::make('Last update', 'last_update')
                 ->sortable(),
 
             Column::make('Progress', 'progress')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
 
             Column::make('Nomor kupa', 'nomor_kupa'),
             Column::make('Nama pengirim', 'nama_pengirim')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
             Column::make('Departemen', 'departemen')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
             Column::make('Kode sampel', 'kode_sampel')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
             Column::make('Estimasi', 'estimasi_formatted', 'estimasi')
                 ->sortable(),
 
             Column::make('Tujuan', 'tujuan')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
             Column::make('Parameter analisis', 'parameter_analisisid')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
             Column::make('Asal sampel', 'asal_sampel')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
             Column::make('Admin', 'admin'),
             Column::make('No hp', 'no_hp')
                 ->sortable()
-                ->field('no_hp')
-                ->searchable(),
+                ->field('no_hp'),
 
             Column::make('Email', 'emailTo')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
 
 

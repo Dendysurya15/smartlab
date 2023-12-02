@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Mail\EmailPelanggan;
 use App\Models\JenisSampel;
 use App\Models\MetodeAnalisis;
 use App\Models\ParameterAnalisis;
@@ -10,10 +11,9 @@ use App\Models\TrackParameter;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Http;
-use GuzzleHttp\Client;
 
 
 class InputProgress extends Component
@@ -47,7 +47,8 @@ class InputProgress extends Component
     public $last_update;
     public $admin;
     public $no_hp;
-    public $email;
+    public $emailTo;
+    public $emailCc;
     public $foto_sampel;
     public $skala_prioritas;
     public $hargaparameter;
@@ -86,7 +87,7 @@ class InputProgress extends Component
         'estimasi' => 'required|date',
         'no_hp' => 'required|string',
         'tujuan' => 'required|string',
-        'email' => 'required|email', // Assuming it's an email field
+        // 'emailTo' => 'required|email', // Assuming it's an email field
         'foto_sampel' => 'max:5000',
     ];
 
@@ -133,9 +134,6 @@ class InputProgress extends Component
         $total = $sub_total + $ppn;
         // dd($sub_total);
 
-
-
-
         $newForm = [
             'nama_parameter' => $defaultParameterAnalisis->nama,
             'id_parameter' => $defaultParameterAnalisis->id,
@@ -151,10 +149,13 @@ class InputProgress extends Component
             'satuan' => '',
             'sub_total' => $sub_total,
             'ppn' => hitungPPN($sub_total),
-            'total' => $total
+            'totalharga' => $total
         ];
 
         $this->formData[] = $newForm;
+        foreach ($this->formData as $index => $inputan) {
+            $this->totalsamples[$index] = 1;
+        }
     }
 
 
@@ -257,7 +258,7 @@ class InputProgress extends Component
             'total' => $total
         ];
 
-        $this->formData[] = $newForm;
+        // $this->formData[] = $newForm;
 
 
         $this->ChangeFieldParamAndNomorLab();
@@ -265,19 +266,14 @@ class InputProgress extends Component
     }
 
 
-
-
-
     public function updateHargaSampel()
     {
-
-        foreach ($this->inputanParameter as $index => $inputan) {
-            if (isset($this->biayaParameter[$index])) {
-                $this->biayaParameter[$index]['jumlah_sampel'] = $inputan['jumlah_per_parameter'];
-                $this->biayaParameter[$index]['sub_total'] = $this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter'];
-                $this->biayaParameter[$index]['ppn'] = hitungPPN($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']);
-                $this->biayaParameter[$index]['total'] = ($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']) + hitungPPN($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']);
-            }
+        foreach ($this->formData as $index => $inputan) {
+            $curr_jumlah_sampel = $this->totalsamples[$index];
+            $curr_harga_sampel = $this->formData[$index]['harga_sampel'];
+            $curr_sub_total = $curr_jumlah_sampel * $curr_harga_sampel;
+            $this->formData[$index]['sub_total'] = $curr_sub_total;
+            $this->formData[$index]['ppn'] = hitungPPN($curr_sub_total);
         }
     }
 
@@ -312,18 +308,8 @@ class InputProgress extends Component
 
     public function updatePPN()
     {
-
-
-
-        foreach ($this->inputanParameter as $index => $inputan) {
-            if (isset($this->biayaParameter[$index])) {
-                $ppn = (($this->hargaparameter * $this->biayaParameter[$index]['jumlah_sampel']) * 11) / 100;
-                $subtotal = ($this->hargaparameter * $this->biayaParameter[$index]['jumlah_sampel']);
-
-                $this->biayaParameter[$index]['sub_total'] = $subtotal;
-                $this->biayaParameter[$index]['ppn'] = $ppn;
-                $this->biayaParameter[$index]['total'] = $ppn + $subtotal;
-            }
+        foreach ($this->formData as $index => $inputan) {
+            $this->formData[$index]['totalharga'] = $this->formData[$index]['ppn'] + $this->formData[$index]['sub_total'];
         }
     }
 
@@ -384,10 +370,15 @@ class InputProgress extends Component
         $commonRandomString = generateRandomString(rand(5, 10));
 
 
+
+        $recipients = array_email($this->emailTo);
+        $cc = array_email($this->emailCc);
+
         try {
             DB::beginTransaction();
 
             $trackSampel = new TrackSampel();
+
 
             $trackSampel->jenis_sampel = $this->jenis_sampel;
             $trackSampel->tanggal_penerimaan = $this->tanggal_penerimaan;
@@ -410,10 +401,12 @@ class InputProgress extends Component
             $trackSampel->last_update = $current;
             $trackSampel->admin = $userId;
             $trackSampel->no_hp = $this->no_hp;
-            $trackSampel->email = $this->email;
+            $trackSampel->emailTo = $this->emailTo;
+            $trackSampel->emailCc = $this->emailCc;
             $trackSampel->parameter_analisisid = $commonRandomString;
             $trackSampel->kode_track = $randomCode;
             $trackSampel->skala_prioritas = $this->skala_prioritas;
+            $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
 
             if ($this->foto_sampel) {
                 $fileName = time() . '_' . $this->foto_sampel->getClientOriginalName();
@@ -421,59 +414,44 @@ class InputProgress extends Component
                 $trackSampel->foto_sampel = $fileName;
             }
 
-            $trackSampel->save();
+            $saveResult = $trackSampel->save();
+
+            if ($saveResult) {
+
+                DB::commit();
+                $trackParameters = [];
+
+                foreach ($formData as $key => $value) {
+                    $trackParameters[] = [
+                        'jumlah' => $value['index'],
+                        'totalakhir' => $value['totalharga'],
+                        'id_tracksampel' => $commonRandomString,
+                        'id_parameter' => $value['id_parameter'],
+                    ];
+                }
+
+                TrackParameter::insert($trackParameters);
+                $this->successSubmit = true;
+                $this->msgSuccess = $randomCode;
+
+                $this->resetForm();
 
 
-            $message = "Hallo, tracking sample Anda dapat dicek di link ini: www-facebook.com dengan Kode Tracking: " . $randomCode;
+                // try {
+                //     Mail::to($recipients)
+                //         ->cc($cc)
+                //         ->send(new EmailPelanggan());
 
-
-            $phoneNumber = preg_replace('/[^0-9]/', '', $this->no_hp);
-
-            // Check if the phone number starts with '08'
-            if (substr($phoneNumber, 0, 2) === '08') {
-                // Replace '08' with '628' to format the number to '+628xxxxx'
-                $phoneNumber = '62' . substr($phoneNumber, 2);
+                //     return "Email sent successfully!";
+                // } catch (\Exception $e) {
+                //     return "Error: " . $e->getMessage();
+                // }
+            } else {
+                DB::rollBack();
+                $this->msgError = 'An error occurred while saving the data: ';
+                // Set the error flag
+                $this->errorSubmit = true;
             }
-
-            // Check if the phone number starts with '+628'
-            if (substr($phoneNumber, 0, 4) === '+628') {
-                // Remove the '+' to format the number to '628xxxxx'
-                $phoneNumber = substr($phoneNumber, 1);
-            }
-
-            $client = new Client();
-            $response = $client->post('http://localhost:3000/send-whatsapp', [
-                'json' => [
-                    'number' => $phoneNumber,
-                    'message' => $message,
-                ],
-            ]);
-
-
-            $trackParameters = [];
-
-            foreach ($formData as $key => $value) {
-                $trackParameters[] = [
-                    'jumlah' => $value['index'],
-                    'totalakhir' => $value['totalharga'],
-                    'id_tracksampel' => $commonRandomString,
-                    'id_parameter' => $value['id_parameter'],
-                ];
-            }
-
-            TrackParameter::insert($trackParameters);
-
-
-
-
-            DB::commit();
-
-            // session()->flash('successSubmit', $randomCode);
-            // $this->redirect('input_progress');
-            $this->successSubmit = true;
-            $this->msgSuccess = $randomCode;
-
-            $this->resetForm();
         } catch (Exception $e) {
             DB::rollBack();
             // session()->flash('errorSubmit', 'An error occurred while saving the data. ' .  $e->getMessage());
@@ -503,7 +481,8 @@ class InputProgress extends Component
             'last_update',
             'admin',
             'no_hp',
-            'email',
+            'emailTo',
+            'emailCc',
             'foto_sampel',
             'skala_prioritas'
         ]);
