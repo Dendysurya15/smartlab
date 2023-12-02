@@ -467,10 +467,10 @@ class Editprogress extends Component
 
     public function save()
     {
-        sleep(2);
-        if (!$this->isExporting) {
-            $this->processSave();
-        }
+        sleep(4);
+        // if (!$this->isExporting) {
+        //     $this->processSave();
+        // }
     }
 
     public function exportExcel()

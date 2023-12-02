@@ -56,4 +56,9 @@ class TrackSampel extends Model
     {
         return $this->hasMany(TrackParameter::class, 'id_tracksampel', 'parameter_analisisid');
     }
+
+    public function scopeSearch($query, $value)
+    {
+        // $query->where('name','like',"%{$value}%")->orWher
+    }
 }
