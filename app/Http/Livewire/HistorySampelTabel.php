@@ -103,7 +103,7 @@ final class HistorySampelTabel extends PowerGridComponent
             ->addColumn('nama_pengirim')
             ->addColumn('departemen')
             ->addColumn('kode_sampel')
-            ->addColumn('estimasi_formatted', fn (TrackSampel $model) => Carbon::parse($model->estimasi)->format('d/m/Y H:i:s'))
+            ->addColumn('estimasi_formatted', fn (TrackSampel $model) => Carbon::parse($model->estimasi)->format('d/m/Y'))
             ->addColumn('tujuan')
             ->addColumn('parameter_analisis')
             ->addColumn('progress', function (TrackSampel $model) {
@@ -112,7 +112,7 @@ final class HistorySampelTabel extends PowerGridComponent
             ->addColumn('last_update', function (TrackSampel $model) {
                 $lastUpdates = explode(',', $model->last_update);
                 $lastUpdate = end($lastUpdates);
-                $formattedDate = Carbon::parse($lastUpdate)->format('d/m/Y H:i:s');
+                $formattedDate = Carbon::parse($lastUpdate)->format(' H:i d/m/Y');
                 return $formattedDate;
             })
             ->addColumn('admin')
@@ -245,10 +245,16 @@ final class HistorySampelTabel extends PowerGridComponent
     public function actions(): array
     {
         return [
-            Button::make('status', 'waiting'),
-            // ->class('bg-transparent border-0 text-red-500 text-sm p-0 cursor-pointer'),
-            Button::make('download', 'lah'),
-            Button::make('download', 'lah'),
+            Button::make('edit', view('icons.edit-icon'))
+                ->class('p-2 mr-2 border rounded hover:bg-slate-100 text-emerald-500 hover:text-emerald-900')
+                // ->class('bg-transparent border-0 text-red-500 text-sm p-0 cursor-pointer'),
+                // Button::make('delete', view('icons.delete-icon')), // the Font Awesome icon code is sent as the second parameter.
+                // ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm  ')
+                ->route('history_sampel.edit', ['history_sampel' => 'id']),
+            // ->target('_self')
+
+            Button::make('edit', view('icons.delete-icon'))->class('p-2 mr-2 border rounded hover:bg-slate-50 text-red-500'),
+
 
             // Button::make('delete') // the Font Awesome icon code is sent as the second parameter.
             //     // ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm  ')
