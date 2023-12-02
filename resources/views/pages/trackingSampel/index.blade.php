@@ -154,7 +154,7 @@
 
             <!-- Image -->
             <div class="hidden md:block absolute top-0 bottom-0 right-0 md:w-1/2" aria-hidden="true">
-                <img class="object-cover object-center w-full h-full" src="{{ asset('images/YCH09590.jpg') }}"
+                <img class="object-cover object-center w-full h-full" src="{{ asset('images/YCH09564.jpg') }}"
                     width="760" height="1024" alt="Authentication image" />
                 {{-- <img class="absolute top-1/4 left-0 -translate-x-1/2 ml-8 hidden lg:block"
                     src="{{ asset('images/auth-decoration.png') }}" width="218" height="224"
@@ -182,6 +182,7 @@
         const kode = document.getElementById('kode').value;
         loadingSpinner.style.display = 'block';
         // Make an AJAX request
+        
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '{{ route('search_sampel_progress') }}', true);
         xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
@@ -199,6 +200,9 @@
                 if (xhr.status === 200) {
                     
                         const response = JSON.parse(xhr.responseText);
+
+
+                        console.log(response)
 
                         if (response && Object.keys(response).length > 0) {
                             resultEmptyElement.style.display = 'none';

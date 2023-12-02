@@ -237,6 +237,39 @@
         </tbody>
     </table>
 
+
+    <table style="margin-top: 20px">
+        <thead>
+            <tr>
+                <th style="border: 1px solid black;">Di buat oleh</th>
+                <th style="border: 1px solid black;">DIketahi Oleh</th>
+                <th style="border: 1px solid black;">Di setujui Oleh</th>
+                <th style="border: 1px solid black;">Catatan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="height: 180px;">
+                <td style="text-align:left;border-left: 1px solid black;width: 350px;"></td>
+                <td style="text-align:left;border-left: 1px solid black;width: 350px;"></td>
+                <td style="text-align:left;border-left: 1px solid black;width: 350px;"></td>
+                <td style="text-align:left;border-left: 1px solid black;width: 900px;"></td>
+            </tr>
+
+            <tr>
+                <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">(Erna Wati)</td>
+                <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">(Budi Umbara)</td>
+                <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">(Lujian Kurniawan)</td>
+                <td style="text-align:left;border-left:1px solid black;width: 900px;"> </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">Petugas Penerima Sampel </td>
+                <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">Manager Laboratorium</td>
+                <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">Pelanggan</td>
+                <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 900px;">Sampel basah </td>
+            </tr>
+        </tbody>
+    </table>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
 </body>

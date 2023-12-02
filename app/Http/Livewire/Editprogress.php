@@ -36,6 +36,14 @@ class Editprogress extends Component
     public $departemen;
     public $nama_pengirim;
     public $kode_sampel;
+    public $jumlah_sampel;
+    public $tgl_pengantaran_sampel;
+    public $kondisi_sampel;
+    public $kemasan_sampel;
+    public $personel;
+    public $alat;
+    public $bahan;
+    public $skala_prioritas;
     public $nomor_surat;
     public $tujuan;
     public $no_hp;
@@ -45,7 +53,8 @@ class Editprogress extends Component
     public $satuanparameter;
     public $totalsampelval;
     public $foto_sampel;
-    public $email;
+    public $emailTo;
+    public $emailCc;
     public $estimasikupa;
     public $parameterid;
     public $oldform = [];
@@ -102,12 +111,16 @@ class Editprogress extends Component
 
         // dd($this->val_parameter);
 
-        $this->parameters[] = [
+
+
+        $this->oldform[] = [
             'jumlah' => 1,
             'value' => '',
+            'nama_parameters' => $defaultParameterAnalisis->nama,
+            'jenis_analisis' => $this->analisisparameter,
             'parametersanalisis' => $this->analisisparameter,
             'harga' => $this->hargaparameter,
-            'sub_total' => $sub_total,
+            'subtotal' => $sub_total,
             'total' => $total,
             'ppn' => $ppn,
             'harga_ori' => $this->hargaparameter,
@@ -186,22 +199,46 @@ class Editprogress extends Component
     {
         $id = $this->sample;
         $query = TrackSampel::find($id);
-
-        // dd($query);
-
-        $this->tanggal = Carbon::parse($query->tanggal_penerimaan)->format('Y-m-d');
-        $this->estimasi = Carbon::parse($query->estimasi)->format('Y-m-d');
+        $this->tanggal = $query->tanggal_penerimaan
+            ? Carbon::parse($query->tanggal_penerimaan)->format('Y-m-d')
+            : null;
+        $this->estimasi = $query->estimasi
+            ? Carbon::parse($query->estimasi)->format('Y-m-d')
+            : null;
         $this->no_kupa = $query->nomor_kupa;
         $this->jenis_sampel = $query->jenis_sampel;
         $this->asal_sampel = $query->asal_sampel;
-        $this->nomor_lab = $query->nomor_lab;
+
+        if ($query->nomor_lab != null) {
+            $nomor_lab = $query->nomor_lab;
+            $arr_nomor_lab = explode('-', $nomor_lab);
+            $this->nomor_lab_left = $arr_nomor_lab[0];
+            $this->nomor_lab_right = $arr_nomor_lab[1];
+        } else {
+            $this->nomor_lab_left = '';
+            $this->nomor_lab_right = '';
+        }
+
+        $this->tgl_pengantaran_sampel = $query->tanggal_pengantaran
+            ? Carbon::parse($query->tanggal_pengantaran)->format('Y-m-d')
+            : null;
+        $this->jumlah_sampel = $query->jumlah_sampel;
+        $this->kondisi_sampel = $query->kondisi_sampel;
+        $this->kemasan_sampel = $query->kemasan_sampel;
+        $this->skala_prioritas = $query->skala_prioritas;
+        // $this->skala_prioritas = $query->skala_prioritas;
+        $this->personel = True;
+        $this->alat = True;
+        $this->bahan = True;
+
         $this->nama_pengirim = $query->nama_pengirim;
         $this->departemen = $query->departemen;
         $this->kode_sampel = $query->kode_sampel;
         $this->nomor_surat = $query->nomor_surat;
         $this->tujuan = $query->tujuan;
         $this->no_hp = $query->no_hp;
-        $this->email = $query->email;
+        $this->emailTo = $query->emailTo;
+        $this->emailCc = $query->emailCc;
         $this->foto_sampel = asset('storage/uploads/' . $query->foto_sampel);
 
 
@@ -239,7 +276,7 @@ class Editprogress extends Component
             $trackform[$key] = [
                 'id' => $value['id'],
                 'harga' => $value['totalakhir'],
-                'jenis_analiss' => $parameters,
+                'jenis_analisis' => $parameters,
                 'harga' => $harga,
                 'nama_parameters' => $nama,
                 'jumlah' => $value['jumlah'],
@@ -252,6 +289,8 @@ class Editprogress extends Component
         }
 
         $this->oldform = $trackform;
+
+        // dd($this->oldform);
 
         $this->ChangeFieldParamAndNomorLab();
     }
@@ -285,6 +324,18 @@ class Editprogress extends Component
         // dd($form);
     }
 
+    public function updateHargaSampel()
+    {
+
+        foreach ($this->oldform as $index => $inputan) {
+            $curr_jumlah_sampel = $this->oldform[$index]['jumlah'];
+            $curr_harga_sampel = $this->oldform[$index]['harga'];
+            $curr_sub_total = $curr_jumlah_sampel * $curr_harga_sampel;
+            $this->oldform[$index]['subtotal'] = $curr_sub_total;
+            $this->oldform[$index]['ppn'] = hitungPPN($curr_sub_total);
+        }
+    }
+
     public function ppnold($index)
     {
         $form = $this->oldform[$index];
@@ -303,8 +354,6 @@ class Editprogress extends Component
         $id = $this->sample;
         $query = TrackSampel::find($id);
 
-        // form baru tambahan 
-        $newparametersedit = $this->parameters;
         // form lama bawaan query 
         $oldparameteredit = $this->oldform;
 
@@ -337,6 +386,16 @@ class Editprogress extends Component
                 $idold[] = $value2['id'];
             }
         }
+
+
+
+        $newParams = [];
+        foreach ($oldparameteredit as $key => $value) {
+            if (!array_key_exists('id', $value)) {
+                $newParams[] = $value;
+            }
+        }
+
         try {
             DB::beginTransaction();
 
@@ -357,31 +416,28 @@ class Editprogress extends Component
             $trackSampel->estimasi = $this->estimasikupa;
             $trackSampel->tujuan = $this->tujuan;
             $trackSampel->no_hp = $this->no_hp;
-            $trackSampel->email = $this->email;
+            $trackSampel->emailTo = $this->emailTo;
+            $trackSampel->emailCc = $this->emailCc;
             $trackSampel->last_update = $newupdate;
             $trackSampel->save();
 
-
-
-            // Delete records based on the IDs
             TrackParameter::whereIn('id', $idold)->delete();
 
             foreach ($oldparameteredit as $key => $value) {
-                // dd($value);
-                TrackParameter::where('id', $value['id'])->update([
-                    'jumlah' => $value['jumlah'],
-                    'totalakhir' => $value['harga_total'],
-                    'id_tracksampel' => $trackid,
-                    'id_parameter' => $value['id_parameter'],
-                ]);
+                if (array_key_exists('id', $value)) {
+                    TrackParameter::where('id', $value['id'])->update([
+                        'jumlah' => $value['jumlah'],
+                        'totalakhir' => $value['harga_total'],
+                        'id_tracksampel' => $trackid,
+                        'id_parameter' => $value['id_parameter'],
+                    ]);
+                }
             }
 
-            // TrackParameter::update($oldParameters);
-
-            if ($newparametersedit != []) {
+            if ($newParams != []) {
                 $trackParameters = [];
 
-                foreach ($newparametersedit as $key => $value) {
+                foreach ($newParams as $key => $value) {
                     $trackParameters[] = [
                         'jumlah' => $value['jumlah'],
                         'totalakhir' => $value['total'],
@@ -411,9 +467,10 @@ class Editprogress extends Component
 
     public function save()
     {
-        if (!$this->isExporting) {
-            $this->processSave();
-        }
+        sleep(4);
+        // if (!$this->isExporting) {
+        //     $this->processSave();
+        // }
     }
 
     public function exportExcel()

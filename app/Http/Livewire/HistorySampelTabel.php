@@ -24,6 +24,7 @@ final class HistorySampelTabel extends PowerGridComponent
     */
     public function setUp(): array
     {
+
         $this->showCheckBox();
 
         return [
@@ -55,7 +56,8 @@ final class HistorySampelTabel extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return TrackSampel::query();
+        return TrackSampel::query()
+            ->orderBy('tanggal_penerimaan', 'desc');
     }
 
 
@@ -92,7 +94,7 @@ final class HistorySampelTabel extends PowerGridComponent
     {
         return PowerGrid::columns()
             ->addColumn('id')
-            ->addColumn('tanggal_penerimaan_formatted', fn (TrackSampel $model) => Carbon::parse($model->tanggal_penerimaan)->format('d/m/Y H:i:s'))
+            ->addColumn('tanggal_penerimaan_formatted', fn (TrackSampel $model) => Carbon::parse($model->tanggal_penerimaan)->format('d/m/Y'))
             ->addColumn('jenis_sampel', function (TrackSampel $model) {
                 return $model->jenisSampel->nama;
             })
@@ -115,7 +117,7 @@ final class HistorySampelTabel extends PowerGridComponent
             })
             ->addColumn('admin')
             ->addColumn('no_hp')
-            ->addColumn('email')
+            ->addColumn('emailTo')
             ->addColumn('foto_sampel');
     }
 
@@ -136,11 +138,13 @@ final class HistorySampelTabel extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id')->sortable(),
-            Column::make('Tanggal penerimaan', 'tanggal_penerimaan_formatted', 'tanggal_penerimaan')
+            // Column::make('No', 'id')->sortable(),
+            Column::make('Id', 'id')
+                ->sortable(),
+            Column::make('Tanggal Penerimaan', 'tanggal_penerimaan_formatted', 'tanggal_penerimaan')
                 ->sortable(),
 
-            Column::make('Jenis sampel', 'jenis_sampel')
+            Column::make('Jenis Sampel', 'jenis_sampel')
                 ->sortable()
                 ->searchable(),
 
@@ -148,9 +152,13 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Asal sampel', 'asal_sampel')
+            Column::make('Last update', 'last_update')
+                ->sortable(),
+
+            Column::make('Progress', 'progress')
                 ->sortable()
                 ->searchable(),
+
 
             Column::make('Nomor kupa', 'nomor_kupa'),
             Column::make('Nama pengirim', 'nama_pengirim')
@@ -176,19 +184,17 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Progress', 'progress')
+            Column::make('Asal sampel', 'asal_sampel')
                 ->sortable()
                 ->searchable(),
-
-            Column::make('Last update', 'last_update')
-                ->sortable(),
 
             Column::make('Admin', 'admin'),
             Column::make('No hp', 'no_hp')
                 ->sortable()
+                ->field('no_hp')
                 ->searchable(),
 
-            Column::make('Email', 'email')
+            Column::make('Email', 'emailTo')
                 ->sortable()
                 ->searchable(),
 
@@ -239,11 +245,24 @@ final class HistorySampelTabel extends PowerGridComponent
     public function actions(): array
     {
         return [
+            Button::make('status', 'waiting'),
+            // ->class('bg-transparent border-0 text-red-500 text-sm p-0 cursor-pointer'),
+            Button::make('download', 'lah'),
+            Button::make('download', 'lah'),
 
-            Button::make('edit', view('icons.edit-icon'))
-                ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-                ->route('history_sampel.edit', fn (\App\Models\TrackSampel $model) => ['history_sampel' => $model->id]),
-
+            // Button::make('delete') // the Font Awesome icon code is sent as the second parameter.
+            //     // ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm  ')
+            //     // ->route('history_sampel.edit', ['history_sampel' => 'id'])
+            //     ->target('_self')
+            //     ->tooltip('Delete Record')
+            // Button::make('edit', view('icons.edit-icon'))
+            //     ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
+            //     ->route('history_sampel.edit', fn (\App\Models\TrackSampel $model) => ['history_sampel' => $model->id]),
+            // Sets the button class to spicy and caption with emoji
+            // Rule::button('order-dish')
+            //     ->when(fn ($dish) => $dish->is_spicy == true)
+            //     ->slot('Order 🔥 🔥 🔥')
+            //     ->setAttribute('class', 'bg-orange-400'),
         ];
     }
 

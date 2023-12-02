@@ -27,6 +27,7 @@ class TrackSampel extends Model
         'nomor_surat',
         'nomor_lab',
         'estimasi',
+        'tanggal_pengantaran',
         'tujuan',
         'parameter_analisis',
         'progress',
@@ -54,5 +55,10 @@ class TrackSampel extends Model
     public function trackParameters()
     {
         return $this->hasMany(TrackParameter::class, 'id_tracksampel', 'parameter_analisisid');
+    }
+
+    public function scopeSearch($query, $value)
+    {
+        // $query->where('name','like',"%{$value}%")->orWher
     }
 }

@@ -1,16 +1,5 @@
 <div>
-    @if ($successSubmit)
-    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
-        role="alert">
-        Record berhasil disimpan dengan kode track<span class="font-medium"> {{$msgSuccess}}</span>
-    </div>
-    @endif
 
-    @if ($errorSubmit)
-    <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-        <span class="font-medium">{{ $msgError }}</span>
-    </div>
-    @endif
     <form wire:submit.prevent="save" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="space-y-12">
@@ -571,8 +560,23 @@
                         class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Simpan
                         Progress</button>
                 </div>
+                @if ($successSubmit)
+                <div class="p-4 mb-4 mt-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+                    role="alert">
+                    Record berhasil diupdate dengan kode track<span class="font-medium"> {{$msgSuccess}}</span>
+                </div>
+                @endif
+
+                @if ($errorSubmit)
+                <div class="p-4 mb-4 mt-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                    role="alert">
+                    <span class="font-medium">{{ $msgError }}</span>
+                </div>
+                @endif
     </form>
 </div>
+
+
 {{--
 <script>
     const fileInput = document.getElementById('foto_sampel');
