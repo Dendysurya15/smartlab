@@ -1,7 +1,6 @@
 <div>
 
-    <!-- here sshow the table  -->
-    <!-- <livewire:parameter-table /> -->
+
 
     <livewire:parameter-table :jenisSampel="$jenis_sampel" :key="$jenis_sampel" />
 

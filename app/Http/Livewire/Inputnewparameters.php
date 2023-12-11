@@ -26,6 +26,7 @@ class Inputnewparameters extends Component
     public string $msgSuccess;
     public bool $errorSubmit = false;
     public string $msgError;
+    protected $listeners = ['openEditModal'];
 
 
 
@@ -44,6 +45,15 @@ class Inputnewparameters extends Component
         $this->emit('filterData', $this->jenis_sampel);
     }
 
+    public function openEditModal($id)
+    {
+
+        $getid = $id;
+
+        dd($getid);
+        // Handle the emitted event here, $id contains the ID sent from the button click
+        // Perform any necessary actions with the ID, such as fetching data for the modal
+    }
 
     public function deleteItem($id)
     {

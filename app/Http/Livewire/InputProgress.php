@@ -7,6 +7,7 @@ use App\Models\JenisSampel;
 use App\Models\MetodeAnalisis;
 use App\Models\ParameterAnalisis;
 use App\Models\TrackSampel;
+use App\Models\SendMsg;
 use App\Models\TrackParameter;
 use Carbon\Carbon;
 use Exception;
@@ -431,21 +432,33 @@ class InputProgress extends Component
                 }
 
                 TrackParameter::insert($trackParameters);
+                $form_hp = $this->no_hp;
+
+                if (strlen($form_hp) === 10 && strpos($form_hp, '08') === 0) {
+                    $form_hp = '62' . substr($form_hp, 1);
+                }
+
+                SendMsg::insert([
+                    'pesan' => 'Halo Tracking sample anda selesai di simpan, progress anda dapat dilihat di website: https://smartlab-srs.ssms.com dengan kode Tracking sample:',
+                    'kodesample' => $randomCode,
+                    'penerima' => $form_hp
+                ]);
+
                 $this->successSubmit = true;
                 $this->msgSuccess = $randomCode;
 
                 $this->resetForm();
 
 
-                // try {
-                //     Mail::to($recipients)
-                //         ->cc($cc)
-                //         ->send(new EmailPelanggan());
+                try {
+                    Mail::to($recipients)
+                        ->cc($cc)
+                        ->send(new EmailPelanggan());
 
-                //     return "Email sent successfully!";
-                // } catch (\Exception $e) {
-                //     return "Error: " . $e->getMessage();
-                // }
+                    return "Email sent successfully!";
+                } catch (\Exception $e) {
+                    return "Error: " . $e->getMessage();
+                }
             } else {
                 DB::rollBack();
                 $this->msgError = 'An error occurred while saving the data: ';

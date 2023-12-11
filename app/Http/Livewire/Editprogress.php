@@ -9,6 +9,7 @@ use App\Models\ParameterAnalisis;
 use App\Models\TrackSampel;
 use App\Models\ProgressPengerjaan;
 use App\Models\TrackParameter;
+use App\Models\SendMsg;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -449,6 +450,17 @@ class Editprogress extends Component
                 TrackParameter::insert($trackParameters);
             }
 
+            $form_hp = $this->no_hp;
+
+            if (strlen($form_hp) === 10 && strpos($form_hp, '08') === 0) {
+                $form_hp = '62' . substr($form_hp, 1);
+            }
+
+            SendMsg::insert([
+                'pesan' => 'Halo Tracking sample anda sudah di update, progress anda dapat dilihat di website: https://smartlab-srs.ssms.com dengan kode Tracking sample:',
+                'kodesample' => $this->kode_sampel,
+                'penerima' => $form_hp
+            ]);
 
 
             DB::commit();

@@ -9,6 +9,7 @@ use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridColumns};
+use App\Models\MetodeAnalisis;
 
 final class ParameterTable extends PowerGridComponent
 {
@@ -148,6 +149,7 @@ final class ParameterTable extends PowerGridComponent
             Column::make('Nama Metode', 'nama')
                 ->sortable(),
             Column::make('Harga Metode', 'harga')
+                ->editOnClick()
                 ->sortable(),
             Column::make('Satuan Metode', 'satuan')
                 ->sortable(),
@@ -156,6 +158,7 @@ final class ParameterTable extends PowerGridComponent
 
         ];
     }
+
 
     /**
      * PowerGrid Filters.
@@ -169,21 +172,6 @@ final class ParameterTable extends PowerGridComponent
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Actions Method
-    |--------------------------------------------------------------------------
-    | Enable the method below only if the Routes below are defined in your app.
-    |
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | Actions Rules
-    |--------------------------------------------------------------------------
-    | Enable the method below to configure Rules for your Table and Action Buttons.
-    |
-    */
 
     /**
      * PowerGrid Action Rules.
@@ -192,14 +180,17 @@ final class ParameterTable extends PowerGridComponent
      */
 
 
+
     // public function actions(): array
     // {
     //     return [
-    //     Button::make('edit')
-    // ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-    // ->html('<i class="fas fa-edit"></i> Edit') // Assuming you're using Font Awesome for icons
-    // ->onClick('editItem') // Assuming you have a method named editItem to handle the edit action
-
+    //         Button::make('edit', view('icons.edit-icon'))
+    //             ->class('p-2 mr-2 border rounded hover:bg-slate-100 text-emerald-500 hover:text-emerald-900')
+    //             ->click('openModal'), // Assuming 'openModal' is a Livewire method handling the modal functionality
     //     ];
+    // }
+    // public function openModal($id)
+    // {
+    //     $this->emit('openModal', $id);
     // }
 }

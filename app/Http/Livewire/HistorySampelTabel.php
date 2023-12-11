@@ -160,6 +160,7 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->sortable(),
 
 
+
             Column::make('Nomor kupa', 'nomor_kupa'),
             Column::make('Nama pengirim', 'nama_pengirim')
                 ->sortable(),
