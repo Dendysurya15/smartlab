@@ -60,6 +60,14 @@ class SystemController extends Controller
     public function edit($id)
     {
         //
+
+        // dd($id);
+
+
+
+        return view('pages.System.CrudParameter.edit', [
+            'tt_id' => $id
+        ]);
     }
 
     /**
@@ -83,5 +91,7 @@ class SystemController extends Controller
     public function destroy($id)
     {
         //
+
+
     }
 }

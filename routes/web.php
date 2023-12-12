@@ -7,6 +7,7 @@ use App\Http\Controllers\HistorySampelController;
 use App\Http\Controllers\InputProgressController;
 use App\Http\Controllers\TrackSampelController;
 use App\Http\Controllers\SystemController;
+use App\Http\Livewire\CrudParameter;
 use App\Mail\EmailPelanggan;
 use Illuminate\Support\Facades\Mail;
 
@@ -56,4 +57,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
     Route::resource('system', SystemController::class);
+    // Route::get('/editparam/{id}', [CrudParameter::class, 'mount'])->name('editparam');
 });

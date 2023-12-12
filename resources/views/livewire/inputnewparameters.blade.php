@@ -53,19 +53,19 @@
                 <div class="col-span-1 md:col-span-1">
                     <div class="flex">
                         <div class="mt-2">
-                            <input type="text" wire:model="parameters.{{ $parameterIndex }}.nama" placeholder="Masukan Nama Parameter" @if($isDisabled) disabled @endif>
+                            <input type="text" wire:model="parameters.{{ $parameterIndex }}.nama" placeholder="Masukan Nama Parameter" @if($isDisabled) disabled @endif class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
                         </div>
                         <div class="mt-2 ml-2">
-                            <input type="number" wire:change="totalsampel({{ $parameterIndex }})" wire:model="parameters.{{ $parameterIndex }}.hargaparams" placeholder="Masukan Harga">
+                            <input type="number" wire:change="totalsampel({{ $parameterIndex }})" wire:model="parameters.{{ $parameterIndex }}.hargaparams" placeholder="Masukan Harga" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6">
 
                         </div>
                         <div class="ml-4 mt-2">
                             <!-- Your button here -->
-                            <button id="tambahMetodeButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" wire:click.prevent="addMetode({{ $parameterIndex }})">
+                            <button id="tambahMetodeButton" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="addMetode({{ $parameterIndex }})">
                                 + Metode
                             </button>
 
-                            <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" wire:click.prevent="deleteParameter({{ $parameterIndex }})">
+                            <button class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="deleteParameter({{ $parameterIndex }})">
                                 Hapus
                             </button>
 
@@ -90,15 +90,15 @@
                         <div class="flex-1 sm:w-1/3">
                             <label class="block text-sm font-medium leading-6 text-gray-900">Nama Metode</label>
                             <div class="mt-2">
-                                <input type="text" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.namamethod" placeholder="Masukan Nama Metode">
+                                <input class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6" type="text" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.namamethod" placeholder="Masukan Nama Metode">
                             </div>
                             @error("metode.$parameterIndex.$methodIndex.namamethod")
                             <span class="text-red-500">Nama tidak boleh kosons</span>
                             @enderror
 
-                            <label class="block text-sm font-medium leading-6 text-gray-900">Harga</label>
+
                             <div class="mt-2">
-                                <input type="number" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.harga" placeholder="Masukan Harga Metode" disabled>
+                                <input class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6" type="hidden" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.harga" placeholder="Masukan Harga Metode" disabled>
                             </div>
                             @error("metode.$parameterIndex.$methodIndex.harga")
                             <span class="text-red-500">Harga tidak boleh kosong</span>
@@ -110,9 +110,10 @@
                         <div class="flex-1 sm:w-1/3 mt-4 sm:mt-0">
                             <label class="block text-sm font-medium leading-6 text-gray-900">Satuan</label>
                             <div class="mt-2">
-                                <input type="text" placeholder="Satuan Metode" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.satuan">
+                                <input class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:max-w-xs sm:text-sm sm:leading-6" type="text" placeholder="Satuan Metode" wire:model="metode.{{ $parameterIndex }}.{{ $methodIndex }}.satuan">
                             </div>
-                            <button class="bg-red-500 mt-4 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" wire:click.prevent="deleteMetode({{ $parameterIndex }}, {{ $methodIndex }})">
+
+                            <button class="mt-4 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600" wire:click.prevent="deleteMetode({{ $parameterIndex }}, {{ $methodIndex }})">
                                 Hapus
                             </button>
                         </div>

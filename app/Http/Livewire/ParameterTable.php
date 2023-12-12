@@ -180,17 +180,14 @@ final class ParameterTable extends PowerGridComponent
      */
 
 
-
-    // public function actions(): array
-    // {
-    //     return [
-    //         Button::make('edit', view('icons.edit-icon'))
-    //             ->class('p-2 mr-2 border rounded hover:bg-slate-100 text-emerald-500 hover:text-emerald-900')
-    //             ->click('openModal'), // Assuming 'openModal' is a Livewire method handling the modal functionality
-    //     ];
-    // }
-    // public function openModal($id)
-    // {
-    //     $this->emit('openModal', $id);
-    // }
+    public function actions(): array
+    {
+        return [
+            Button::make('edit', view('icons.edit-icon'))
+                ->class('p-2 mr-2 border rounded hover:bg-slate-100 text-emerald-500 hover:text-emerald-900')
+                ->route('system.edit', ['system' => 'id'])
+                ->target('_self'), // This targets the current window
+            // Other buttons...
+        ];
+    }
 }

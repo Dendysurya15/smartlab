@@ -153,20 +153,22 @@ class Inputnewparameters extends Component
 
 
 
-
     public function save()
     {
         $allParameters = $this->parameters;
-        // $methods = $this->metode[$parameterIndex] ?? [];
-        // dd($allParameters);
 
         try {
             foreach ($allParameters as $parameterIndex => $parameter) {
                 $nama = $parameter['nama'];
                 $jenis_sampel = $parameter['jenis_sampel'];
+                $hargaparams = $parameter['hargaparams'];
                 $methods = $this->metode[$parameterIndex] ?? [];
 
-                // dd($methods;)
+                // If methods is empty or null, set it to '-'
+                if (empty($methods)) {
+                    $methods = [['namamethod' => '-', 'harga' => $hargaparams, 'satuan' => '-']];
+                }
+
                 $this->validate([
                     "parameters.$parameterIndex.nama" => 'required',
                 ]);
@@ -178,11 +180,8 @@ class Inputnewparameters extends Component
                 ]);
 
                 foreach ($methods as $methodIndex => $method) {
-                    $this->validate([
-                        "metode.$parameterIndex.$methodIndex.harga" => 'numeric|required',
-                        "metode.$parameterIndex.$methodIndex.namamethod" => 'required',
-                    ]);
-                    // dd($method);
+
+
                     // Insert into metode_analisis table with the obtained parameter ID
                     MetodeAnalisis::create([
                         'nama' => $method['namamethod'],
