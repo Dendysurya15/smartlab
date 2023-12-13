@@ -458,7 +458,7 @@ class Editprogress extends Component
 
             SendMsg::insert([
                 'pesan' => 'Halo Tracking sample anda sudah di update, progress anda dapat dilihat di website: https://smartlab-srs.ssms.com dengan kode Tracking sample:',
-                'kodesample' => $this->kode_sampel,
+                'kodesample' => $query->kode_track,
                 'penerima' => $form_hp
             ]);
 

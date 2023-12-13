@@ -31,7 +31,9 @@ final class ParameterTable extends PowerGridComponent
             Exportable::make('export')
                 ->striped()
                 ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
+            Header::make()
+                ->showToggleColumns()
+                ->showSearchInput(),
             Footer::make()
                 ->showPerPage()
                 ->showRecordCount(),
@@ -145,11 +147,11 @@ final class ParameterTable extends PowerGridComponent
             Column::make('Jenis Sample', 'jenis_sampel')
                 ->sortable(),
             Column::make('Nama Parameter', 'nama_params')
+                ->searchable()
                 ->sortable(),
             Column::make('Nama Metode', 'nama')
                 ->sortable(),
             Column::make('Harga Metode', 'harga')
-                ->editOnClick()
                 ->sortable(),
             Column::make('Satuan Metode', 'satuan')
                 ->sortable(),

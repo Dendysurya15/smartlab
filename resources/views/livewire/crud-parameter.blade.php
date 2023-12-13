@@ -54,7 +54,9 @@
 
 
             <div class="mt-6 flex items-center justify-end gap-x-6">
-                <button type="button" wire:click="delete({{ $data[0]['id'] }})" class="text-sm font-semibold leading-6 text-gray-900">Hapus Data</button>
+                <a href="{{ route('system.index') }}" class="rounded-md bg-white-200 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Cancel</a>
+
+                <button type="button" wire:click="delete({{ $data[0]['id'] }})" class="rounded-md bg-white-200 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Hapus Data</button>
                 <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Simpan
                     Progress</button>
             </div>
