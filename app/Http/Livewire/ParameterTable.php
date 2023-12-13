@@ -143,17 +143,22 @@ final class ParameterTable extends PowerGridComponent
     {
         return [
             Column::make('Id', 'id')
+                ->searchable()
                 ->sortable(),
             Column::make('Jenis Sample', 'jenis_sampel')
+                ->searchable()
                 ->sortable(),
             Column::make('Nama Parameter', 'nama_params')
                 ->searchable()
                 ->sortable(),
             Column::make('Nama Metode', 'nama')
+                ->searchable()
                 ->sortable(),
             Column::make('Harga Metode', 'harga')
+                ->searchable()
                 ->sortable(),
             Column::make('Satuan Metode', 'satuan')
+                ->searchable()
                 ->sortable(),
 
 

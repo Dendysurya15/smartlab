@@ -259,13 +259,13 @@
                 <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">(Erna Wati)</td>
                 <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">(Budi Umbara)</td>
                 <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">(Lujian Kurniawan)</td>
-                <td style="text-align:left;border-left:1px solid black;width: 900px;"> </td>
+                <td style="text-align:left;border-left:1px solid black;border-right:1px solid black;width: 900px;"> </td>
             </tr>
             <tr>
                 <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">Petugas Penerima Sampel </td>
                 <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">Manager Laboratorium</td>
                 <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 350px;">Pelanggan</td>
-                <td style="text-align:left;border-bottom:1px solid black;border-left:1px solid black;width: 900px;">Sampel basah </td>
+                <td style="text-align:left;border-bottom:1px solid black;border-right:1px solid black;border-left:1px solid black;width: 900px;">Sampel basah </td>
             </tr>
         </tbody>
     </table>
