@@ -76,8 +76,12 @@ final class HistorySampelTabel extends PowerGridComponent
      */
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'jenisSampel' => ['nama'],
+        ];
     }
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -163,6 +167,7 @@ final class HistorySampelTabel extends PowerGridComponent
 
             Column::make('Nomor kupa', 'nomor_kupa'),
             Column::make('Nama pengirim', 'nama_pengirim')
+                ->searchable()
                 ->sortable(),
 
             Column::make('Departemen', 'departemen')
@@ -189,6 +194,7 @@ final class HistorySampelTabel extends PowerGridComponent
                 ->field('no_hp'),
 
             Column::make('Email', 'emailTo')
+                ->searchable()
                 ->sortable(),
 
 
