@@ -59,10 +59,6 @@ class SystemController extends Controller
      */
     public function edit($id)
     {
-        //
-
-        // dd($id);
-
 
 
         return view('pages.System.CrudParameter.edit', [
@@ -90,8 +86,11 @@ class SystemController extends Controller
      */
     public function destroy($id)
     {
-        //
+    }
 
 
+    public function delete_parameter_and_metode($id)
+    {
+        dd('sdkfjldskfj');
     }
 }

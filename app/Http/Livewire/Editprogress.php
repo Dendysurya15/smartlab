@@ -403,10 +403,13 @@ class Editprogress extends Component
             $id = $this->sample;
             $trackSampel = TrackSampel::find($id);
 
+            $progress_now =  ProgressPengerjaan::where('id', $this->get_progress)->first()->nama;
             // Update the existing TrackSampel model
             $trackSampel->jenis_sampel = $this->jenis_sampel;
             $trackSampel->tanggal_penerimaan = $this->tanggal;
             $trackSampel->progress = $this->get_progress;
+
+
             $trackSampel->asal_sampel = $this->asal_sampel;
             $trackSampel->nomor_kupa = $this->no_kupa;
             $trackSampel->nomor_lab = $this->nomor_lab;
@@ -422,7 +425,7 @@ class Editprogress extends Component
             $trackSampel->last_update = $newupdate;
             $trackSampel->save();
 
-            TrackParameter::whereIn('id', $idold)->delete();
+            // TrackParameter::whereIn('id', $idold)->delete();
 
             foreach ($oldparameteredit as $key => $value) {
                 if (array_key_exists('id', $value)) {
@@ -447,8 +450,9 @@ class Editprogress extends Component
                     ];
                 }
 
-                TrackParameter::insert($trackParameters);
+                // TrackParameter::insert($trackParameters);
             }
+
 
             $form_hp = $this->no_hp;
 
@@ -457,18 +461,18 @@ class Editprogress extends Component
             }
 
             SendMsg::insert([
-                'pesan' => 'Halo Tracking sample anda sudah di update, progress anda dapat dilihat di website: https://smartlab-srs.ssms.com dengan kode Tracking sample:',
+                'pesan' => 'Halo Tracking sample anda sudah di update ke ' . $progress_now .  ', progress anda dapat dilihat di website: https://smartlab.srs-ssms.com dengan kode Tracking sample:',
                 'kodesample' => $query->kode_track,
                 'penerima' => $form_hp
             ]);
 
 
-            DB::commit();
+            // DB::commit();
 
             $this->successSubmit = true;
             $this->msgSuccess = $query->kode_track;
         } catch (Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
             $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
             $this->errorSubmit = true;
         }

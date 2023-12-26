@@ -15,7 +15,6 @@ class CrudParameter extends Component
     public $namamtd;
     public $hargamtd;
     public $satuanmtd;
-
     protected $rules = [
         'namamtd' => 'required',
         'hargamtd' => 'numeric',

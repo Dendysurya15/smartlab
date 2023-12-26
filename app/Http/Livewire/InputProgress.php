@@ -439,7 +439,7 @@ class InputProgress extends Component
                 }
 
                 SendMsg::insert([
-                    'pesan' => 'Halo Tracking sample anda selesai di simpan, progress anda dapat dilihat di website: https://smartlab-srs.ssms.com dengan kode Tracking sample:',
+                    'pesan' => 'Halo Tracking sample anda selesai di simpan, progress saat ini yaitu Registrasi dan penerimaan sampel, progress anda dapat dilihat di website: https://smartlab.srs-ssms.com/tracking_sampel dengan kode Tracking sample:',
                     'kodesample' => $randomCode,
                     'penerima' => $form_hp
                 ]);
