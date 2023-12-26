@@ -17,18 +17,175 @@
 
         <thead>
 
-
             <tr>
-                <th rowspan="5" style="border: 1px solid black;">
-
+                <th></th>
+                <td rowspan="4" colspan="2"></td>
+                <td colspan="17">PT . Citra Borneo Indah</td>
+            </tr>
+            <tr>
+                <th></th>
+                <td colspan="17">REsearch and development - laboratorium analiitik</td>
+            </tr>
+            <tr>
+                <th></th>
+                <td colspan="17">Formulir</td>
+            </tr>
+            <tr>
+                <th></th>
+                <td colspan="17">Kaji Ulang Permintaa, Tender dan Kontrak Sampel Tanah</td>
+            </tr>
+            <tr>
+                <th></th>
+                <th colspan="2" style="border: 1px solid black;">
+                    No.Dokumen
+                </th>
+                <th colspan="4" style="border: 1px solid black;text-align:center;">
+                    Revisi
+                </th>
+                <th colspan="8" style="border: 1px solid black;text-align:center;">
+                    Berlaku Efektif
+                </th>
+                <th colspan="5" style="border: 1px solid black;text-align:center;">
+                    Halaman
                 </th>
             </tr>
             <tr>
-                <th colspan="18" style="border: 1px solid black;text-align:center;">
-                    PT. CITRA BORNEO INDAH
+                <th></th>
+                <th colspan="2" style="border: 1px solid black;">
+                    FR.7.1-12
+                </th>
+                <th colspan="4" style="border: 1px solid black;text-align:center;">
+                    02
+                </th>
+                <th colspan="8" style="border: 1px solid black;text-align:center;">
+                    1-jul-21
+                </th>
+                <th colspan="5" style="border: 1px solid black;text-align:center;">
+                    1 dari 1
                 </th>
             </tr>
             <tr>
+                <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
+            </tr>
+            <tr>
+                <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
+            </tr>
+            <tr>
+                <th></th>
+                <th colspan="2">
+                    Tanggal Penerimaan
+                </th>
+                <th colspan="2">
+                    : 09 Oktober 2023
+                </th>
+
+                <th colspan="11"></th>
+                <th colspan="3">Jenis Sampel</th>
+                <th>: Tanah</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th colspan="2">
+                    No. Kaji Ulang
+                </th>
+                <th>
+                    : 229
+                </th>
+
+                <th colspan="12"></th>
+                <th colspan="3">Nama Pelanggan</th>
+                <th>: Lujian Kurniawan</th>
+            </tr>
+            <tr>
+                <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
+            </tr>
+
+            <tr>
+                <th></th>
+                <th rowspan="2" style="border: 1px solid black;">
+                    No. Surat Pelanggan
+                </th>
+                <th rowspan="2" style="border: 1px solid black;text-align:center;">
+                    Kemasan Sampel
+                </th>
+                <th rowspan="2" style="border: 1px solid black;text-align:center;">
+                    Jumlah Sampel
+                </th>
+                <th rowspan="2" style="border: 1px solid black;text-align:center;">
+                    Nomor Laboratorium
+                </th>
+                <th rowspan="2" style="border: 1px solid black;text-align:center;">
+                    Parameter Analisis
+                </th>
+                <th rowspan="2" style="border: 1px solid black;text-align:center;">
+                    Metode Analisis
+                </th>
+                <th rowspan="2" style="border: 1px solid black;text-align:center;">
+                    Satuan
+                </th>
+                <th colspan="3" style="border: 1px solid black;text-align:center;">
+                    Sumber Daya Laboratorium
+                </th>
+
+                <th colspan="5" style="border: 1px solid black;text-align:center;">
+                    Biaya Analisa (Rp)
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Konfirmasi
+                </th>
+                <th colspan="2" style="border: 1px solid black;text-align:center;">
+                    Kondisi Sample
+                </th>
+
+                <th rowspan="2" style="border: 1px solid black;text-align:center;">
+                    Tanggal Penyelesaian Analisa
+                </th>
+
+            </tr>
+            <tr>
+                <th></th>
+
+                <th style="border: 1px solid black;text-align:center;">
+                    Personel (Tersedia dan Kompeten)
+                </th>
+
+                <th style="border: 1px solid black;text-align:center;">
+                    Alat (Tersedia dan Baik)
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Bahan Kimia (Tersedia dan Baik)
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Jumlah Sampel
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Harga Per Sampel
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Sub Total
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    ppn 11%
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Total
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Langsung / Telepon / Email
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Normal
+                </th>
+                <th style="border: 1px solid black;text-align:center;">
+                    Abnormal
+                </th>
+
+
+            </tr>
+
+
+
+            <!-- <tr>
                 <th colspan="18" style="border: 1px solid black;text-align:center;">
                     RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK
                 </th>
@@ -40,7 +197,7 @@
             </tr>
             <tr>
                 <th colspan="18" style="border: 1px solid black;text-align:center;">
-                    Kaji Ulang Permintaan,Tender dan Kontrak Sampel {{$jenissample}}
+                    Kaji Ulang Permintaan,Tender dan Kontrak Sampel
                 </th>
             </tr>
             <tr>
@@ -59,7 +216,7 @@
             </tr>
             <tr>
                 <th style="text-align:center;border: 1px solid black;">
-                    {{$no_dokumen}}
+
                 </th>
                 <th colspan="6" style="text-align:center;border: 1px solid black;">
                     02
@@ -81,13 +238,13 @@
 
             <tr style="border: 1px solid black;">
                 <th colspan="4">
-                    Tanggal Penerimaan: {{$tanggal}}
+
                 </th>
                 <th colspan="14">
 
                 </th>
                 <th colspan="2">
-                    Jenis Sample : {{$jenissample}}
+
                 </th>
             </tr>
             <tr style="border: 1px solid black;">
@@ -101,15 +258,15 @@
                     Nama Pelanggan:
                 </th>
                 <th colspan="2">
-                    {{$pelanggan}}
+
                 </th>
             </tr>
 
             <tr>
                 <td>&nbsp;</td>
-            </tr>
+            </tr> -->
 
-
+            <!-- 
             <tr>
                 <th style="border: 1px solid black;text-align:center" rowspan="2">
                     No Surat Pelanggan
@@ -183,62 +340,16 @@
                     Abnormal
                 </th>
 
-            </tr>
+            </tr> -->
 
         </thead>
         <tbody>
-            @foreach ($trackdata as $data)
-            <tr>
-                <td style="border: 1px solid black;text-align:center;">{{$data['no_surat']}}</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['kondisi_sampel']}}</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['jumlah_sampel']}}</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['nomor_lab']}}</td>
-                <td style="border: 1px solid black;text-align:center;">
-                    @if(isset($data['parameter_analisis']['parameter']) && is_array($data['parameter_analisis']['parameter']))
-                    @foreach ($data['parameter_analisis']['parameter'] as $items)
-                    {{$items}}<br>
-                    @endforeach
-                    @endif
-                </td>
-                <td style="border: 1px solid black;text-align:center;">
-                    @if(is_array($data['metode_analisis'])) <!-- Check if it's an array -->
-                    @foreach ($data['metode_analisis'] as $metode)
-                    {{$metode}}<br>
-                    @endforeach
-                    @else
-                    {{$data['metode_analisis']}} <!-- Display single value if not an array -->
-                    @endif
-                </td>
-                <td style="border: 1px solid black;text-align:center;">%</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['personel']}}</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['alat']}}</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['bahan']}}</td>
-                <td style="border: 1px solid black;text-align:center;">
-                    {{$data['parameter_analisis']['jumlah_sampel']}} <!-- Access 'jumlah_sampel' directly -->
-                </td>
-                <td style="border: 1px solid black;text-align:center;">
-                    {{$data['parameter_analisis']['hargaori']}} <!-- Access 'jumlah_sampel' directly -->
-                </td>
-                <td style="border: 1px solid black;text-align:center;">
-                    {{$data['parameter_analisis']['subtotal']}} <!-- Access 'jumlah_sampel' directly -->
-                </td>
-                <td style="border: 1px solid black;text-align:center;">
-                    {{$data['parameter_analisis']['ppn']}} <!-- Access 'jumlah_sampel' directly -->
-                </td>
-                <td style="border: 1px solid black;text-align:center;">
-                    {{$data['parameter_analisis']['total']}} <!-- Access 'jumlah_sampel' directly -->
-                </td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['email']}}</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['normal']}}</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['taknormal']}}</td>
-                <td style="border: 1px solid black;text-align:center;">{{$data['estimasi']}}</td>
-            </tr>
-            @endforeach
+
         </tbody>
     </table>
 
 
-    <table style="margin-top: 20px">
+    <!-- <table style="margin-top: 20px">
         <thead>
             <tr>
                 <th style="border: 1px solid black;">Di buat oleh</th>
@@ -268,7 +379,7 @@
                 <td style="text-align:left;border-bottom:1px solid black;border-right:1px solid black;border-left:1px solid black;width: 900px;">Sampel basah </td>
             </tr>
         </tbody>
-    </table>
+    </table> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 

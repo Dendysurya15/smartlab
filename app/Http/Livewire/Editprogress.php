@@ -492,6 +492,7 @@ class Editprogress extends Component
     {
         $this->isExporting = true; // Set the flag to true when exporting Excel
         $id = $this->sample;
+
         return Excel::download(new FormDataExport($id), 'Data_Lab.xlsx');
     }
 }

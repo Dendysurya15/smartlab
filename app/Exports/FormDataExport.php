@@ -11,10 +11,13 @@ use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
 
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class FormDataExport implements FromView, ShouldAutoSize, WithDrawings
+class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
 {
 
     private $id;
@@ -144,14 +147,68 @@ class FormDataExport implements FromView, ShouldAutoSize, WithDrawings
         ]);
     }
 
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $columnsToStyle = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T'];
+                foreach ($columnsToStyle as $column) {
+                    $event->sheet->getStyle($column)->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                    $event->sheet->getStyle($column)->getAlignment()->setWrapText(true);
+                }
+
+                $event->sheet->getStyle('C')->getAlignment()->setWrapText(true);
+
+                $event->sheet->getStyle('D')->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle('E')->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle('I')->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle('J')->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle('K')->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle('L')->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle('M')->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle('Q')->getAlignment()->setWrapText(true);
+            },
+        ];
+    }
+
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 5,
+            'B' => 30,
+            'C' => 15,
+            'D' => 15,
+            'E' => 15,
+            'F' => 40,
+            'G' => 25,
+            'H' => 15,
+            'I' => 15,
+            'J' => 15,
+            'K' => 15,
+            'L' => 15,
+            'M' => 15,
+            'N' => 15,
+            'O' => 15,
+            'P' => 15,
+            'Q' => 15,
+            'R' => 15,
+            'S' => 15,
+            'T' => 40
+
+        ];
+    }
+
     public function drawings()
     {
         $drawing = new Drawing();
         $drawing->setName('Logo');
         $drawing->setDescription('This is my logo');
-        $drawing->setPath(public_path('images/suratkop.png'));
-        $drawing->setHeight(140);
-        $drawing->setCoordinates('A1');
+        $drawing->setPath(public_path('images/logo_CBI_2.png'));
+        $drawing->setHeight(70);
+        $drawing->setCoordinates('B1');
 
         return $drawing;
     }
