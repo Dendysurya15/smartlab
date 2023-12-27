@@ -1,7 +1,7 @@
 <?php
 
 if (!function_exists('tanggal_indo')) {
-    function tanggal_indo($tanggal, $cetak_hari = false, $cetak_bulan = false)
+    function tanggal_indo($tanggal, $cetak_hari = false, $cetak_bulan = false, $cetak_tanggal = false)
     {
         $hari = array(
             1 => 'Senin',
@@ -29,6 +29,7 @@ if (!function_exists('tanggal_indo')) {
         );
         $split = explode('-', $tanggal);
         $splitted_tgl_jam = explode(' ', $split[2]);
+
         $tgl_indo = $splitted_tgl_jam[0] . ' ' . $bulan[(int)$split[1]] . ' ' . $split[0] . ', ' . $splitted_tgl_jam[1];
 
         if ($cetak_hari) {
@@ -38,6 +39,10 @@ if (!function_exists('tanggal_indo')) {
 
         if ($cetak_bulan) {
             return $bulan[(int)$split[1]] . ' ' . $split[0];
+        }
+
+        if ($cetak_tanggal) {
+            return $splitted_tgl_jam[0] . ' ' . $bulan[(int)$split[1]] . ' ' . $split[0];
         }
         return $tgl_indo;
     }

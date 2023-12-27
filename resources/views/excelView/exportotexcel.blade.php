@@ -19,24 +19,24 @@
 
             <tr>
                 <th></th>
-                <td rowspan="4" colspan="2"></td>
-                <td colspan="17">PT . Citra Borneo Indah</td>
+                <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
+                <td colspan="17" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="17">REsearch and development - laboratorium analiitik</td>
+                <td colspan="17" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="17">Formulir</td>
+                <td colspan="17" style="border: 1px solid black;">Formulir</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="17">Kaji Ulang Permintaa, Tender dan Kontrak Sampel Tanah</td>
+                <td colspan="17" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel {{$jenis_kupa}} </td>
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border: 1px solid black;">
+                <th colspan="2" style="border: 1px solid black;font-weight:bold">
                     No.Dokumen
                 </th>
                 <th colspan="4" style="border: 1px solid black;text-align:center;">
@@ -72,29 +72,29 @@
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2">
+                <th colspan="2" style="border-left:1px solid black;border-top:1px solid black ;">
                     Tanggal Penerimaan
                 </th>
-                <th colspan="2">
-                    : 09 Oktober 2023
+                <th colspan="2" style="border-top:1px solid black;">
+                    : {{$tanggal_penerimaan}}
                 </th>
 
-                <th colspan="11"></th>
-                <th colspan="3">Jenis Sampel</th>
-                <th>: Tanah</th>
+                <th colspan="11" style="border-top: 1px solid black;"></th>
+                <th colspan="3" style="border-top: 1px solid black;">Jenis Sampel</th>
+                <th style="border-top: 1px solid black;border-right: 1px solid black;">: {{$jenis_kupa}}</th>
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2">
+                <th colspan="2" style="border-left: 1px solid black;border-bottom: 1px solid black;">
                     No. Kaji Ulang
                 </th>
-                <th>
-                    : 229
+                <th style="border-bottom: 1px solid black;">
+                    : {{$no_kupa}}
                 </th>
 
-                <th colspan="12"></th>
-                <th colspan="3">Nama Pelanggan</th>
-                <th>: Lujian Kurniawan</th>
+                <th colspan="12" style="border-bottom: 1px solid blacck;"></th>
+                <th colspan="3" style="border-bottom: 1px solid black;">Nama Pelanggan</th>
+                <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$nama_pengirim}}</th>
             </tr>
             <tr>
                 <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
@@ -183,170 +183,103 @@
 
             </tr>
 
-
-
-            <!-- <tr>
-                <th colspan="18" style="border: 1px solid black;text-align:center;">
-                    RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK
-                </th>
-            </tr>
-            <tr>
-                <th colspan="18" style="border: 1px solid black;text-align:center;">
-                    Formulir
-                </th>
-            </tr>
-            <tr>
-                <th colspan="18" style="border: 1px solid black;text-align:center;">
-                    Kaji Ulang Permintaan,Tender dan Kontrak Sampel
-                </th>
-            </tr>
-            <tr>
-                <th style="text-align:center;border: 1px solid black;">
-                    No: Dokumen
-                </th>
-                <th colspan="6" style="text-align:center;border: 1px solid black;">
-                    Revisi
-                </th>
-                <th colspan="6" style="text-align:center;border: 1px solid black;">
-                    Berlaku Efektif
-                </th>
-                <th colspan="6" style="text-align:center;border: 1px solid black;">
-                    Halaman
-                </th>
-            </tr>
-            <tr>
-                <th style="text-align:center;border: 1px solid black;">
-
-                </th>
-                <th colspan="6" style="text-align:center;border: 1px solid black;">
-                    02
-                </th>
-                <th colspan="6" style="text-align:center;border: 1px solid black;">
-                    01-Jul-21
-                </th>
-                <th colspan="6" style="text-align:center;border: 1px solid black;">
-                    1 dari 1
-                </th>
-            </tr>
-
-            <tr>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-            </tr>
-
-            <tr style="border: 1px solid black;">
-                <th colspan="4">
-
-                </th>
-                <th colspan="14">
-
-                </th>
-                <th colspan="2">
-
-                </th>
-            </tr>
-            <tr style="border: 1px solid black;">
-                <th colspan="2">
-                    No. Kaji Ulang : 441
-                </th>
-                <th colspan="14">
-
-                </th>
-                <th colspan="2">
-                    Nama Pelanggan:
-                </th>
-                <th colspan="2">
-
-                </th>
-            </tr>
-
-            <tr>
-                <td>&nbsp;</td>
-            </tr> -->
-
-            <!-- 
-            <tr>
-                <th style="border: 1px solid black;text-align:center" rowspan="2">
-                    No Surat Pelanggan
-                </th>
-                <th style="border: 1px solid black;text-align:center" rowspan="2">
-                    Kemasan Sampel
-                </th>
-                <th style="border: 1px solid black;text-align:center" rowspan="2">
-                    Jumlah Sampel
-                </th>
-                <th style="border: 1px solid black;text-align:center" rowspan="2">
-                    Nomor Laboratorium
-                </th>
-                <th style="border: 1px solid black;text-align:center" rowspan="2">
-                    Parameter Analisis
-                </th>
-                <th style="border: 1px solid black;text-align:center" rowspan="2">
-                    Metode Analisis
-                </th>
-                <th style="border: 1px solid black;text-align:center" rowspan="2">
-                    Satuan
-                </th>
-                <th style="border: 1px solid black;text-align:center" colspan="3">
-                    Sumber Daya Laboratorium
-                </th>
-                <th style="border: 1px solid black;text-align:center" colspan="5">
-                    Biaya Analisa (Rp)
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Konfirmasi
-                </th>
-                <th style="border: 1px solid black;text-align:center" colspan="2">
-                    Kondisi Sample
-                </th>
-                <th style="border: 1px solid black;text-align:center" rowspan="2">
-                    Tanggal Penyelesaian Analisa
-                </th>
-            </tr>
-            <tr>
-                <th style="border: 1px solid black;text-align:center">
-                    Personel (Tersedia dan Kompeten)
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Alat (Tersedia dan Baik)
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Bahan Kimia (Tersedia dan Baik)
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Jumlah Sampel
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Harga per Sampel
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Sub Total
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    ppn 11%
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Total
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Langsung / Telepon / Email
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Normal
-                </th>
-                <th style="border: 1px solid black;text-align:center">
-                    Abnormal
-                </th>
-
-            </tr> -->
-
         </thead>
         <tbody>
 
+            @foreach ($kupa as $data)
+            <tr style="border-left:1px solid black;border-right:1px solid black">
+                <td></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_no_surat']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_kemasan']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_no_lab']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_param']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_metode']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_satuan']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_personel']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_alat']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_bahan']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel_2']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_harga']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_ppn']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_total']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_langsung']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_normal']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_abnormal']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_tanggal']}}</td>
+            </tr>
+            @endforeach
+
+
+            <tr>
+                <td></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td colspan="3" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">Total</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{$final_total}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+            </tr>
+
+            <tr>
+                <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
+            </tr>
+
+            <tr>
+                <td></td>
+                <td colspan="2" style="border: 1px solid black;">Dibuat Oleh,</td>
+                <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
+                <td colspan="2" style="border: 1px solid black;">Disetujui Oleh,</td>
+                <td colspan="12" style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">Catatan Khusus : </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="2" rowspan="5" style="border: 1px solid black;">(............................................)</td>
+                <td colspan="3" rowspan="5" style="border:1px solid black">(............................................)</td>
+                <td colspan="2" rowspan="5" style="border:1px solid black">(............................................)</td>
+                <td colspan="12" style="border-right: 1px solid black;"></td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td colspan="12" style="border-right: 1px solid black;"></td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td colspan="12" style="border-right: 1px solid black;"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="12" style="border-right: 1px solid black;"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="12" style="border-right: 1px solid black;"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="2" style="border: 1px solid black;">Petugas Penerima Sampel</td>
+                <td colspan="3" style="border: 1px solid black;">Manager Laboratorium</td>
+                <td colspan="2" style="border: 1px solid black;">Pelanggan</td>
+                <td colspan="12" style="border-bottom: 1px solid black;border-right: 1px solid black;"></td>
+            </tr>
+
         </tbody>
     </table>
+
 
 
     <!-- <table style="margin-top: 20px">
@@ -381,7 +314,8 @@
         </tbody>
     </table> -->
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
 
 </body>
 
