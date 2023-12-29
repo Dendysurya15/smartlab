@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
 
@@ -20,26 +21,31 @@
             <tr>
                 <th></th>
                 <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
-                <td colspan="17" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">PT . CITRA BORNEO INDAH</td>
+                <td colspan="18"
+                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
+                    PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="17" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
+                <td colspan="18"
+                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
+                    RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="17" style="border: 1px solid black;">Formulir</td>
+                <td colspan="18" style="border: 1px solid black;">Formulir</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="17" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel {{$jenis_kupa}} </td>
+                <td colspan="18" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
+                    {{$jenis_kupa}} </td>
             </tr>
             <tr>
                 <th></th>
                 <th colspan="2" style="border: 1px solid black;font-weight:bold">
                     No.Dokumen
                 </th>
-                <th colspan="4" style="border: 1px solid black;text-align:center;">
+                <th colspan="5" style="border: 1px solid black;text-align:center;">
                     Revisi
                 </th>
                 <th colspan="8" style="border: 1px solid black;text-align:center;">
@@ -54,7 +60,7 @@
                 <th colspan="2" style="border: 1px solid black;">
                     FR.7.1-12
                 </th>
-                <th colspan="4" style="border: 1px solid black;text-align:center;">
+                <th colspan="5" style="border: 1px solid black;text-align:center;">
                     02
                 </th>
                 <th colspan="8" style="border: 1px solid black;text-align:center;">
@@ -65,10 +71,10 @@
                 </th>
             </tr>
             <tr>
-                <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
+                <td colspan="20"></td> <!-- Replace "20" with the total number of columns in your table -->
             </tr>
             <tr>
-                <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
+                <td colspan="20"></td> <!-- Replace "20" with the total number of columns in your table -->
             </tr>
             <tr>
                 <th></th>
@@ -79,7 +85,7 @@
                     : {{$tanggal_penerimaan}}
                 </th>
 
-                <th colspan="11" style="border-top: 1px solid black;"></th>
+                <th colspan="12" style="border-top: 1px solid black;"></th>
                 <th colspan="3" style="border-top: 1px solid black;">Jenis Sampel</th>
                 <th style="border-top: 1px solid black;border-right: 1px solid black;">: {{$jenis_kupa}}</th>
             </tr>
@@ -92,12 +98,12 @@
                     : {{$no_kupa}}
                 </th>
 
-                <th colspan="12" style="border-bottom: 1px solid blacck;"></th>
+                <th colspan="13" style="border-bottom: 1px solid blacck;"></th>
                 <th colspan="3" style="border-bottom: 1px solid black;">Nama Pelanggan</th>
                 <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$nama_pengirim}}</th>
             </tr>
             <tr>
-                <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
+                <td colspan="20"></td> <!-- Replace "20" with the total number of columns in your table -->
             </tr>
 
             <tr>
@@ -114,7 +120,7 @@
                 <th rowspan="2" style="border: 1px solid black;text-align:center;">
                     Nomor Laboratorium
                 </th>
-                <th rowspan="2" style="border: 1px solid black;text-align:center;">
+                <th rowspan="2" colspan="2" style="border: 1px solid black;text-align:center;">
                     Parameter Analisis
                 </th>
                 <th rowspan="2" style="border: 1px solid black;text-align:center;">
@@ -194,12 +200,14 @@
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_no_lab']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_param']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_param']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_metode']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_satuan']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_personel']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_alat']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_bahan']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel_2']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel_2']}}
+                </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_harga']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_ppn']}}</td>
@@ -214,41 +222,65 @@
 
             <tr>
                 <td></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td colspan="3" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">Total</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{$final_total}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;"></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td colspan="4"
+                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                    Total</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td
+                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                    {{$final_total}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
             </tr>
 
             <tr>
-                <td colspan="19"></td> <!-- Replace "19" with the total number of columns in your table -->
+                <td colspan="20"></td> <!-- Replace "20" with the total number of columns in your table -->
             </tr>
 
             <tr>
                 <td></td>
                 <td colspan="2" style="border: 1px solid black;">Dibuat Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
-                <td colspan="2" style="border: 1px solid black;">Disetujui Oleh,</td>
-                <td colspan="12" style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">Catatan Khusus : </td>
+                <td colspan="3" style="border: 1px solid black;">Disetujui Oleh,</td>
+                <td colspan="12"
+                    style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
+                    Catatan Khusus : </td>
             </tr>
             <tr>
                 <td></td>
-                <td colspan="2" rowspan="5" style="border: 1px solid black;">(............................................)</td>
-                <td colspan="3" rowspan="5" style="border:1px solid black">(............................................)</td>
-                <td colspan="2" rowspan="5" style="border:1px solid black">(............................................)</td>
+                <td colspan="2" rowspan="5" style="border: 1px solid black;">
+                    (............................................)</td>
+                <td colspan="3" rowspan="5" style="border:1px solid black">
+                    (............................................)</td>
+                <td colspan="2" rowspan="5" style="border:1px solid black">
+                    (............................................)</td>
                 <td colspan="12" style="border-right: 1px solid black;"></td>
             </tr>
 
@@ -314,7 +346,8 @@
         </tbody>
     </table> -->
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
 
 </body>

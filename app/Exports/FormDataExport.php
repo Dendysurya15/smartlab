@@ -34,37 +34,50 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $tracksample = TrackSampel::findOrFail($this->id);
 
-        $jenis_sample = JenisSampel::where('id', $tracksample->jenis_sampel)->first()->nama;
+        $jenis_sample = JenisSampel::with('parameterAnalisis.metodeAnalisis')->where('id', $tracksample->jenis_sampel)->first();
+        $row_parameter = $jenis_sample->parameterAnalisis->pluck('nama');
+
+        $row_metode = [];
+        $row_satuan = [];
+        $metode_arr = $jenis_sample->parameterAnalisis;
+
+        foreach ($metode_arr as $key => $value) {
+
+            foreach ($value->metodeAnalisis as $key2 => $value2) {
+                $row_metode[] = $value2->nama;
+                $row_satuan = $value2->satuan;
+            }
+        }
+
         $tgl_penerimaan = tanggal_indo($tracksample->tanggal_penerimaan, false, false, true);
-        $jenis_kupa = $jenis_sample;
+        $jenis_kupa = $jenis_sample->nama;
         $no_kupa = $tracksample->nomor_kupa;
         $nama_pengirim = $tracksample->nama_pengirim;
 
-
         $arr_per_column = [];
         //set default value with 19 column satu baris
-        for ($i = 0; $i < 19; $i++) {
-            $arr_per_column[0]['col_no_surat'] = $tracksample->nomor_surat;
-            $arr_per_column[0]['col_kemasan'] = $tracksample->kemasan_sampel;
-            $arr_per_column[0]['col_jum_sampel'] = $tracksample->jumlah_sampel;
-            $arr_per_column[0]['col_no_lab'] = $tracksample->nomor_lab;
-            $arr_per_column[0]['col_param'] = '';
-            $arr_per_column[0]['col_metode'] = '';
-            $arr_per_column[0]['col_satuan'] = '';
-            $arr_per_column[0]['col_personel'] = $tracksample->personel;
-            $arr_per_column[0]['col_alat'] = $tracksample->alat;
-            $arr_per_column[0]['col_bahan'] = $tracksample->bahan;
-            $arr_per_column[0]['col_jum_sampel_2'] = '';
-            $arr_per_column[0]['col_harga'] = '';
-            $arr_per_column[0]['col_sub_total'] = '';
-            $arr_per_column[0]['col_ppn'] = '';
-            $arr_per_column[0]['col_total'] = '';
-            $arr_per_column[0]['col_langsung'] = '';
-            $arr_per_column[0]['col_normal'] = '';
-            $arr_per_column[0]['col_abnormal'] = '';
-            $arr_per_column[0]['col_tanggal'] = $tracksample->tanggal_pengantaran;
-        }
 
+
+        $arr_per_column[0]['col_no_surat'] = $tracksample->nomor_surat;
+        $arr_per_column[0]['col_kemasan'] = $tracksample->kemasan_sampel;
+        $arr_per_column[0]['col_jum_sampel'] = $tracksample->jumlah_sampel;
+        $arr_per_column[0]['col_no_lab'] = $tracksample->nomor_lab;
+        $arr_per_column[0]['col_param'] = $row_parameter[0];
+        $arr_per_column[0]['col_mark'] = '';
+        $arr_per_column[0]['col_metode'] = $row_metode[0];
+        $arr_per_column[0]['col_satuan'] = $row_satuan[0];
+        $arr_per_column[0]['col_personel'] = $tracksample->personel;
+        $arr_per_column[0]['col_alat'] = $tracksample->alat;
+        $arr_per_column[0]['col_bahan'] = $tracksample->bahan;
+        $arr_per_column[0]['col_jum_sampel_2'] = '';
+        $arr_per_column[0]['col_harga'] = '';
+        $arr_per_column[0]['col_sub_total'] = '';
+        $arr_per_column[0]['col_ppn'] = '';
+        $arr_per_column[0]['col_total'] = '';
+        $arr_per_column[0]['col_langsung'] = '';
+        $arr_per_column[0]['col_normal'] = '';
+        $arr_per_column[0]['col_abnormal'] = '';
+        $arr_per_column[0]['col_tanggal'] = $tracksample->tanggal_pengantaran;
 
         $final_total = 0;
 
@@ -84,7 +97,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             foreach ($getTrack as $key => $value) {
                 $coll_arr = $value->ParameterAnalisis->metodeAnalisis;
 
-
                 if (isset($coll_arr) || is_array($coll_arr) || count($coll_arr) > 0) {
 
                     $inc = 0;
@@ -92,8 +104,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     $base_harga = 0;
                     $jumlah_sampel = 0;
                     foreach ($coll_arr as $key2 => $value2) {
-
-
 
                         $temp_metode[] = $value2->nama;
                         $temp_harga[] = $value2->harga;
@@ -124,14 +134,13 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 }
             }
 
+            $row_count = count($row_parameter);
 
-
-
-            $row_count = $row;
-
-            for ($i = 0; $i < $row; $i++) {
+            for ($i = 0; $i < $row_count; $i++) {
 
                 if ($i == 0) {
+
+
                     $arr_per_column[$i]['col_param'] = $temp_param[$i];
                     $arr_per_column[$i]['col_metode'] = $temp_metode[$i];
                     $arr_per_column[$i]['col_satuan'] = $temp_satuan[$i];

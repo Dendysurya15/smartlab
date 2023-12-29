@@ -10,4 +10,9 @@ class JenisSampel extends Model
     use HasFactory;
 
     protected $table = 'jenis_sampel';
+
+    public function parameterAnalisis()
+    {
+        return $this->hasMany(ParameterAnalisis::class, 'id_jenis_sampel', 'id');
+    }
 }
