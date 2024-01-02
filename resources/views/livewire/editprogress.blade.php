@@ -353,8 +353,8 @@
                     <div class="mt-2">
                         <select wire:model="val_parameter" autocomplete="country-name"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600  sm:text-sm sm:leading-6">
-                            @foreach ($parameterAnalisisOptions as $key => $items)
-                            <option value="{{$key}}">{{$items}}</option>
+                            @foreach ($list_parameter as $key => $items)
+                            <option value="{{$items['id']}}">{{$items['nama_parameter_full']}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -374,7 +374,7 @@
         </div>
     </div>
 
-    {{-- <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
+    <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
         @foreach($oldform as $index => $parameter)
         <div class="grid grid-cols-5 gap-5 mt-4">
 
@@ -384,9 +384,9 @@
                 </label>
 
                 <div class="mt-2 ml-4 text-sm">
-                    @foreach ($parameter['jenis_analisis'] as $key => $data)
-                    <li>{{ $data }}</li>
-                    @endforeach
+
+                    <li>{{ $parameter['metode_analisis'] }}</li>
+
                 </div>
 
             </div>
@@ -449,7 +449,7 @@
             </div>
         </div>
         @endforeach
-    </div> --}}
+    </div>
 
     <div class="mt-6 flex items-center justify-end gap-x-6">
         <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>

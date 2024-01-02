@@ -4,7 +4,6 @@ namespace App\Http\Livewire;
 
 
 use App\Models\JenisSampel;
-use App\Models\MetodeAnalisis;
 use App\Models\ParameterAnalisis;
 use App\Models\TrackSampel;
 use App\Models\ProgressPengerjaan;
@@ -74,8 +73,27 @@ class Editprogress extends Component
         $jenisSampelOptions = JenisSampel::all();
 
         $query = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
-        $progressStr = JenisSampel::find($query->jenis_sampel)->progress;
-        $arr_progress = explode(',', $progressStr);
+        $progressQuery = JenisSampel::with('parameterAnalisis')->find($query->jenis_sampel);
+
+        $relationship = $progressQuery->parameterAnalisis;
+        if ($progressQuery->nama != 'Pupuk Anorganik') {
+            $list_parameter = $relationship->groupBy('nama_parameter')->flatMap(function ($grouped) {
+                return $grouped->count() > 1 ? $grouped->map(function ($item) {
+                    return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter . ' ' . $item->metode_analisis];
+                }) : $grouped->map(function ($item) {
+                    return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter];
+                });
+            })->values()->toArray();
+        } else {
+            $list_parameter = $relationship->groupBy('nama_parameter')->flatMap(function ($grouped) {
+                return $grouped->count() > 1 ? $grouped->map(function ($item) {
+                    return ['id' => $item->id, 'nama_parameter_full' => $item->bahan_produk . ' ' . $item->nama_parameter . ' ' . $item->metode_analisis];
+                }) : $grouped->map(function ($item) {
+                    return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter];
+                });
+            })->values()->toArray();
+        }
+        $arr_progress = explode(',', $progressQuery->progress);
 
         $progressOptions = [];
 
@@ -84,14 +102,11 @@ class Editprogress extends Component
             $progressOptions[$queryProgress->id] = $queryProgress->nama;
         }
 
-        // $metodeAnalisisOptions = metodeAnalisis::all();
-
-        // dd($getTrack, $getAnalisis, $trackform);
         return view(
             'livewire.editprogress',
             [
                 'jenisSampelOptions' => $jenisSampelOptions,
-                // 'metodeAnalisisOptions' => $metodeAnalisisOptions,
+                'list_parameter' => $list_parameter,
                 'listProgress' => $progressOptions,
                 'oldform' => $this->oldform,
 
@@ -102,39 +117,28 @@ class Editprogress extends Component
     public function addParameter()
     {
 
-        // dd($this->val_parameter);
+        $this->val_parameter = $this->val_parameter ?? $this->parameterAnalisisOptions[0]['id'];
         $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
 
+        $this->hargaparameter = $defaultParameterAnalisis->harga;
+        $this->satuanparameter = $defaultParameterAnalisis->satuan;
+        $this->analisisparameter = $defaultParameterAnalisis->metode_analisis;
 
-        // dd($defaultParameterAnalisis);
-        $options = MetodeAnalisis::where('id_parameter', $defaultParameterAnalisis->id)->get();
-
-
-        $this->hargaparameter = $options->first()->harga;
-        $this->satuanparameter = $options->first()->satuan;
-        $this->analisisparameter = $options->pluck('nama', 'id')->toArray();
         $sub_total = $this->hargaparameter * 1;
         $ppn = hitungPPN($sub_total);
         $total = $sub_total + $ppn;
         $defaultppn = 11;
 
-        // dd($this->val_parameter);
-
-
-
         $this->oldform[] = [
             'jumlah' => 1,
             'value' => '',
-            'nama_parameters' => $defaultParameterAnalisis->nama,
-            'jenis_analisis' => $this->analisisparameter,
-            'parametersanalisis' => $this->analisisparameter,
+            'nama_parameters' => $defaultParameterAnalisis->nama_parameter,
+            'metode_analisis' => $this->analisisparameter,
             'harga' => $this->hargaparameter,
             'subtotal' => $sub_total,
             'total' => $total,
             'ppn' => $ppn,
-            'harga_ori' => $this->hargaparameter,
-            'judulppn' => $defaultppn . "% PPN",
-            'id_parameter' => $this->parameterid = $defaultParameterAnalisis->id
+            'judulppn' => $defaultppn . "% PPN"
         ];
     }
 
@@ -197,7 +201,7 @@ class Editprogress extends Component
         if ($selectedJenisSampel) {
             $options = ParameterAnalisis::where('id_jenis_sampel', $this->jenis_sampel)->get();
             $options2 = ProgressPengerjaan::whereIn('id', $progressIds)->get();
-            $this->parameterAnalisisOptions = $options->pluck('nama', 'id')->toArray();
+            // $this->parameterAnalisisOptions = $options->pluck('nama', 'id')->toArray();
             $this->prameterproggres = $options2->pluck('nama', 'id')->toArray();
             $this->get_progress = $trackprogres;
             $this->val_parameter = $options->pluck('id')->first();
@@ -252,56 +256,30 @@ class Editprogress extends Component
         $this->emailCc = $query->emailCc;
         $this->foto_sampel = asset('storage/uploads/' . $query->foto_sampel);
 
-
-        // dd($this->foto_sampel);
-        // dd($this->foto_sampel);
-
-
-        $getTrack = TrackParameter::where('id_tracksampel', $query->parameter_analisisid)->get()->toArray();
-        // $getAnalisis = MetodeAnalisis::all()->toArray();
-        $getparameters = ParameterAnalisis::all()->toArray();
-
+        $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $query->parameter_analisisid)->get()->toArray();
         $trackform = [];
 
-        // dd($trackform);
+        foreach ($getTrack as $key => $value) {
+            $harga = $value['parameter_analisis']['harga'];
 
-        // foreach ($getTrack as $key => $value) {
-        //     $parameters = [];
+            $subtotal = $value['jumlah'] * $harga;
+            $ppn = hitungPPN($subtotal);
 
-        //     foreach ($getAnalisis as $key2 => $value2) {
-        //         if ($value2['id_parameter'] == $value['id_parameter']) {
-        //             $parameters[] = $value2['nama'];
-        //             $harga = $value2['harga'];
-        //         }
-        //     }
-
-        //     $nama = '-';
-        //     foreach ($getparameters as $keyx => $valuex) {
-        //         if ($value['id_parameter'] == $valuex['id']) {
-        //             $nama = $valuex['nama'];
-        //         }
-        //     }
-        //     $subtotal = $value['jumlah'] * $harga;
-        //     $ppn = hitungPPN($subtotal);
-
-        // $trackform[$key] = [
-        //     'id' => $value['id'],
-        //     'harga' => $value['totalakhir'],
-        //     'jenis_analisis' => $parameters,
-        //     'harga' => $harga,
-        //     'nama_parameters' => $nama,
-        //     'jumlah' => $value['jumlah'],
-        //     'harga_total' => $value['totalakhir'],
-        //     'subtotal' => $subtotal,
-        //     'ppn' => $ppn,
-        //     'id_parameter' => $value['id_parameter'],
-        //     'judulppn' => "11% PPN",
-        // ];
-        // }
+            $trackform[$key] = [
+                'id' => $value['id'],
+                'harga' => $harga,
+                'metode_analisis' => $value['parameter_analisis']['metode_analisis'],
+                'nama_parameters' => $value['parameter_analisis']['nama_parameter'],
+                'jumlah' => $value['jumlah'],
+                'harga_total' => $value['totalakhir'],
+                'subtotal' => $subtotal,
+                'ppn' => $ppn,
+                'id_parameter' => $value['id_parameter'],
+                'judulppn' => "11% PPN",
+            ];
+        }
 
         $this->oldform = $trackform;
-
-        // dd($this->oldform);
 
         $this->ChangeFieldParamAndNomorLab();
     }
@@ -435,7 +413,7 @@ class Editprogress extends Component
             $trackSampel->last_update = $newupdate;
             $trackSampel->save();
 
-            // TrackParameter::whereIn('id', $idold)->delete();
+            TrackParameter::whereIn('id', $idold)->delete();
 
             foreach ($oldparameteredit as $key => $value) {
                 if (array_key_exists('id', $value)) {
@@ -460,7 +438,7 @@ class Editprogress extends Component
                     ];
                 }
 
-                // TrackParameter::insert($trackParameters);
+                TrackParameter::insert($trackParameters);
             }
 
 
@@ -470,25 +448,22 @@ class Editprogress extends Component
                 $form_hp = '62' . substr($form_hp, 1);
             }
 
-            SendMsg::insert([
-                'pesan' => 'Halo Tracking sample anda sudah di update ke ' . $progress_now .  ', progress anda dapat dilihat di website: https://smartlab.srs-ssms.com dengan kode Tracking sample:',
-                'kodesample' => $query->kode_track,
-                'penerima' => $form_hp
-            ]);
+            // SendMsg::insert([
+            //     'pesan' => 'Halo Tracking sample anda sudah di update ke ' . $progress_now .  ', progress anda dapat dilihat di website: https://smartlab.srs-ssms.com dengan kode Tracking sample:',
+            //     'kodesample' => $query->kode_track,
+            //     'penerima' => $form_hp
+            // ]);
 
 
-            // DB::commit();
+            DB::commit();
 
             $this->successSubmit = true;
             $this->msgSuccess = $query->kode_track;
         } catch (Exception $e) {
-            // DB::rollBack();
+            DB::rollBack();
             $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
             $this->errorSubmit = true;
         }
-
-        // You can remove the following dd() statement if everything is working as expected
-        // dd($trackSampel);
     }
 
     public function save()
