@@ -19,13 +19,10 @@
             <label for="jns_sam" class="block text-sm font-medium leading-6 text-gray-900">Jenis
                 Sampel</label>
             <div class="mt-2">
-                <select wire:model="jenis_sampel" wire:change="ChangeFieldParamAndNomorLab" autocomplete="jenis_sampel"
-                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600  sm:text-sm sm:leading-6">
-                    @foreach ($jenisSampelOptions as $item)
-                    <option value="{{$item->id}}">{{$item->nama}}
-                    </option>
-                    @endforeach
-                </select>
+                <input type="text" name="asal_sampel" id="asal_sampel" wire:model="nama_jenis_sampel"
+                    autocomplete="given-name" value=""
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+                    disabled>
                 @error('jenis_sampel')
                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -61,7 +58,7 @@
             <div class="mt-2">
                 <select wire:model="get_progress"
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600  sm:text-sm sm:leading-6">
-                    @foreach ($prameterproggres as $key => $items)
+                    @foreach ($listProgress as $key => $items)
                     <option value="{{$key}}">{{$items}}</option>
                     @endforeach
                 </select>
@@ -377,7 +374,7 @@
         </div>
     </div>
 
-    <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
+    {{-- <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
         @foreach($oldform as $index => $parameter)
         <div class="grid grid-cols-5 gap-5 mt-4">
 
@@ -452,7 +449,7 @@
             </div>
         </div>
         @endforeach
-    </div>
+    </div> --}}
 
     <div class="mt-6 flex items-center justify-end gap-x-6">
         <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>

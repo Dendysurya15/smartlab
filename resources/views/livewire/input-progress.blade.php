@@ -371,7 +371,7 @@
                                     <select wire:model="val_parameter" autocomplete="country-name"
                                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600  sm:text-sm sm:leading-6">
                                         @foreach ($parameterAnalisisOptions as $key => $items)
-                                        <option value="{{$key}}">{{$items}}</option>
+                                        <option value="{{$items['id']}}">{{$items['nama_parameter_full']}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -404,15 +404,7 @@
                                 <label class="block text-sm font-medium leading-6 text-gray-900">
                                     {{$item['nama_parameter']}} </label>
                                 <div class="mt-2">
-                                    <ul class="list-disc pl-4 text-sm">
-                                        @if (is_array($item['list_metode']))
-                                        @foreach ($item['list_metode'] as $data)
-                                        <li>{{ $data }}</li>
-                                        @endforeach
-                                        @else
-                                        <p>{{ $item['list_metode'] }}</p>
-                                        @endif
-                                    </ul>
+                                    <p>{{ $item['list_metode'] }}</p>
                                 </div>
                             </div>
 
@@ -423,7 +415,7 @@
                                 <div class="mt-2">
                                     <input type="number" autocomplete="given-name"
                                         wire:change="gethargasample({{ $index }})"
-                                        wire:model="totalsamples.{{ $index }}"
+                                        wire:model="formData.{{ $index }}.jumlah_sampel"
                                         class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                                 </div>

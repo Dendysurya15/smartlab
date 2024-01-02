@@ -60,8 +60,7 @@ class Editprogress extends Component
     public $parameterid;
     public $oldform = [];
     public $parameters = [];
-
-
+    public $nama_jenis_sampel;
 
     public bool $successSubmit = false;
     public string $msgSuccess;
@@ -74,17 +73,26 @@ class Editprogress extends Component
     {
         $jenisSampelOptions = JenisSampel::all();
 
-        $metodeAnalisisOptions = metodeAnalisis::all();
+        $query = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
+        $progressStr = JenisSampel::find($query->jenis_sampel)->progress;
+        $arr_progress = explode(',', $progressStr);
+
+        $progressOptions = [];
+
+        foreach ($arr_progress as $progressId) {
+            $queryProgress = ProgressPengerjaan::find($progressId);
+            $progressOptions[$queryProgress->id] = $queryProgress->nama;
+        }
+
+        // $metodeAnalisisOptions = metodeAnalisis::all();
 
         // dd($getTrack, $getAnalisis, $trackform);
-
-
-        // dd($this->tanggal);
         return view(
             'livewire.editprogress',
             [
                 'jenisSampelOptions' => $jenisSampelOptions,
-                'metodeAnalisisOptions' => $metodeAnalisisOptions,
+                // 'metodeAnalisisOptions' => $metodeAnalisisOptions,
+                'listProgress' => $progressOptions,
                 'oldform' => $this->oldform,
 
             ]
@@ -209,6 +217,8 @@ class Editprogress extends Component
         $this->no_kupa = $query->nomor_kupa;
         $this->jenis_sampel = $query->jenis_sampel;
         $this->asal_sampel = $query->asal_sampel;
+        $query = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
+        $this->nama_jenis_sampel = JenisSampel::find($query->jenis_sampel)->nama;
 
         if ($query->nomor_lab != null) {
             $nomor_lab = $query->nomor_lab;
@@ -248,46 +258,46 @@ class Editprogress extends Component
 
 
         $getTrack = TrackParameter::where('id_tracksampel', $query->parameter_analisisid)->get()->toArray();
-        $getAnalisis = MetodeAnalisis::all()->toArray();
+        // $getAnalisis = MetodeAnalisis::all()->toArray();
         $getparameters = ParameterAnalisis::all()->toArray();
 
         $trackform = [];
 
         // dd($trackform);
 
-        foreach ($getTrack as $key => $value) {
-            $parameters = [];
+        // foreach ($getTrack as $key => $value) {
+        //     $parameters = [];
 
-            foreach ($getAnalisis as $key2 => $value2) {
-                if ($value2['id_parameter'] == $value['id_parameter']) {
-                    $parameters[] = $value2['nama'];
-                    $harga = $value2['harga'];
-                }
-            }
+        //     foreach ($getAnalisis as $key2 => $value2) {
+        //         if ($value2['id_parameter'] == $value['id_parameter']) {
+        //             $parameters[] = $value2['nama'];
+        //             $harga = $value2['harga'];
+        //         }
+        //     }
 
-            $nama = '-';
-            foreach ($getparameters as $keyx => $valuex) {
-                if ($value['id_parameter'] == $valuex['id']) {
-                    $nama = $valuex['nama'];
-                }
-            }
-            $subtotal = $value['jumlah'] * $harga;
-            $ppn = hitungPPN($subtotal);
+        //     $nama = '-';
+        //     foreach ($getparameters as $keyx => $valuex) {
+        //         if ($value['id_parameter'] == $valuex['id']) {
+        //             $nama = $valuex['nama'];
+        //         }
+        //     }
+        //     $subtotal = $value['jumlah'] * $harga;
+        //     $ppn = hitungPPN($subtotal);
 
-            $trackform[$key] = [
-                'id' => $value['id'],
-                'harga' => $value['totalakhir'],
-                'jenis_analisis' => $parameters,
-                'harga' => $harga,
-                'nama_parameters' => $nama,
-                'jumlah' => $value['jumlah'],
-                'harga_total' => $value['totalakhir'],
-                'subtotal' => $subtotal,
-                'ppn' => $ppn,
-                'id_parameter' => $value['id_parameter'],
-                'judulppn' => "11% PPN",
-            ];
-        }
+        // $trackform[$key] = [
+        //     'id' => $value['id'],
+        //     'harga' => $value['totalakhir'],
+        //     'jenis_analisis' => $parameters,
+        //     'harga' => $harga,
+        //     'nama_parameters' => $nama,
+        //     'jumlah' => $value['jumlah'],
+        //     'harga_total' => $value['totalakhir'],
+        //     'subtotal' => $subtotal,
+        //     'ppn' => $ppn,
+        //     'id_parameter' => $value['id_parameter'],
+        //     'judulppn' => "11% PPN",
+        // ];
+        // }
 
         $this->oldform = $trackform;
 
