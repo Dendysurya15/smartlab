@@ -3,13 +3,14 @@
 namespace App\Http\Livewire;
 
 use Illuminate\Support\Carbon;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridColumns};
 use App\Models\MetodeAnalisis;
+use App\Models\ParameterAnalisis;
 
 final class ParameterTable extends PowerGridComponent
 {
@@ -62,23 +63,16 @@ final class ParameterTable extends PowerGridComponent
         $this->jenisSampel = $id;
         $this->refreshGrid(); // Refresh the PowerGrid data with the new ID
 
-        // dd($id);
+
     }
 
     public function datasource(): Builder
     {
+
         if ($this->jenisSampel) {
-            return DB::connection('mysql')->table('metode_analisis')
-                ->select('metode_analisis.*', 'parameter_analisis.nama as nama_params', 'jenis_sampel.nama as jenis_sampel')
-                ->join('parameter_analisis', 'parameter_analisis.id', '=', 'metode_analisis.id_parameter')
-                ->join('jenis_sampel', 'jenis_sampel.id', '=', 'parameter_analisis.id_jenis_sampel')
-                ->where('jenis_sampel.id', $this->jenisSampel);
+            return ParameterAnalisis::query()->where('id_jenis_sampel', $this->jenisSampel);
         } else {
-            // Default query when no ID is selected
-            return DB::connection('mysql')->table('metode_analisis')
-                ->select('metode_analisis.*', 'parameter_analisis.nama as nama_params', 'jenis_sampel.nama as jenis_sampel')
-                ->join('parameter_analisis', 'parameter_analisis.id', '=', 'metode_analisis.id_parameter')
-                ->join('jenis_sampel', 'jenis_sampel.id', '=', 'parameter_analisis.id_jenis_sampel');
+            return ParameterAnalisis::query();
         }
     }
 
@@ -116,13 +110,10 @@ final class ParameterTable extends PowerGridComponent
     {
         return PowerGrid::columns()
             ->addColumn('id')
-            ->addColumn('nama')
-            ->addColumn('nama_params')
-            ->addColumn('jenis_sampel')
+            ->addColumn('nama_parameter')
+            ->addColumn('metode_analisis')
             ->addColumn('harga')
-            ->addColumn('satuan')
-            /** Example of custom column using a closure **/
-            ->addColumn('nama_lower', fn ($model) => strtolower(e($model->nama)));
+            ->addColumn('satuan');
     }
 
     /*
@@ -145,13 +136,11 @@ final class ParameterTable extends PowerGridComponent
             Column::make('Id', 'id')
                 ->searchable()
                 ->sortable(),
-            Column::make('Jenis Sample', 'jenis_sampel')
+
+            Column::make('Nama Parameter', 'nama_parameter')
                 ->searchable()
                 ->sortable(),
-            Column::make('Nama Parameter', 'nama_params')
-                ->searchable()
-                ->sortable(),
-            Column::make('Nama Metode', 'nama')
+            Column::make('Nama Metode', 'metode_analisis')
                 ->searchable()
                 ->sortable(),
             Column::make('Harga Metode', 'harga')
@@ -190,15 +179,15 @@ final class ParameterTable extends PowerGridComponent
     public function actions(): array
     {
         return [
-            Button::make('edit', view('icons.edit-icon'))
-                ->class('p-2 mr-2 border rounded hover:bg-slate-100 text-emerald-500 hover:text-emerald-900')
-                ->route('system.edit', ['system' => 'id'])
-                ->target('_self'), // This targets the current window
-            Button::make('delete', view('icons.delete-icon'))
-                ->class('p-2 mr-2 border rounded hover:bg-slate-100 text-red-500 hover:text-red-900')
-                // ->route('delete-data', ['id' => 'id'])
-                // ->method('POST'),
-                ->emit('deleteConfirmDiscount', ['id' => 'id']),
+            // Button::make('edit', view('icons.edit-icon'))
+            //     ->class('p-2 mr-2 border rounded hover:bg-slate-100 text-emerald-500 hover:text-emerald-900')
+            //     ->route('system.edit', ['system' => 'id'])
+            //     ->target('_self'), // This targets the current window
+            // Button::make('delete', view('icons.delete-icon'))
+            //     ->class('p-2 mr-2 border rounded hover:bg-slate-100 text-red-500 hover:text-red-900')
+            //     // ->route('delete-data', ['id' => 'id'])
+            //     // ->method('POST'),
+            //     ->emit('deleteConfirmDiscount', ['id' => 'id']),
             // ->class('bg-transparent border-0 text-red-500 text-sm p-0 cursor-pointer'),
             // Button::make('delete', view('icons.delete-icon')), // the Font Awesome icon code is sent as the second parameter.
             // ->class('bg-slate-700 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm  ')

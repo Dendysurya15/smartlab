@@ -15,7 +15,7 @@
             <div class="p-5">
                 @livewire('inputnewparameters')
 
-                @livewire('delete-confirmation')
+                {{-- @livewire('delete-confirmation') --}}
 
             </div>
         </div>

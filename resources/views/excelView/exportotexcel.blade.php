@@ -200,7 +200,8 @@
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_no_lab']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_param']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_param']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">
+                    {{ $data['col_mark'] == 1 ? '✓' : '' }}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_metode']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_satuan']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_personel']}}</td>
@@ -279,7 +280,7 @@
                     (............................................)</td>
                 <td colspan="3" rowspan="5" style="border:1px solid black">
                     (............................................)</td>
-                <td colspan="2" rowspan="5" style="border:1px solid black">
+                <td colspan="3" rowspan="5" style="border:1px solid black">
                     (............................................)</td>
                 <td colspan="12" style="border-right: 1px solid black;"></td>
             </tr>
@@ -305,7 +306,7 @@
                 <td></td>
                 <td colspan="2" style="border: 1px solid black;">Petugas Penerima Sampel</td>
                 <td colspan="3" style="border: 1px solid black;">Manager Laboratorium</td>
-                <td colspan="2" style="border: 1px solid black;">Pelanggan</td>
+                <td colspan="3" style="border: 1px solid black;">Pelanggan</td>
                 <td colspan="12" style="border-bottom: 1px solid black;border-right: 1px solid black;"></td>
             </tr>
 

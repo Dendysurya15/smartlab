@@ -138,6 +138,7 @@ class Editprogress extends Component
             'subtotal' => $sub_total,
             'total' => $total,
             'ppn' => $ppn,
+            'id_parameter' => $this->parameterid = $defaultParameterAnalisis->id,
             'judulppn' => $defaultppn . "% PPN"
         ];
     }

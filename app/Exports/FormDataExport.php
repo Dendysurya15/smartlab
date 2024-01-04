@@ -34,35 +34,30 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $tracksample = TrackSampel::findOrFail($this->id);
 
-        $jenis_sample = JenisSampel::with('parameterAnalisis.metodeAnalisis')->where('id', $tracksample->jenis_sampel)->first();
-        $row_parameter = $jenis_sample->parameterAnalisis->pluck('nama');
+        $jenis_sample = JenisSampel::with('parameterAnalisis')->where('id', $tracksample->jenis_sampel)->first();
 
-        $row_metode = [];
-        $row_satuan = [];
-        $metode_arr = $jenis_sample->parameterAnalisis;
+        $parameter_analisis_excel = $jenis_sample->parameter_analisis;
 
-        foreach ($metode_arr as $key => $value) {
+        $array_param_analisis_excel = explode(',', $parameter_analisis_excel);
 
-            foreach ($value->metodeAnalisis as $key2 => $value2) {
-                $row_metode[] = $value2->nama;
-                $row_satuan = $value2->satuan;
-            }
-        }
+        $array_param_analisis_excel = array_map('trim', $array_param_analisis_excel);
+
+        $row_metode = $jenis_sample->parameterAnalisis->pluck('metode_analisis');
+        $row_satuan = $jenis_sample->parameterAnalisis->pluck('satuan');
 
         $tgl_penerimaan = tanggal_indo($tracksample->tanggal_penerimaan, false, false, true);
+        $tgl_penyelesaian = tanggal_indo($tracksample->tanggal_pengantaran, false, false, true);
         $jenis_kupa = $jenis_sample->nama;
         $no_kupa = $tracksample->nomor_kupa;
         $nama_pengirim = $tracksample->nama_pengirim;
 
         $arr_per_column = [];
-        //set default value with 19 column satu baris
-
 
         $arr_per_column[0]['col_no_surat'] = $tracksample->nomor_surat;
         $arr_per_column[0]['col_kemasan'] = $tracksample->kemasan_sampel;
         $arr_per_column[0]['col_jum_sampel'] = $tracksample->jumlah_sampel;
         $arr_per_column[0]['col_no_lab'] = $tracksample->nomor_lab;
-        $arr_per_column[0]['col_param'] = $row_parameter[0];
+        $arr_per_column[0]['col_param'] = $array_param_analisis_excel[0];
         $arr_per_column[0]['col_mark'] = '';
         $arr_per_column[0]['col_metode'] = $row_metode[0];
         $arr_per_column[0]['col_satuan'] = $row_satuan[0];
@@ -77,13 +72,15 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $arr_per_column[0]['col_langsung'] = '';
         $arr_per_column[0]['col_normal'] = '';
         $arr_per_column[0]['col_abnormal'] = '';
-        $arr_per_column[0]['col_tanggal'] = $tracksample->tanggal_pengantaran;
+        $arr_per_column[0]['col_tanggal'] = $tgl_penyelesaian;
 
         $final_total = 0;
 
         if (!is_null($tracksample->parameter_analisisid) && $tracksample->parameter_analisisid !== 0 && $tracksample->parameter_analisisid != '0') {
 
-            $getTrack = TrackParameter::where('id_tracksampel', $tracksample->parameter_analisisid)->get();
+            $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $tracksample->parameter_analisisid)->get();
+
+
 
             $row = 0;
             $temp_param = [];
@@ -94,80 +91,103 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $temp_satuan = [];
             $temp_ppn  = [];
 
+            $inputan_parameter = [];
+            $inc = 0;
             foreach ($getTrack as $key => $value) {
-                $coll_arr = $value->ParameterAnalisis->metodeAnalisis;
+                $inputan_parameter[$inc]['nama'] = $value->ParameterAnalisis->nama_parameter;
+                $inputan_parameter[$inc]['alias'] = $value->ParameterAnalisis->nama_unsur;
+                $inputan_parameter[$inc]['satuan'] = $value->ParameterAnalisis->satuan;
+                $inputan_parameter[$inc]['metode'] = $value->ParameterAnalisis->metode_analisis;
+                $inputan_parameter[$inc]['harga'] = $value->ParameterAnalisis->harga;
+                $inputan_parameter[$inc]['jumlah'] = $value->jumlah;
 
-                if (isset($coll_arr) || is_array($coll_arr) || count($coll_arr) > 0) {
+                $inc++;
+            }
 
-                    $inc = 0;
-                    $subtotal = 0;
-                    $base_harga = 0;
-                    $jumlah_sampel = 0;
-                    foreach ($coll_arr as $key2 => $value2) {
+            $match_parameter = [];
 
-                        $temp_metode[] = $value2->nama;
-                        $temp_harga[] = $value2->harga;
-                        $temp_satuan[] = $value2->satuan;
-                        $base_harga = $value2->harga;
-                        $jumlah_sampel = $value->jumlah;
-                        $subtotal =  $base_harga * $jumlah_sampel;
+            foreach ($array_param_analisis_excel as $key => $item) {
+                // Check if the value exists in the "nama" or "nama_unsur" key of the second array
+                $foundItem = array_filter($inputan_parameter, function ($secondItem) use ($item) {
+                    return $secondItem['nama'] === $item || $secondItem['alias'] === $item;
+                });
 
-                        $temp_subtotal[] = $subtotal;
-                        $temp_ppn[] = hitungPPN($subtotal);
-                        $grant_total = $subtotal + hitungPPN($subtotal);
-                        $temp_total[] = $grant_total;
-                        $final_total += $grant_total;
-
-                        $row++;
-                        $inc++;
-                        if ($inc > 1) {
-                            $temp_param[] = '';
-                            $temp_jumlah[] = '';
-                        } else {
-                            $temp_param[] =  $value->ParameterAnalisis->nama;
-                            $temp_jumlah[] = $value->jumlah;
-                        }
-                    }
-                } else {
-                    dd('nais');
-                    $row++;
+                if (!empty($foundItem)) {
+                    $match_parameter[$key] = reset($foundItem);
                 }
             }
 
-            $row_count = count($row_parameter);
+
+            $row_count = count($array_param_analisis_excel);
+
+
+            $subtotal  = 0;
+            $total = 0;
+            foreach ($match_parameter as $key => $value) {
+                $subtotal  = $value['jumlah'] * $value['harga'];
+                $ppn = hitungPPN($subtotal);
+                $total = $subtotal + $ppn;
+                $final_total += $total;
+                $match_parameter[$key]['ppn'] = $ppn;
+                $match_parameter[$key]['subtotal'] = $subtotal;
+                $match_parameter[$key]['total'] = $total;
+            }
 
             for ($i = 0; $i < $row_count; $i++) {
 
                 if ($i == 0) {
 
-
-                    $arr_per_column[$i]['col_param'] = $temp_param[$i];
-                    $arr_per_column[$i]['col_metode'] = $temp_metode[$i];
-                    $arr_per_column[$i]['col_satuan'] = $temp_satuan[$i];
+                    if (array_key_exists($i, $match_parameter) && $i === $i) {
+                        $arr_per_column[$i]['col_mark'] = 1;
+                        $arr_per_column[$i]['col_harga'] = $match_parameter[$i]['harga'];
+                        $arr_per_column[$i]['col_satuan'] = $match_parameter[$i]['satuan'];
+                        $arr_per_column[$i]['col_metode'] = $match_parameter[$i]['metode'];
+                        $arr_per_column[$i]['col_jum_sampel_2'] = $match_parameter[$i]['jumlah'];
+                        $arr_per_column[$i]['col_sub_total'] = $match_parameter[$i]['subtotal'];
+                        $arr_per_column[$i]['col_ppn'] = $match_parameter[$i]['ppn'];
+                        $arr_per_column[$i]['col_total'] = $match_parameter[$i]['total'];
+                    } else {
+                        $arr_per_column[$i]['col_mark'] = '';
+                        $arr_per_column[$i]['col_harga'] = '';
+                        $arr_per_column[$i]['col_satuan'] = '';
+                        $arr_per_column[$i]['col_metode'] = '';
+                        $arr_per_column[$i]['col_jum_sampel_2'] = '';
+                        $arr_per_column[$i]['col_sub_total'] = '';
+                        $arr_per_column[$i]['col_ppn'] = '';
+                        $arr_per_column[$i]['col_total'] = '';
+                    }
+                    $arr_per_column[$i]['col_param'] = $array_param_analisis_excel[$i];
                     $arr_per_column[$i]['col_personel'] = '';
                     $arr_per_column[$i]['col_alat'] = '';
                     $arr_per_column[$i]['col_bahan'] = '';
-                    $arr_per_column[$i]['col_jum_sampel_2'] = $temp_jumlah[$i];
-                    $arr_per_column[$i]['col_harga'] = $temp_harga[$i];
-                    $arr_per_column[$i]['col_sub_total'] = $temp_subtotal[$i];
-                    $arr_per_column[$i]['col_ppn'] = $temp_ppn[$i];
-                    $arr_per_column[$i]['col_total'] = $temp_total[$i];
                 } else {
+                    if (array_key_exists($i, $match_parameter) && $i === $i) {
+                        $arr_per_column[$i]['col_mark'] = 1;
+                        $arr_per_column[$i]['col_harga'] = $match_parameter[$i]['harga'];
+                        $arr_per_column[$i]['col_satuan'] = $match_parameter[$i]['satuan'];
+                        $arr_per_column[$i]['col_metode'] = $match_parameter[$i]['metode'];
+                        $arr_per_column[$i]['col_jum_sampel_2'] = $match_parameter[$i]['jumlah'];
+                        $arr_per_column[$i]['col_sub_total'] = $match_parameter[$i]['subtotal'];
+                        $arr_per_column[$i]['col_ppn'] = $match_parameter[$i]['ppn'];
+                        $arr_per_column[$i]['col_total'] = $match_parameter[$i]['total'];
+                    } else {
+                        $arr_per_column[$i]['col_mark'] = '';
+                        $arr_per_column[$i]['col_harga'] = '';
+                        $arr_per_column[$i]['col_satuan'] = '';
+                        $arr_per_column[$i]['col_metode'] = '';
+                        $arr_per_column[$i]['col_jum_sampel_2'] = '';
+                        $arr_per_column[$i]['col_sub_total'] = '';
+                        $arr_per_column[$i]['col_ppn'] = '';
+                        $arr_per_column[$i]['col_total'] = '';
+                    }
                     $arr_per_column[$i]['col_no_surat'] = '';
                     $arr_per_column[$i]['col_kemasan'] = '';
                     $arr_per_column[$i]['col_jum_sampel'] = '';
                     $arr_per_column[$i]['col_no_lab'] = '';
-                    $arr_per_column[$i]['col_param'] = $temp_param[$i];
-                    $arr_per_column[$i]['col_metode'] = $temp_metode[$i];
-                    $arr_per_column[$i]['col_satuan'] = $temp_satuan[$i];
+                    $arr_per_column[$i]['col_param'] = $array_param_analisis_excel[$i];
                     $arr_per_column[$i]['col_personel'] = '';
                     $arr_per_column[$i]['col_alat'] = '';
                     $arr_per_column[$i]['col_bahan'] = '';
-                    $arr_per_column[$i]['col_jum_sampel_2'] = $temp_jumlah[$i];
-                    $arr_per_column[$i]['col_harga'] = $temp_harga[$i];
-                    $arr_per_column[$i]['col_sub_total'] = $temp_subtotal[$i];
-                    $arr_per_column[$i]['col_ppn'] = $temp_ppn[$i];
-                    $arr_per_column[$i]['col_total'] = $temp_total[$i];
                     $arr_per_column[$i]['col_langsung'] = '';
                     $arr_per_column[$i]['col_normal'] = '';
                     $arr_per_column[$i]['col_abnormal'] = '';
@@ -308,7 +328,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $columnsToStyle = ['B12', 'C12', 'D12', 'E12', 'B5', 'B6', 'D1', 'D2', 'D3', 'D4', 'F12', 'G12', 'H12', 'I13', 'J13', 'K13', 'L13', 'M13', 'N13', 'O13', 'P13', 'Q13', 'R13', 'S13', 'T12'];
+                $columnsToStyle = ['B12', 'C12', 'D12', 'E12', 'B5', 'B6', 'D1', 'D2', 'D3', 'D4', 'F12',  'H12', 'I12', 'J13', 'K13', 'L13', 'M13', 'N13', 'O13', 'P13', 'Q13', 'R13', 'S13', 'T13', 'U12'];
                 foreach ($columnsToStyle as $column) {
                     $event->sheet->getStyle($column)->getAlignment()
                         ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
@@ -318,7 +338,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 }
 
                 $event->sheet->getStyle('C12')->getAlignment()->setWrapText(true);
-
                 $event->sheet->getStyle('D12')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('G')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('E12')->getAlignment()->setWrapText(true);
@@ -341,13 +360,13 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             'D' => 10,
             'E' => 15,
             'F' => 35,
-            'G' => 35,
-            'H' => 15,
+            'G' => 5,
+            'H' => 35,
             'I' => 15,
             'J' => 15,
             'K' => 15,
-            'L' => 10,
-            'M' => 15,
+            'L' => 15,
+            'M' => 10,
             'N' => 15,
             'O' => 15,
             'P' => 15,
