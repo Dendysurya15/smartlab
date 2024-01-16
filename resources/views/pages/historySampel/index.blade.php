@@ -5,10 +5,13 @@
             <header class="flex px-5 py-4 bg-slate-800 border-b border-slate-100 dark:border-slate-700">
                 <h2 class="font-bold text-slate-200 dark:text-slate-100">HISTORY PENGERJAAN SAMPEL</h2>
             </header>
-            <div class="p-5 bg-slate-50">
+            @livewire('history-kupa-table')
+            {{-- <div class="p-5 bg-slate-50">
+
 
                 <livewire:history-sampel-tabel />
-            </div>
+
+            </div> --}}
         </div>
     </div>
 </x-app-layout>

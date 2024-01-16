@@ -41,6 +41,11 @@ class TrackSampel extends Model
         'skala_prioritas'
     ];
 
+    public function scopeSearch($query, $value)
+    {
+        $query->where('nama_pengirim', 'like', "%$value%")->orWhere('departemen', 'like', "%$value%");;
+    }
+
     // Define the "belongs to" relationship with JenisSample
     public function jenisSampel()
     {
