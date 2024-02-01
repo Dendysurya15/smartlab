@@ -60,6 +60,23 @@ if (!function_exists('hitungPPN')) {
         return ($angka * 11) / 100;
     }
 }
+if (!function_exists('numberformat')) {
+    function numberformat($number)
+    {
+        // Remove any non-numeric characters from the input number
+        $number = preg_replace('/\D/', '', $number);
+
+        // Check if the number starts with '0'
+        if (strpos($number, '0') === 0) {
+            // Replace '0' with '62'
+            return '62' . substr($number, 1);
+        } else {
+            // If it doesn't start with '0', return as is
+            return $number;
+        }
+    }
+}
+
 
 if (!function_exists('array_email')) {
     function array_email($input)

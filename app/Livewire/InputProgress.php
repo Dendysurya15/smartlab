@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Mail\EmailPelanggan;
 use App\Models\JenisSampel;
-use App\Models\MetodeAnalisis;
+use App\Models\Progress;
 use App\Models\ParameterAnalisis;
 use App\Models\TrackSampel;
 use App\Models\SendMsg;
@@ -82,7 +82,7 @@ class InputProgress extends Component
         'kemasan_sampel' => 'required|string',
         'nomor_surat' => 'required|string',
         'estimasi' => 'required|date',
-        'no_hp' => 'required|string',
+        'no_hp' => 'required',
         'tujuan' => 'required|string',
         // 'emailTo' => 'required|email', // Assuming it's an email field
         'foto_sampel' => 'max:5000',
@@ -321,7 +321,7 @@ class InputProgress extends Component
 
 
 
-        // $this->validate();
+        $this->validate();
 
 
         $formData = array_filter($this->formData, function ($item) {
@@ -362,6 +362,7 @@ class InputProgress extends Component
         $recipients = array_email($this->emailTo);
         $cc = array_email($this->emailCc);
 
+        // dd($recipients, $cc);
         try {
             DB::beginTransaction();
 
@@ -396,6 +397,10 @@ class InputProgress extends Component
             $trackSampel->skala_prioritas = $this->skala_prioritas;
             $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
 
+
+            $getprogres = Progress::pluck('nama')->first();
+
+            // dd($getprogres);
             if ($this->foto_sampel) {
                 $fileName = time() . '_' . $this->foto_sampel->getClientOriginalName();
                 $this->foto_sampel->storeAs('uploads', $fileName, 'public');
@@ -421,31 +426,31 @@ class InputProgress extends Component
                 TrackParameter::insert($dataToInsert);
                 $form_hp = $this->no_hp;
 
-                if (strlen($form_hp) === 10 && strpos($form_hp, '08') === 0) {
-                    $form_hp = '62' . substr($form_hp, 1);
-                }
+                $nohp = numberformat($form_hp);
+                // dd($nohp);
                 DB::commit();
-                // SendMsg::insert([
-                //     'pesan' => 'Halo Tracking sample anda selesai di simpan, progress saat ini yaitu Registrasi dan penerimaan sampel, progress anda dapat dilihat di website: https://smartlab.srs-ssms.com/tracking_sampel dengan kode Tracking sample:',
-                //     'kodesample' => $randomCode,
-                //     'penerima' => $form_hp
-                // ]);
+                SendMsg::insert([
+                    'nomor_surat' => $this->nomor_surat,
+                    'progress' => $getprogres,
+                    'kodesample' => $randomCode,
+                    'penerima' => $form_hp
+                ]);
 
                 $this->successSubmit = true;
                 $this->msgSuccess = $randomCode;
 
                 $this->resetForm();
 
+                // dd($recipients);
+                try {
+                    Mail::to($recipients)
+                        ->cc($cc)
+                        ->send(new EmailPelanggan());
 
-                // try {
-                //     Mail::to($recipients)
-                //         ->cc($cc)
-                //         ->send(new EmailPelanggan());
-
-                //     return "Email sent successfully!";
-                // } catch (\Exception $e) {
-                //     return "Error: " . $e->getMessage();
-                // }
+                    return "Email sent successfully!";
+                } catch (\Exception $e) {
+                    return "Error: " . $e->getMessage();
+                }
             } else {
                 DB::rollBack();
                 $this->msgError = 'An error occurred while saving the data: ';
