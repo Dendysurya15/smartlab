@@ -14,7 +14,11 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
@@ -180,6 +184,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
             ])
             ->actions([
+                // ActionGroup::make([
+                //     ViewAction::make(),
+                //     EditAction::make(),
+                //     DeleteAction::make(),
+                // ]),
                 Action::make('edit')
                     ->label('Edit Kupa')
                     ->url(fn (TrackSampel $record): string => route('history_sampel.edit', $record->id))
@@ -187,17 +196,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->openUrlInNewTab()
                     ->size('xs'),
                 Action::make('delete')
-                    ->url(fn (TrackSampel $record): string => route('history_sampel.edit', $record->id))
-                    ->icon('heroicon-o-trash')->color('danger')
-                    ->openUrlInNewTab()
-                    ->size('xs'),
-                // ActionGroup::make([
-                //     ViewAction::make(),
-                //     EditAction::make()->successRedirectUrl(fn (TrackSampel $record): string => route('history_sampel.edit', [
-                //         'history_sampel' => $record->id,
-                //     ])),
-                //     DeleteAction::make(),
-                // ])->icon('heroicon-m-ellipsis-horizontal')->size(ActionSize::Small),
+                    ->action(fn (TrackSampel $record) => $record->delete())
+                    ->deselectRecordsAfterCompletion()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Kupa')
+                    ->modalSubheading(fn (TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat di pulihkan kembali.")
+                    ->modalButton('Yes')
+
             ])
             ->bulkActions([
                 BulkAction::make('export')
