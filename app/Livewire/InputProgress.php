@@ -220,6 +220,7 @@ class InputProgress extends Component
         $this->bahan = True;
         $this->skala_prioritas = 'Normal';
         $this->estimasi = Carbon::now()->toDateString();
+        $this->tgl_pengantaran_sampel = Carbon::now()->toDateString();
         $defaultJenisSampel = JenisSampel::first();
         $this->nomor_lab_left = $current . $defaultJenisSampel->kode . '.';
         $this->nomor_lab_right = $current . $defaultJenisSampel->kode . '.';

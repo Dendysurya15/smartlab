@@ -83,19 +83,20 @@
                             @csrf
                             <div class="space-y-4">
                                 <div>
-                                    <x-jet-label for="kode">{{ __('Kode') }} <span class="text-rose-500">*</span>
-                                    </x-jet-label>
-                                    <x-jet-input id="kode" type="text" name="kode" :value="old('kode')" required
-                                        autofocus autocomplete="kode" />
+                                    <x-label for="kode">{{ __('Kode') }} <span class="text-rose-500">*</span>
+                                    </x-label>
+
+                                    <x-input id="kode" type="text" name="kode" :value="old('kode')" required autofocus
+                                        autocomplete="kode" />
                                 </div>
                             </div>
                             <div class="flex items-center mt-6">
 
-                                <x-jet-button>
+                                <x-button>
                                     {{ __('Submit') }}
 
 
-                                </x-jet-button>
+                                </x-button>
                                 <svg aria-hidden="true" id="loading" style="display: none"
                                     class="ml-3 inline w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600"
                                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
