@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\FormDataExport;
 use App\Http\Requests\InputProgressRequest;
 use App\Models\JenisSampel;
 use App\Models\ProgressPengerjaan;
 use App\Models\TrackSampel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HistoryKupaController extends Controller
 {
@@ -185,5 +187,11 @@ class HistoryKupaController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function exportExcel($id)
+    {
+        return Excel::download(new FormDataExport($id), 'Data_Lab.xlsx');
     }
 }

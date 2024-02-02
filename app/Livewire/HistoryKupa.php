@@ -189,6 +189,12 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 //     EditAction::make(),
                 //     DeleteAction::make(),
                 // ]),
+                Action::make('download')
+                    ->label('Export')
+                    ->url(fn (TrackSampel $record): string => route('export.excel', $record->id))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->size('xs'),
                 Action::make('edit')
                     ->label('Edit Kupa')
                     ->url(fn (TrackSampel $record): string => route('history_sampel.edit', $record->id))
@@ -205,13 +211,13 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->modalSubheading(fn (TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat di pulihkan kembali.")
                     ->modalButton('Yes')
 
-            ])
-            ->bulkActions([
-                BulkAction::make('export')
-
-                    ->color('success')
-                    ->action(fn (Collection $records) => $records->each->delete())
             ]);
+        // ->bulkActions([
+        //     BulkAction::make('export')
+
+        //         ->color('success')
+        //         ->action(fn (Collection $records) => $records->each->delete())
+        // ]);
     }
 
     public function render(): View

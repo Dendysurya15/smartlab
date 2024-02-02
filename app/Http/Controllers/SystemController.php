@@ -12,6 +12,7 @@ class SystemController extends Controller
     public function index()
     {
         //
+        return view('pages.System.AddParameters.index');
     }
 
     /**

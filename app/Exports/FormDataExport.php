@@ -310,7 +310,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         // dd($tracksample);
 
         // dd($arr_per_column);
-        return view('excelView.exportotexcel', [
+        return view('excelView.exportexcel', [
             // 'trackdata' => $exportData,
             // 'tanggal' => $tanggalterima,
             // 'jenissample' => $jenis_sample,
@@ -383,7 +383,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $drawing = new Drawing();
         $drawing->setName('Logo');
         $drawing->setDescription('This is my logo');
-        $drawing->setPath(public_path('images/logo_CBI_2.png'));
+        $drawing->setPath(public_path('images/Logo_CBI_2.png'));
         $drawing->setHeight(70);
         $drawing->setCoordinates('B1');
 
