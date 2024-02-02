@@ -1,9 +1,12 @@
 <?php
 
-use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+namespace Database\Seeders;
+
 use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolesSeeder extends Seeder
 {
@@ -17,19 +20,28 @@ class RolesSeeder extends Seeder
         $role_admin = Role::updateOrCreate(['name' => 'admin']);
         $role_user = Role::updateOrCreate(['name' => 'user']);
 
-        // Define permissions
+        // Define permissions (if needed)
+        // Permission
         $permission1 = Permission::updateOrCreate(['name' => 'view_rolemanagement']);
         $permission2 = Permission::updateOrCreate(['name' => 'edit_data']);
+        $permission3 = Permission::updateOrCreate(['name' => 'view_dashboard']);
+        // Add more permissions here...
 
-        // Assign permissions to roles
-        $role_superuser->givePermissionTo([$permission1, $permission2]);
-        $role_admin->givePermissionTo($permission2);
+        // Assign all permissions to the superuser role
+        $allPermissions = Permission::pluck('id')->toArray();
+        $role_superuser->syncPermissions($allPermissions);
 
-        // Assign roles to users
+        // Assign specific permissions to the admin role
+        $role_admin->givePermissionTo([$permission1, $permission2]);
+
+        // User
+        // Assign roles to users (assuming you have already defined users)
         $superuser = User::find(2); // Assuming user with ID 2 is the superuser
         $admin = User::find(1); // Assuming user with ID 1 is the admin
+        $user = User::find(4); // Assuming user with ID 1 is the admin
 
         $superuser->assignRole('superuser');
         $admin->assignRole('admin');
+        $user->assignRole('user');
     }
 }

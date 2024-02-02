@@ -212,12 +212,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->modalButton('Yes')
 
             ]);
-        // ->bulkActions([
-        //     BulkAction::make('export')
-
-        //         ->color('success')
-        //         ->action(fn (Collection $records) => $records->each->delete())
-        // ]);
     }
 
     public function render(): View

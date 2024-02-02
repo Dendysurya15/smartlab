@@ -15,6 +15,12 @@ class SystemController extends Controller
         return view('pages.System.AddParameters.index');
     }
 
+
+    public function roles()
+    {
+        //
+        return view('pages.System.Roles.index');
+    }
     /**
      * Show the form for creating a new resource.
      */

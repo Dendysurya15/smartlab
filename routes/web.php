@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
     Route::resource('system', SystemController::class);
+    Route::get('/roles', [SystemController::class, 'roles'])->name('roles');
     // Route::get('/editparam/{id}', [CrudParameter::class, 'mount'])->name('editparam');
     Route::post('delete-data/{id}', [SystemController::class, 'delete_parameter_and_metode'])->name('delete-data');
 });
