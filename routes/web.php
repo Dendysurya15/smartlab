@@ -14,6 +14,8 @@ use App\Http\Controllers\HistoryKupaController;
 use App\Http\Controllers\InputProgressController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TrackSampelController;
+use App\Http\Controllers\UserRoleController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,7 @@ Route::get('tracking_sampel', [TrackSampelController::class, 'index']);
 Route::post('search_sampel_progress', [TrackSampelController::class, 'search'])->name('search_sampel_progress');
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::post('/assign-roles', [UserRoleController::class, 'assignRoles'])->name('assign.roles');
 
     // Route for the getting the data feed
     Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
