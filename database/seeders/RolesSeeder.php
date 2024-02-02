@@ -36,12 +36,12 @@ class RolesSeeder extends Seeder
 
         // User
         // Assign roles to users (assuming you have already defined users)
-        $superuser = User::find(2); // Assuming user with ID 2 is the superuser
-        $admin = User::find(1); // Assuming user with ID 1 is the admin
-        $user = User::find(4); // Assuming user with ID 1 is the admin
+        // $superuser = User::find(2); // Assuming user with ID 2 is the superuser
+        $user = User::find(1); // Assuming user with ID 1 is the admin
+        // $user = User::find(4); // Assuming user with ID 1 is the admin
 
-        $superuser->assignRole('superuser');
-        $admin->assignRole('admin');
-        $user->assignRole('user');
+        $user->assignRole('superuser');
+        // $admin->assignRole('admin');
+        // $user->assignRole('user');
     }
 }

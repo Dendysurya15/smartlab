@@ -2,9 +2,15 @@
 
 namespace App\Livewire;
 
+use App\Models\User;
 use Livewire\Component;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -25,13 +31,44 @@ class RoleManagement extends Component implements HasTable, HasForms
 
 
 
-        $role = Role::pluck('name')->toArray();
+        $roles = Role::pluck('name');
+        $permission = Permission::pluck('name');
 
-        // dd($role);
+
+
         return $table
-            // ->query(TrackSampel::query())
+            ->query(User::query())
             ->columns([
-                TextColumn::make('Name')->sortable(),
+                TextColumn::make('name')->sortable(),
+                TextColumn::make('password')
+                    ->getStateUsing(function (User $user) {
+                        return implode('.', $user->getRoleNames()->toArray());
+                    })
+                    ->label('Role User')
+                    ->badge()
+                    ->separator('.')
+                    ->color('success')
+                    ->listWithLineBreaks()
+                    ->sortable(),
+
+                TextColumn::make('email')
+                    ->getStateUsing(function (User $user) {
+                        $permissionsString = implode('.', $user->getAllPermissions()->pluck('name')->toArray());
+                        return $permissionsString;
+                    })
+                    ->color('success')
+                    ->badge()
+                    ->separator('.')
+                    ->listWithLineBreaks()
+                    ->label('Permission')
+                    ->sortable(),
+            ])
+            ->actions([
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])->color('info')->icon('heroicon-m-ellipsis-horizontal'),
+                // ...
             ])
 
             ->defaultSort('name', 'asc');
