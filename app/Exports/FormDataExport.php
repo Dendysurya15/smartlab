@@ -26,6 +26,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
     public function __construct($id)
     {
         $this->id = $id;
+        dd($id);
     }
 
 
