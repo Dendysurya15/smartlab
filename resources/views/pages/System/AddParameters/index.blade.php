@@ -12,10 +12,8 @@
 
 
             <div class="p-5">
-                {{-- @livewire('inputnewparameters') --}}
-
-                {{-- @livewire('delete-confirmation') --}}
-
+                @livewire('table-parameter')
+                @livewire('addparameters')
             </div>
         </div>
     </div>

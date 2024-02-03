@@ -108,12 +108,14 @@
                         </a>
                         <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
                             <ul class="pl-9 mt-1 @if(!in_array(Request::segment(1), ['history_sampel.index', 'input_progress.index'])){{ 'hidden' }}@endif" :class="open ? '!block' : 'hidden'">
+                                @can('edit_data')
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('input_progress.index')){{ '!text-emerald-500' }}@endif" href="{{ route('input_progress.index') }}">
                                         <span class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Input
                                             Progress</span>
                                     </a>
                                 </li>
+                                @endcan
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('history_sampel.index')){{ '!text-emerald-500' }}@endif" href="{{route('history_sampel.index')}}">
                                         <span class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">History</span>
@@ -138,6 +140,7 @@
                         </a>
                     </li>
                     <!-- System -->
+                    @can('edit_data')
                     <li class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if(in_array(Request::segment(1), ['system'])){{ 'bg-slate-900' }}@endif" x-data="{ open: {{ in_array(Request::segment(1), ['system']) ? 1 : 0 }} }">
                         <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if(in_array(Request::segment(1), ['system'])){{ 'hover:text-slate-200' }}@endif" href="#0" @click.prevent="sidebarExpanded ? open = !open : sidebarExpanded = true">
                             <div class="flex items-center justify-between">
@@ -166,24 +169,26 @@
                         </a>
                         <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
                             <ul class="pl-9 mt-1 @if(!in_array(Request::segment(1), ['system.index'])){{ 'hidden' }}@endif" :class="open ? '!block' : 'hidden'">
+
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('system.index')){{ '!text-emerald-500' }}@endif" href="{{ route('system.index') }}">
                                         <span class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                                             Parameter</span>
                                     </a>
                                 </li>
+
+                                @can('view_rolemanagement')
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('system.index')){{ '!text-emerald-500' }}@endif" href="{{ route('roles') }}">
                                         <span class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                                             Roles Management</span>
                                     </a>
                                 </li>
-
+                                @endcan
                             </ul>
                         </div>
                     </li>
-
-
+                    @endcan
                 </ul>
             </div>
 

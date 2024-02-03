@@ -12,8 +12,19 @@ class ParameterAnalisis extends Model
     protected $table = 'parameter_analisis';
 
     protected $fillable = [
-        'nama', // Add 'nama' attribute here if it's not already present
+        'nama_parameter',
+        'nama_unsur',
+        'bahan_produk',
+        'metode_analisis',
+        'harga',
+        'satuan',
         'id_jenis_sampel',
     ];
     public $timestamps = false;
+
+    // ParameterAnalisis model
+    public function jenisSampel()
+    {
+        return $this->belongsTo(JenisSampel::class, 'id_jenis_sampel');
+    }
 }
