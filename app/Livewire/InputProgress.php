@@ -441,15 +441,15 @@ class InputProgress extends Component
                 $this->resetForm();
 
                 // dd($recipients);
-                try {
-                    Mail::to($recipients)
-                        ->cc($cc)
-                        ->send(new EmailPelanggan($this->tanggal_penerimaan, $this->nomor_surat, $nomorlab));
+                // try {
+                //     Mail::to($recipients)
+                //         ->cc($cc)
+                //         ->send(new EmailPelanggan($this->tanggal_penerimaan, $this->nomor_surat, $nomorlab));
 
-                    return "Email sent successfully!";
-                } catch (\Exception $e) {
-                    return "Error: " . $e->getMessage();
-                }
+                //     return "Email sent successfully!";
+                // } catch (\Exception $e) {
+                //     return "Error: " . $e->getMessage();
+                // }
             } else {
                 DB::rollBack();
                 $this->msgError = 'An error occurred while saving the data: ';
