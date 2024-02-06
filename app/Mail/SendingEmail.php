@@ -9,32 +9,27 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EmailPelanggan extends Mailable
+class SendingEmail extends Mailable
 {
     use Queueable, SerializesModels;
-
-    public $tgl;
-    public $nomor_surat;
-    public $nomorlab;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($tgl, $nomor_surat, $nomorlab)
+    public function __construct()
     {
-        $this->tgl = $tgl;
-        $this->nomor_surat = $nomor_surat;
-        $this->nomorlab = $nomorlab;
+        //
     }
+
     /**
      * Get the message envelope.
      */
-    // public function build()
-    // {
-
-    //     return $this->view('layouts.email')
-    //         ->subject('Your Subject Here');
-    // }
+    public function envelope(): Envelope
+    {
+        return new Envelope(
+            subject: 'Sending Email',
+        );
+    }
 
     /**
      * Get the message content definition.

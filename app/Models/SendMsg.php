@@ -9,9 +9,8 @@ class SendMsg extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'nomor_surat', // Add 'nama' attribute here if it's not already present
+        'pesan', // Add 'nama' attribute here if it's not already present
         'penerima',
-        'progress',
         'kodesample',
     ];
     public $timestamps = false;

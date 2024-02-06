@@ -430,8 +430,7 @@ class InputProgress extends Component
                 // dd($nohp);
                 DB::commit();
                 SendMsg::insert([
-                    'nomor_surat' => $this->nomor_surat,
-                    'progress' => $getprogres,
+                    'pesan' => $this->nomor_surat,
                     'kodesample' => $randomCode,
                     'penerima' => $form_hp
                 ]);
@@ -445,7 +444,7 @@ class InputProgress extends Component
                 try {
                     Mail::to($recipients)
                         ->cc($cc)
-                        ->send(new EmailPelanggan());
+                        ->send(new EmailPelanggan($this->tanggal_penerimaan, $this->nomor_surat, $nomorlab));
 
                     return "Email sent successfully!";
                 } catch (\Exception $e) {

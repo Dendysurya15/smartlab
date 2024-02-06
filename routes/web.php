@@ -50,6 +50,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::fallback(function () {
         return view('pages/utility/404');
     });
+    // Route::get('/emailax', function () {
+    //     return view('layouts.email');
+    // });
 
     Route::resource('system', SystemController::class);
     Route::get('/roles', [SystemController::class, 'roles'])->name('roles')->middleware('can:view_rolemanagement');
