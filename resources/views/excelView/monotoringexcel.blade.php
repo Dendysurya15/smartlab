@@ -159,7 +159,30 @@
 
         </thead>
         <tbody>
+            @foreach ($data as $items)
+            <tr>
+                <td>{{ $items['no'] }}</td>
+                <td>{{ $items['tgl_trma'] }}</td>
+                <td>{{ $items['jenis_sample'] }}</td>
+                <td>{{ $items['asal_sampel'] }}</td>
+                <td>{{ $items['memo_pengantar'] }}</td>
+                <td>{{ $items['nama_pengirim'] }}</td>
+                <td>{{ $items['departemen'] }}</td>
+                <td>{{ $items['nomor_kupa'] }}</td>
+                <td>{{ $items['kode_sampel'] }}</td>
+                <td>{{ $items['jumlah_parameter'] }}</td>
+                <td>{{ $items['jumlah_sampel'] }}</td>
 
+                <td>{{ $items['parameter_anal'] }}</td>
+                <td>{{ $items['harga_normal'] }}</td>
+                <td>{{ $items['harga_ppn'] }}</td>
+                <td>{{ $items['estimasi'] }}</td>
+                <td>{{ $items['tanggal_serif'] }}</td>
+                <td>{{ $items['no_serif'] }}</td>
+                <td>{{ $items['tanggal_kirimserif'] }}</td>
+            </tr>
+
+            @endforeach
         </tbody>
     </table>
 

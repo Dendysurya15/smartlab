@@ -14,6 +14,6 @@ class TrackParameter extends Model
 
     public function ParameterAnalisis()
     {
-        return $this->belongsTo(ParameterAnalisis::class, 'id_parameter', 'id');
+        return $this->belongsTo(ParameterAnalisis::class, 'id_parameter');
     }
 }
