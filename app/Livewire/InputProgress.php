@@ -33,9 +33,9 @@ class InputProgress extends Component
     public $jumlah_sampel;
     public $kondisi_sampel;
     public $kemasan_sampel;
-    public $personel;
-    public $alat;
-    public $bahan;
+    // public $personel;
+    // public $alat;
+    // public $bahan;
     public $nomor_surat;
     public $nomor_lab_left;
     public $nomor_lab_right;
@@ -136,24 +136,23 @@ class InputProgress extends Component
         $this->analisisparameter = $defaultParameterAnalisis->metode_analisis;
 
         $sub_total = $this->hargaparameter * 1;
-        $ppn = hitungPPN($sub_total);
-        $total = $sub_total + $ppn;
+        $total = $sub_total;
 
         $newForm = [
             'nama_parameter' => $defaultParameterAnalisis->nama_parameter,
             'id_parameter' => $defaultParameterAnalisis->id,
             'jumlahsample' => 'Jumlah Sampel',
             'hargassample' => 'Harga Sampel',
-            'ppnjudul' => '11% PPN',
+            'personel' => True,
+            'alat' => True,
+            'bahan' => True,
             'subtotal' => 'Sub Total',
             'totaljudul' => 'Total',
             'list_metode' => $this->analisisparameter,
             'jumlah_sampel' => 1,
             'harga_sampel' =>  $this->hargaparameter,
-            'ppnvalue' => $ppn,
             'satuan' => '',
             'sub_total' => $sub_total,
-            'ppn' => hitungPPN($sub_total),
             'totalharga' => $total
         ];
 
@@ -165,13 +164,9 @@ class InputProgress extends Component
 
         $form = $this->formData[$index];
         $harga = $this->formData[$index]['harga_sampel'];
-
-
         $sub_totalx[$index] = $harga *  $this->formData[$index]['jumlah_sampel'];
-        $ppn[$index] = hitungPPN($sub_totalx[$index]);
-        $totalharga[$index] = hitungPPN($sub_totalx[$index]) +  $sub_totalx[$index];
+        $totalharga[$index] = $sub_totalx[$index] +  $sub_totalx[$index];
         $this->formData[$index]['sub_total'] = $sub_totalx[$index];
-        $this->formData[$index]['ppn'] = $ppn[$index];
         $this->formData[$index]['totalharga'] = $totalharga[$index];
     }
 
@@ -215,9 +210,9 @@ class InputProgress extends Component
         $this->jumlah_sampel = $jumlah_sampel_default;
         $this->kondisi_sampel = 'Normal';
         $this->asal_sampel = 'Internal';
-        $this->personel = True;
-        $this->alat = True;
-        $this->bahan = True;
+        // $this->personel = True;
+        // $this->alat = True;
+        // $this->bahan = True;
         $this->skala_prioritas = 'Normal';
         $this->estimasi = Carbon::now()->toDateString();
         $this->tgl_pengantaran_sampel = Carbon::now()->toDateString();
@@ -232,33 +227,7 @@ class InputProgress extends Component
         $defaultMetodeAnalisis = 'test';
         $metodeAnalisisId = $defaultMetodeAnalisis;
         $sub_total = $this->hargaparameter * $jumlah_sampel_default;
-        // dd($this->hargaparameter);
-        $ppn = hitungPPN($sub_total);
-
-        $total = $sub_total + $ppn;
-
-
-
-
-
-        $newForm = [
-            'nama_parameter' => '',
-            'id_parameter' => '',
-            'jumlahsample' => '',
-            'hargassample' => '',
-            'list_metode' => '',
-            'subtotal' => '',
-            'ppnjudul' => '',
-            'totaljudul' => '',
-            'harga_sampel' => $defaultHarga,
-            'satuan' => '',
-            'sub_total' => $sub_total,
-            'ppn' => hitungPPN($sub_total),
-            'total' => $total
-        ];
-
-        // $this->formData[] = $newForm;
-
+        $total = $sub_total;
 
         $this->ChangeFieldParamAndNomorLab();
     }
@@ -270,8 +239,7 @@ class InputProgress extends Component
             $curr_jumlah_sampel = $inputan['jumlah_sampel'];
             $curr_harga_sampel = $inputan['harga_sampel'];
             $curr_sub_total = $curr_jumlah_sampel * $curr_harga_sampel;
-            $this->formData[$index]['sub_total'] = $curr_sub_total;
-            $this->formData[$index]['ppn'] = hitungPPN($curr_sub_total);
+            $this->formData[$index]['totalharga'] = $curr_sub_total;
         }
     }
 
@@ -282,8 +250,7 @@ class InputProgress extends Component
             if (isset($this->biayaParameter[$index])) {
                 $this->biayaParameter[$index]['jumlah_sampel'] = $inputan['jumlah_per_parameter'];
                 $this->biayaParameter[$index]['sub_total'] = $this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter'];
-                $this->biayaParameter[$index]['ppn'] = hitungPPN($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']);
-                $this->biayaParameter[$index]['total'] = ($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']) + hitungPPN($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']);
+                $this->biayaParameter[$index]['total'] = ($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']) + $this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter'];
             }
         }
     }
@@ -320,13 +287,15 @@ class InputProgress extends Component
     {
 
 
-
         $this->validate();
 
 
         $formData = array_filter($this->formData, function ($item) {
             return !empty($item['nama_parameter']);
         });
+
+
+
 
         $userId = 1;
         if (auth()->check()) {
@@ -379,9 +348,6 @@ class InputProgress extends Component
             $trackSampel->jumlah_sampel = $this->jumlah_sampel;
             $trackSampel->kondisi_sampel = $this->kondisi_sampel;
             $trackSampel->kemasan_sampel = $this->kemasan_sampel;
-            $trackSampel->personel = $this->personel;
-            $trackSampel->alat = $this->alat;
-            $trackSampel->bahan = $this->bahan;
             $trackSampel->nomor_surat = $this->nomor_surat;
             $trackSampel->nomor_lab =  $nomorlab;
             $trackSampel->estimasi = $this->estimasi;
@@ -419,6 +385,9 @@ class InputProgress extends Component
                         'id_parameter' => $data['id_parameter'],
                         'jumlah' => $data['jumlah_sampel'],
                         'totalakhir' => $data['totalharga'],
+                        'personel' => $data['personel'] == True ? 1 : 0,
+                        'alat' => $data['alat'] == True ? 1 : 0,
+                        'bahan' => $data['bahan'] == True ? 1 : 0,
                         'id_tracksampel' => $commonRandomString,
                     ];
                 }
@@ -428,13 +397,13 @@ class InputProgress extends Component
 
                 $nohp = numberformat($form_hp);
                 // dd($nohp);
-                DB::commit();
+
                 SendMsg::insert([
                     'pesan' => $this->nomor_surat,
                     'kodesample' => $randomCode,
                     'penerima' => $form_hp
                 ]);
-
+                DB::commit();
                 $this->successSubmit = true;
                 $this->msgSuccess = $randomCode;
 
@@ -475,9 +444,9 @@ class InputProgress extends Component
             'jumlah_sampel',
             'kondisi_sampel',
             'kemasan_sampel',
-            'personel',
-            'alat',
-            'bahan',
+            // 'personel',
+            // 'alat',
+            // 'bahan',
             'nomor_surat',
             // 'nomor_lab',
             'estimasi',

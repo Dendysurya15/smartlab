@@ -308,51 +308,6 @@
 
                     </div>
 
-                    <div class="sm:col-span-3">
-                        <div class="grid grid-cols-3 gap-4">
-                            <div class="col-span-1">
-                                <div class="flex h-6 items-center">
-                                    <input id="personel" wire:model="personel" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                                </div>
-                                <div class="text-sm leading-6">
-                                    <label for="personel" class="font-medium text-gray-900">Personel</label>
-                                    <p class="text-gray-500 text-xs">(Tersedia dan Kompeten)</p>
-                                    @error('personel')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-span-1">
-                                <div class="flex h-6 items-center">
-                                    <input id="alat" wire:model="alat" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                                </div>
-                                <div class="text-sm leading-6">
-                                    <label for="alat" class="font-medium text-gray-900">Alat</label>
-                                    <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
-                                    @error('alat')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-span-1">
-                                <div class="flex h-6 items-center">
-                                    <input id="bahan" wire:model="bahan" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                                </div>
-                                <div class="text-sm leading-6">
-                                    <label for="bahan" class="font-medium text-gray-900">Bahan</label>
-                                    <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
-                                    @error('bahan')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
                     <div class="col-span-full">
                         <h2 class="text-base font-semibold leading-7 text-gray-900">Pengujian Sampel
                         </h2>
@@ -397,9 +352,10 @@
 
                         @foreach ($formData as $index => $item)
 
-                        <div class="grid grid-cols-5 gap-5 mb-2 p-2" wire:key="form-{{ $index }}">
+                        <div class="grid grid-cols-5 gap-5 mb-2 p-2 border border-dashed border-gray-900/25 rounded-lg"
+                            wire:key="form-{{ $index }}">
 
-                            <div class="sm:col-span-2">
+                            <div class="sm:col-span-2 ">
 
                                 <label class="block text-sm font-medium leading-6 text-gray-900">
                                     {{$item['nama_parameter']}} </label>
@@ -408,60 +364,92 @@
                                 </div>
                             </div>
 
-                            <div class="sm:col-span-1">
-                                <label class="block text-sm font-medium leading-6 text-gray-900">
-                                    {{$item['jumlahsample']}} </label>
+                            <div class="sm:col-span-2">
 
-                                <div class="mt-2">
-                                    <input type="number" autocomplete="given-name"
-                                        wire:change="gethargasample({{ $index }})"
-                                        wire:model="formData.{{ $index }}.jumlah_sampel"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">
+                                            {{$item['jumlahsample']}} </label>
 
+                                        <div class="mt-2">
+                                            <input type="number" autocomplete="given-name"
+                                                wire:change="gethargasample({{ $index }})"
+                                                wire:model="formData.{{ $index }}.jumlah_sampel"
+                                                class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">
+                                            {{$item['hargassample']}}</label>
+                                        <div class="mt-2">
+                                            <input type="number" autocomplete="given-name"
+                                                wire:change="updateHargaSampel()"
+                                                wire:model="formData.{{ $index }}.harga_sampel"
+                                                class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">
+                                            {{$item['totaljudul']}} </label>
+                                        <div class="mt-2">
+                                            <input type="text" autocomplete="given-name"
+                                                wire:model="formData.{{ $index }}.totalharga" disabled
+                                                class="block w-full rounded-md border-0 text-slate-400 font-semibold shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <label class="block text-sm font-medium leading-6 text-gray-900">
-                                    {{$item['subtotal']}}</label>
-                                <div class="mt-2">
-                                    <input type="text" autocomplete="given-name" disabled
-                                        wire:model="formData.{{ $index }}.sub_total"
-                                        class="block w-full rounded-md border-0 text-slate-400 font-semibold shadow-sm ring-1  ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="mt-2">
+                                        <div class="flex h-6 items-center">
+                                            <input id="personel" wire:model="formData.{{ $index }}.personel"
+                                                type="checkbox"
+                                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                        </div>
+                                        <div class="text-sm leading-6">
+                                            <label for="personel" class="font-medium text-gray-900">Personel</label>
+                                            <p class="text-gray-500 text-xs">(Tersedia dan Kompeten)</p>
+                                            @error('personel')
+                                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
 
+                                        <div class="flex h-6 items-center">
+                                            <input id="alat" wire:model="formData.{{ $index }}.alat" type="checkbox"
+                                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                        </div>
+                                        <div class="text-sm leading-6">
+                                            <label for="alat" class="font-medium text-gray-900">Alat</label>
+                                            <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
+                                            @error('alat')
+                                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="flex h-6 items-center">
+                                            <input id="bahan" wire:model="formData.{{ $index }}.bahan" type="checkbox"
+                                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                        </div>
+                                        <div class="text-sm leading-6">
+                                            <label for="bahan" class="font-medium text-gray-900">Bahan</label>
+                                            <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
+                                            @error('bahan')
+                                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
                             <div class="sm:col-span-1">
-                                <label class="block text-sm font-medium leading-6 text-gray-900">
-                                    {{$item['hargassample']}}</label>
-                                <div class="mt-2">
-                                    <input type="number" autocomplete="given-name" wire:change="updateHargaSampel()"
-                                        {{-- value="{{ $item['harga_sampel'] }}" --}}
-                                        wire:model="formData.{{ $index }}.harga_sampel"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                                </div>
 
 
-
-                                <label class="block text-sm font-medium leading-6 text-gray-900"> {{$item['ppnjudul']}}
-                                </label>
-
-                                <div class="mt-2">
-                                    <input type="text" autocomplete="given-name" wire:change="updatePPN()"
-                                        wire:model="formData.{{ $index }}.ppn"
-                                        class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-
-                                </div>
-                            </div>
-                            <div class="sm:col-span-1">
-                                <label class="block text-sm font-medium leading-6 text-gray-900">
-                                    {{$item['totaljudul']}} </label>
-                                <div class="mt-2">
-                                    <input type="text" autocomplete="given-name"
-                                        wire:model="formData.{{ $index }}.totalharga" disabled
-                                        class="block w-full rounded-md border-0 text-slate-400 font-semibold shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                                </div>
-
-                                <label class="block text-sm font-medium leading-6 text-gray-900">
-                                    {{$item['subtotal']}}</label>
+                                <label class="block text-sm font-medium leading-6 text-white">
+                                    |</label>
 
                                 <div class="mt-2">
                                     <button
