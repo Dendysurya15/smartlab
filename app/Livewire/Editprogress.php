@@ -14,7 +14,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\FormDataExport;
+use App\Exports\MinotoringExport;
 
 
 class Editprogress extends Component
@@ -478,7 +478,7 @@ class Editprogress extends Component
         $this->isExporting = true; // Set the flag to true when exporting Excel
         $id = $this->sample;
 
-        return Excel::download(new FormDataExport($id), 'Data_Lab.xlsx');
+        return Excel::download(new MinotoringExport($id), 'Data_Lab.xlsx');
     }
 
     // public function export()
@@ -487,6 +487,6 @@ class Editprogress extends Component
     //     $id = $this->sample;
 
     //     // return Excel::download(new FormDataExport($id), 'Data_Lab.xlsx');
-    //     return Excel::download(new InvoicesExport, 'invoices.xlsx', true, ['X-Vapor-Base64-Encode' => 'True']);
+    //     return Excel::download(new MinotoringExport, 'invoices.xlsx', true, ['X-Vapor-Base64-Encode' => 'True']);
     // }
 }
