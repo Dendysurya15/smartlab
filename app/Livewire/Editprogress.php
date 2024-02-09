@@ -122,10 +122,10 @@ class Editprogress extends Component
         $this->hargaparameter = $defaultParameterAnalisis->harga;
         $this->satuanparameter = $defaultParameterAnalisis->satuan;
         $this->analisisparameter = $defaultParameterAnalisis->metode_analisis;
-
-        $sub_total = $this->hargaparameter * 1;
-        $ppn = hitungPPN($sub_total);
-        $total = $sub_total + $ppn;
+        $this->personel = $this->personel == True ? True : False;
+        $this->alat = $this->alat == True ? True : False;
+        $this->bahan = $this->bahan == True ? True : False;
+        $total = $this->hargaparameter * 1;
         $defaultppn = 11;
 
         $this->oldform[] = [
@@ -134,9 +134,10 @@ class Editprogress extends Component
             'nama_parameters' => $defaultParameterAnalisis->nama_parameter,
             'metode_analisis' => $this->analisisparameter,
             'harga' => $this->hargaparameter,
-            'subtotal' => $sub_total,
             'total' => $total,
-            'ppn' => $ppn,
+            'personel' =>   $this->personel,
+            'alat' =>    $this->alat,
+            'bahan' =>    $this->bahan,
             'id_parameter' => $this->parameterid = $defaultParameterAnalisis->id,
             'judulppn' => $defaultppn . "% PPN"
         ];
@@ -242,9 +243,9 @@ class Editprogress extends Component
         $this->kemasan_sampel = $query->kemasan_sampel;
         $this->skala_prioritas = $query->skala_prioritas;
         // $this->skala_prioritas = $query->skala_prioritas;
-        $this->personel = True;
-        $this->alat = True;
-        $this->bahan = True;
+        // $this->personel = True;
+        // $this->alat = True;
+        // $this->bahan = True;
 
         $this->nama_pengirim = $query->nama_pengirim;
         $this->departemen = $query->departemen;
@@ -261,9 +262,7 @@ class Editprogress extends Component
 
         foreach ($getTrack as $key => $value) {
             $harga = $value['parameter_analisis']['harga'];
-
-            $subtotal = $value['jumlah'] * $harga;
-            $ppn = hitungPPN($subtotal);
+            $total = $value['jumlah'] * $harga;
 
             $trackform[$key] = [
                 'id' => $value['id'],
@@ -271,9 +270,10 @@ class Editprogress extends Component
                 'metode_analisis' => $value['parameter_analisis']['metode_analisis'],
                 'nama_parameters' => $value['parameter_analisis']['nama_parameter'],
                 'jumlah' => $value['jumlah'],
-                'harga_total' => $value['totalakhir'],
-                'subtotal' => $subtotal,
-                'ppn' => $ppn,
+                'total' => $total,
+                'personel' => $value['personel'] === 1 ? True : ($value['personel'] === 0 ? False : False),
+                'alat' => $value['alat'] === 1 ? True : ($value['alat'] === 0 ? False : False),
+                'bahan' => $value['bahan'] === 1 ? True : ($value['bahan'] === 0 ? False : False),
                 'id_parameter' => $value['id_parameter'],
                 'judulppn' => "11% PPN",
             ];
@@ -298,19 +298,9 @@ class Editprogress extends Component
     public function totalsampelold($index)
     {
         $form = $this->oldform[$index];
-
-
         $jumlahsample = $form['jumlah'];
         $hargasampel = $form['harga'] * $jumlahsample;
-        $ppn = hitungPPN($hargasampel);
-        $total = $hargasampel + $ppn;
-
-        // Update the parameters array
-        $this->oldform[$index]['subtotal'] = $hargasampel;
-        $this->oldform[$index]['ppn'] = $ppn;
-        $this->oldform[$index]['harga_total'] = $total;
-
-        // dd($form);
+        $this->oldform[$index]['total'] = $hargasampel;
     }
 
     public function updateHargaSampel()
@@ -320,8 +310,7 @@ class Editprogress extends Component
             $curr_jumlah_sampel = $this->oldform[$index]['jumlah'];
             $curr_harga_sampel = $this->oldform[$index]['harga'];
             $curr_sub_total = $curr_jumlah_sampel * $curr_harga_sampel;
-            $this->oldform[$index]['subtotal'] = $curr_sub_total;
-            $this->oldform[$index]['ppn'] = hitungPPN($curr_sub_total);
+            $this->oldform[$index]['total'] = $curr_sub_total;
         }
     }
 
@@ -419,8 +408,11 @@ class Editprogress extends Component
                 if (array_key_exists('id', $value)) {
                     TrackParameter::where('id', $value['id'])->update([
                         'jumlah' => $value['jumlah'],
-                        'totalakhir' => $value['harga_total'],
+                        'totalakhir' => $value['total'],
                         'id_tracksampel' => $trackid,
+                        'personel' => $value['personel'] == True ? 1 : 0,
+                        'alat' => $value['alat'] == True ? 1 : 0,
+                        'bahan' => $value['bahan'] == True ? 1 : 0,
                         'id_parameter' => $value['id_parameter'],
                     ]);
                 }
@@ -434,6 +426,9 @@ class Editprogress extends Component
                         'jumlah' => $value['jumlah'],
                         'totalakhir' => $value['total'],
                         'id_tracksampel' => $trackid,
+                        'personel' => $value['personel'] == True ? 1 : 0,
+                        'alat' => $value['alat'] == True ? 1 : 0,
+                        'bahan' => $value['bahan'] == True ? 1 : 0,
                         'id_parameter' => $value['id_parameter'],
                     ];
                 }
