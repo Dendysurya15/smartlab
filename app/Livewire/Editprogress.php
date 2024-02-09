@@ -59,6 +59,9 @@ class Editprogress extends Component
     public $oldform = [];
     public $parameters = [];
     public $nama_jenis_sampel;
+    public $selected_status;
+    public $badge_color_status;
+    public $kode_track;
 
     public bool $successSubmit = false;
     public string $msgSuccess;
@@ -104,6 +107,7 @@ class Editprogress extends Component
         return view(
             'livewire.editprogress',
             [
+                'status_pengerjaan' => $query->status,
                 'jenisSampelOptions' => $jenisSampelOptions,
                 'list_parameter' => $list_parameter,
                 'listProgress' => $progressOptions,
@@ -213,6 +217,9 @@ class Editprogress extends Component
     {
         $id = $this->sample;
         $query = TrackSampel::find($id);
+        $this->selected_status = $query->status;
+        $this->badge_color_status = $query->status === 'Approved' ? 'bg-emerald-600' : ($query->status === 'Rejected' ? 'bg-red-600' : ($query->status === 'Pending' ? 'bg-yellow-600' : ''));
+        $this->kode_track = $query->kode_track;
         $this->tanggal = $query->tanggal_penerimaan
             ? Carbon::parse($query->tanggal_penerimaan)->format('Y-m-d')
             : null;
@@ -386,7 +393,7 @@ class Editprogress extends Component
             $trackSampel->tanggal_penerimaan = $this->tanggal;
             $trackSampel->progress = $this->get_progress;
 
-
+            $trackSampel->status = $this->selected_status;
             $trackSampel->asal_sampel = $this->asal_sampel;
             $trackSampel->nomor_kupa = $this->no_kupa;
             $trackSampel->nomor_lab = $this->nomor_lab;
@@ -454,6 +461,8 @@ class Editprogress extends Component
 
             $this->successSubmit = true;
             $this->msgSuccess = $query->kode_track;
+            $this->selected_status = $this->selected_status;
+            $this->badge_color_status = $this->selected_status === 'Approved' ? 'bg-emerald-600' : ($this->selected_status === 'Rejected' ? 'bg-red-600' : ($this->selected_status === 'Pending' ? 'bg-yellow-600' : ''));
         } catch (Exception $e) {
             DB::rollBack();
             $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();

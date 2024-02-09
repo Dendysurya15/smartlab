@@ -67,9 +67,6 @@ class HistoryKupaController extends Controller
 
         $query = TrackSampel::find($id);
 
-
-        ($query);
-
         $jns_sampel = JenisSampel::all();
         // dd($query);
 

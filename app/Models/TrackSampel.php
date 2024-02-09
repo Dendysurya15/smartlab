@@ -36,7 +36,8 @@ class TrackSampel extends Model
         'emailCc',
         'foto_sampel',
         'kode',
-        'skala_prioritas'
+        'skala_prioritas',
+        'status',
     ];
     public function jenisSampel()
     {

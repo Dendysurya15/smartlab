@@ -39,7 +39,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ->query(TrackSampel::query())
             ->columns([
 
-
                 TextColumn::make('tanggal_penerimaan')
                     ->formatStateUsing(function (TrackSampel $track) {
                         return tanggal_indo($track->tanggal_penerimaan);
@@ -104,6 +103,33 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->searchable()
                     ->sortable()
                     ->size('xs'),
+                TextColumn::make('status')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->formatStateUsing(function (TrackSampel $track) {
+                        return $track->status;
+                    })
+                    ->searchable()
+                    ->badge()
+                    ->color(function (TrackSampel $track) {
+                        $result = '';
+                        switch ($track->status) {
+                            case 'Approved':
+                                $result = 'success';
+                                break;
+                            case 'Pending':
+                                $result = 'warning';
+                                break;
+                            case 'Rejected':
+                                $result = 'danger';
+                                break;
+                            default:
+                                $result = 'gray';
+                        }
+
+                        return $result;
+                    })
+                    ->sortable()
+                    ->size('xs'),
 
                 TextColumn::make('skala_prioritas')
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -115,7 +141,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                     ->sortable()
                     ->size('xs'),
-
                 TextColumn::make('asal_sampel')
                     ->toggleable(isToggledHiddenByDefault: true)
 
