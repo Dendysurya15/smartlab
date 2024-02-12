@@ -13,30 +13,30 @@
 <body>
 
 
-    <table>
+    <table style="border: 1px solid black;">
 
         <thead>
             <tr>
                 <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
-                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
+                <td colspan="15" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
                     PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
-                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
+                <td colspan="15" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
                     RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
 
-                <td colspan="16" style="border: 1px solid black;">Formulir</td>
+                <td colspan="15" style="border: 1px solid black;">Formulir</td>
             </tr>
             <tr>
 
-                <td colspan="16" style="border: 1px solid black;">MONITORING PENERIMAAN SAMPEL
+                <td colspan="15" style="border: 1px solid black;">MONITORING PENERIMAAN SAMPEL
 
                 </td>
             </tr>
             <tr>
-                <th colspan="3" style="border: 1px solid black;font-weight:bold">
+                <th colspan="2" style="border: 1px solid black;font-weight:bold">
                     No.Dokumen
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
@@ -50,7 +50,7 @@
                 </th>
             </tr>
             <tr>
-                <th colspan="3" style="border: 1px solid black;">
+                <th colspan="2" style="border: 1px solid black;">
                     FR.7.1-12
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
@@ -64,10 +64,10 @@
                 </th>
             </tr>
             <tr>
-                <td colspan="17"></td> <!-- Replace "18" with the total number of columns in your table -->
+                <td colspan="16"></td> <!-- Replace "18" with the total number of columns in your table -->
             </tr>
             <tr>
-                <td colspan="17"></td> <!-- Replace "20" with the total number of columns in your table -->
+                <td colspan="16"></td> <!-- Replace "20" with the total number of columns in your table -->
             </tr>
             <tr>
                 <th colspan="2" style="border-left:1px solid black;border-top:1px solid black ;">
@@ -77,7 +77,7 @@
                     :
                 </th>
 
-                <th colspan="12" style="border-top: 1px solid black;"></th>
+                <th colspan="11" style="border-top: 1px solid black;"></th>
                 <th colspan="2" style="border-top: 1px solid black;">Jenis Sampel</th>
                 <th style="border-top: 1px solid black;border-right: 1px solid black;">:</th>
             </tr>
@@ -89,7 +89,7 @@
                     :
                 </th>
 
-                <th colspan="12" style="border-bottom: 1px solid black;"></th>
+                <th colspan="11" style="border-bottom: 1px solid black;"></th>
                 <th colspan="2" style="border-bottom: 1px solid black;">Nama Pelanggan</th>
                 <th style="border-bottom: 1px solid black;border-right:1px solid black">:</th>
             </tr>
@@ -125,9 +125,6 @@
                 </th>
                 <th rowspan="2" style="border: 1px solid black;text-align:center;">
                     Parameter Analisa
-                </th>
-                <th rowspan="2" style="border: 1px solid black;text-align:center;">
-                    Biaya Analisa (Rp)
                 </th>
                 <th rowspan="2" style="border: 1px solid black;text-align:center;">
                     Biaya Analisa + ppn 11% (Rp)
@@ -175,7 +172,6 @@
 
                 <td>{{ $items['parameter_anal'] }}</td>
                 <td>{{ $items['harga_normal'] }}</td>
-                <td>{{ $items['harga_ppn'] }}</td>
                 <td>{{ $items['estimasi'] }}</td>
                 <td>{{ $items['tanggal_serif'] }}</td>
                 <td>{{ $items['no_serif'] }}</td>
@@ -183,6 +179,67 @@
             </tr>
 
             @endforeach
+
+            <tr>
+                <td>{{ $total['no'] }}</td>
+                <td>{{ $total['tgl_trma'] }}</td>
+                <td>{{ $total['jenis_sample'] }}</td>
+                <td>{{ $total['asal_sampel'] }}</td>
+                <td>{{ $total['memo_pengantar'] }}</td>
+                <td>{{ $total['nama_pengirim'] }}</td>
+                <td>{{ $total['departemen'] }}</td>
+                <td>{{ $total['nomor_kupa'] }}</td>
+                <td>{{ $total['kode_sampel'] }}</td>
+                <td>{{ $total['jumlah_parameter'] }}</td>
+                <td>{{ $total['jumlah_sampel'] }}</td>
+
+                <td>{{ $total['parameter_anal'] }}</td>
+                <td>{{ $total['harga_normal'] }}</td>
+                <td>{{ $total['estimasi'] }}</td>
+                <td>{{ $total['tanggal_serif'] }}</td>
+                <td>{{ $total['no_serif'] }}</td>
+                <td>{{ $total['tanggal_kirimserif'] }}</td>
+            </tr>
+            <tr>
+                <td>{{ $totalppn['no'] }}</td>
+                <td>{{ $totalppn['tgl_trma'] }}</td>
+                <td>{{ $totalppn['jenis_sample'] }}</td>
+                <td>{{ $totalppn['asal_sampel'] }}</td>
+                <td>{{ $totalppn['memo_pengantar'] }}</td>
+                <td>{{ $totalppn['nama_pengirim'] }}</td>
+                <td>{{ $totalppn['departemen'] }}</td>
+                <td>{{ $totalppn['nomor_kupa'] }}</td>
+                <td>{{ $totalppn['kode_sampel'] }}</td>
+                <td>{{ $totalppn['jumlah_parameter'] }}</td>
+                <td>{{ $totalppn['jumlah_sampel'] }}</td>
+
+                <td>{{ $totalppn['parameter_anal'] }}</td>
+                <td>{{ $totalppn['harga_normal'] }}</td>
+                <td>{{ $totalppn['estimasi'] }}</td>
+                <td>{{ $totalppn['tanggal_serif'] }}</td>
+                <td>{{ $totalppn['no_serif'] }}</td>
+                <td>{{ $totalppn['tanggal_kirimserif'] }}</td>
+            </tr>
+            <tr>
+                <td>{{ $totalfinal['no'] }}</td>
+                <td>{{ $totalfinal['tgl_trma'] }}</td>
+                <td>{{ $totalfinal['jenis_sample'] }}</td>
+                <td>{{ $totalfinal['asal_sampel'] }}</td>
+                <td>{{ $totalfinal['memo_pengantar'] }}</td>
+                <td>{{ $totalfinal['nama_pengirim'] }}</td>
+                <td>{{ $totalfinal['departemen'] }}</td>
+                <td>{{ $totalfinal['nomor_kupa'] }}</td>
+                <td>{{ $totalfinal['kode_sampel'] }}</td>
+                <td>{{ $totalfinal['jumlah_parameter'] }}</td>
+                <td>{{ $totalfinal['jumlah_sampel'] }}</td>
+
+                <td>{{ $totalfinal['parameter_anal'] }}</td>
+                <td>{{ $totalfinal['harga_normal'] }}</td>
+                <td>{{ $totalfinal['estimasi'] }}</td>
+                <td>{{ $totalfinal['tanggal_serif'] }}</td>
+                <td>{{ $totalfinal['no_serif'] }}</td>
+                <td>{{ $totalfinal['tanggal_kirimserif'] }}</td>
+            </tr>
         </tbody>
     </table>
 

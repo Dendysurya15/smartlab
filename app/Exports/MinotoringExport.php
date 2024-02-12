@@ -16,6 +16,8 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use OpenSpout\Common\Entity\Style\Border;
 
 
 class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
@@ -53,11 +55,14 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
             if ($trackParameter->ParameterAnalisis) {
                 $nama_parameter[] = $trackParameter->ParameterAnalisis->nama_parameter;
                 $hargaasli[] = $trackParameter->ParameterAnalisis->harga;
-                $hargappn[] = intval(round($trackParameter->ParameterAnalisis->harga * 1.11, 0)); // Convert to integer
             }
+            $totalharga = array_sum($hargaasli);
+            $totalppn = $totalharga * 0.11;
+
+            $totalbayar = $totalharga + $totalppn;
         }
 
-        // dd($tracksample);
+        // dd($totalharga);
 
         $row = count($nama_parameter);
 
@@ -76,8 +81,7 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
             $temp['jumlah_parameter'] = $i === 0 ?  $val_track : ' ';
             $temp['jumlah_sampel'] = $i === 0 ?  $tracksample->jumlah_sampel : ' ';
             $temp['parameter_anal'] =   $nama_parameter[$i]; // Access specific element based on index
-            $temp['harga_normal'] =   $hargaasli[$i]; // Access specific element based on index
-            $temp['harga_ppn'] =   $hargappn[$i]; // Access specific element based on index
+            $temp['harga_normal'] =   $hargaasli[$i];
             $temp['estimasi'] = $i === 0 ? $tracksample->estimasi : ' ';
             $temp['tanggal_serif'] = $i === 0 ?  '-' : ' ';
             $temp['no_serif'] = $i === 0 ? '-' : ' ';
@@ -86,11 +90,68 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
             $arr[] = $temp; // Add the row to the main array
         }
 
+        $total = [
+            'no' =>  ' ',
+            'tgl_trma' =>   ' ',
+            'jenis_sample' =>  ' ',
+            'asal_sampel' =>  ' ',
+            'memo_pengantar' => ' ',
+            'nama_pengirim' =>   ' ',
+            'departemen' =>  ' ',
+            'nomor_kupa' =>   ' ',
+            'kode_sampel' =>  ' ',
+            'jumlah_parameter' =>  ' ',
+            'jumlah_sampel' =>   ' ',
+            'parameter_anal' =>   'Sub Total',
+            'harga_normal' =>  $totalharga,
+            'harga_ppn' =>   ' ',
+            'estimasi' =>  ' ',
+            'tanggal_serif' =>   ' ',
+            'no_serif' =>  ' ',
+            'tanggal_kirimserif' =>  ' ',
+        ];
+        $totalppn = [
+            'no' =>  ' ',
+            'tgl_trma' =>   ' ',
+            'jenis_sample' =>  ' ',
+            'asal_sampel' =>  ' ',
+            'memo_pengantar' => ' ',
+            'nama_pengirim' =>   ' ',
+            'departemen' =>  ' ',
+            'nomor_kupa' =>   ' ',
+            'kode_sampel' =>  ' ',
+            'jumlah_parameter' =>  ' ',
+            'jumlah_sampel' =>   ' ',
+            'parameter_anal' =>   'PPN 11%',
+            'harga_normal' =>  $totalppn,
+            'harga_ppn' =>   ' ',
+            'estimasi' =>  ' ',
+            'tanggal_serif' =>   ' ',
+            'no_serif' =>  ' ',
+            'tanggal_kirimserif' =>  ' ',
+        ];
+        $totalfinal = [
+            'no' =>  ' ',
+            'tgl_trma' =>   ' ',
+            'jenis_sample' =>  ' ',
+            'asal_sampel' =>  ' ',
+            'memo_pengantar' => ' ',
+            'nama_pengirim' =>   ' ',
+            'departemen' =>  ' ',
+            'nomor_kupa' =>   ' ',
+            'kode_sampel' =>  ' ',
+            'jumlah_parameter' =>  ' ',
+            'jumlah_sampel' =>   ' ',
+            'parameter_anal' =>   'Total Harga',
+            'harga_normal' =>  $totalbayar,
+            'harga_ppn' =>   ' ',
+            'estimasi' =>  ' ',
+            'tanggal_serif' =>   ' ',
+            'no_serif' =>  ' ',
+            'tanggal_kirimserif' =>  ' ',
+        ];
 
-
-        // dd($arr, $tracksample);
-
-        return view('excelView.monotoringexcel', ['data' => $arr]);
+        return view('excelView.monotoringexcel', ['data' => $arr, 'total' => $total, 'totalppn' => $totalppn, 'totalfinal' => $totalfinal]);
     }
     public function registerEvents(): array
     {
@@ -104,8 +165,34 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
                         ],
                     ],
                     'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
                         'wrapText' => true,
                     ],
+                ];
+                $styletotal = [
+                    'borders' => [
+                        'bottom' => [
+                            'borderStyle' => 'thick', // Corrected
+                            'color' => [
+                                'rgb' => '808080'
+                            ]
+                        ],
+                        'top' => [
+                            'borderStyle' => 'thick', // Corrected
+                            'color' => [
+                                'rgb' => '808080'
+                            ]
+                        ]
+                    ],
+                ];
+                $arrtotal = [
+                    'L19',
+                    'L20',
+                    'L21',
+                    'M19',
+                    'M20',
+                    'M21',
                 ];
                 $arrcells = [
                     'B11', 'C11', 'D11', 'E11', 'F11', 'G11', 'H11', 'I11',
@@ -125,6 +212,9 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
 
                 // dd($arrcells);
                 foreach ($arrcells as $key => $value) {
+                    $event->sheet->getStyle($value)->applyFromArray($styleHeader);
+                }
+                foreach ($arrtotal as $key => $value) {
                     $event->sheet->getStyle($value)->applyFromArray($styleHeader);
                 }
             },
