@@ -2,7 +2,7 @@
     <header class="flex px-5 py-4 bg-slate-800 border-b border-slate-100 dark:border-slate-700">
         <h2 class="font-bold text-slate-200 dark:text-slate-100">
             <span class="rounded-md px-3 py-2 text-sm font-semibold text-gray-100 shadow-sm {{$badge_color_status}}
-                hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
                 focus-visible:outline-emerald-600 mr-2">
                 @php
                 echo strtoupper($selected_status)

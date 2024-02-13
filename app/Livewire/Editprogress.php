@@ -218,7 +218,17 @@ class Editprogress extends Component
         $id = $this->sample;
         $query = TrackSampel::find($id);
         $this->selected_status = $query->status;
-        $this->badge_color_status = $query->status === 'Approved' ? 'bg-emerald-600' : ($query->status === 'Rejected' ? 'bg-red-600' : ($query->status === 'Pending' ? 'bg-yellow-600' : ''));
+
+        if ($this->selected_status === 'Approved') {
+            $this->badge_color_status = 'bg-emerald-600';
+        } elseif ($this->selected_status === 'Rejected') {
+            $this->badge_color_status = 'bg-red-600';
+        } elseif ($this->selected_status === 'Pending') {
+            $this->badge_color_status = 'bg-yellow-500';
+        }
+
+
+
         $this->kode_track = $query->kode_track;
         $this->tanggal = $query->tanggal_penerimaan
             ? Carbon::parse($query->tanggal_penerimaan)->format('Y-m-d')
@@ -462,7 +472,7 @@ class Editprogress extends Component
             $this->successSubmit = true;
             $this->msgSuccess = $query->kode_track;
             $this->selected_status = $this->selected_status;
-            $this->badge_color_status = $this->selected_status === 'Approved' ? 'bg-emerald-600' : ($this->selected_status === 'Rejected' ? 'bg-red-600' : ($this->selected_status === 'Pending' ? 'bg-yellow-600' : ''));
+            $this->badge_color_status = $this->selected_status === 'Approved' ? 'bg-emerald-600' : ($this->selected_status === 'Rejected' ? 'bg-red-600' : ($this->selected_status === 'Pending' ? 'bg-yellow-500' : ''));
         } catch (Exception $e) {
             DB::rollBack();
             $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();

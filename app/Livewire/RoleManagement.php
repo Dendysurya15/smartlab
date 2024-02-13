@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\User;
 use App\Models\TrackSampel;
+use Exception;
 use Livewire\Component;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -27,6 +28,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\FromView;
 
 class RoleManagement extends Component implements HasTable, HasForms
@@ -36,15 +39,20 @@ class RoleManagement extends Component implements HasTable, HasForms
     use InteractsWithTable;
     use InteractsWithForms;
 
+    public $name;
+    public $email;
+    public $role_user;
+    public $password;
+
+    public bool $successSubmit = false;
+    public string $msgSuccess;
+    public bool $errorSubmit = false;
+    public string $msgError;
+
     public function table(Table $table): Table
     {
-
-
-
-        $roles = Role::pluck('name');
-        $permission = Permission::pluck('name');
-
-
+        $roles = Role::pluck('name', 'id');
+        $permissionsAll = Permission::pluck('name', 'id')->toArray();
 
         return $table
             ->query(User::query())
@@ -78,52 +86,32 @@ class RoleManagement extends Component implements HasTable, HasForms
                     EditAction::make()
                         ->form([
                             Select::make('Roles')
-                                ->options([
-                                    'superuser' => 'superuser',
-                                    'admin' => 'admin',
-                                    'user' => 'user',
-                                ])
+                                ->options($roles)
                                 ->live(),
-                            Checkbox::make('view_rolemanagement')->inline(),
-                            Checkbox::make('edit_data')->inline(),
-                            Checkbox::make('view_dashboard')->inline(),
-                            Checkbox::make('download')->inline(),
+                            ...array_map(function ($permission) {
+                                return Checkbox::make($permission)->inline()->label($permission);
+                            }, $permissionsAll),
                         ])
-                        ->using(function (User $record, array $data): User {
-                            // Retrieve the user record
+                        ->using(function (User $record, array $data) use ($permissionsAll): User {
                             $user = User::find($record['id']);
 
-                            // Empty all roles and permissions for the user
-                            $user->roles()->detach();
-                            $user->permissions()->detach();
 
                             if (!empty($data['Roles'])) {
-                                // Create or retrieve the selected role
-                                $role = Role::updateOrCreate(['name' => $data['Roles']]);
+                                $user->roles()->detach();
+                                $user->permissions()->detach();
 
-                                // Define permissions based on form input
+                                $role = Role::where('id', $data['Roles'])->first();
+
                                 $permissions = [];
-                                if ($data['view_rolemanagement'] == true) {
-                                    $permissions[] = Permission::updateOrCreate(['name' => 'view_rolemanagement']);
+                                foreach ($permissionsAll as $permission) {
+                                    if (!empty($data[$permission])) {
+                                        $permissions[] = $permission;
+                                    }
                                 }
-                                if ($data['edit_data'] == true) {
-                                    $permissions[] = Permission::updateOrCreate(['name' => 'edit_data']);
-                                }
-                                if ($data['view_dashboard'] == true) {
-                                    $permissions[] = Permission::updateOrCreate(['name' => 'view_dashboard']);
-                                }
-                                if ($data['download'] == true) {
-                                    $permissions[] = Permission::updateOrCreate(['name' => 'download']);
-                                }
-                                // dd($permissions);
-                                // Assign permissions to the role
+
+                                $user->assignRole($role->name);
                                 $role->syncPermissions($permissions);
-
-                                // Assign the role to the user
-                                $user->assignRole($role);
                             }
-
-                            // Return the modified user record
                             return $record;
                         }),
 
@@ -137,9 +125,44 @@ class RoleManagement extends Component implements HasTable, HasForms
     }
 
 
+    public function save()
+    {
+        try {
+            DB::beginTransaction();
+            $new_user = User::create([
+                'name' => $this->name,
+                'email' => $this->email,
+                'password' => Hash::make($this->password),
+            ]);
+
+            if ($this->role_user) {
+                // Find the role by name
+                $role = Role::where('name', $this->role_user)->first();
+
+                // Attach the role to the new user
+                $new_user->assignRole($role);
+
+                // Sync permissions associated with the role
+                $new_user->syncPermissions($role->permissions);
+            }
+
+            DB::commit();
+            $this->successSubmit = true;
+            $this->reset(['name', 'email', 'password', 'role_user']);
+        } catch (Exception $e) {
+            DB::rollBack();
+            // session()->flash('errorSubmit', 'An error occurred while saving the data. ' .  $e->getMessage());
+            $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
+            // Set the error flag
+            $this->errorSubmit = true;
+        }
+    }
+
 
     public function render(): View
     {
-        return view('livewire.role-management');
+        $roles = Role::WhereNotIn('name', ['superuser'])->pluck('name', 'id');
+
+        return view('livewire.role-management', ['roles' => $roles]);
     }
 }

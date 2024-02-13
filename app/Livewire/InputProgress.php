@@ -336,8 +336,6 @@ class InputProgress extends Component
             DB::beginTransaction();
 
             $trackSampel = new TrackSampel();
-
-
             $trackSampel->jenis_sampel = $this->jenis_sampel;
             $trackSampel->tanggal_penerimaan = $this->tanggal_penerimaan;
             $trackSampel->asal_sampel = $this->asal_sampel;

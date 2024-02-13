@@ -61,11 +61,10 @@ class TableParameter extends Component  implements HasTable, HasForms
                     ->searchable()
                     ->rules(['required', 'max:255'])
                     ->sortable(),
-                TextInputColumn::make('jenisSampel.nama')
-                    ->label('Jenis Sample')
+                TextColumn::make('jenisSampel.nama')
+                    ->label('Jenis Sampel')
                     ->searchable()
-                    ->rules(['required', 'max:255'])
-                    ->sortable(),
+                    ->sortable()->size('xs'),
             ])->striped()
             ->filters([
                 SelectFilter::make('id_jenis_sampel')
