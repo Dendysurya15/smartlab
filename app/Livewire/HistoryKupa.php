@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\TrackSampel;
+use App\Models\User;
 use Carbon\Carbon;
 use Filament\Tables\Actions\Action;
 use Livewire\Component;
@@ -37,18 +38,18 @@ class HistoryKupa extends Component implements HasForms, HasTable
     {
         return $table
             ->query(TrackSampel::query())
-            ->defaultSort('tanggal_penerimaan', 'desc')
+            ->defaultSort('tanggal_terima', 'desc')
             ->defaultSort('id', 'desc')
             ->columns([
-                TextColumn::make('tanggal_penerimaan')
+                TextColumn::make('tanggal_terima')
                     ->formatStateUsing(function (TrackSampel $track) {
-                        return tanggal_indo($track->tanggal_penerimaan, false, false, true);
+                        return tanggal_indo($track->tanggal_terima, false, false, true);
                     })
                     ->toggleable(isToggledHiddenByDefault: false)
                     // ->searchable(query: function (Builder $query, string $search): Builder {
                     //     $originalFormat = tanggal_indo($search);
 
-                    //     return $query->orWhere('tanggal_penerimaan', 'like', "%{$search}%");
+                    //     return $query->orWhere('tanggal_terima', 'like', "%{$search}%");
                     // })
                     ->sortable()
                     ->size('xs'),
@@ -110,8 +111,13 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 TextColumn::make('status')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->formatStateUsing(function (TrackSampel $track) {
-                        return $track->status;
+                        if ($track->status_changed_by != null) {
+                            return   $track->status_changed_by != null ? $track->status . ' by ' . User::find($track->status_changed_by)->name : ' ';
+                        } else {
+                            return $track->status;
+                        }
                     })
+                    ->limit(23)
                     ->searchable()
                     ->badge()
                     ->color(function (TrackSampel $track) {
@@ -140,7 +146,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->searchable()
                     ->badge()
                     ->color(function (TrackSampel $track) {
-                        return $track->skala_prioritas === 'Normal' ? 'warning' : ($track->skala_prioritas === 'Tinggi' ? 'danger' : 'gray');
+                        return $track->skala_prioritas === 'Normal' ? 'gray' : ($track->skala_prioritas === 'Tinggi' ? 'danger' : 'gray');
                     })
 
                     ->sortable()
@@ -184,7 +190,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         }
                         return  'Skala Prioritas : ' . ($data['value'] === 'normal' ? 'Normal' : 'Tinggi');
                     }),
-                Filter::make('tanggal_penerimaan')
+                Filter::make('tanggal_terima')
                     ->form([
                         DatePicker::make('Range Tanggal Awal'),
                         DatePicker::make('Range Tanggal Akhir')->default(now()),
@@ -193,11 +199,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         return $query
                             ->when(
                                 $data['Range Tanggal Awal'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_penerimaan', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
                             )
                             ->when(
                                 $data['Range Tanggal Akhir'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_penerimaan', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -213,12 +219,19 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
             ])
             ->actions([
-                Action::make('download')
-                    ->label('Export')
+                Action::make('export_kupa')
+                    ->label('Kupa')
                     ->url(fn (TrackSampel $record): string => route('export.excel', $record->id))
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->visible(auth()->user()->can('export_kupa'))
+                    ->size('xs'),
+                Action::make('export_form_monitoring_kupa')
+                    ->label('Form Monitoring')
+                    ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->visible(auth()->user()->can('export_form_monitoring_kupa'))
                     ->size('xs'),
                 Action::make('edit')
                     ->label('Edit Kupa')

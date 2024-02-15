@@ -16,7 +16,7 @@
     <div class="p-5">
 
 
-        <form wire:submit.prevent="save" method="POST" enctype="multipart/form-data" wire:loading.class="opacity-50">
+        <form wire:submit.prevent="save" method="POST" enctype="multipart/form-data">
 
             @method('PUT') {{-- This is used to specify that this is an update request --}}
             @csrf {{-- Include the CSRF token for security --}}
@@ -28,9 +28,9 @@
                     <label for="status" class="block text-sm font-medium leading-6 text-gray-900">Status
                         Pengerjaan</label>
                     <div class="mt-2">
+                        @can('update_status_pengerjaan_kupa')
                         <select id="status_pengerjaan" wire:model="selected_status" autocomplete="status_pengerjaan"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600  sm:text-sm sm:leading-6">
-
                             <option value="Approved" @if (old('status_pengerjaan', $status_pengerjaan)==='Approved' )
                                 selected @endif>Approved</option>
                             <option value="Rejected" @if (old('status_pengerjaan', $status_pengerjaan)==='Rejected' )
@@ -38,6 +38,23 @@
                             <option value="Pending" @if (old('status_pengerjaan', $status_pengerjaan)==='Pending' )
                                 selected @endif>Pending</option>
                         </select>
+                        @else
+                        <select id="status_pengerjaan" wire:model="selected_status" autocomplete="status_pengerjaan"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-emerald-600  sm:text-sm sm:leading-6"
+                            disabled>
+                            <option value="Approved" @if (old('status_pengerjaan', $status_pengerjaan)==='Approved' )
+                                selected @endif>Approved</option>
+                            <option value="Rejected" @if (old('status_pengerjaan', $status_pengerjaan)==='Rejected' )
+                                selected @endif>Rejected</option>
+                            <option value="Pending" @if (old('status_pengerjaan', $status_pengerjaan)==='Pending' )
+                                selected @endif>Pending</option>
+                        </select>
+                        <p class="text-xs italic text-red-500">Not allowed to edit as role {{ implode(', ',
+                            auth()->user()->getRoleNames()->toArray()) }}
+                        </p>
+                        @endcan
+
+
                         @error('status_pengerjaan')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -85,11 +102,11 @@
                 </div>
 
                 <div class="col-span-1 md:col-span-1">
-                    <label for="tanggal_penerimaan" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
-                        Penerimaan</label>
+                    <label for="tanggal_memo" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
+                        Memo</label>
                     <div class="mt-2">
 
-                        <input type="date" wire:model="tanggal" autocomplete="given-name"
+                        <input type="date" wire:model="tanggal_memo" autocomplete="given-name"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                     </div>
@@ -269,16 +286,14 @@
 
                 </div>
                 <div class="col-span-1 md:col-span-1">
-                    <label for="tgl_pengantaran_sampel"
-                        class="block text-sm font-medium leading-6 text-gray-900">Tanggal
-                        Pengantaran Sampel
-                        Kupa <span style="color:red">*</span></label>
+                    <label for="tanggal_terima" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
+                        Terima<span style="color:red">*</span></label>
                     <div class="mt-2">
-                        <input type="date" wire:model="tgl_pengantaran_sampel" id="tgl_pengantaran_sampel"
-                            autocomplete="given-name" value="{{ old('tgl_pengantaran_sampel') }}"
+                        <input type="date" wire:model="tanggal_terima" id="tanggal_terima" autocomplete="given-name"
+                            value="{{ old('tanggal_terima') }}"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
-                        @error('tgl_pengantaran_sampel')
+                        @error('tanggal_terima')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
@@ -393,7 +408,7 @@
                 </div>
             </div>
 
-            <div class="sm:col-span-6  rounded-lg border border-dashed border-gray-900/25 mt-8">
+            <div class="sm:col-span-6 mt-5 rounded-lg border border-dashed border-gray-900/25">
                 @foreach($oldform as $index => $parameter)
                 <div class="grid grid-cols-5 gap-5 mt-4">
 
@@ -540,15 +555,15 @@
 
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
-                <button type="submit" wire:loading.remove
+                <button type="submit"
                     class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
                     Update Progress
                 </button>
-                <button type="button" wire:loading
+                {{-- <button type="button"
                     class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm cursor-not-allowed">
 
                     Update Progress
-                    <svg aria-hidden="true" id="loading"
+                    <svg aria-hidden="true"
                         class="ml-3 inline w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600"
                         viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -558,7 +573,7 @@
                             d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
                             fill="currentFill" />
                     </svg>
-                </button>
+                </button> --}}
             </div>
             @if ($successSubmit)
             <div class="p-4 mb-4 mt-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"

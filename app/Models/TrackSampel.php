@@ -12,7 +12,9 @@ class TrackSampel extends Model
     protected $table = 'track_sampel';
     public $timestamps = false;
     protected $fillable = [
-        'tanggal_penerimaan',
+        'tanggal_memo',
+        'tanggal_terima',
+        'status_changed_by',
         'jenis_sampel',
         'asal_sampel',
         'nomor_kupa',

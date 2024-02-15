@@ -24,7 +24,8 @@ class InputProgress extends Component
     public $parameterAnalisis = [];
     public $metodeAnalisis = [];
     public $jenis_sampel = 5;
-    public $tanggal_penerimaan;
+    public $tanggal_memo;
+    public $tanggal_terima;
     public $asal_sampel;
     public $nomor_kupa;
     public $nama_pengirim;
@@ -69,7 +70,7 @@ class InputProgress extends Component
     public $formData = [];
 
     protected $rules = [
-        'tanggal_penerimaan' => 'required|date',
+        'tanggal_terima' => 'required|date',
         'jenis_sampel' => 'required',
         'asal_sampel' => 'required|in:Internal,Eksternal',
         'nomor_kupa' => 'required|numeric',
@@ -205,7 +206,8 @@ class InputProgress extends Component
 
         $current = Carbon::now();
         $current = $current->format('y');
-        $this->tanggal_penerimaan = Carbon::now()->toDateString();
+        $this->tanggal_memo = Carbon::now()->toDateString();
+        $this->tanggal_terima = Carbon::now()->toDateString();
         $jumlah_sampel_default = 0;
         $this->jumlah_sampel = $jumlah_sampel_default;
         $this->kondisi_sampel = 'Normal';
@@ -337,7 +339,8 @@ class InputProgress extends Component
 
             $trackSampel = new TrackSampel();
             $trackSampel->jenis_sampel = $this->jenis_sampel;
-            $trackSampel->tanggal_penerimaan = $this->tanggal_penerimaan;
+            $trackSampel->tanggal_memo = $this->tanggal_memo;
+            $trackSampel->tanggal_terima = $this->tanggal_terima;
             $trackSampel->asal_sampel = $this->asal_sampel;
             $trackSampel->nomor_kupa = $this->nomor_kupa;
             $trackSampel->nama_pengirim = $this->nama_pengirim;
@@ -411,7 +414,7 @@ class InputProgress extends Component
                 // try {
                 //     Mail::to($recipients)
                 //         ->cc($cc)
-                //         ->send(new EmailPelanggan($this->tanggal_penerimaan, $this->nomor_surat, $nomorlab));
+                //         ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $nomorlab));
 
                 //     return "Email sent successfully!";
                 // } catch (\Exception $e) {
@@ -433,7 +436,8 @@ class InputProgress extends Component
 
         $this->reset([
             'jenis_sampel',
-            'tanggal_penerimaan',
+            'tanggal_memo',
+            'tanggal_terima',
             'asal_sampel',
             'nomor_kupa',
             'nama_pengirim',

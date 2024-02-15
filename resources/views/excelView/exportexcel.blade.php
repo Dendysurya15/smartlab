@@ -21,23 +21,23 @@
             <tr>
                 <th></th>
                 <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
-                <td colspan="18"
+                <td colspan="16"
                     style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
                     PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="18"
+                <td colspan="16"
                     style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
                     RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="18" style="border: 1px solid black;">Formulir</td>
+                <td colspan="16" style="border: 1px solid black;">Formulir</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="18" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
+                <td colspan="16" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
                     {{$jenis_kupa}} </td>
             </tr>
             <tr>
@@ -48,7 +48,7 @@
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
                     Revisi
                 </th>
-                <th colspan="8" style="border: 1px solid black;text-align:center;">
+                <th colspan="6" style="border: 1px solid black;text-align:center;">
                     Berlaku Efektif
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
@@ -63,7 +63,7 @@
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
                     02
                 </th>
-                <th colspan="8" style="border: 1px solid black;text-align:center;">
+                <th colspan="6" style="border: 1px solid black;text-align:center;">
                     1-jul-21
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
@@ -85,7 +85,7 @@
                     : {{$tanggal_penerimaan}}
                 </th>
 
-                <th colspan="12" style="border-top: 1px solid black;"></th>
+                <th colspan="10" style="border-top: 1px solid black;"></th>
                 <th colspan="3" style="border-top: 1px solid black;">Jenis Sampel</th>
                 <th style="border-top: 1px solid black;border-right: 1px solid black;">: {{$jenis_kupa}}</th>
             </tr>
@@ -98,7 +98,7 @@
                     : {{$no_kupa}}
                 </th>
 
-                <th colspan="13" style="border-bottom: 1px solid blacck;"></th>
+                <th colspan="11" style="border-bottom: 1px solid blacck;"></th>
                 <th colspan="3" style="border-bottom: 1px solid black;">Nama Pelanggan</th>
                 <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$nama_pengirim}}</th>
             </tr>
@@ -133,7 +133,7 @@
                     Sumber Daya Laboratorium
                 </th>
 
-                <th colspan="5" style="border: 1px solid black;text-align:center;">
+                <th colspan="3" style="border: 1px solid black;text-align:center;">
                     Biaya Analisa (Rp)
                 </th>
                 <th style="border: 1px solid black;text-align:center;">
@@ -170,12 +170,12 @@
                 <th style="border: 1px solid black;text-align:center;">
                     Sub Total
                 </th>
-                <th style="border: 1px solid black;text-align:center;">
+                {{-- <th style="border: 1px solid black;text-align:center;">
                     ppn 11%
                 </th>
                 <th style="border: 1px solid black;text-align:center;">
                     Total
-                </th>
+                </th> --}}
                 <th style="border: 1px solid black;text-align:center;">
                     Langsung / Telepon / Email
                 </th>
@@ -204,15 +204,20 @@
                     {{ $data['col_mark'] == 1 ? '✓' : '' }}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_metode']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_satuan']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_personel']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_alat']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_bahan']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;"> {{ $data['col_personel'] == 1 ?
+                    '✓' : '' }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;"> {{ $data['col_alat'] == 1 ? '✓'
+                    : '' }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;"> {{ $data['col_bahan'] == 1 ? '✓'
+                    : '' }}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel_2']}}
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_harga']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total']}}</td>
+                {{-- <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total']}}
+                </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_ppn']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_total']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_total']}}</td> --}}
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_langsung']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_normal']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_abnormal']}}</td>
@@ -220,6 +225,95 @@
             </tr>
             @endforeach
 
+
+            <tr>
+                <td></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td colspan="4"
+                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                    Total Per Parameter</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td
+                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                    {{$sub_total}}</td>
+                {{-- <td
+                    style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td> --}}
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td colspan="4"
+                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                    PPn 11%</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td
+                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                    {{$ppn}}</td>
+
+                {{-- <td
+                    style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td> --}}
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+            </tr>
 
             <tr>
                 <td></td>
@@ -244,13 +338,18 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
                 <td
                     style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                     {{$final_total}}</td>
+
+                {{-- <td
+                    style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td> --}}
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
@@ -270,7 +369,7 @@
                 <td colspan="2" style="border: 1px solid black;">Dibuat Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Disetujui Oleh,</td>
-                <td colspan="12"
+                <td colspan="10"
                     style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
                     Catatan Khusus : </td>
             </tr>
@@ -282,32 +381,32 @@
                     (............................................)</td>
                 <td colspan="3" rowspan="5" style="border:1px solid black">
                     (............................................)</td>
-                <td colspan="12" style="border-right: 1px solid black;"></td>
+                <td colspan="10" style="border-right: 1px solid black;"></td>
             </tr>
 
             <tr>
                 <td></td>
-                <td colspan="12" style="border-right: 1px solid black;"></td>
+                <td colspan="10" style="border-right: 1px solid black;"></td>
             </tr>
 
             <tr>
                 <td></td>
-                <td colspan="12" style="border-right: 1px solid black;"></td>
+                <td colspan="10" style="border-right: 1px solid black;"></td>
             </tr>
             <tr>
                 <td></td>
-                <td colspan="12" style="border-right: 1px solid black;"></td>
+                <td colspan="10" style="border-right: 1px solid black;"></td>
             </tr>
             <tr>
                 <td></td>
-                <td colspan="12" style="border-right: 1px solid black;"></td>
+                <td colspan="10" style="border-right: 1px solid black;"></td>
             </tr>
             <tr>
                 <td></td>
                 <td colspan="2" style="border: 1px solid black;">Petugas Penerima Sampel</td>
                 <td colspan="3" style="border: 1px solid black;">Manager Laboratorium</td>
                 <td colspan="3" style="border: 1px solid black;">Pelanggan</td>
-                <td colspan="12" style="border-bottom: 1px solid black;border-right: 1px solid black;"></td>
+                <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;"></td>
             </tr>
 
         </tbody>

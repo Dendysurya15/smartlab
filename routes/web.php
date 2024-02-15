@@ -36,7 +36,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])
         ->name('export.excel');
-    // Route for the getting the data feed
+    Route::get('/export-form-monitoring-kupa/{id}', [HistoryKupaController::class, 'exportFormMonitoringKupa'])
+        ->name('export.form-monitoring-kupa');
+
     Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

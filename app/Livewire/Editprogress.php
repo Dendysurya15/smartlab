@@ -15,12 +15,13 @@ use Illuminate\Support\Facades\DB;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MinotoringExport;
-
+use App\Exports\MonitoringKupaExport;
 
 class Editprogress extends Component
 {
     public $sample;
-    public $tanggal;
+    public $tanggal_memo;
+    public $tanggal_terima;
     public $estimasi;
     public $no_kupa;
     public $jenis_sampel;
@@ -54,7 +55,6 @@ class Editprogress extends Component
     public $foto_sampel;
     public $emailTo;
     public $emailCc;
-    public $estimasikupa;
     public $parameterid;
     public $oldform = [];
     public $parameters = [];
@@ -230,8 +230,11 @@ class Editprogress extends Component
 
 
         $this->kode_track = $query->kode_track;
-        $this->tanggal = $query->tanggal_penerimaan
-            ? Carbon::parse($query->tanggal_penerimaan)->format('Y-m-d')
+        $this->tanggal_memo = $query->tanggal_memo
+            ? Carbon::parse($query->tanggal_memo)->format('Y-m-d')
+            : null;
+        $this->tanggal_terima = $query->tanggal_terima
+            ? Carbon::parse($query->tanggal_terima)->format('Y-m-d')
             : null;
         $this->estimasi = $query->estimasi
             ? Carbon::parse($query->estimasi)->format('Y-m-d')
@@ -358,7 +361,16 @@ class Editprogress extends Component
 
         $timeupdate = Carbon::now()->format('y-m-d H:i:s');
 
-        $newupdate = $last_update . ',' . $timeupdate;
+        $queryJenisSampel = JenisSampel::find($query->jenis_sampel);
+        $list_progress = explode(',', $queryJenisSampel->progress);
+
+        $processed_progress = [];
+        foreach ($list_progress as $list) {
+            $processed_progress[] = $list;
+            if ($list == $query->progress) {
+                break;
+            }
+        }
 
         $trackid = $query->parameter_analisisid;
 
@@ -382,8 +394,6 @@ class Editprogress extends Component
             }
         }
 
-
-
         $newParams = [];
         foreach ($oldparameteredit as $key => $value) {
             if (!array_key_exists('id', $value)) {
@@ -398,25 +408,34 @@ class Editprogress extends Component
             $trackSampel = TrackSampel::find($id);
 
             $progress_now =  ProgressPengerjaan::where('id', $this->get_progress)->first()->nama;
-            // Update the existing TrackSampel model
             $trackSampel->jenis_sampel = $this->jenis_sampel;
-            $trackSampel->tanggal_penerimaan = $this->tanggal;
-            $trackSampel->progress = $this->get_progress;
+            $trackSampel->tanggal_memo = $this->tanggal_memo;
+            $trackSampel->tanggal_terima = $this->tanggal_terima;
+
 
             $trackSampel->status = $this->selected_status;
+            $trackSampel->status_changed_by = auth()->user()->id;
             $trackSampel->asal_sampel = $this->asal_sampel;
             $trackSampel->nomor_kupa = $this->no_kupa;
-            $trackSampel->nomor_lab = $this->nomor_lab;
+            $trackSampel->nomor_lab = $this->nomor_lab_left . '-' . $this->nomor_lab_right;
             $trackSampel->nama_pengirim = $this->nama_pengirim;
             $trackSampel->departemen = $this->departemen;
             $trackSampel->kode_sampel = $this->kode_sampel;
             $trackSampel->nomor_surat = $this->nomor_surat;
-            $trackSampel->estimasi = $this->estimasikupa;
+            $trackSampel->estimasi = $this->estimasi;
             $trackSampel->tujuan = $this->tujuan;
             $trackSampel->no_hp = $this->no_hp;
             $trackSampel->emailTo = $this->emailTo;
             $trackSampel->emailCc = $this->emailCc;
-            $trackSampel->last_update = $newupdate;
+
+
+
+            // jika ada progress yang berbeda
+            if (!in_array($this->get_progress, $processed_progress)) {
+                $trackSampel->progress = $this->get_progress;
+                $trackSampel->last_update = $last_update . ',' . $timeupdate;
+            }
+
             $trackSampel->save();
 
             TrackParameter::whereIn('id', $idold)->delete();
@@ -487,12 +506,48 @@ class Editprogress extends Component
         }
     }
 
+    private function isDataModified($oldparameteredit)
+    {
+        // Check if any changes have been made to the data in $oldparameteredit
+
+
+
+        foreach ($oldparameteredit as $key => $value) {
+            if (array_key_exists('id', $value)) {
+                // If any id exists, changes have been made
+                return true;
+            }
+        }
+
+
+
+
+        // Check if any changes have been made to the properties of $trackSampel
+        // $propertiesToCheck = [
+        //     'jenis_sampel', 'tanggal_memo', 'tanggal_terima',
+        //     'status', 'asal_sampel', 'nomor_kupa',
+        //     'nomor_lab_left', 'nomor_lab_right', 'nama_pengirim',
+        //     'departemen', 'kode_sampel', 'nomor_surat',
+        //     'estimasi', 'tujuan', 'no_hp', 'emailTo', 'emailCc'
+        // ];
+
+        // foreach ($propertiesToCheck as $property) {
+        //     if ($this->$property !== $this->trackSampel->$property) {
+        //         // If any property is different, changes have been made
+        //         return true;
+        //     }
+        // }
+
+        // // If no changes have been detected
+        // return false;
+    }
+
     public function exportExcel()
     {
         $this->isExporting = true; // Set the flag to true when exporting Excel
         $id = $this->sample;
 
-        return Excel::download(new MinotoringExport($id), 'Data_Lab.xlsx');
+        return Excel::download(new MonitoringKupaExport($id), 'Data_Lab.xlsx');
     }
 
     // public function export()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\FormDataExport;
+use App\Exports\MonitoringKupaExport;
 use App\Http\Requests\InputProgressRequest;
 use App\Models\JenisSampel;
 use App\Models\ProgressPengerjaan;
@@ -189,6 +190,16 @@ class HistoryKupaController extends Controller
 
     public function exportExcel($id)
     {
-        return Excel::download(new FormDataExport($id), 'Data_Lab.xlsx');
+        $query = TrackSampel::find($id);
+
+        $filename = 'Kupa ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
+        return Excel::download(new FormDataExport($id), $filename);
+    }
+
+    public function exportFormMonitoringKupa($id)
+    {
+        $query = TrackSampel::find($id);
+        $filename = 'Form Monitoring Kupa ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
+        return Excel::download(new MonitoringKupaExport($id), $filename);
     }
 }

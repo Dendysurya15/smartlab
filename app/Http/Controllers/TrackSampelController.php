@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JenisSampel;
+use App\Models\ProgressPengerjaan;
+use App\Models\TrackSampel;
 use Illuminate\Http\Request;
 
 class TrackSampelController extends Controller

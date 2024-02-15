@@ -23,7 +23,7 @@
     @can('create_new_user')
     <form wire:submit.prevent="save" method="POST">
         @csrf
-        <div class="pt-5">
+        <div class="pt-5 ">
             <h2 class="text-base font-semibold leading-7 text-gray-900">Buat User Baru</h2>
             <p class="mt-1 text-sm leading-6 text-gray-600">Berikut ini merupakan form untuk menambahkan user admin atau
                 role lain ke sistem Smartlab. Mohon pastikan untuk mengisi data dengan benar !</p>

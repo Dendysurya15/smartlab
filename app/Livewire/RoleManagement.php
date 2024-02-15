@@ -58,7 +58,7 @@ class RoleManagement extends Component implements HasTable, HasForms
             ->query(User::query())
             ->columns([
                 TextColumn::make('name')->sortable(),
-                TextColumn::make('password')
+                TextColumn::make('updated_at')
                     ->getStateUsing(function (User $user) {
                         return implode('.', $user->getRoleNames()->toArray());
                     })
@@ -68,8 +68,11 @@ class RoleManagement extends Component implements HasTable, HasForms
                     ->color('success')
                     ->listWithLineBreaks()
                     ->sortable(),
-
                 TextColumn::make('email')
+                    ->label('Email User')
+                    ->sortable(),
+
+                TextColumn::make('created_at')
                     ->getStateUsing(function (User $user) {
                         $permissionsString = implode('.', $user->getAllPermissions()->pluck('name')->toArray());
                         return $permissionsString;

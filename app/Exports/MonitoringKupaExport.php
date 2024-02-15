@@ -20,7 +20,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use OpenSpout\Common\Entity\Style\Border;
 
 
-class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
+class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
 {
     private $id;
 
@@ -35,59 +35,63 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
     public function view(): View
     {
 
+
         $tracksample = TrackSampel::findOrFail($this->id);
-        $tanggal_penerimaan = Carbon::parse($tracksample['tanggal_penerimaan']);
+        $tanggal_terima = Carbon::parse($tracksample['tanggal_terima']);
 
 
         $trackparam = $tracksample->trackParameters;
-        // dd($trackparam);
+
         $val_track = 0;
         foreach ($trackparam as $key => $value) {
             $val_track += $value['jumlah'];
             $id[] = $value['id'];
         }
-        // dd($id);
+
         $trackParameters = TrackParameter::with('ParameterAnalisis')->whereIn('id', $id)->get();
 
         $nama_parameter = [];
 
+
+        $hargatotal = 0;
         foreach ($trackParameters as $trackParameter) {
             if ($trackParameter->ParameterAnalisis) {
                 $nama_parameter[] = $trackParameter->ParameterAnalisis->nama_parameter;
                 $hargaasli[] = $trackParameter->ParameterAnalisis->harga;
+                $harga_total_per_sampel[] = $trackParameter->totalakhir;
+                $jumlah_per_parameter[] = $trackParameter->jumlah;
             }
-            $totalharga = array_sum($hargaasli);
-            $totalppn = $totalharga * 0.11;
-
-            $totalbayar = $totalharga + $totalppn;
+            $hargatotal += $trackParameter->totalakhir;
         }
 
-        // dd($totalharga);
+        $harga_total_dengan_ppn = hitungPPN($hargatotal);
+        $final_total = $hargatotal + hitungPPN($hargatotal);
 
         $row = count($nama_parameter);
 
         $arr = array();
         for ($i = 0; $i < $row; $i++) {
-            $temp = array(); // Create a temporary array for each row
+            $temp = array();
             $temp['no'] =  $i === 0 ? '1' : ' ';
-            $temp['tgl_trma'] =  $i === 0 ? $tanggal_penerimaan->format('Y-m-d') : ' ';
+            $temp['tgl_trma'] =  $i === 0 ? $tanggal_terima->format('Y-m-d') : ' ';
             $temp['jenis_sample'] =  $i === 0 ? $tracksample->jenisSampel->nama : ' ';
             $temp['asal_sampel'] = $i === 0 ? $tracksample->asal_sampel : ' ';
-            $temp['memo_pengantar'] = $i === 0 ? '-' : ' ';
+            $temp['memo_pengantar'] = $i === 0 ? tanggal_indo($tracksample->tanggal_memo, false, false, true) : ' ';
             $temp['nama_pengirim'] = $i === 0 ? $tracksample->nama_pengirim : ' ';
             $temp['departemen'] = $i === 0 ? $tracksample->departemen : ' ';
             $temp['nomor_kupa'] = $i === 0 ? $tracksample->nomor_kupa : ' ';
             $temp['kode_sampel'] = $i === 0 ? $tracksample->kode_sampel : ' ';
             $temp['jumlah_parameter'] = $i === 0 ?  $val_track : ' ';
-            $temp['jumlah_sampel'] = $i === 0 ?  $tracksample->jumlah_sampel : ' ';
-            $temp['parameter_anal'] =   $nama_parameter[$i]; // Access specific element based on index
+            $temp['jumlah_sampel'] =   $jumlah_per_parameter[$i];
+            $temp['sub_total_per_parameter'] =   $harga_total_per_sampel[$i];
+            $temp['parameter_analisis'] =   $nama_parameter[$i];
             $temp['harga_normal'] =   $hargaasli[$i];
-            $temp['estimasi'] = $i === 0 ? $tracksample->estimasi : ' ';
+            $temp['estimasi'] = $i === 0 ? tanggal_indo($tracksample->estimasi, false, false, true) : ' ';
             $temp['tanggal_serif'] = $i === 0 ?  '-' : ' ';
             $temp['no_serif'] = $i === 0 ? '-' : ' ';
-            $temp['tanggal_kirimserif'] = $i === 0 ? '-x' : ' ';
+            $temp['tanggal_kirim_sertif'] = $i === 0 ? '-' : ' ';
 
-            $arr[] = $temp; // Add the row to the main array
+            $arr[] = $temp;
         }
 
         $total = [
@@ -102,13 +106,14 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
             'kode_sampel' =>  ' ',
             'jumlah_parameter' =>  ' ',
             'jumlah_sampel' =>   ' ',
-            'parameter_anal' =>   'Sub Total',
-            'harga_normal' =>  $totalharga,
+            'sub_total_per_parameter' => ' ',
+            'parameter_analisis' =>   'Sub Total',
+            'harga_normal' =>  $hargatotal,
             'harga_ppn' =>   ' ',
             'estimasi' =>  ' ',
             'tanggal_serif' =>   ' ',
             'no_serif' =>  ' ',
-            'tanggal_kirimserif' =>  ' ',
+            'tanggal_kirim_sertif' =>  ' ',
         ];
         $totalppn = [
             'no' =>  ' ',
@@ -122,13 +127,14 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
             'kode_sampel' =>  ' ',
             'jumlah_parameter' =>  ' ',
             'jumlah_sampel' =>   ' ',
-            'parameter_anal' =>   'PPN 11%',
-            'harga_normal' =>  $totalppn,
+            'sub_total_per_parameter' => ' ',
+            'parameter_analisis' =>   'PPN 11%',
+            'harga_normal' =>  $harga_total_dengan_ppn,
             'harga_ppn' =>   ' ',
             'estimasi' =>  ' ',
             'tanggal_serif' =>   ' ',
             'no_serif' =>  ' ',
-            'tanggal_kirimserif' =>  ' ',
+            'tanggal_kirim_sertif' =>  ' ',
         ];
         $totalfinal = [
             'no' =>  ' ',
@@ -142,16 +148,17 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
             'kode_sampel' =>  ' ',
             'jumlah_parameter' =>  ' ',
             'jumlah_sampel' =>   ' ',
-            'parameter_anal' =>   'Total Harga',
-            'harga_normal' =>  $totalbayar,
+            'sub_total_per_parameter' => ' ',
+            'parameter_analisis' =>   'Total Harga',
+            'harga_normal' =>  $final_total,
             'harga_ppn' =>   ' ',
             'estimasi' =>  ' ',
             'tanggal_serif' =>   ' ',
             'no_serif' =>  ' ',
-            'tanggal_kirimserif' =>  ' ',
+            'tanggal_kirim_sertif' =>  ' ',
         ];
 
-        return view('excelView.monotoringexcel', ['data' => $arr, 'total' => $total, 'totalppn' => $totalppn, 'totalfinal' => $totalfinal]);
+        return view('excelView.monitoringexcel', ['data' => $arr, 'total' => $total, 'totalppn' => $totalppn, 'totalfinal' => $totalfinal]);
     }
     public function registerEvents(): array
     {
@@ -195,7 +202,7 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
                     'M21',
                 ];
                 $arrcells = [
-                    'B11', 'C11', 'D11', 'E11', 'F11', 'G11', 'H11', 'I11',
+                    'B11', 'C11', 'D11', 'E11', 'F11', 'G11', 'H12', 'I11',
                     'J11',
                     'K11',
                     'L11',
@@ -208,15 +215,19 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
                     'F12',
                     'G12',
                     'R11',
+                    'S11',
+                    'D1',
+                    'D2',
+                    'D3',
+                    'D4'
                 ];
 
-                // dd($arrcells);
                 foreach ($arrcells as $key => $value) {
                     $event->sheet->getStyle($value)->applyFromArray($styleHeader);
                 }
-                foreach ($arrtotal as $key => $value) {
-                    $event->sheet->getStyle($value)->applyFromArray($styleHeader);
-                }
+                // foreach ($arrtotal as $key => $value) {
+                //     $event->sheet->getStyle($value)->applyFromArray($styleHeader);
+                // }
             },
         ];
     }
@@ -226,21 +237,21 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
     {
         return [
             'A' => 5,
-            'B' => 10,
-            'C' => 8,
+            'B' => 6,
+            'C' => 15,
             'D' => 15,
-            'E' => 15,
-            'F' => 10,
-            'G' => 10,
-            'H' => 8,
+            'E' => 20,
+            'F' => 25,
+            'G' => 15,
+            'H' => 20,
             'I' => 15,
             'J' => 10,
             'K' => 10,
             'L' => 20,
-            'M' => 10,
+            'M' => 25,
             'N' => 15,
             'O' => 15,
-            'P' => 15,
+            'P' => 20,
             'Q' => 15,
             'R' => 15,
         ];
@@ -254,7 +265,7 @@ class MinotoringExport implements FromView, ShouldAutoSize, WithColumnWidths, Wi
         $drawing->setPath(public_path('images/Logo_CBI_2.png'));
         $drawing->setHeight(70);
         $drawing->setWidth(100);
-        $drawing->setCoordinates('A1');
+        $drawing->setCoordinates('B1');
 
         return $drawing;
     }

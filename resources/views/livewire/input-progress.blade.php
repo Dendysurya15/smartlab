@@ -9,17 +9,15 @@
                 <p class="mt-1 text-sm leading-6 text-gray-600">Peringatan untuk crosscheck ulang seluruh
                     data yang ingin akan dimasukkan ke sistem!</p>
 
-                {{-- tanggal penerimaan --}}
+                {{-- tanggal memo --}}
                 <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-2">
-                        <label for="tanggal_penerimaan"
-                            class="block text-sm font-medium leading-6 text-gray-900">Tanggal
-                            Penerimaan <span style="color:red">*</span></label>
+                        <label for="tanggal_memo" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
+                            Memo <span style="color:red">*</span></label>
                         <div class="mt-2">
-                            <input type="date" wire:model="tanggal_penerimaan" id="tanggal_penerimaan"
-                                autocomplete="given-name"
+                            <input type="date" wire:model="tanggal_memo" id="tanggal_memo" autocomplete="given-name"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                            @error('tanggal_penerimaan')
+                            @error('tanggal_memo')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -220,15 +218,14 @@
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label for="tgl_pengantaran_sampel"
-                            class="block text-sm font-medium leading-6 text-gray-900">Tanggal Pengantaran Sampel
-                            Kupa <span style="color:red">*</span></label>
+                        <label for="tanggal_terima" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
+                            Penerimaan<span style="color:red">*</span></label>
                         <div class="mt-2">
-                            <input type="date" wire:model="tgl_pengantaran_sampel" id="tgl_pengantaran_sampel"
-                                autocomplete="given-name" value="{{ old('tgl_pengantaran_sampel') }}"
+                            <input type="date" wire:model="tanggal_terima" id="tanggal_terima" autocomplete="given-name"
+                                value="{{ old('tanggal_terima') }}"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
-                            @error('tgl_pengantaran_sampel')
+                            @error('tanggal_terima')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
