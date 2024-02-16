@@ -410,16 +410,18 @@ class InputProgress extends Component
 
                 $this->resetForm();
 
-                // dd($recipients);
-                // try {
-                //     Mail::to($recipients)
-                //         ->cc($cc)
-                //         ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $nomorlab));
+                $nomorserif = '-';
 
-                //     return "Email sent successfully!";
-                // } catch (\Exception $e) {
-                //     return "Error: " . $e->getMessage();
-                // }
+                // dd($recipients);
+                try {
+                    Mail::to($recipients)
+                        ->cc($cc)
+                        ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $nomorlab, $randomCode, $nomorserif));
+
+                    return "Email sent successfully!";
+                } catch (\Exception $e) {
+                    return "Error: " . $e->getMessage();
+                }
             } else {
                 DB::rollBack();
                 $this->msgError = 'An error occurred while saving the data: ';

@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -16,43 +17,43 @@ class EmailPelanggan extends Mailable
     public $tgl;
     public $nomor_surat;
     public $nomorlab;
+    public $randomCode;
+    public $nomorserif;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($tgl, $nomor_surat, $nomorlab)
+    public function __construct($tgl, $nomor_surat, $nomorlab, $randomCode, $nomorserif)
     {
         $this->tgl = $tgl;
         $this->nomor_surat = $nomor_surat;
         $this->nomorlab = $nomorlab;
-    }
-    /**
-     * Get the message envelope.
-     */
-    // public function build()
-    // {
-
-    //     return $this->view('layouts.email')
-    //         ->subject('Your Subject Here');
-    // }
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
-            view: 'layouts.email',
-        );
+        $this->randomCode = $randomCode;
+        $this->nomorserif = $nomorserif;
     }
 
     /**
-     * Get the attachments for the message.
+     * Build the message.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return $this
      */
-    public function attachments(): array
+    public function build()
     {
-        return [];
+
+        $datenow = Carbon::now();
+
+        // Format the date as "dd-mm-yy"
+        $formattedDate = $datenow->format('d-m-y');
+
+
+        return $this->view('layouts.email', [
+            'tanggal' => $this->tgl,
+            'nomorsurat' => $this->nomor_surat,
+            'nomorlab' => $this->nomorlab,
+            'track' => $this->randomCode,
+            'nomorserif' => $this->nomorserif,
+            'tanggalkirim' => $formattedDate,
+        ])
+            ->subject('Hasil Analisa Surat:' . ' ' . $this->nomor_surat);
     }
 }

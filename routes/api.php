@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestEmailController;
 use App\Mail\SendingEmail;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailPelanggan;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,8 +23,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::get('/send-mail', function () {
-    $email = new SendingEmail(); // Corrected the assignment operator from '-' to '='
-    Mail::to('valentinojaja@gmail.com')->send($email);
+    $recipients = 'valentinojaja@gmail.com';
+    $cc = 'elsamayanti.putrisim@gmail.com';
+    $tgl = '02-16-2024';
+    $nomor_surat = 'Testtest';
+    $nomorlab = 'testomg';
+    try {
+        Mail::to($recipients)
+            ->cc($cc)
+            ->send(new EmailPelanggan($tgl, $nomor_surat, $nomorlab));
 
-    return 'Success';
+        return "Email sent successfully!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
 });

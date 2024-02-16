@@ -53,7 +53,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         return view('pages/utility/404');
     });
     Route::get('/testing', function () {
-        return view('excelView.monotoringexcel');
+        return view('layouts.email');
     });
 
     Route::resource('system', SystemController::class);
