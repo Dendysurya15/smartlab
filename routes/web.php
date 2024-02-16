@@ -30,6 +30,7 @@ use App\Http\Controllers\UserRoleController;
 
 Route::redirect('/', 'login');
 Route::get('tracking_sampel', [TrackSampelController::class, 'index']);
+Route::get('tracking_sampels/{id}', [TrackSampelController::class, 'searchbyid']);
 Route::post('search_sampel_progress', [TrackSampelController::class, 'search'])->name('search_sampel_progress');
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {

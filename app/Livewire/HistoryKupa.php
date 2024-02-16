@@ -72,6 +72,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 TextColumn::make('progressSampel.nama')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable()
+                    ->copyable()
                     ->sortable()
                     ->size('xs'),
                 TextColumn::make('nomor_kupa')
