@@ -15,12 +15,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         if (localStorage.getItem('dark-mode') === 'false' || !('dark-mode' in localStorage)) {
-            document.querySelector('html').classList.remove('dark');
-            document.querySelector('html').style.colorScheme = 'light';
-        } else {
-            document.querySelector('html').classList.add('dark');
-            document.querySelector('html').style.colorScheme = 'dark';
-        }
+                document.querySelector('html').classList.remove('dark');
+                document.querySelector('html').style.colorScheme = 'light';
+            } else {
+                document.querySelector('html').classList.add('dark');
+                document.querySelector('html').style.colorScheme = 'dark';
+            }
     </script>
 </head>
 
@@ -64,7 +64,8 @@
                                         fill="url(#logo-b)" />
                                 </svg> --}}
                                 <div class="">
-                                    <img class="" src="{{ asset('images/LOGO-SRS.png') }}" width="170" height="170" alt="Alex Shatov" />
+                                    <img class="" src="{{ asset('images/LOGO-SRS.png') }}" width="170" height="170"
+                                        alt="Alex Shatov" />
                                 </div>
                             </a>
                             {{-- <p>kasdjflk</p> --}}
@@ -85,7 +86,8 @@
                                     <x-label for="kode">{{ __('Kode') }} <span class="text-rose-500">*</span>
                                     </x-label>
 
-                                    <x-input id="kode" type="text" name="kode" :value="old('kode')" required autofocus autocomplete="kode" />
+                                    <x-input id="kode" type="text" name="kode" :value="old('kode')" required autofocus
+                                        autocomplete="kode" />
                                 </div>
                             </div>
                             <div class="flex items-center mt-6">
@@ -95,9 +97,15 @@
 
 
                                 </x-button>
-                                <svg aria-hidden="true" id="loading" style="display: none" class="ml-3 inline w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                                <svg aria-hidden="true" id="loading" style="display: none"
+                                    class="ml-3 inline w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600"
+                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                        fill="currentColor" />
+                                    <path
+                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                        fill="currentFill" />
                                 </svg>
                             </div>
 
@@ -105,11 +113,13 @@
 
 
                         <div class="mt-5" id="result" style="display: none">
-                            <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                            <div
+                                class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                 {{-- <a href="#"> --}}
-                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="kode_track_hasil">
-                                </h5>
-                                {{--
+                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+                                        id="kode_track_hasil">
+                                    </h5>
+                                    {{--
                                 </a> --}}
                                 {{-- <ul class="space-y-4 text-left text-gray-500 dark:text-gray-400">
                                     <li class="flex items-start space-x-3">
@@ -132,7 +142,9 @@
                             </div>
                         </div>
 
-                        <div class="mt-5 mb-2 text-sm text-slate-600 font-medium italic" id="result_empty" style="display: none">Tidak menemukan sampel dengan kode <span id="kode_track_failed" class="text-red-600"></span>
+                        <div class="mt-5 mb-2 text-sm text-slate-600 font-medium italic" id="result_empty"
+                            style="display: none">Tidak menemukan sampel dengan kode <span id="kode_track_failed"
+                                class="text-red-600"></span>
 
                         </div>
                     </div>
@@ -143,10 +155,11 @@
 
             <!-- Image -->
             <div class="hidden md:block absolute top-0 bottom-0 right-0 md:w-1/2" aria-hidden="true">
-                <img class="object-cover object-center w-full h-full" src="{{ asset('images/YCH09564.jpg') }}" width="760" height="1024" alt="Authentication image" />
+                <img class="object-cover object-center w-full h-full" src="{{ asset('images/YCH09564.jpg') }}"
+                    width="760" height="1024" alt="Authentication image" />
                 {{-- <img class="absolute top-1/4 left-0 -translate-x-1/2 ml-8 hidden lg:block"
                     src="{{ asset('images/auth-decoration.png') }}" width="218" height="224"
-                alt="Authentication decoration" /> --}}
+                    alt="Authentication decoration" /> --}}
             </div>
         </div>
 
@@ -156,38 +169,37 @@
 </html>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('tracking-form');
-        const resultElement = document.getElementById('result');
-        const resultEmptyElement = document.getElementById('result_empty');
-        const kode_track_hasil = document.getElementById('kode_track_hasil');
-        const kode_track_failed = document.getElementById('kode_track_failed');
-        const ulElement = document.getElementById('progress-list');
-        const loadingSpinner = document.getElementById('loading');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('tracking-form');
+    const resultElement = document.getElementById('result');
+    const resultEmptyElement = document.getElementById('result_empty');
+    const kode_track_hasil = document.getElementById('kode_track_hasil');
+    const kode_track_failed = document.getElementById('kode_track_failed');
+    const ulElement = document.getElementById('progress-list');
+    const loadingSpinner = document.getElementById('loading');
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-            const kode = document.getElementById('kode').value;
-            loadingSpinner.style.display = 'block';
-            // Make an AJAX request
+        const kode = document.getElementById('kode').value;
+        loadingSpinner.style.display = 'block';
+        // Make an AJAX request
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ route('search_sampel_progress') }}', true);
+        xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        
+        xhr.onerror = function() {
+            console.error('Network request failed');
+            loadingSpinner.style.display = 'none';
+        };
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '{{ route('
-                search_sampel_progress ') }}', true);
-            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
-            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-
-            xhr.onerror = function() {
-                console.error('Network request failed');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
                 loadingSpinner.style.display = 'none';
-            };
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    loadingSpinner.style.display = 'none';
-                    ulElement.innerHTML = '';
-                    if (xhr.status === 200) {
-
+                ulElement.innerHTML = '';
+                if (xhr.status === 200) {
+                    
                         const response = JSON.parse(xhr.responseText);
 
 
@@ -196,7 +208,7 @@
                         if (response && Object.keys(response).length > 0) {
                             resultEmptyElement.style.display = 'none';
                             resultElement.style.display = 'block';
-
+                            
                             if (!ulElement) {
                                 // If the ul element doesn't exist, create it
                                 ulElement = document.createElement('ul');
@@ -206,11 +218,11 @@
                                 // Append the newly created ul to the resultElement
                                 resultElement.appendChild(ulElement);
                             }
-
+                            
                             kode_track_hasil.textContent = response.kode_track;
                             var arr_progress = response.progress;
                             var arr_last_update = response.last_update;
-
+                            
                             var inc = 0
                             arr_progress.forEach(element => {
                                 const li = document.createElement('li');
@@ -253,18 +265,17 @@
                             resultElement.style.display = 'none';
                             resultEmptyElement.style.display = 'block';
                             // console.log('Empty response received.');
-                            kode_track_failed.textContent = kode;
+                            kode_track_failed.textContent =  kode ;
                         }
-
-                    }
-                    // Handle other HTTP status codes here if necessary
+                    
                 }
-            };
+                // Handle other HTTP status codes here if necessary
+            }
+        };
 
-            const data = JSON.stringify({
-                kode: kode
-            });
-            xhr.send(data);
-        });
+        const data = JSON.stringify({ kode: kode });
+        xhr.send(data);
     });
+});
+
 </script>
