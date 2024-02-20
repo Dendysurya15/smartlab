@@ -52,7 +52,7 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
 
         $nama_parameter = [];
 
-
+        // dd($trackParameters);
         $hargatotal = 0;
         foreach ($trackParameters as $trackParameter) {
             if ($trackParameter->ParameterAnalisis) {

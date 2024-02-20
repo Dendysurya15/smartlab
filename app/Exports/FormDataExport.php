@@ -22,6 +22,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
     private $id;
 
+    private $countnamaarr; // Class property to store countnamaarr value
 
     public function __construct($id)
     {
@@ -51,6 +52,11 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $jenis_kupa = $jenis_sample->nama;
         $no_kupa = $tracksample->nomor_kupa;
         $nama_pengirim = $tracksample->nama_pengirim;
+
+        $track = $jenis_sample->parameterAnalisis->toArray();
+
+
+        // dd($track);
 
         $arr_per_column = [];
 
@@ -130,38 +136,80 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             //     $match_parameter[$key]['subtotal'] = $subtotal;
             //     $match_parameter[$key]['total'] = $total;
             // }
+            $newInputanParameters = [];
+
+            foreach ($inputan_parameter as $key => $value) {
+                $nama = $value['nama'];
+
+                // Check if the nama contains a comma
+                if (strpos($nama, ',') !== false) {
+                    // Split the nama by comma
+                    $namaArray = explode(',', $nama);
+
+                    // dd($namaArray, $track);
+
+                    $countnamaarr = count($namaArray);
+                    // Iterate through the split nama and create new arrays
+                    foreach ($namaArray as $index => $namaItem) {
+                        foreach ($track as $key => $value1) {
+                            // Compare $namaItem with "nama_unsur" instead of comparing with index
+                            if ($value1['nama_unsur'] === trim($namaItem)) {
+                                $newInputanParameters[] = [
+                                    "nama" => trim($namaItem),
+                                    "alias" => ($index === 0 ?  $value["alias"] : ''),
+                                    "satuan" => $value1["satuan"],
+                                    "metode" => $value1["metode_analisis"],
+                                    "personel" => ($index === 0 ? $value["personel"] : ''),
+                                    "alat" => ($index === 0 ? $value["alat"] : ''),
+                                    "bahan" => ($index === 0 ? $value["bahan"] : ''),
+                                    "harga_per_satuan" => ($index === 0 ? $value["harga_per_satuan"] : ''),
+                                    "jumlah" => ($index === 0 ?  $value["jumlah"] : ''),
+                                    "total_per_parameter" => ($index === 0 ? $value["total_per_parameter"] : '')
+                                ];
+                            }
+                        }
+                    }
+                } else {
+                    // If no comma, simply add the original array
+                    $newInputanParameters[] = $value;
+                }
+            }
+            // dd($newInputanParameters);
+            $row_count = count($newInputanParameters);
+
+
 
 
             for ($i = 0; $i < $row_count; $i++) {
 
                 if ($i == 0) {
 
-                    if (array_key_exists($i, $inputan_parameter) && $i === $i) {
+                    if (array_key_exists($i, $newInputanParameters) && $i === $i) {
                         $arr_per_column[$i]['col_mark'] = 1;
-                        $arr_per_column[$i]['col_param'] = $inputan_parameter[$i]['nama'];
-                        $arr_per_column[$i]['col_harga'] = $inputan_parameter[$i]['harga_per_satuan'];
-                        $arr_per_column[$i]['col_satuan'] = $inputan_parameter[$i]['satuan'];
-                        $arr_per_column[$i]['col_metode'] = $inputan_parameter[$i]['metode'];
-                        $arr_per_column[$i]['col_personel'] = $inputan_parameter[$i]['personel'];
-                        $arr_per_column[$i]['col_alat'] = $inputan_parameter[$i]['alat'];
-                        $arr_per_column[$i]['col_bahan'] = $inputan_parameter[$i]['bahan'];
-                        $arr_per_column[$i]['col_jum_sampel_2'] = $inputan_parameter[$i]['jumlah'];
-                        $arr_per_column[$i]['col_sub_total'] = $inputan_parameter[$i]['total_per_parameter'];
+                        $arr_per_column[$i]['col_param'] = $newInputanParameters[$i]['nama'];
+                        $arr_per_column[$i]['col_harga'] = $newInputanParameters[$i]['harga_per_satuan'];
+                        $arr_per_column[$i]['col_satuan'] = $newInputanParameters[$i]['satuan'];
+                        $arr_per_column[$i]['col_metode'] = $newInputanParameters[$i]['metode'];
+                        $arr_per_column[$i]['col_personel'] = $newInputanParameters[$i]['personel'];
+                        $arr_per_column[$i]['col_alat'] = $newInputanParameters[$i]['alat'];
+                        $arr_per_column[$i]['col_bahan'] = $newInputanParameters[$i]['bahan'];
+                        $arr_per_column[$i]['col_jum_sampel_2'] = $newInputanParameters[$i]['jumlah'];
+                        $arr_per_column[$i]['col_sub_total'] = $newInputanParameters[$i]['total_per_parameter'];
                         $arr_per_column[$i]['col_ppn'] = '';
                         $arr_per_column[$i]['col_total'] = '';
                     }
                 } else {
-                    if (array_key_exists($i, $inputan_parameter) && $i === $i) {
+                    if (array_key_exists($i, $newInputanParameters) && $i === $i) {
                         $arr_per_column[$i]['col_mark'] = 1;
-                        $arr_per_column[$i]['col_param'] = $inputan_parameter[$i]['nama'];
-                        $arr_per_column[$i]['col_harga'] = $inputan_parameter[$i]['harga_per_satuan'];
-                        $arr_per_column[$i]['col_satuan'] = $inputan_parameter[$i]['satuan'];
-                        $arr_per_column[$i]['col_metode'] = $inputan_parameter[$i]['metode'];
-                        $arr_per_column[$i]['col_personel'] = $inputan_parameter[$i]['personel'];
-                        $arr_per_column[$i]['col_alat'] = $inputan_parameter[$i]['alat'];
-                        $arr_per_column[$i]['col_bahan'] = $inputan_parameter[$i]['bahan'];
-                        $arr_per_column[$i]['col_jum_sampel_2'] = $inputan_parameter[$i]['jumlah'];
-                        $arr_per_column[$i]['col_sub_total'] = $inputan_parameter[$i]['total_per_parameter'];
+                        $arr_per_column[$i]['col_param'] = $newInputanParameters[$i]['nama'];
+                        $arr_per_column[$i]['col_harga'] = $newInputanParameters[$i]['harga_per_satuan'];
+                        $arr_per_column[$i]['col_satuan'] = $newInputanParameters[$i]['satuan'];
+                        $arr_per_column[$i]['col_metode'] = $newInputanParameters[$i]['metode'];
+                        $arr_per_column[$i]['col_personel'] = $newInputanParameters[$i]['personel'];
+                        $arr_per_column[$i]['col_alat'] = $newInputanParameters[$i]['alat'];
+                        $arr_per_column[$i]['col_bahan'] = $newInputanParameters[$i]['bahan'];
+                        $arr_per_column[$i]['col_jum_sampel_2'] = $newInputanParameters[$i]['jumlah'];
+                        $arr_per_column[$i]['col_sub_total'] = $newInputanParameters[$i]['total_per_parameter'];
                         $arr_per_column[$i]['col_ppn'] = '';
                         $arr_per_column[$i]['col_total'] = '';
                     }
@@ -177,6 +225,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             }
         }
 
+        $this->countnamaarr = $countnamaarr ?? 0;
 
         // dd($arr_per_column);
         return view('excelView.exportexcel', [
@@ -198,7 +247,43 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
     public function registerEvents(): array
     {
         return [
+
+
             AfterSheet::class => function (AfterSheet $event) {
+
+                // $countnamaarr = 5;
+                if ($this->countnamaarr != 0) {
+                    $endRow = 13 + $this->countnamaarr; // Access countnamaarr from the class property
+
+                    // dd($endRow);
+                    // Merge cells
+                    $event->sheet->mergeCells("O14:O$endRow");
+                    $event->sheet->getStyle("O14:O$endRow")->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+
+                    $event->sheet->mergeCells("N14:N$endRow");
+                    $event->sheet->getStyle("N14:N$endRow")->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                    $event->sheet->mergeCells("J14:J$endRow");
+                    $event->sheet->getStyle("J14:J$endRow")->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                    $event->sheet->mergeCells("K14:K$endRow");
+                    $event->sheet->getStyle("K14:K$endRow")->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                    $event->sheet->mergeCells("L14:L$endRow");
+                    $event->sheet->getStyle("L14:L$endRow")->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                    $event->sheet->mergeCells("M14:M$endRow");
+                    $event->sheet->getStyle("M14:M$endRow")->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                }
+
                 $columnsToStyle = ['B12', 'C12', 'D12', 'E12', 'B5', 'B6', 'D1', 'D2', 'D3', 'D4', 'F12',  'H12', 'I12', 'J13', 'K13', 'L13', 'M13', 'N13', 'O13', 'P13', 'Q13', 'R13', 'S12', 'T13', 'U12'];
                 foreach ($columnsToStyle as $column) {
                     $event->sheet->getStyle($column)->getAlignment()
@@ -211,6 +296,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $event->sheet->getStyle('C12')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('D12')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('G')->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle('H')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('E12')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('I13')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('J13')->getAlignment()->setWrapText(true);
@@ -219,6 +305,8 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $event->sheet->getStyle('M13')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('Q13')->getAlignment()->setWrapText(true);
             },
+
+
         ];
     }
 

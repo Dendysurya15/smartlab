@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
 
@@ -21,14 +20,12 @@
             <tr>
                 <th></th>
                 <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
-                <td colspan="16"
-                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
+                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
                     PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16"
-                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
+                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
                     RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
@@ -38,7 +35,8 @@
             <tr>
                 <th></th>
                 <td colspan="16" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
-                    {{$jenis_kupa}} </td>
+                    {{$jenis_kupa}}
+                </td>
             </tr>
             <tr>
                 <th></th>
@@ -201,7 +199,8 @@
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_no_lab']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_param']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">
-                    {{ $data['col_mark'] == 1 ? '✓' : '' }}</td>
+                    {{ $data['col_mark'] == 1 ? '✓' : '' }}
+                </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_metode']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_satuan']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;"> {{ $data['col_personel'] == 1 ?
@@ -236,8 +235,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
                     Total Per Parameter</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
@@ -249,9 +247,9 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                    {{$sub_total}}</td>
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                    {{$sub_total}}
+                </td>
                 {{-- <td
                     style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
@@ -280,8 +278,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
                     PPn 11%</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
@@ -293,9 +290,9 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                    {{$ppn}}</td>
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                    {{$ppn}}
+                </td>
 
                 {{-- <td
                     style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
@@ -325,8 +322,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
                     Total</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
@@ -338,9 +334,9 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                    {{$final_total}}</td>
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                    {{$final_total}}
+                </td>
 
                 {{-- <td
                     style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
@@ -369,8 +365,7 @@
                 <td colspan="2" style="border: 1px solid black;">Dibuat Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Disetujui Oleh,</td>
-                <td colspan="10"
-                    style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
+                <td colspan="10" style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
                     Catatan Khusus : </td>
             </tr>
             <tr>
@@ -446,8 +441,7 @@
         </tbody>
     </table> -->
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
 
 </body>

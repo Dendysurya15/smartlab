@@ -133,7 +133,7 @@
                                                         <tr>
                                                             <td class="pad" style="width:100%;">
                                                                 <div align="center" class="alignment" style="line-height:10px">
-                                                                    <div style="max-width: 128px;"><a href="https://smartlab.srs-ssms.com/" style="outline:none" tabindex="-1" target="_blank"><img alt="Your Logo Illustration" src="https://mobilepro.srs-ssms.com/storage/app/public/layoutemail/CBI-logo.png" style="display: block; height: auto; border: 0; width: 100%;" title="Your Logo Illustration" width="128" /></a></div>
+                                                                    <div style="max-width: 128px;"><a href="https://smartlab.srs-ssms.com/" style="outline:none" tabindex="-1" target="_blank"><img alt="SSMS" src="https://mobilepro.srs-ssms.com/storage/app/public/layoutemail/CBI-logo.png" style="display: block; height: auto; border: 0; width: 100%;" title="Your Logo Illustration" width="128" /></a></div>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -164,12 +164,7 @@
                                                     <table border="0" cellpadding="10" cellspacing="0" class="button_block block-8" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                                         <tr>
                                                             <td class="pad">
-                                                                <div align="center" class="alignment"><!--[if mso]>
-<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://smartlab.srs-ssms.com/tracking_sampel" style="height:36px;width:150px;v-text-anchor:middle;" arcsize="12%" stroke="false" fillcolor="#a3a5a8">
-<w:anchorlock/>
-<v:textbox inset="0px,0px,0px,0px">
-<center style="color:#ffffff; font-family:Tahoma, sans-serif; font-size:14px">
-<![endif]--><a href="https://smartlab.srs-ssms.com/tracking_sampel" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#a3a5a8;border-radius:4px;width:auto;border-top:0px solid transparent;font-weight:700;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:4px;padding-bottom:4px;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:14px;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank"><span style="padding-left:18px;padding-right:18px;font-size:14px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 28px;">Check Progress</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
+                                                                <div align="center" class="alignment"><a href="https://smartlab.srs-ssms.com/tracking_sampels/{{$track ?? 0}}" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#a3a5a8;border-radius:4px;width:auto;border-top:0px solid transparent;font-weight:700;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:4px;padding-bottom:4px;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:14px;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank"><span style="padding-left:18px;padding-right:18px;font-size:14px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 28px;">Check Progress</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -186,7 +181,7 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #f3e9ce; border-radius: 0; color: #000000; width: 680px; margin: 0 auto;" width="680">
+                                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #478F4A; border-radius: 0; color: #000000; width: 680px; margin: 0 auto;" width="680">
                                         <tbody>
                                             <tr>
                                                 <td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 15px; padding-left: 20px; padding-right: 20px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
@@ -215,12 +210,10 @@
                                                     <table border="0" cellpadding="10" cellspacing="0" class="button_block block-3" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                                         <tr>
                                                             <td class="pad">
-                                                                <div align="center" class="alignment"><!--[if mso]>
-<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://smartlab.srs-ssms.com/tracking_sampel" style="height:36px;width:153px;v-text-anchor:middle;" arcsize="12%" stroke="false" fillcolor="#000">
-<w:anchorlock/>
-<v:textbox inset="0px,0px,0px,0px">
-<center style="color:#ffffff; font-family:Tahoma, sans-serif; font-size:14px">
-<![endif]--><a href="https://smartlab.srs-ssms.com/tracking_sampel" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#000;border-radius:4px;width:auto;border-top:0px solid transparent;font-weight:400;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:4px;padding-bottom:4px;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:14px;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank"><span style="padding-left:18px;padding-right:18px;font-size:14px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 28px;">Check Progress</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
+                                                                <div align="center" class="alignment">
+                                                                    <a href="https://smartlab.srs-ssms.com/tracking_sampel" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#000;border-radius:4px;width:auto;border-top:0px solid transparent;font-weight:400;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:4px;padding-bottom:4px;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:14px;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank"><span style="padding-left:18px;padding-right:18px;font-size:14px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 28px;">Check Progress</span></span></a> </v:textbox>
+                                                                    </v:roundrect>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -236,7 +229,7 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #f3e9ce; border-radius: 0; color: #000000; width: 680px; margin: 0 auto;" width="680">
+                                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #478F4A; border-radius: 0; color: #000000; width: 680px; margin: 0 auto;" width="680">
                                         <tbody>
                                             <tr>
                                                 <td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
@@ -268,7 +261,7 @@
                                                     <table border="0" cellpadding="0" cellspacing="0" class="heading_block block-1" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                                         <tr>
                                                             <td class="pad" style="padding-left:10px;padding-right:10px;padding-top:10px;text-align:center;width:100%;">
-                                                                <h3 style="margin: 0; color: #000; direction: ltr; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; font-size: 20px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 24px;">Admin lab</h3>
+                                                                <h3 style="margin: 0; color: #000; direction: ltr; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; font-size: 20px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 24px;">CS Smartlab</h3>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -291,7 +284,7 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #f3e9ce; border-radius: 0; color: #000000; width: 680px; margin: 0 auto;" width="680">
+                                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #478F4A; border-radius: 0; color: #000000; width: 680px; margin: 0 auto;" width="680">
                                         <tbody>
                                             <tr>
                                                 <td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
@@ -316,7 +309,7 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #f3e9ce; border-radius: 0; color: #000000; width: 680px; margin: 0 auto;" width="680">
+                                    <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #478F4A; border-radius: 0; color: #000000; width: 680px; margin: 0 auto;" width="680">
                                         <tbody>
                                             <tr>
                                                 <td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 15px; padding-left: 20px; padding-right: 20px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
@@ -399,7 +392,7 @@
                                                             <td class="pad">
                                                                 <div style="font-family: sans-serif">
                                                                     <div class="" style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 14.399999999999999px; color: #efefef; line-height: 1.2;">
-                                                                        <p style="margin: 0; font-size: 14px; text-align: left; mso-line-height-alt: 16.8px;"><span style="color:#C0C0C0;font-size:12px;">Kunjungi Kami di : </span><a href="http://www.citraborneo.co.id" rel="noopener" style="text-decoration: underline; color: #efefef;" target="_blank">www.citraborneo.co.id</a></p>
+                                                                        <p style="margin: 0; font-size: 14px; text-align: left; mso-line-height-alt: 16.8px;"><span style="color:#C0C0C0;font-size:12px;">Cek Kami di : </span><a href="http://www.citraborneo.co.id" rel="noopener" style="text-decoration: underline; color: #efefef;" target="_blank">www.citraborneo.co.id</a></p>
                                                                         <p style="margin: 0; mso-line-height-alt: 14.399999999999999px;"> </p>
                                                                     </div>
                                                                 </div>
@@ -427,7 +420,8 @@
                                                             <td class="pad" style="vertical-align: middle; color: #1e0e4b; font-family: 'Inter', sans-serif; font-size: 15px; padding-bottom: 5px; padding-top: 5px; text-align: center;">
                                                                 <table cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                                                     <tr>
-                                                                        <td class="alignment" style="vertical-align: middle; text-align: center;"><!--[if vml]><table align="center" cellpadding="0" cellspacing="0" role="presentation" style="display:inline-block;padding-left:0px;padding-right:0px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;"><![endif]-->
+                                                                        <td class="alignment" style="vertical-align: middle; text-align: center;"><!--[if vml]>
+                                                                    <table align="center" cellpadding="0" cellspacing="0" role="presentation" style="display:inline-block;padding-left:0px;padding-right:0px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;"><![endif]-->
                                                                             <!--[if !vml]><!-->
 
                                                                         </td>
