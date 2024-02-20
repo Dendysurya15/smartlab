@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Filament\Notifications\Notification;
 
 class InputProgress extends Component
 {
@@ -66,6 +67,7 @@ class InputProgress extends Component
     public bool $errorSubmit = false;
     public string $msgError;
 
+    public $progress = 0;
 
     public $formData = [];
 
@@ -399,12 +401,24 @@ class InputProgress extends Component
                 $nohp = numberformat($form_hp);
                 // dd($nohp);
 
+
                 SendMsg::insert([
-                    'pesan' => $this->nomor_surat,
+                    'no_surat' => $this->nomor_surat,
                     'kodesample' => $randomCode,
-                    'penerima' => $form_hp
+                    'penerima' => $nohp,
+                    'progres' => $getprogres,
+                    'type' => 'input',
                 ]);
+
+
                 DB::commit();
+
+                Notification::make()
+                    ->title('Berhasil disimpan')
+                    ->body(' Record berhasil disimpan dengan kode track ' . $randomCode)
+                    ->success()
+                    ->send();
+
                 $this->successSubmit = true;
                 $this->msgSuccess = $randomCode;
 
@@ -424,12 +438,23 @@ class InputProgress extends Component
                 }
             } else {
                 DB::rollBack();
+                Notification::make()
+                    ->title('Error ')
+                    ->danger()
+                    ->send();
+
                 $this->msgError = 'An error occurred while saving the data: ';
                 // Set the error flag
                 $this->errorSubmit = true;
             }
         } catch (Exception $e) {
             DB::rollBack();
+
+            Notification::make()
+                ->title('Error ' . $e->getMessage())
+                ->danger()
+                ->send();
+
             // session()->flash('errorSubmit', 'An error occurred while saving the data. ' .  $e->getMessage());
             $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
             // Set the error flag

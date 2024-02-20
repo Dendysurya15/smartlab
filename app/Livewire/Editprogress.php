@@ -16,6 +16,9 @@ use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MinotoringExport;
 use App\Exports\MonitoringKupaExport;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailPelanggan;
+use Filament\Notifications\Notification;
 
 class Editprogress extends Component
 {
@@ -475,18 +478,41 @@ class Editprogress extends Component
 
             $form_hp = $this->no_hp;
 
-            if (strlen($form_hp) === 10 && strpos($form_hp, '08') === 0) {
-                $form_hp = '62' . substr($form_hp, 1);
-            }
+            $nohp = numberformat($form_hp);
+            // dd($nohp);
 
-            // SendMsg::insert([
-            //     'pesan' => 'Halo Tracking sample anda sudah di update ke ' . $progress_now .  ', progress anda dapat dilihat di website: https://smartlab.srs-ssms.com dengan kode Tracking sample:',
-            //     'kodesample' => $query->kode_track,
-            //     'penerima' => $form_hp
-            // ]);
+            SendMsg::insert([
+                'no_surat' => $this->nomor_surat,
+                'kodesample' => $this->kode_sampel,
+                'penerima' => $nohp,
+                'progres' => $progress_now,
+                'type' => 'update',
+            ]);
 
+            $recipients = $this->emailTo;
+            $cc = $this->emailCc;
+
+
+            $nomorserif = '-';
 
             DB::commit();
+
+            Notification::make()
+                ->title('Berhasil disimpan')
+                ->body(' Record berhasil diupdate dengan kode track ' . $this->kode_sampel)
+                ->success()
+                ->send();
+
+            try {
+                Mail::to($recipients)
+                    ->cc($cc)
+                    ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
+
+                return "Email sent successfully!";
+            } catch (\Exception $e) {
+                return "Error: " . $e->getMessage();
+            }
+
 
             $this->successSubmit = true;
             $this->msgSuccess = $query->kode_track;
@@ -494,6 +520,10 @@ class Editprogress extends Component
             $this->badge_color_status = $this->selected_status === 'Approved' ? 'bg-emerald-600' : ($this->selected_status === 'Rejected' ? 'bg-red-600' : ($this->selected_status === 'Pending' ? 'bg-yellow-500' : ''));
         } catch (Exception $e) {
             DB::rollBack();
+            Notification::make()
+                ->title('Error ' . $e->getMessage())
+                ->danger()
+                ->send();
             $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
             $this->errorSubmit = true;
         }
