@@ -304,7 +304,9 @@
                         {{-- @if (count($formData) > 1)
                         <p class="sm:col-span-6">Rekap Biaya Per Parameter</p>
                         @endif --}}
-
+                        @error('formData')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                         @foreach ($formData as $index => $item)
 
                         <div class="grid grid-cols-5 gap-5 mb-2 p-2 border border-dashed border-gray-900/25 rounded-lg" wire:key="form-{{ $index }}">
@@ -402,6 +404,7 @@
                         </div>
                         @endforeach
                     </div>
+
 
 
                     <div class="sm:col-span-6  ">

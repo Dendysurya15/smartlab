@@ -279,7 +279,7 @@ class Editprogress extends Component
         $this->emailTo = $query->emailTo;
         $this->emailCc = $query->emailCc;
         $this->foto_sampel = asset('storage/uploads/' . $query->foto_sampel);
-
+        // dd($this->foto_sampel);
         $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $query->parameter_analisisid)->get()->toArray();
         $trackform = [];
 

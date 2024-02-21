@@ -89,6 +89,7 @@ class InputProgress extends Component
         'tujuan' => 'required|string',
         // 'emailTo' => 'required|email', // Assuming it's an email field
         'foto_sampel' => 'max:5000',
+        'formData' => 'required',
     ];
 
     protected $messages = [
@@ -298,6 +299,7 @@ class InputProgress extends Component
             return !empty($item['nama_parameter']);
         });
 
+        // dd($formData);
 
 
 
@@ -424,7 +426,33 @@ class InputProgress extends Component
                 $this->successSubmit = true;
                 $this->msgSuccess = $randomCode;
 
-                $this->resetForm();
+                $this->reset([
+                    'jenis_sampel',
+                    'tanggal_memo',
+                    'tanggal_terima',
+                    'asal_sampel',
+                    'nomor_kupa',
+                    'nama_pengirim',
+                    'departemen',
+                    'kode_sampel',
+                    'jumlah_sampel',
+                    'kondisi_sampel',
+                    'kemasan_sampel',
+                    'formData',
+                    // 'alat',
+                    // 'bahan',
+                    'nomor_surat',
+                    // 'nomor_lab',
+                    'estimasi',
+                    'tujuan',
+                    'last_update',
+                    'admin',
+                    'no_hp',
+                    'emailTo',
+                    'emailCc',
+                    'foto_sampel',
+                    'skala_prioritas'
+                ]);
 
                 $nomorserif = '-';
 
@@ -475,7 +503,7 @@ class InputProgress extends Component
             'jumlah_sampel',
             'kondisi_sampel',
             'kemasan_sampel',
-            // 'personel',
+            'formData',
             // 'alat',
             // 'bahan',
             'nomor_surat',

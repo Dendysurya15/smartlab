@@ -35,6 +35,7 @@ class TrackSampel extends Model
         'admin',
         'no_hp',
         'emailTo',
+        'kode_track',
         'emailCc',
         'foto_sampel',
         'kode',

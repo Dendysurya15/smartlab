@@ -38,7 +38,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
     {
         return $table
             ->query(TrackSampel::query())
-            ->defaultSort('tanggal_terima', 'desc')
+            // ->defaultSort('tanggal_terima', 'desc')
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('tanggal_terima')
@@ -191,30 +191,30 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         }
                         return  'Skala Prioritas : ' . ($data['value'] === 'normal' ? 'Normal' : 'Tinggi');
                     }),
-                Filter::make('tanggal_terima')
-                    ->form([
-                        DatePicker::make('Range Tanggal Awal'),
-                        DatePicker::make('Range Tanggal Akhir')->default(now()),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['Range Tanggal Awal'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
-                            )
-                            ->when(
-                                $data['Range Tanggal Akhir'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '<=', $date),
-                            );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
+                // Filter::make('tanggal_terima')
+                //     ->form([
+                //         DatePicker::make('Range Tanggal Awal'),
+                //         DatePicker::make('Range Tanggal Akhir')->default(now()),
+                //     ])
+                //     ->query(function (Builder $query, array $data): Builder {
+                //         return $query
+                //             ->when(
+                //                 $data['Range Tanggal Awal'],
+                //                 fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
+                //             )
+                //             ->when(
+                //                 $data['Range Tanggal Akhir'],
+                //                 fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '<=', $date),
+                //             );
+                //     })
+                //     ->indicateUsing(function (array $data): ?string {
 
-                        if (!$data['Range Tanggal Awal']) {
-                            return null;
-                        }
+                //         if (!$data['Range Tanggal Awal']) {
+                //             return null;
+                //         }
 
-                        return 'Mulai dari ' . Carbon::parse($data['Range Tanggal Awal'])->toFormattedDateString() . ' hingga ' . Carbon::parse($data['Range Tanggal Akhir'])->toFormattedDateString();
-                    }),
+                //         return 'Mulai dari ' . Carbon::parse($data['Range Tanggal Awal'])->toFormattedDateString() . ' hingga ' . Carbon::parse($data['Range Tanggal Akhir'])->toFormattedDateString();
+                //     }),
 
 
 
