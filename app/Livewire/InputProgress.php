@@ -300,9 +300,21 @@ class InputProgress extends Component
         });
 
         // dd($formData);
+        $currentDateTime = Carbon::now();
+
+        // Get the hour, minutes, and seconds
+        $thisHour = $currentDateTime->hour;
+        $thisMinute = $currentDateTime->minute;
+        $thisSecond = $currentDateTime->second;
+
+        // Alternatively, you can chain the methods to get the hour, minutes, and seconds directly
+        list($thisHour, $thisMinute, $thisSecond) = explode(':', $currentDateTime->toTimeString());
+
+        // You can also get the time formatted as HH:MM:SS
+        $thisTime = $currentDateTime->toTimeString(); // Format: HH:MM:SS
 
 
-
+        // dd($thisTime, $this->tanggal_memo);
         $userId = 1;
         if (auth()->check()) {
             $user = auth()->user();
@@ -337,14 +349,14 @@ class InputProgress extends Component
         $recipients = array_email($this->emailTo);
         $cc = array_email($this->emailCc);
 
-        // dd($recipients, $cc);
+        // dd($this->tanggal_terima);
         try {
             DB::beginTransaction();
 
             $trackSampel = new TrackSampel();
             $trackSampel->jenis_sampel = $this->jenis_sampel;
-            $trackSampel->tanggal_memo = $this->tanggal_memo;
-            $trackSampel->tanggal_terima = $this->tanggal_terima;
+            $trackSampel->tanggal_memo = $this->tanggal_memo . ' ' . $thisTime;
+            $trackSampel->tanggal_terima = $this->tanggal_terima . ' ' . $thisTime;
             $trackSampel->asal_sampel = $this->asal_sampel;
             $trackSampel->nomor_kupa = $this->nomor_kupa;
             $trackSampel->nama_pengirim = $this->nama_pengirim;
@@ -366,7 +378,7 @@ class InputProgress extends Component
             $trackSampel->parameter_analisisid = $commonRandomString;
             $trackSampel->kode_track = $randomCode;
             $trackSampel->skala_prioritas = $this->skala_prioritas;
-            $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
+            $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel . ' ' . $thisTime;
 
 
             $getprogres = Progress::pluck('nama')->first();
