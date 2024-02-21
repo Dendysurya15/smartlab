@@ -416,6 +416,8 @@ class InputProgress extends Component
                 Notification::make()
                     ->title('Berhasil disimpan')
                     ->body(' Record berhasil disimpan dengan kode track ' . $randomCode)
+                    ->icon('heroicon-o-document-text')
+                    ->iconColor('success')
                     ->success()
                     ->send();
 

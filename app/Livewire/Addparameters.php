@@ -12,6 +12,8 @@ use App\Models\TrackParameter;
 use Termwind\Components\Dd;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Filament\Notifications\Notification;
+
 
 class Addparameters extends Component
 {
@@ -168,12 +170,25 @@ class Addparameters extends Component
             }
             DB::commit();
 
+            Notification::make()
+                ->title('Berhasil disimpan')
+                ->body('Parameter berhasil di tambahkan')
+                ->icon('heroicon-o-document-text')
+                ->iconColor('success')
+                ->success()
+
+                ->send();
+
             $this->successSubmit = true;
             $this->msgSuccess = "Data saved successfully!";
 
             $this->resetForm();
         } catch (Exception $e) {
             DB::rollBack();
+            Notification::make()
+                ->title('Error ' . $e->getMessage())
+                ->danger()
+                ->send();
             $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
             $this->errorSubmit = true;
         }

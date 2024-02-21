@@ -26,7 +26,7 @@ use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
+use Filament\Notifications\Notification;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -242,14 +242,22 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->visible(auth()->user()->can('edit_kupa'))
                     ->size('xs'),
                 Action::make('delete')
-                    ->action(fn (TrackSampel $record) => $record->delete())
+                    ->action(function (TrackSampel $record) {
+                        $record->delete();
+                        Notification::make()
+                            ->title("Berhasil di Hapus")
+                            ->success()
+                            ->send();
+                    })
                     ->deselectRecordsAfterCompletion()
                     ->icon('heroicon-o-trash')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(auth()->user()->can('hapus_kupa'))
                     ->modalHeading('Delete Kupa')
-                    ->modalSubheading(fn (TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat di pulihkan kembali.")
+                    ->modalSubheading(
+                        fn (TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat dipulihkan kembali."
+                    )
                     ->modalButton('Yes')
 
             ]);

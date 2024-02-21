@@ -526,12 +526,12 @@
 </div>
 @endif
 
-
+{{--
 <div class="mt-6 flex items-center gap-x-6">
     <button wire:click="exportExcel" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Export
         Excel</button>
 </div>
-
+--}}
 
 </form>
 </div>

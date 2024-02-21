@@ -500,6 +500,8 @@ class Editprogress extends Component
             Notification::make()
                 ->title('Berhasil disimpan')
                 ->body(' Record berhasil diupdate dengan kode track ' . $this->kode_sampel)
+                ->icon('heroicon-o-document-text')
+                ->iconColor('success')
                 ->success()
                 ->send();
 
