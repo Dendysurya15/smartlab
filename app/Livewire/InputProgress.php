@@ -355,8 +355,8 @@ class InputProgress extends Component
 
             $trackSampel = new TrackSampel();
             $trackSampel->jenis_sampel = $this->jenis_sampel;
-            $trackSampel->tanggal_memo = $this->tanggal_memo . ' ' . $thisTime;
-            $trackSampel->tanggal_terima = $this->tanggal_terima . ' ' . $thisTime;
+            $trackSampel->tanggal_memo = $this->tanggal_memo;
+            $trackSampel->tanggal_terima = $this->tanggal_terima;
             $trackSampel->asal_sampel = $this->asal_sampel;
             $trackSampel->nomor_kupa = $this->nomor_kupa;
             $trackSampel->nama_pengirim = $this->nama_pengirim;
@@ -378,7 +378,7 @@ class InputProgress extends Component
             $trackSampel->parameter_analisisid = $commonRandomString;
             $trackSampel->kode_track = $randomCode;
             $trackSampel->skala_prioritas = $this->skala_prioritas;
-            $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel . ' ' . $thisTime;
+            $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
 
 
             $getprogres = Progress::pluck('nama')->first();

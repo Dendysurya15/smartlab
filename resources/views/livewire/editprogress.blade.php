@@ -85,7 +85,7 @@
                         <label for="tanggal_memo" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
                             Memo</label>
                         <div class="mt-2">
-                            <input type="date" wire:model="tanggal_memo" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="datetime-local" wire:model="tanggal_memo" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                         </div>
                     </div>
                     <div class="sm:col-span-2">
@@ -221,17 +221,6 @@
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Tujuan</label>
                         <div class="mt-2">
                             <input type="text" name="tujuan" id="tujuan" wire:model="tujuan" autocomplete="given-name" value="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                        </div>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="tanggal_terima" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
-                            Terima<span style="color:red">*</span></label>
-                        <div class="mt-2">
-                            <input type="date" wire:model="tanggal_terima" id="tanggal_terima" autocomplete="given-name" value="{{ old('tanggal_terima') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-
-                            @error('tanggal_terima')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
                         </div>
                     </div>
                     <div class="sm:col-span-2">

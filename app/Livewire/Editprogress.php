@@ -233,9 +233,9 @@ class Editprogress extends Component
 
 
         $this->kode_track = $query->kode_track;
-        $this->tanggal_memo = $query->tanggal_memo
-            ? Carbon::parse($query->tanggal_memo)->format('Y-m-d')
-            : null;
+        $this->tanggal_memo = $query->tanggal_memo;
+        //     ? Carbon::parse($query->tanggal_memo)->format('Y-m-d')
+        //     : null;
         $this->tanggal_terima = $query->tanggal_terima
             ? Carbon::parse($query->tanggal_terima)->format('Y-m-d')
             : null;

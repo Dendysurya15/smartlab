@@ -142,7 +142,7 @@
                                                     <table border="0" cellpadding="0" cellspacing="0" class="heading_block block-4" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                                         <tr>
                                                             <td class="pad" style="padding-bottom:10px;padding-left:10px;padding-right:10px;padding-top:5px;text-align:center;width:100%;">
-                                                                <h1 style="margin: 0; color: #4F6750; direction: ltr; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; font-size: 40px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 48px;"><span class="tinyMce-placeholder">Smartlab Track Record </span></h1>
+                                                                <h1 style="margin: 0; color: #4F6750; direction: ltr; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; font-size: 40px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 48px;"><span class="tinyMce-placeholder">Smartlab Tracking Record </span></h1>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -207,7 +207,7 @@
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                    <table border="0" cellpadding="10" cellspacing="0" class="button_block block-3" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                    <!-- <table border="0" cellpadding="10" cellspacing="0" class="button_block block-3" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                                         <tr>
                                                             <td class="pad">
                                                                 <div align="center" class="alignment">
@@ -216,7 +216,7 @@
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                    </table>
+                                                    </table> -->
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -261,7 +261,7 @@
                                                     <table border="0" cellpadding="0" cellspacing="0" class="heading_block block-1" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                                         <tr>
                                                             <td class="pad" style="padding-left:10px;padding-right:10px;padding-top:10px;text-align:center;width:100%;">
-                                                                <h3 style="margin: 0; color: #000; direction: ltr; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; font-size: 20px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 24px;">CS Smartlab</h3>
+                                                                <h3 style="margin: 0; color: #000; direction: ltr; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; font-size: 20px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 24px;">Custumer Service Laboratorium</h3>
                                                             </td>
                                                         </tr>
                                                     </table>

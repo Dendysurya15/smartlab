@@ -15,7 +15,7 @@
                         <label for="tanggal_memo" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
                             Memo <span style="color:red">*</span></label>
                         <div class="mt-2">
-                            <input type="date" wire:model="tanggal_memo" id="tanggal_memo" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            <input type="datetime-local" wire:model="tanggal_memo" id="tanggal_memo" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('tanggal_memo')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror

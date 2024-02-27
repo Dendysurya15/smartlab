@@ -113,7 +113,14 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->formatStateUsing(function (TrackSampel $track) {
                         if ($track->status_changed_by != null) {
-                            return   $track->status_changed_by != null ? $track->status . ' by ' . User::find($track->status_changed_by)->name : ' ';
+                            $user = User::find($track->status_changed_by);
+                            if ($user) {
+                                $roles = $user->getRoleNames();
+                                // dd($roles);
+                                return $track->status . ' by ' . ($roles->isNotEmpty() ? $roles->implode(', ') : 'No Role');
+                            } else {
+                                return $track->status;
+                            }
                         } else {
                             return $track->status;
                         }
