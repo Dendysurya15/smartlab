@@ -337,7 +337,7 @@ class InputProgress extends Component
 
         $current = Carbon::now();
         $current = $current->format('Y-m-d H:i:s');
-
+        // dd($this->nomor_lab_left, $this->nomor_lab_right);
         $nomorlab =  $this->nomor_lab_left . '-' . $this->nomor_lab_right;
 
         function generateRandomString($length)

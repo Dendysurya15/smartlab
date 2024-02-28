@@ -115,6 +115,27 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
             'no_serif' =>  ' ',
             'tanggal_kirim_sertif' =>  ' ',
         ];
+        $diskon = [
+            'no' =>  ' ',
+            'tgl_trma' =>   ' ',
+            'jenis_sample' =>  ' ',
+            'asal_sampel' =>  ' ',
+            'memo_pengantar' => ' ',
+            'nama_pengirim' =>   ' ',
+            'departemen' =>  ' ',
+            'nomor_kupa' =>   ' ',
+            'kode_sampel' =>  ' ',
+            'jumlah_parameter' =>  ' ',
+            'jumlah_sampel' =>   ' ',
+            'sub_total_per_parameter' => ' ',
+            'parameter_analisis' =>   'Diskon %',
+            'harga_normal' =>  $tracksample->discount,
+            'harga_ppn' =>   ' ',
+            'estimasi' =>  ' ',
+            'tanggal_serif' =>   ' ',
+            'no_serif' =>  ' ',
+            'tanggal_kirim_sertif' =>  ' ',
+        ];
         $totalppn = [
             'no' =>  ' ',
             'tgl_trma' =>   ' ',
@@ -150,7 +171,7 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
             'jumlah_sampel' =>   ' ',
             'sub_total_per_parameter' => ' ',
             'parameter_analisis' =>   'Total Harga',
-            'harga_normal' =>  $final_total,
+            'harga_normal' =>  $final_total * (1 - ($tracksample->discount / 100)),
             'harga_ppn' =>   ' ',
             'estimasi' =>  ' ',
             'tanggal_serif' =>   ' ',
@@ -158,7 +179,7 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
             'tanggal_kirim_sertif' =>  ' ',
         ];
 
-        return view('excelView.monitoringexcel', ['data' => $arr, 'total' => $total, 'totalppn' => $totalppn, 'totalfinal' => $totalfinal]);
+        return view('excelView.monitoringexcel', ['data' => $arr, 'total' => $total, 'totalppn' => $totalppn, 'diskon' => $diskon, 'totalfinal' => $totalfinal]);
     }
     public function registerEvents(): array
     {

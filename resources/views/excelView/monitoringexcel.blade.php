@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoring Export</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
 
@@ -21,14 +20,12 @@
             <tr>
                 <td></td>
                 <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
-                <td colspan="16"
-                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
+                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
                     PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
                 <td></td>
-                <td colspan="16"
-                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
+                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
                     RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
@@ -287,6 +284,45 @@
             <tr>
                 <td></td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['no'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['tgl_trma'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['jenis_sample'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['asal_sampel'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['memo_pengantar'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['nama_pengirim'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['departemen'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['nomor_kupa'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['kode_sampel'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['jumlah_parameter'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['jumlah_sampel'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['parameter_analisis'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['harga_normal'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['estimasi'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['tanggal_serif'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['no_serif'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
+                    $diskon['tanggal_kirim_sertif'] }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
                     $totalfinal['no'] }}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">{{
                     $totalfinal['tgl_trma'] }}</td>
@@ -328,8 +364,7 @@
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
 
 </body>

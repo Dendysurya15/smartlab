@@ -112,24 +112,21 @@
                             <input type="number" name="no_kupa" id="no_kupa" wire:model="no_kupa" autocomplete="given-name" value="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                         </div>
                     </div>
+
+                    <!-- nomor lab  -->
                     <div class="sm:col-span-2">
-                        <label for="nomor_lab" class="block text-sm font-medium leading-6 text-gray-900">Nomor
-                            Lab <span style="color:red">*</span></label>
-                        <div class="mt-2 grid grid-cols-2 gap-4">
-                            <div class="col-span-1">
-                                <input type="text" wire:model="nomor_lab_left" id="nomor_lab_left" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                                @error('nomor_lab_left')
-                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div class="col-span-1">
-                                <input type="text" wire:model="nomor_lab_right" id="nomor_lab_right" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                                @error('nomor_lab_right')
-                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <label for="jumlah_sampel" class="block text-sm font-medium leading-6 text-gray-900">Jumlah
+                            Sampel <span style="color:red">*</span>
+                        </label>
+                        <div class="mt-2">
+                            <input type="number" wire:model="jumlah_sampel" id="jumlah_sampel" autocomplete="given-name" value="{{ old('jumlah_sampel') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                            @error('jumlah_sampel')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
+
                     <div class="sm:col-span-2">
                         <label for="nama_pelanggan" class="block text-sm font-medium leading-6 text-gray-900">Nama
                             Pengirim</label>
@@ -180,17 +177,35 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="sm:col-span-2">
-                        <label for="jumlah_sampel" class="block text-sm font-medium leading-6 text-gray-900">Jumlah
-                            Sampel <span style="color:red">*</span>
-                        </label>
-                        <div class="mt-2">
-                            <input type="number" wire:model="jumlah_sampel" id="jumlah_sampel" autocomplete="given-name" value="{{ old('jumlah_sampel') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
-                            @error('jumlah_sampel')
+                    <!-- jumsampel  -->
+                    <div class="sm:col-span-2">
+                        <label for="nomor_lab" class="block text-sm font-medium leading-6 text-gray-900">Nomor
+                            Lab <span style="color:red">*</span></label>
+                        @if ($jumlah_sampel > 1)
+                        <div class="mt-2 grid grid-cols-2 gap-4">
+
+                            <div class="col-span-1">
+                                <input type="text" wire:model="nomor_lab_left" id="nomor_lab_left" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                @error('nomor_lab_left')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="col-span-1">
+                                <input type="text" wire:model="nomor_lab_right" id="nomor_lab_right" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                @error('nomor_lab_right')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                        @else
+                        <div class="mt-2">
+                            <input type="text" wire:model="nomor_lab_left" id="nomor_lab_left" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            @error('nomor_lab_left')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+                        @endif
                     </div>
                     <div class="sm:col-span-2">
                         <label for="no_surat" class="block text-sm font-medium leading-6 text-gray-900">Nomor Surat
