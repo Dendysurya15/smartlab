@@ -81,7 +81,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $arr_per_column[0]['col_abnormal'] = '';
         $arr_per_column[0]['col_tanggal'] = '-';
 
-        $sub_total_parameter = 0;
+        $sub = 0;
         $final_total = 0;
 
         if (!is_null($tracksample->parameter_analisisid) && $tracksample->parameter_analisisid !== 0 && $tracksample->parameter_analisisid != '0') {
@@ -96,17 +96,25 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $inputan_parameter[$inc]['alias'] = $value->ParameterAnalisis->nama_unsur;
                 $inputan_parameter[$inc]['satuan'] = $value->ParameterAnalisis->satuan;
                 $inputan_parameter[$inc]['metode'] = $value->ParameterAnalisis->metode_analisis;
-                $inputan_parameter[$inc]['personel'] = $value->personel;
-                $inputan_parameter[$inc]['alat'] = $value->alat;
-                $inputan_parameter[$inc]['bahan'] = $value->bahan;
+                $inputan_parameter[$inc]['personel'] = $tracksample->personel;
+                $inputan_parameter[$inc]['alat'] = $tracksample->alat;
+                $inputan_parameter[$inc]['bahan'] = $tracksample->bahan;
                 $inputan_parameter[$inc]['harga_per_satuan'] = $value->ParameterAnalisis->harga;
                 $inputan_parameter[$inc]['jumlah'] = $value->jumlah;
                 $inputan_parameter[$inc]['total_per_parameter'] = $value->totalakhir;
+                $inputan_parameter[$inc]['discount'] = $tracksample->discount;
 
 
-                $sub_total_parameter += $value->totalakhir;
+                $sub += $value->totalakhir;
+                $discount = $tracksample->discount;
+                $ppn = $sub + hitungPPN($sub);
+                $sub_total_parameter = $ppn * (1 - ($discount / 100));
+
                 $inc++;
             }
+
+
+            // dd($sub_total_parameter);
 
             // $match_parameter = [];
 
@@ -233,12 +241,13 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             // 'tanggal' => $tanggalterima,
             // 'jenissample' => $jenis_sample,
             // 'pelanggan' => $pelanggan,
-            'sub_total' => $sub_total_parameter,
-            'ppn' => hitungPPN($sub_total_parameter),
-            'final_total' => $sub_total_parameter + hitungPPN($sub_total_parameter),
+            'sub_total' => $sub,
+            'ppn' => hitungPPN($sub),
+            'final_total' => $sub_total_parameter,
             'nama_pengirim' => $nama_pengirim,
             'no_kupa' => $no_kupa,
             'jenis_kupa' => $jenis_kupa,
+            'discount' => $discount,
             'tanggal_penerimaan' => $tgl_penerimaan,
             'kupa' => $arr_per_column
         ]);

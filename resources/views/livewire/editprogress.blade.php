@@ -246,6 +246,47 @@
                         </div>
                     </div>
                     <div class="sm:col-span-2">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="mt-2">
+                                <div class="flex h-6 items-center">
+                                    <input id="personel" wire:model="personel" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                </div>
+                                <div class="text-sm leading-6">
+                                    <label for="personel" class="font-medium text-gray-900">Personel</label>
+                                    <p class="text-gray-500 text-xs">(Tersedia dan Kompeten)</p>
+                                    @error('personel')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="mt-2">
+
+                                <div class="flex h-6 items-center">
+                                    <input id="alat" wire:model="alat" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                </div>
+                                <div class="text-sm leading-6">
+                                    <label for="alat" class="font-medium text-gray-900">Alat</label>
+                                    <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
+                                    @error('alat')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="flex h-6 items-center">
+                                    <input id="bahan" wire:model="bahan" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                </div>
+                                <div class="text-sm leading-6">
+                                    <label for="bahan" class="font-medium text-gray-900">Bahan</label>
+                                    <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
+                                    @error('bahan')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sm:col-span-4">
                         <div class="grid grid-cols-2 gap-6">
                             <div class="col-span-1">
                                 <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Email
@@ -269,6 +310,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sm:col-span-2">
+                        <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Diskon %</label>
+                        <div class="mt-2">
+                            <input type="number" wire:model="discount" id="discount" autocomplete="given-name" value="{{ old('discount') }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            @error('discount')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+
                     <div class="col-span-full mt-6">
                         <h2 class="text-base font-semibold leading-7 text-gray-900">Pengujian Sampel
                         </h2>
@@ -332,45 +384,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <div class="mt-2">
-                                        <div class="flex h-6 items-center">
-                                            <input id="personel" wire:model.defer="oldform.{{ $index }}.personel" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                                        </div>
-                                        <div class="text-sm leading-6">
-                                            <label for="personel" class="font-medium text-gray-900">Personel</label>
-                                            <p class="text-gray-500 text-xs">(Tersedia dan Kompeten)</p>
-                                            @error('personel')
-                                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="mt-2">
 
-                                        <div class="flex h-6 items-center">
-                                            <input id="alat" wire:model.defer="oldform.{{ $index }}.alat" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                                        </div>
-                                        <div class="text-sm leading-6">
-                                            <label for="alat" class="font-medium text-gray-900">Alat</label>
-                                            <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
-                                            @error('alat')
-                                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="mt-2">
-                                        <div class="flex h-6 items-center">
-                                            <input id="bahan" wire:model.defer="oldform.{{ $index }}.bahan" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                                        </div>
-                                        <div class="text-sm leading-6">
-                                            <label for="bahan" class="font-medium text-gray-900">Bahan</label>
-                                            <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
-                                            @error('bahan')
-                                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
 

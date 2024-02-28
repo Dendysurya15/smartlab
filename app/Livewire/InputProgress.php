@@ -35,9 +35,9 @@ class InputProgress extends Component
     public $jumlah_sampel;
     public $kondisi_sampel;
     public $kemasan_sampel;
-    // public $personel;
-    // public $alat;
-    // public $bahan;
+    public $personel;
+    public $alat;
+    public $bahan;
     public $nomor_surat;
     public $nomor_lab_left;
     public $nomor_lab_right;
@@ -59,7 +59,9 @@ class InputProgress extends Component
     public $namaparameter;
     public $analisisparameter = [0];
     public $val_parameter;
+    public $discount = 0;
     public $subtotal;
+    public $jumsap = 0;
     public $list_metode = [];
 
     public bool $successSubmit = false;
@@ -76,7 +78,7 @@ class InputProgress extends Component
         'jenis_sampel' => 'required',
         'asal_sampel' => 'required|in:Internal,Eksternal',
         'nomor_kupa' => 'required|numeric',
-        // 'nomor_lab' => 'required|string',
+        'discount' => 'required',
         'nama_pengirim' => 'required|string',
         'departemen' => 'required|string',
         'kode_sampel' => 'required|string',
@@ -129,6 +131,13 @@ class InputProgress extends Component
         }
     }
 
+    public function getlabstatus()
+    {
+        $this->jumsap = $this->jumlah_sampel;
+
+        // dd($jumsamp);
+    }
+
     public function addParameter()
     {
 
@@ -147,9 +156,9 @@ class InputProgress extends Component
             'id_parameter' => $defaultParameterAnalisis->id,
             'jumlahsample' => 'Jumlah Sampel',
             'hargassample' => 'Harga Sampel',
-            'personel' => True,
-            'alat' => True,
-            'bahan' => True,
+            // 'personel' => True,
+            // 'alat' => True,
+            // 'bahan' => True,
             'subtotal' => 'Sub Total',
             'totaljudul' => 'Total',
             'list_metode' => $this->analisisparameter,
@@ -215,7 +224,7 @@ class InputProgress extends Component
         $this->jumlah_sampel = $jumlah_sampel_default;
         $this->kondisi_sampel = 'Normal';
         $this->asal_sampel = 'Internal';
-        // $this->personel = True;
+        $this->discount = 0;
         // $this->alat = True;
         // $this->bahan = True;
         $this->skala_prioritas = 'Normal';
@@ -349,7 +358,8 @@ class InputProgress extends Component
         $recipients = array_email($this->emailTo);
         $cc = array_email($this->emailCc);
 
-        // dd($this->tanggal_terima);
+        // dd($this->personel, $this->alat, $this->bahan);
+        // dd($this->discount);
         try {
             DB::beginTransaction();
 
@@ -374,10 +384,13 @@ class InputProgress extends Component
             $trackSampel->admin = $userId;
             $trackSampel->no_hp = $this->no_hp;
             $trackSampel->emailTo = $this->emailTo;
-            $trackSampel->emailCc = $this->emailCc;
+            $trackSampel->personel = ($this->personel ? 1 : 0);
+            $trackSampel->alat = ($this->alat ? 1 : 0);
+            $trackSampel->bahan = ($this->bahan ? 1 : 0);
             $trackSampel->parameter_analisisid = $commonRandomString;
             $trackSampel->kode_track = $randomCode;
             $trackSampel->skala_prioritas = $this->skala_prioritas;
+            $trackSampel->discount = $this->discount;
             $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
 
 
@@ -402,9 +415,9 @@ class InputProgress extends Component
                         'id_parameter' => $data['id_parameter'],
                         'jumlah' => $data['jumlah_sampel'],
                         'totalakhir' => $data['totalharga'],
-                        'personel' => $data['personel'] == True ? 1 : 0,
-                        'alat' => $data['alat'] == True ? 1 : 0,
-                        'bahan' => $data['bahan'] == True ? 1 : 0,
+                        // 'personel' => $data['personel'] == True ? 1 : 0,
+                        // 'alat' => $data['alat'] == True ? 1 : 0,
+                        // 'bahan' => $data['bahan'] == True ? 1 : 0,
                         'id_tracksampel' => $commonRandomString,
                     ];
                 }

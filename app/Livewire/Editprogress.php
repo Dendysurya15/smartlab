@@ -50,6 +50,7 @@ class Editprogress extends Component
     public $nomor_surat;
     public $tujuan;
     public $no_hp;
+    public $discount;
     public $val_parameter;
     public $analisisparameter;
     public $hargaparameter;
@@ -270,6 +271,10 @@ class Editprogress extends Component
         // $this->alat = True;
         // $this->bahan = True;
 
+        $this->personel = ($query->personel == 1 ? True : False);
+        $this->alat = ($query->alat == 1 ? True : False);
+        $this->bahan = ($query->bahan == 1 ? True : False);
+
         $this->nama_pengirim = $query->nama_pengirim;
         $this->departemen = $query->departemen;
         $this->kode_sampel = $query->kode_sampel;
@@ -278,6 +283,7 @@ class Editprogress extends Component
         $this->no_hp = $query->no_hp;
         $this->emailTo = $query->emailTo;
         $this->emailCc = $query->emailCc;
+        $this->discount = $query->discount;
         $this->foto_sampel = asset('storage/uploads/' . $query->foto_sampel);
         // dd($this->foto_sampel);
         $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $query->parameter_analisisid)->get()->toArray();
@@ -294,9 +300,9 @@ class Editprogress extends Component
                 'nama_parameters' => $value['parameter_analisis']['nama_parameter'],
                 'jumlah' => $value['jumlah'],
                 'total' => $total,
-                'personel' => $value['personel'] === 1 ? True : ($value['personel'] === 0 ? False : False),
-                'alat' => $value['alat'] === 1 ? True : ($value['alat'] === 0 ? False : False),
-                'bahan' => $value['bahan'] === 1 ? True : ($value['bahan'] === 0 ? False : False),
+                // 'personel' => $value['personel'] === 1 ? True : ($value['personel'] === 0 ? False : False),
+                // 'alat' => $value['alat'] === 1 ? True : ($value['alat'] === 0 ? False : False),
+                // 'bahan' => $value['bahan'] === 1 ? True : ($value['bahan'] === 0 ? False : False),
                 'id_parameter' => $value['id_parameter'],
                 'judulppn' => "11% PPN",
             ];

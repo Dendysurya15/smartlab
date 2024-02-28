@@ -237,6 +237,7 @@
                 </td>
                 <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
                     Total Per Parameter</td>
+
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
@@ -294,14 +295,41 @@
                     {{$ppn}}
                 </td>
 
-                {{-- <td
-                    style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
 
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td> --}}
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                    Diskon %</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                </td>
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:right">
+                    {{$discount}}
+                </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
@@ -355,6 +383,7 @@
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
             </tr>
+
 
             <tr>
                 <td colspan="20"></td> <!-- Replace "20" with the total number of columns in your table -->
