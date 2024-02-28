@@ -14,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
-
+use Cknow\Money\Money;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
@@ -33,6 +33,10 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
     public function view(): View
     {
+
+        // $test =  Money::USD(500);
+
+        // dd($test);
 
         $tracksample = TrackSampel::findOrFail($this->id);
 
@@ -107,13 +111,19 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
                 $sub += $value->totalakhir;
                 $discount = $tracksample->discount;
-                $ppn = $sub + hitungPPN($sub);
-                $sub_total_parameter = $ppn * (1 - ($discount / 100));
+                $test = $sub + hitungPPN($sub);
+                $ppn = Money::IDR($test, true);
+                $getdisc = round($test * $discount / 100, 2);
+
+                $sub_total_parameter = Money::IDR($test * (1 - ($discount / 100)), true);
 
                 $inc++;
             }
 
+            // $test = Money::USD(500, true); // $500.00 force decimals
 
+
+            // dd($getdisc);
             // dd($sub_total_parameter);
 
             // $match_parameter = [];
@@ -203,7 +213,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                         $arr_per_column[$i]['col_bahan'] = $newInputanParameters[$i]['bahan'];
                         $arr_per_column[$i]['col_jum_sampel_2'] = $newInputanParameters[$i]['jumlah'];
                         $arr_per_column[$i]['col_sub_total'] = $newInputanParameters[$i]['total_per_parameter'];
-                        $arr_per_column[$i]['col_ppn'] = '';
+                        $arr_per_column[$i]['col_ppn'] = 1;
                         $arr_per_column[$i]['col_total'] = '';
                     }
                 } else {
@@ -241,13 +251,14 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             // 'tanggal' => $tanggalterima,
             // 'jenissample' => $jenis_sample,
             // 'pelanggan' => $pelanggan,
-            'sub_total' => $sub,
-            'ppn' => hitungPPN($sub),
+            'sub_total' => Money::IDR($sub, true),
+            'ppn' => $ppn,
             'final_total' => $sub_total_parameter,
             'nama_pengirim' => $nama_pengirim,
             'no_kupa' => $no_kupa,
             'jenis_kupa' => $jenis_kupa,
-            'discount' => $discount,
+            'disclabel' => $discount,
+            'discount' => Money::IDR($getdisc, true),
             'tanggal_penerimaan' => $tgl_penerimaan,
             'kupa' => $arr_per_column
         ]);
@@ -273,6 +284,10 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
                     $event->sheet->mergeCells("N14:N$endRow");
                     $event->sheet->getStyle("N14:N$endRow")->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                    $event->sheet->mergeCells("P14:P$endRow");
+                    $event->sheet->getStyle("P14:P$endRow")->getAlignment()
                         ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
                         ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
                     $event->sheet->mergeCells("J14:J$endRow");

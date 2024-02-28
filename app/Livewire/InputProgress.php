@@ -38,6 +38,7 @@ class InputProgress extends Component
     public $personel;
     public $alat;
     public $bahan;
+    public $confirmation;
     public $nomor_surat;
     public $nomor_lab_left;
     public $nomor_lab_right;
@@ -217,16 +218,27 @@ class InputProgress extends Component
     {
 
         $current = Carbon::now();
-        $current = $current->format('y');
-        $this->tanggal_memo = Carbon::now()->toDateString();
-        $this->tanggal_terima = Carbon::now()->toDateString();
+        $formattedDateTime = $current->format('Y-m-d\TH:i');
+
+        // dd($formattedDateTime);
+
+        $this->tanggal_memo = $formattedDateTime;
+        // $current = $current->format('y');
+
+        // $this->tanggal_memo = date('Y-m-d\TH:i', strtotime('2024-02-28 10:20 PM'));
+
+        // dd($formattedDateTime, $this->tanggal_memo);
+        if ($current->format('H:i') > '12:59') {
+            // Add one day if the time is after 12:59 AM
+            $this->tanggal_terima = $current->addDay()->toDateString();
+        } else {
+            $this->tanggal_terima = $current->toDateString();
+        }
         $jumlah_sampel_default = 0;
         $this->jumlah_sampel = $jumlah_sampel_default;
         $this->kondisi_sampel = 'Normal';
         $this->asal_sampel = 'Internal';
         $this->discount = 0;
-        // $this->alat = True;
-        // $this->bahan = True;
         $this->skala_prioritas = 'Normal';
         $this->estimasi = Carbon::now()->toDateString();
         $this->tgl_pengantaran_sampel = Carbon::now()->toDateString();
@@ -234,15 +246,6 @@ class InputProgress extends Component
         $this->nomor_lab_left = $current . $defaultJenisSampel->kode . '.';
         $this->nomor_lab_right = $current . $defaultJenisSampel->kode . '.';
         $this->jenis_sampel = $defaultJenisSampel ? $defaultJenisSampel->id : null;
-        $defaultParameterAnalisis = ParameterAnalisis::Where('id_jenis_sampel', $defaultJenisSampel->id)->first();
-
-        $parameterAnalisisId = $defaultParameterAnalisis ? $defaultParameterAnalisis->id : [];
-        $defaultHarga = '0';
-        $defaultMetodeAnalisis = 'test';
-        $metodeAnalisisId = $defaultMetodeAnalisis;
-        $sub_total = $this->hargaparameter * $jumlah_sampel_default;
-        $total = $sub_total;
-
         $this->ChangeFieldParamAndNomorLab();
     }
 
@@ -387,6 +390,7 @@ class InputProgress extends Component
             $trackSampel->personel = ($this->personel ? 1 : 0);
             $trackSampel->alat = ($this->alat ? 1 : 0);
             $trackSampel->bahan = ($this->bahan ? 1 : 0);
+            $trackSampel->konfirmasi = ($this->confirmation ? 1 : 0);
             $trackSampel->parameter_analisisid = $commonRandomString;
             $trackSampel->kode_track = $randomCode;
             $trackSampel->skala_prioritas = $this->skala_prioritas;

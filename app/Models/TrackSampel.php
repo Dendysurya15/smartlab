@@ -39,6 +39,7 @@ class TrackSampel extends Model
         'emailCc',
         'foto_sampel',
         'personel',
+        'konfirmasi',
         'alat',
         'bahan',
         'discount',

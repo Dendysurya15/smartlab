@@ -18,7 +18,7 @@ use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use OpenSpout\Common\Entity\Style\Border;
-
+use Cknow\Money\Money;
 
 class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
 {
@@ -93,7 +93,7 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
 
             $arr[] = $temp;
         }
-
+        $gethargatotal = $hargatotal;
         $total = [
             'no' =>  ' ',
             'tgl_trma' =>   ' ',
@@ -108,13 +108,15 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
             'jumlah_sampel' =>   ' ',
             'sub_total_per_parameter' => ' ',
             'parameter_analisis' =>   'Sub Total',
-            'harga_normal' =>  $hargatotal,
+            'harga_normal' => Money::IDR($gethargatotal, true),
             'harga_ppn' =>   ' ',
             'estimasi' =>  ' ',
             'tanggal_serif' =>   ' ',
             'no_serif' =>  ' ',
             'tanggal_kirim_sertif' =>  ' ',
         ];
+        $getdisc = round($harga_total_dengan_ppn * $tracksample->discount / 100, 2);
+
         $diskon = [
             'no' =>  ' ',
             'tgl_trma' =>   ' ',
@@ -129,13 +131,14 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
             'jumlah_sampel' =>   ' ',
             'sub_total_per_parameter' => ' ',
             'parameter_analisis' =>   'Diskon %',
-            'harga_normal' =>  $tracksample->discount,
+            'harga_normal' => Money::IDR($getdisc, true),
             'harga_ppn' =>   ' ',
             'estimasi' =>  ' ',
             'tanggal_serif' =>   ' ',
             'no_serif' =>  ' ',
             'tanggal_kirim_sertif' =>  ' ',
         ];
+        $gettotalppn =  $harga_total_dengan_ppn;
         $totalppn = [
             'no' =>  ' ',
             'tgl_trma' =>   ' ',
@@ -150,13 +153,14 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
             'jumlah_sampel' =>   ' ',
             'sub_total_per_parameter' => ' ',
             'parameter_analisis' =>   'PPN 11%',
-            'harga_normal' =>  $harga_total_dengan_ppn,
+            'harga_normal' =>  Money::IDR($gettotalppn, true),
             'harga_ppn' =>   ' ',
             'estimasi' =>  ' ',
             'tanggal_serif' =>   ' ',
             'no_serif' =>  ' ',
             'tanggal_kirim_sertif' =>  ' ',
         ];
+        $getfinal = $final_total * (1 - ($tracksample->discount / 100));
         $totalfinal = [
             'no' =>  ' ',
             'tgl_trma' =>   ' ',
@@ -171,7 +175,7 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
             'jumlah_sampel' =>   ' ',
             'sub_total_per_parameter' => ' ',
             'parameter_analisis' =>   'Total Harga',
-            'harga_normal' =>  $final_total * (1 - ($tracksample->discount / 100)),
+            'harga_normal' =>  Money::IDR($getfinal, true),
             'harga_ppn' =>   ' ',
             'estimasi' =>  ' ',
             'tanggal_serif' =>   ' ',

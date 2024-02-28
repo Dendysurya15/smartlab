@@ -16,6 +16,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
+        "cknow/laravel-money": "^7.0",
         "maatwebsite/excel": "^3.1",
         "spatie/laravel-permission": "^6.3"
     },

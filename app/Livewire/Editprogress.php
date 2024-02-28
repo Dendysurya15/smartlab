@@ -56,6 +56,7 @@ class Editprogress extends Component
     public $hargaparameter;
     public $satuanparameter;
     public $totalsampelval;
+    public $confirmation;
     public $foto_sampel;
     public $emailTo;
     public $emailCc;
@@ -284,6 +285,7 @@ class Editprogress extends Component
         $this->emailTo = $query->emailTo;
         $this->emailCc = $query->emailCc;
         $this->discount = $query->discount;
+        $this->confirmation = ($query->konfirmasi == 1 ? True : False);
         $this->foto_sampel = asset('storage/uploads/' . $query->foto_sampel);
         // dd($this->foto_sampel);
         $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $query->parameter_analisisid)->get()->toArray();
@@ -436,6 +438,10 @@ class Editprogress extends Component
             $trackSampel->no_hp = $this->no_hp;
             $trackSampel->emailTo = $this->emailTo;
             $trackSampel->emailCc = $this->emailCc;
+            $trackSampel->personel = ($this->personel ? 1 : 0);
+            $trackSampel->alat = ($this->alat ? 1 : 0);
+            $trackSampel->bahan = ($this->bahan ? 1 : 0);
+            $trackSampel->konfirmasi = ($this->confirmation ? 1 : 0);
 
 
 
@@ -455,9 +461,9 @@ class Editprogress extends Component
                         'jumlah' => $value['jumlah'],
                         'totalakhir' => $value['total'],
                         'id_tracksampel' => $trackid,
-                        'personel' => $value['personel'] == True ? 1 : 0,
-                        'alat' => $value['alat'] == True ? 1 : 0,
-                        'bahan' => $value['bahan'] == True ? 1 : 0,
+                        // 'personel' => $value['personel'] == True ? 1 : 0,
+                        // 'alat' => $value['alat'] == True ? 1 : 0,
+                        // 'bahan' => $value['bahan'] == True ? 1 : 0,
                         'id_parameter' => $value['id_parameter'],
                     ]);
                 }
@@ -471,9 +477,9 @@ class Editprogress extends Component
                         'jumlah' => $value['jumlah'],
                         'totalakhir' => $value['total'],
                         'id_tracksampel' => $trackid,
-                        'personel' => $value['personel'] == True ? 1 : 0,
-                        'alat' => $value['alat'] == True ? 1 : 0,
-                        'bahan' => $value['bahan'] == True ? 1 : 0,
+                        // 'personel' => $value['personel'] == True ? 1 : 0,
+                        // 'alat' => $value['alat'] == True ? 1 : 0,
+                        // 'bahan' => $value['bahan'] == True ? 1 : 0,
                         'id_parameter' => $value['id_parameter'],
                     ];
                 }

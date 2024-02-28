@@ -316,7 +316,7 @@
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
                 <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
-                    Diskon %</td>
+                    Diskon {{$disclabel}}%</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
@@ -435,7 +435,6 @@
 
         </tbody>
     </table>
-
 
 
     <!-- <table style="margin-top: 20px">
