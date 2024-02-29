@@ -7,6 +7,7 @@ use App\Models\TrackParameter;
 use App\Models\MetodeAnalisis;
 use App\Models\JenisSampel;
 use App\Models\ParameterAnalisis;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
@@ -23,6 +24,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
     private $id;
 
     private $countnamaarr; // Class property to store countnamaarr value
+    private $semuaRowParameter;
 
     public function __construct($id)
     {
@@ -39,6 +41,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         // dd($test);
 
         $tracksample = TrackSampel::findOrFail($this->id);
+        $nama_petugas_penerima_sampel = User::find($tracksample->admin)->name;
 
         $jenis_sample = JenisSampel::with('parameterAnalisis')->where('id', $tracksample->jenis_sampel)->first();
 
@@ -168,9 +171,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             }
             // dd($newInputanParameters);
             $row_count = count($newInputanParameters);
-
-
-
+            $this->semuaRowParameter = $row_count;
 
             for ($i = 0; $i < $row_count; $i++) {
 
@@ -225,6 +226,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             // 'tanggal' => $tanggalterima,
             // 'jenissample' => $jenis_sample,
             // 'pelanggan' => $pelanggan,
+            'petugas_penerima_sampel' => $nama_petugas_penerima_sampel,
             'sub_total' => Money::IDR($sub, true),
             'ppn' => $ppn,
             'final_total' => $sub_total_parameter,
@@ -335,15 +337,47 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         ];
     }
 
+
     public function drawings()
     {
-        $drawing = new Drawing();
-        $drawing->setName('Logo');
-        $drawing->setDescription('This is my logo');
-        $drawing->setPath(public_path('images/Logo_CBI_2.png'));
-        $drawing->setHeight(70);
-        $drawing->setCoordinates('B1');
 
-        return $drawing;
+        $tinggiDefaultKolom = 13 +  4 + 1 + 1 + 1 +  $this->semuaRowParameter;
+
+        $drawings = [];
+
+        $lokasiKolomTtdPenerimaSampel = "B$tinggiDefaultKolom";
+        $lokasiKolomTtdHeadOfLab = "D$tinggiDefaultKolom";
+
+        // First Image
+        $drawing1 = new Drawing();
+        $drawing1->setName('Logo1');
+        $drawing1->setDescription('This is my first logo');
+        $drawing1->setPath(public_path('images/Logo_CBI_2.png'));
+        $drawing1->setHeight(70);
+        $drawing1->setCoordinates('B1');
+        $drawings[] = $drawing1;
+
+        // Second Image
+        $drawing2 = new Drawing();
+        $drawing2->setName('Logo2');
+        $drawing2->setDescription('This is my second logo');
+        $drawing2->setPath(public_path('images/bg_test.png'));
+        $drawing2->setHeight(70);
+        $drawing2->setCoordinates($lokasiKolomTtdPenerimaSampel);
+        $drawings[] = $drawing2;
+
+
+        $drawing3 = new Drawing();
+        $drawing3->setName('Logo2');
+        $drawing3->setDescription('This is my second logo');
+        $drawing3->setPath(public_path('images/bg_test.png'));
+        $drawing3->setHeight(70);
+        $drawing3->setCoordinates($lokasiKolomTtdHeadOfLab);
+        $drawings[] = $drawing3;
+
+
+        // Add more images as needed
+
+        return $drawings;
     }
 }

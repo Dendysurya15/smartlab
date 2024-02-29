@@ -38,7 +38,10 @@ class HistoryKupa extends Component implements HasForms, HasTable
     {
         return $table
             ->query(TrackSampel::query())
-            // ->defaultSort('tanggal_terima', 'desc')
+            ->defaultSort('tanggal_terima', 'desc')
+            ->emptyStateIcon('heroicon-o-bookmark')
+            ->emptyStateHeading('Tidak Ada History')
+            ->emptyStateDescription('Jika Terdapat History Kupa, Akan tercatat otomatis di halaman ini')
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('tanggal_terima')
