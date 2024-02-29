@@ -167,7 +167,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
             $row_count = count($newInputanParameters);
             $countnamaarr = count($namaArray ?? []);
-
             $this->semuaRowParameter = $row_count;
 
             for ($i = 0; $i < $row_count; $i++) {

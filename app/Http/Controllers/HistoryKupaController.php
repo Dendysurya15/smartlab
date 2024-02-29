@@ -193,6 +193,8 @@ class HistoryKupaController extends Controller
         $query = TrackSampel::find($id);
 
         $filename = 'Kupa ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
+
+        dd($filename);
         return Excel::download(new FormDataExport($id), $filename);
     }
 
