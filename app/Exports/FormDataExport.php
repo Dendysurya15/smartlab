@@ -107,6 +107,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $inputan_parameter[$inc]['jumlah'] = $value->jumlah;
                 $inputan_parameter[$inc]['total_per_parameter'] = $value->totalakhir;
                 $inputan_parameter[$inc]['discount'] = $tracksample->discount;
+                $inputan_parameter[$inc]['col_verif'] = $tracksample->konfirmasi;
 
 
                 $sub += $value->totalakhir;
@@ -120,40 +121,12 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $inc++;
             }
 
-            // $test = Money::USD(500, true); // $500.00 force decimals
-
-
-            // dd($getdisc);
-            // dd($sub_total_parameter);
-
-            // $match_parameter = [];
-
-            // foreach ($array_param_analisis_excel as $key => $item) {
-            //     // Check if the value exists in the "nama" or "nama_unsur" key of the second array
-            //     $foundItem = array_filter($inputan_parameter, function ($secondItem) use ($item) {
-            //         return $secondItem['nama'] === $item || $secondItem['alias'] === $item;
-            //     });
-
-            //     if (!empty($foundItem)) {
-            //         $match_parameter[$key] = reset($foundItem);
-            //     }
-            // }
 
 
             $row_count = count($inputan_parameter);
 
 
-            // $subtotal  = 0;
-            // $total = 0;
-            // foreach ($match_parameter as $key => $value) {
-            //     $subtotal  = $value['jumlah'] * $value['harga'];
-            //     $ppn = hitungPPN($subtotal);
-            //     $total = $subtotal + $ppn;
-            //     $final_total += $total;
-            //     $match_parameter[$key]['ppn'] = $ppn;
-            //     $match_parameter[$key]['subtotal'] = $subtotal;
-            //     $match_parameter[$key]['total'] = $total;
-            // }
+
             $newInputanParameters = [];
 
             foreach ($inputan_parameter as $key => $value) {
@@ -175,14 +148,15 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                                 $newInputanParameters[] = [
                                     "nama" => trim($namaItem),
                                     "alias" => ($index === 0 ?  $value["alias"] : ''),
+                                    "col_verif" => ($index === 0 ?  $value["col_verif"] : ''),
                                     "satuan" => $value1["satuan"],
                                     "metode" => $value1["metode_analisis"],
                                     "personel" => ($index === 0 ? $value["personel"] : ''),
                                     "alat" => ($index === 0 ? $value["alat"] : ''),
                                     "bahan" => ($index === 0 ? $value["bahan"] : ''),
-                                    "harga_per_satuan" => ($index === 0 ? $value["harga_per_satuan"] : ''),
+                                    "harga_per_satuan" => ($index === 0 ? $value["harga_per_satuan"] : '-'),
                                     "jumlah" => ($index === 0 ?  $value["jumlah"] : ''),
-                                    "total_per_parameter" => ($index === 0 ? $value["total_per_parameter"] : '')
+                                    "total_per_parameter" => ($index === 0 ? $value["total_per_parameter"] : '-')
                                 ];
                             }
                         }
@@ -205,30 +179,30 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     if (array_key_exists($i, $newInputanParameters) && $i === $i) {
                         $arr_per_column[$i]['col_mark'] = 1;
                         $arr_per_column[$i]['col_param'] = $newInputanParameters[$i]['nama'];
-                        $arr_per_column[$i]['col_harga'] = $newInputanParameters[$i]['harga_per_satuan'];
+                        $arr_per_column[$i]['col_harga'] = Money::IDR($newInputanParameters[$i]['harga_per_satuan'], true);
                         $arr_per_column[$i]['col_satuan'] = $newInputanParameters[$i]['satuan'];
                         $arr_per_column[$i]['col_metode'] = $newInputanParameters[$i]['metode'];
                         $arr_per_column[$i]['col_personel'] = $newInputanParameters[$i]['personel'];
                         $arr_per_column[$i]['col_alat'] = $newInputanParameters[$i]['alat'];
                         $arr_per_column[$i]['col_bahan'] = $newInputanParameters[$i]['bahan'];
                         $arr_per_column[$i]['col_jum_sampel_2'] = $newInputanParameters[$i]['jumlah'];
-                        $arr_per_column[$i]['col_sub_total'] = $newInputanParameters[$i]['total_per_parameter'];
-                        $arr_per_column[$i]['col_ppn'] = 1;
+                        $arr_per_column[$i]['col_sub_total'] = Money::IDR($newInputanParameters[$i]['total_per_parameter'], true);
+                        $arr_per_column[$i]['col_verif'] = $newInputanParameters[$i]['col_verif'];
                         $arr_per_column[$i]['col_total'] = '';
                     }
                 } else {
                     if (array_key_exists($i, $newInputanParameters) && $i === $i) {
                         $arr_per_column[$i]['col_mark'] = 1;
                         $arr_per_column[$i]['col_param'] = $newInputanParameters[$i]['nama'];
-                        $arr_per_column[$i]['col_harga'] = $newInputanParameters[$i]['harga_per_satuan'];
+                        $arr_per_column[$i]['col_harga'] = ($newInputanParameters[$i]['harga_per_satuan'] === '-') ? '-' : Money::IDR($newInputanParameters[$i]['harga_per_satuan'], true);
                         $arr_per_column[$i]['col_satuan'] = $newInputanParameters[$i]['satuan'];
                         $arr_per_column[$i]['col_metode'] = $newInputanParameters[$i]['metode'];
                         $arr_per_column[$i]['col_personel'] = $newInputanParameters[$i]['personel'];
                         $arr_per_column[$i]['col_alat'] = $newInputanParameters[$i]['alat'];
                         $arr_per_column[$i]['col_bahan'] = $newInputanParameters[$i]['bahan'];
                         $arr_per_column[$i]['col_jum_sampel_2'] = $newInputanParameters[$i]['jumlah'];
-                        $arr_per_column[$i]['col_sub_total'] = $newInputanParameters[$i]['total_per_parameter'];
-                        $arr_per_column[$i]['col_ppn'] = '';
+                        $arr_per_column[$i]['col_sub_total'] = ($newInputanParameters[$i]['total_per_parameter'] === '-') ? '-' : Money::IDR($newInputanParameters[$i]['total_per_parameter'], true);
+                        $arr_per_column[$i]['col_verif'] = '';
                         $arr_per_column[$i]['col_total'] = '';
                     }
                     $arr_per_column[$i]['col_no_surat'] = '';

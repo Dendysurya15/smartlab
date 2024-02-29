@@ -213,11 +213,8 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_harga']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total']}}</td>
-                {{-- <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total']}}
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_ppn']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_total']}}</td> --}}
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_langsung']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{ $data['col_verif'] == 1 ? '✓'
+                    : '' }}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_normal']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_abnormal']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_tanggal']}}</td>
@@ -468,7 +465,9 @@
             </tr>
         </tbody>
     </table> -->
-
+    @php
+    dd('aaa');
+    @endphp
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
 
