@@ -199,7 +199,7 @@ class HistoryKupaController extends Controller
     public function exportFormMonitoringKupa($id)
     {
         $query = TrackSampel::find($id);
-        $filename = 'Form Monitoring Kupa ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
+        $filename = 'Form Monitoring Sampel ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
         return Excel::download(new MonitoringKupaExport($id), $filename);
     }
 }
