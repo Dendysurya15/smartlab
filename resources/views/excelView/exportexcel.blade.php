@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
 
@@ -21,14 +20,12 @@
             <tr>
                 <th></th>
                 <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
-                <td colspan="16"
-                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
+                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
                     PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16"
-                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
+                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
                     RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
@@ -214,8 +211,8 @@
                     : '' }}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel_2']}}
                 </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_harga']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total']}}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_harga'] == '-' ? ' ' :$data['col_harga'] }}</td>
+                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total'] == '-' ? ' ' :$data['col_sub_total']}}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{ $data['col_verif'] == 1 ? '✓'
                     : '' }}</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_normal']}}</td>
@@ -235,8 +232,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
                     Total Per Parameter</td>
 
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
@@ -249,8 +245,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                     {{$sub_total}}
                 </td>
                 {{-- <td
@@ -281,8 +276,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
                     PPn 11%</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
@@ -294,8 +288,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                     {{$ppn}}
                 </td>
 
@@ -319,8 +312,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
                     Diskon {{$disclabel}}%</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
@@ -332,10 +324,10 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:right">
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                     {{$discount}}
                 </td>
+
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
@@ -356,8 +348,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                <td colspan="4" style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
                     Total</td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
@@ -369,8 +360,7 @@
                 </td>
                 <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                 </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
+                <td style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
                     {{$final_total}}
                 </td>
 
@@ -402,14 +392,14 @@
                 <td colspan="2" style="border: 1px solid black;">Dibuat Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Disetujui Oleh,</td>
-                <td colspan="10"
-                    style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
+                <td colspan="10" style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
                     Catatan Khusus : </td>
             </tr>
             <tr>
                 <td></td>
                 <td colspan="2" rowspan="5" style="border: 1px solid black;">
-                    {{$petugas_penerima_sampel}}</td>
+                    {{$petugas_penerima_sampel}}
+                </td>
                 <td colspan="3" rowspan="5" style="border:1px solid black">
                     Budi Umbara</td>
                 <td colspan="3" rowspan="5" style="border:1px solid black">
@@ -479,8 +469,7 @@
     </table> -->
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
 
 </body>

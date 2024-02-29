@@ -25,6 +25,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
     private $countnamaarr; // Class property to store countnamaarr value
     private $semuaRowParameter;
+    private $status;
 
     public function __construct($id)
     {
@@ -55,15 +56,11 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $row_satuan = $jenis_sample->parameterAnalisis->pluck('satuan');
 
         $tgl_penerimaan = tanggal_indo($tracksample->tanggal_terima, false, false, true);
-        $tgl_penyelesaian = tanggal_indo($tracksample->tanggal_pengantaran, false, false, true);
+
         $jenis_kupa = $jenis_sample->nama;
         $no_kupa = $tracksample->nomor_kupa;
         $nama_pengirim = $tracksample->nama_pengirim;
-
-        $track = $jenis_sample->parameterAnalisis->toArray();
-
-
-        // dd($track);
+        $this->status = $tracksample->status;
 
         $arr_per_column = [];
 
@@ -111,6 +108,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $inputan_parameter[$inc]['total_per_parameter'] = $value->totalakhir;
                 $inputan_parameter[$inc]['discount'] = $tracksample->discount;
                 $inputan_parameter[$inc]['col_verif'] = $tracksample->konfirmasi;
+                $inputan_parameter[$inc]['flagcol'] = 'True';
 
 
                 $sub += $value->totalakhir;
@@ -140,37 +138,35 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     // Split the nama by comma
                     $namaArray = explode(',', $nama);
 
-                    // dd($namaArray, $track);
-
-                    $countnamaarr = count($namaArray);
                     // Iterate through the split nama and create new arrays
                     foreach ($namaArray as $index => $namaItem) {
-                        foreach ($track as $key => $value1) {
-                            // Compare $namaItem with "nama_unsur" instead of comparing with index
-                            if ($value1['nama_unsur'] === trim($namaItem)) {
-                                $newInputanParameters[] = [
-                                    "nama" => trim($namaItem),
-                                    "alias" => ($index === 0 ?  $value["alias"] : ''),
-                                    "col_verif" => ($index === 0 ?  $value["col_verif"] : ''),
-                                    "satuan" => $value1["satuan"],
-                                    "metode" => $value1["metode_analisis"],
-                                    "personel" => ($index === 0 ? $value["personel"] : ''),
-                                    "alat" => ($index === 0 ? $value["alat"] : ''),
-                                    "bahan" => ($index === 0 ? $value["bahan"] : ''),
-                                    "harga_per_satuan" => ($index === 0 ? $value["harga_per_satuan"] : '-'),
-                                    "jumlah" => ($index === 0 ?  $value["jumlah"] : ''),
-                                    "total_per_parameter" => ($index === 0 ? $value["total_per_parameter"] : '-')
-                                ];
-                            }
-                        }
+
+                        $lastKey = key(array_slice($namaArray, -1, 1, true));
+                        // dd($lastKey);
+                        array_unshift($newInputanParameters, [
+                            "nama" => trim($namaItem),
+                            "alias" => ($index === $lastKey ?  $value["alias"] : ''),
+                            "col_verif" => ($index === $lastKey ?  $value["col_verif"] : ''),
+                            "satuan" => $value["satuan"], // Assuming satuan is same for all splitted items
+                            "metode" => $value["metode"], // Assuming metode is same for all splitted items
+                            "personel" => ($index === $lastKey ? $value["personel"] : ''),
+                            "alat" => ($index === $lastKey ? $value["alat"] : ''),
+                            "bahan" => ($index === $lastKey ? $value["bahan"] : ''),
+                            "harga_per_satuan" => ($index === $lastKey ? $value["harga_per_satuan"] : '-'),
+                            "jumlah" => ($index === $lastKey ?  $value["jumlah"] : ''),
+                            "total_per_parameter" => ($index === $lastKey ? $value["total_per_parameter"] : '-')
+                        ]);
                     }
                 } else {
                     // If no comma, simply add the original array
                     $newInputanParameters[] = $value;
                 }
             }
-            // dd($newInputanParameters);
+
+            // dd($newInputanParameters, $inputan_parameter);
+
             $row_count = count($newInputanParameters);
+            $countnamaarr = count($namaArray);
             $this->semuaRowParameter = $row_count;
 
             for ($i = 0; $i < $row_count; $i++) {
@@ -180,14 +176,14 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     if (array_key_exists($i, $newInputanParameters) && $i === $i) {
                         $arr_per_column[$i]['col_mark'] = 1;
                         $arr_per_column[$i]['col_param'] = $newInputanParameters[$i]['nama'];
-                        $arr_per_column[$i]['col_harga'] = Money::IDR($newInputanParameters[$i]['harga_per_satuan'], true);
+                        $arr_per_column[$i]['col_harga'] = ($newInputanParameters[$i]['harga_per_satuan'] === '-') ? '-' : Money::IDR($newInputanParameters[$i]['harga_per_satuan'], true);
                         $arr_per_column[$i]['col_satuan'] = $newInputanParameters[$i]['satuan'];
                         $arr_per_column[$i]['col_metode'] = $newInputanParameters[$i]['metode'];
                         $arr_per_column[$i]['col_personel'] = $newInputanParameters[$i]['personel'];
                         $arr_per_column[$i]['col_alat'] = $newInputanParameters[$i]['alat'];
                         $arr_per_column[$i]['col_bahan'] = $newInputanParameters[$i]['bahan'];
                         $arr_per_column[$i]['col_jum_sampel_2'] = $newInputanParameters[$i]['jumlah'];
-                        $arr_per_column[$i]['col_sub_total'] = Money::IDR($newInputanParameters[$i]['total_per_parameter'], true);
+                        $arr_per_column[$i]['col_sub_total'] = ($newInputanParameters[$i]['total_per_parameter'] === '-') ? '-' : Money::IDR($newInputanParameters[$i]['total_per_parameter'], true);
                         $arr_per_column[$i]['col_verif'] = $newInputanParameters[$i]['col_verif'];
                         $arr_per_column[$i]['col_total'] = '';
                     }
@@ -220,7 +216,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $this->countnamaarr = $countnamaarr ?? 0;
 
-        // dd($arr_per_column);
+        // dd($this->countnamaarr);
         return view('excelView.exportexcel', [
             // 'trackdata' => $exportData,
             // 'tanggal' => $tanggalterima,
@@ -256,12 +252,12 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     $event->sheet->mergeCells("O14:O$endRow");
                     $event->sheet->getStyle("O14:O$endRow")->getAlignment()
                         ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
                     $event->sheet->mergeCells("N14:N$endRow");
                     $event->sheet->getStyle("N14:N$endRow")->getAlignment()
                         ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                     $event->sheet->mergeCells("P14:P$endRow");
                     $event->sheet->getStyle("P14:P$endRow")->getAlignment()
                         ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
@@ -341,6 +337,8 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
     public function drawings()
     {
 
+        // dd($this->status);
+
         $tinggiDefaultKolom = 13 +  4 + 1 + 1 + 1 +  $this->semuaRowParameter;
 
         $drawings = [];
@@ -358,13 +356,15 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $drawings[] = $drawing1;
 
         // Second Image
-        $drawing2 = new Drawing();
-        $drawing2->setName('Logo2');
-        $drawing2->setDescription('This is my second logo');
-        $drawing2->setPath(public_path('images/bg_test.png'));
-        $drawing2->setHeight(70);
-        $drawing2->setCoordinates($lokasiKolomTtdPenerimaSampel);
-        $drawings[] = $drawing2;
+        if ($this->status === 'Approved') {
+            $drawing2 = new Drawing();
+            $drawing2->setName('Logo2');
+            $drawing2->setDescription('This is my second logo');
+            $drawing2->setPath(public_path('images/bg_test.png'));
+            $drawing2->setHeight(70);
+            $drawing2->setCoordinates($lokasiKolomTtdPenerimaSampel);
+            $drawings[] = $drawing2;
+        }
 
 
         $drawing3 = new Drawing();
