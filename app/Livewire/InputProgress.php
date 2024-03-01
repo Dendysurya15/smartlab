@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Filament\Notifications\Actions\Action;
+use Illuminate\Validation\ValidationException;
 use Filament\Notifications\Notification;
 
 class InputProgress extends Component
@@ -82,7 +84,6 @@ class InputProgress extends Component
         'discount' => 'required',
         'nama_pengirim' => 'required|string',
         'departemen' => 'required|string',
-        'kode_sampel' => 'required|string',
         'jumlah_sampel' => 'required|numeric',
         'kondisi_sampel' => 'required|string',
         'kemasan_sampel' => 'required|string',
@@ -234,7 +235,7 @@ class InputProgress extends Component
         } else {
             $this->tanggal_terima = $current->toDateString();
         }
-        $jumlah_sampel_default = 0;
+        $jumlah_sampel_default = 1;
         $this->jumlah_sampel = $jumlah_sampel_default;
         $this->kondisi_sampel = 'Normal';
         $this->asal_sampel = 'Internal';
@@ -298,13 +299,31 @@ class InputProgress extends Component
 
     }
 
+    public function cancelButton()
+    {
+        $this->redirect('history_sampel');
+    }
 
+    public function draftKupa()
+    {
+        $this->handleFormSubmission('draft');
+    }
 
     public function save()
     {
+        $this->handleFormSubmission('save');
+    }
 
 
-        $this->validate();
+    public function handleFormSubmission($action)
+    {
+
+
+
+        if ($action === 'save') {
+
+            $this->validate();
+        }
 
 
         $formData = array_filter($this->formData, function ($item) {
@@ -343,17 +362,7 @@ class InputProgress extends Component
         // dd($this->nomor_lab_left, $this->nomor_lab_right);
         $nomorlab =  $this->nomor_lab_left . '-' . $this->nomor_lab_right;
 
-        function generateRandomString($length)
-        {
-            $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $randomString = '';
 
-            for ($i = 0; $i < $length; $i++) {
-                $randomString .= $characters[rand(0, strlen($characters) - 1)];
-            }
-
-            return $randomString;
-        }
         $commonRandomString = generateRandomString(rand(5, 10));
 
 
@@ -397,60 +406,84 @@ class InputProgress extends Component
             $trackSampel->discount = $this->discount;
             $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
 
+            $getprogress = Progress::pluck('nama')->first();
 
-            $getprogres = Progress::pluck('nama')->first();
-
-            // dd($getprogres);
             if ($this->foto_sampel) {
                 $fileName = time() . '_' . $this->foto_sampel->getClientOriginalName();
                 $this->foto_sampel->storeAs('uploads', $fileName, 'public');
                 $trackSampel->foto_sampel = $fileName;
             }
 
+            if ($action === 'draft') {
+                $trackSampel->status = 'Draft';
+            }
+
             $saveResult = $trackSampel->save();
 
             if ($saveResult) {
 
-
                 $trackParameters = [];
 
-                foreach ($formData as $data) {
-                    $dataToInsert[] = [
-                        'id_parameter' => $data['id_parameter'],
-                        'jumlah' => $data['jumlah_sampel'],
-                        'totalakhir' => $data['totalharga'],
-                        // 'personel' => $data['personel'] == True ? 1 : 0,
-                        // 'alat' => $data['alat'] == True ? 1 : 0,
-                        // 'bahan' => $data['bahan'] == True ? 1 : 0,
-                        'id_tracksampel' => $commonRandomString,
-                    ];
+                if ($formData !== []) {
+                    foreach ($formData as $data) {
+                        $dataToInsert[] = [
+                            'id_parameter' => $data['id_parameter'],
+                            'jumlah' => $data['jumlah_sampel'],
+                            'totalakhir' => $data['totalharga'],
+                            // 'personel' => $data['personel'] == True ? 1 : 0,
+                            // 'alat' => $data['alat'] == True ? 1 : 0,
+                            // 'bahan' => $data['bahan'] == True ? 1 : 0,
+                            'id_tracksampel' => $commonRandomString,
+                        ];
+                    }
+
+                    TrackParameter::insert($dataToInsert);
                 }
 
-                TrackParameter::insert($dataToInsert);
-                $form_hp = $this->no_hp;
-
-                $nohp = numberformat($form_hp);
-                // dd($nohp);
-
-
-                SendMsg::insert([
-                    'no_surat' => $this->nomor_surat,
-                    'kodesample' => $randomCode,
-                    'penerima' => $nohp,
-                    'progres' => $getprogres,
-                    'type' => 'input',
-                ]);
-
-
+                //to store to database below code
                 DB::commit();
 
-                Notification::make()
-                    ->title('Berhasil disimpan')
-                    ->body(' Record berhasil disimpan dengan kode track ' . $randomCode)
-                    ->icon('heroicon-o-document-text')
-                    ->iconColor('success')
-                    ->success()
-                    ->send();
+                if ($action === 'save') {
+                    $form_hp = $this->no_hp;
+
+                    $nohp = numberformat($form_hp);
+                    SendMsg::insert([
+                        'no_surat' => $this->nomor_surat,
+                        'kodesample' => $randomCode,
+                        'penerima' => $nohp,
+                        'progres' => $getprogress,
+                        'type' => 'input',
+                    ]);
+
+                    Notification::make()
+                        ->title('Berhasil disimpan')
+                        ->body(' Record berhasil disimpan dengan kode track ' . $randomCode)
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('success')
+                        ->color('success')
+                        ->actions([
+                            Action::make('view')
+                                ->button()
+                                ->url(route('history_sampel.index')),
+
+                        ])
+                        ->success()
+                        ->send();
+                } else if ($action === 'draft') {
+                    Notification::make()
+                        ->title('Draft Tersimpan')
+                        ->body(' Record Kupa draft berhasil disimpan dengan kode track' . $randomCode)
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('warning')
+                        ->color('warning')
+                        ->actions([
+                            Action::make('view')
+                                ->button()
+                                ->url(route('history_sampel.index')),
+
+                        ])
+                        ->send();
+                }
 
                 $this->successSubmit = true;
                 $this->msgSuccess = $randomCode;
@@ -500,6 +533,7 @@ class InputProgress extends Component
                 Notification::make()
                     ->title('Error ')
                     ->danger()
+                    ->color('danger')
                     ->send();
 
                 $this->msgError = 'An error occurred while saving the data: ';
@@ -512,6 +546,7 @@ class InputProgress extends Component
             Notification::make()
                 ->title('Error ' . $e->getMessage())
                 ->danger()
+                ->color('danger')
                 ->send();
 
             // session()->flash('errorSubmit', 'An error occurred while saving the data. ' .  $e->getMessage());

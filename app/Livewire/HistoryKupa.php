@@ -137,11 +137,14 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             case 'Approved':
                                 $result = 'success';
                                 break;
-                            case 'Pending':
-                                $result = 'warning';
+                            case 'Waiting Approved':
+                                $result = 'gray';
                                 break;
                             case 'Rejected':
                                 $result = 'danger';
+                                break;
+                            case 'Draft':
+                                $result = 'warning';
                                 break;
                             default:
                                 $result = 'gray';
@@ -229,6 +232,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
 
             ])
+            // ->bulkActions([
+            //     BulkAction::make('delete')
+            //         ->requiresConfirmation()
+            //         ->action(fn (Collection $records) => $records->each->delete())
+            // ])
             ->actions([
                 Action::make('export_kupa')
                     ->label('Kupa')
@@ -251,6 +259,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->openUrlInNewTab()
                     ->visible(auth()->user()->can('edit_kupa'))
                     ->size('xs'),
+
                 Action::make('delete')
                     ->action(function (TrackSampel $record) {
                         $record->delete();
