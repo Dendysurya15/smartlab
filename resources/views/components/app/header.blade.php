@@ -6,8 +6,7 @@
             <div class="flex">
 
                 <!-- Hamburger button -->
-                <button class="text-slate-500 hover:text-slate-600 lg:hidden" @click.stop="sidebarOpen = !sidebarOpen"
-                    aria-controls="sidebar" :aria-expanded="sidebarOpen">
+                <button class="text-slate-500 hover:text-slate-600 lg:hidden" @click.stop="sidebarOpen = !sidebarOpen" aria-controls="sidebar" :aria-expanded="sidebarOpen">
                     <span class="sr-only">Open sidebar</span>
                     <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <rect x="4" y="5" width="16" height="2" />
@@ -26,15 +25,15 @@
                 <x-modal-search /> --}}
 
                 <!-- Notifications button -->
-                {{--
-                <x-dropdown-notifications align="right" /> --}}
+
+                <x-dropdown-notifications align="right" />
 
                 <!-- Info button -->
                 {{--
                 <x-dropdown-help align="right" /> --}}
 
                 <!-- Dark mode toggle -->
-                <x-theme-toggle />
+                <!-- <x-theme-toggle /> -->
 
                 <!-- Divider -->
                 <hr class="w-px h-6 bg-slate-200 dark:bg-slate-700 border-none" />
