@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MinotoringExport;
 use App\Exports\MonitoringKupaExport;
 use Illuminate\Support\Facades\Mail;
+use Filament\Notifications\Actions\Action;
 use App\Mail\EmailPelanggan;
 use Filament\Notifications\Notification;
 
@@ -25,6 +26,8 @@ class Editprogress extends Component
     public $sample;
     public $tanggal_memo;
     public $tanggal_terima;
+
+    public $updatedDraft = 'nais bro';
     public $estimasi;
     public $no_kupa;
     public $jenis_sampel;
@@ -112,6 +115,8 @@ class Editprogress extends Component
         return view(
             'livewire.editprogress',
             [
+
+                'updatedDraft' => $this->updatedDraft,
                 'status_pengerjaan' => $query->status,
                 'jenisSampelOptions' => $jenisSampelOptions,
                 'list_parameter' => $list_parameter,
@@ -220,6 +225,8 @@ class Editprogress extends Component
 
     public function mount()
     {
+
+
         $id = $this->sample;
         $query = TrackSampel::find($id);
         $this->selected_status = $query->status;
@@ -228,8 +235,10 @@ class Editprogress extends Component
             $this->badge_color_status = 'bg-emerald-600';
         } elseif ($this->selected_status === 'Rejected') {
             $this->badge_color_status = 'bg-red-600';
-        } elseif ($this->selected_status === 'Pending') {
+        } elseif ($this->selected_status === 'Draft') {
             $this->badge_color_status = 'bg-yellow-500';
+        } else if ($this->selected_status === 'Waiting Approved') {
+            $this->badge_color_status = 'bg-gray-500';
         }
 
 
@@ -358,8 +367,37 @@ class Editprogress extends Component
         $this->oldform[$index]['judulppn'] = $ppn . "% PPN";
     }
 
-    private function processSave()
+
+    public function cancelButton()
     {
+        return redirect()->to(route('history_sampel.index'));
+    }
+
+    public function updateDraft()
+    {
+
+        $this->handleFormSubmission('updateDraft');
+    }
+
+    public function finishDraftToSave()
+    {
+        $this->handleFormSubmission('finishDraftToSave');
+    }
+
+    public function save()
+    {
+        if (!$this->isExporting) {
+            $this->handleFormSubmission('save');
+        }
+    }
+
+    private function handleFormSubmission($action)
+    {
+
+        if ($action === 'finishDraftToSave') {
+            $this->validate();
+        }
+
         $id = $this->sample;
         $query = TrackSampel::find($id);
 
@@ -423,15 +461,15 @@ class Editprogress extends Component
             $trackSampel->tanggal_memo = $this->tanggal_memo;
             $trackSampel->tanggal_terima = $this->tanggal_terima;
 
-
-            $trackSampel->status = $this->selected_status;
-            $trackSampel->status_changed_by = auth()->user()->id;
+            // $trackSampel->status = $this->selected_status;
+            // $trackSampel->status_changed_by = auth()->user()->id;
             $trackSampel->asal_sampel = $this->asal_sampel;
             $trackSampel->nomor_kupa = $this->no_kupa;
             $trackSampel->nomor_lab = $this->nomor_lab_left . '-' . $this->nomor_lab_right;
             $trackSampel->nama_pengirim = $this->nama_pengirim;
             $trackSampel->departemen = $this->departemen;
             $trackSampel->kode_sampel = $this->kode_sampel;
+            $trackSampel->kemasan_sampel = $this->kemasan_sampel;
             $trackSampel->nomor_surat = $this->nomor_surat;
             $trackSampel->estimasi = $this->estimasi;
             $trackSampel->tujuan = $this->tujuan;
@@ -443,6 +481,10 @@ class Editprogress extends Component
             $trackSampel->bahan = ($this->bahan ? 1 : 0);
             $trackSampel->konfirmasi = ($this->confirmation ? 1 : 0);
 
+            if ($action === 'finishDraftToSave') {
+                $trackSampel->status = 'Waiting Approved';
+                $trackSampel->status_changed_by = null;
+            }
 
 
             // jika ada progress yang berbeda
@@ -491,47 +533,56 @@ class Editprogress extends Component
             $form_hp = $this->no_hp;
 
             $nohp = numberformat($form_hp);
-            // dd($nohp);
-
-            SendMsg::insert([
-                'no_surat' => $this->nomor_surat,
-                'kodesample' => $this->kode_sampel,
-                'penerima' => $nohp,
-                'progres' => $progress_now,
-                'type' => 'update',
-            ]);
-
-            $recipients = $this->emailTo;
-            $cc = $this->emailCc;
-
-
-            $nomorserif = '-';
 
             DB::commit();
+            if ($action === 'finishDraftToSave') {
 
-            Notification::make()
-                ->title('Berhasil disimpan')
-                ->body(' Record berhasil diupdate dengan kode track ' . $this->kode_sampel)
-                ->icon('heroicon-o-document-text')
-                ->iconColor('success')
-                ->success()
-                ->send();
 
-            try {
+                Notification::make()
+                    ->title('Berhasil disimpan')
+                    ->body(' Record status menjadi Waiting Approved')
+                    ->icon('heroicon-o-document-text')
+                    ->iconColor('success')
+                    ->success()
+                    ->send();
+                $nomorserif = '-';
+                $recipients = $this->emailTo;
+                $cc = $this->emailCc;
+                SendMsg::insert([
+                    'no_surat' => $this->nomor_surat,
+                    'kodesample' => $this->kode_sampel,
+                    'penerima' => $nohp,
+                    'progres' => $progress_now,
+                    'type' => 'update',
+                ]);
+
                 Mail::to($recipients)
                     ->cc($cc)
                     ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
+            } else if ($action === 'updateDraft') {
+                Notification::make()
+                    ->title('Draft Tersimpan')
+                    ->body('Draft berhasil diupdate ')
+                    ->icon('heroicon-o-document-text')
+                    ->iconColor('warning')
+                    ->color('warning')
 
-                return "Email sent successfully!";
-            } catch (\Exception $e) {
-                return "Error: " . $e->getMessage();
+                    ->send();
+            } else if ($action === 'save') {
+                Notification::make()
+                    ->title('Berhasil Update')
+                    ->body('Kupa berhasil diupdate ')
+                    ->icon('heroicon-o-document-text')
+                    ->iconColor('success')
+                    ->color('success')
+
+                    ->send();
             }
-
 
             $this->successSubmit = true;
             $this->msgSuccess = $query->kode_track;
             $this->selected_status = $this->selected_status;
-            $this->badge_color_status = $this->selected_status === 'Approved' ? 'bg-emerald-600' : ($this->selected_status === 'Rejected' ? 'bg-red-600' : ($this->selected_status === 'Pending' ? 'bg-yellow-500' : ''));
+            $this->badge_color_status = $this->selected_status === 'Approved' ? 'bg-emerald-600' : ($this->selected_status === 'Rejected' ? 'bg-red-600' : ($this->selected_status === 'Waiting Approved' ? 'bg-yellow-500' : ($this->selected_status === 'Draft' ? 'bg-amber-600' : '')));
         } catch (Exception $e) {
             DB::rollBack();
             Notification::make()
@@ -541,14 +592,15 @@ class Editprogress extends Component
             $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
             $this->errorSubmit = true;
         }
+
+        $this->reset([
+            'foto_sampel',
+        ]);
+
+        // $this->updatedDraft = 'bro';
     }
 
-    public function save()
-    {
-        if (!$this->isExporting) {
-            $this->processSave();
-        }
-    }
+
 
     private function isDataModified($oldparameteredit)
     {
@@ -602,4 +654,25 @@ class Editprogress extends Component
     //     // return Excel::download(new FormDataExport($id), 'Data_Lab.xlsx');
     //     return Excel::download(new MinotoringExport, 'invoices.xlsx', true, ['X-Vapor-Base64-Encode' => 'True']);
     // }
+
+
+    protected $rules = [
+        'tanggal_terima' => 'required|date',
+        'jenis_sampel' => 'required',
+        'asal_sampel' => 'required|in:Internal,Eksternal',
+        'no_kupa' => 'required|numeric',
+        'discount' => 'required',
+        'nama_pengirim' => 'required|string',
+        'departemen' => 'required|string',
+        'jumlah_sampel' => 'required|numeric',
+        'kondisi_sampel' => 'required|string',
+        'kemasan_sampel' => 'required|string',
+        'nomor_surat' => 'required|string',
+        'estimasi' => 'required|date',
+        'no_hp' => 'required',
+        'tujuan' => 'required|string',
+        // 'emailTo' => 'required|email', // Assuming it's an email field
+        'foto_sampel' => 'max:5000',
+        'oldform' => 'required',
+    ];
 }

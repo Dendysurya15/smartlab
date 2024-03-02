@@ -8,13 +8,13 @@
                 echo strtoupper($selected_status)
                 @endphp
             </span>
-            DETAIL PROGRESS SAMPLE {{$kode_track}}
+            DETAIL PROGRESS SAMPEL {{$kode_track}}
 
         </h2>
     </header>
 
 
-    <form wire:submit.prevent="save" method="POST" enctype="multipart/form-data">
+    <form wire:submit.prevent="save" method="POST" enctype="multipart/form-data" class="p-5">
         @csrf
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
@@ -26,7 +26,7 @@
 
                 <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
-                    <div class="sm:col-span-2">
+                    {{-- <div class="sm:col-span-2">
                         <label for="status" class="block text-sm font-medium leading-6 text-gray-900">Status
                             Pengerjaan</label>
                         <div class="mt-2">
@@ -58,10 +58,11 @@
 
 
                             @error('status_pengerjaan')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
                             @enderror
                         </div>
-                    </div>
+                    </div> --}}
+
                     <div class="sm:col-span-2">
                         <label for="status" class="block text-sm font-medium leading-6 text-gray-900">Status
                             Pengerjaan</label>
@@ -73,8 +74,16 @@
                                 @endforeach
                             </select>
                             @error('jenis_sampel')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
                             @enderror
+                        </div>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="tanggal_memo" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
+                            Memo</label>
+                        <div class="mt-2">
+                            <input type="datetime-local" wire:model="tanggal_memo" autocomplete="given-name"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                         </div>
                     </div>
                     <div class="sm:col-span-2">
@@ -93,10 +102,23 @@
                         </div>
                     </div>
                     <div class="sm:col-span-2">
-                        <label for="tanggal_memo" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
-                            Memo</label>
+                        <label for="tanggal_terima" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
+                            Terima<span style="color:red">*</span></label>
                         <div class="mt-2">
-                            <input type="datetime-local" wire:model="tanggal_memo" autocomplete="given-name"
+                            <input type="date" wire:model="tanggal_terima" id="tanggal_terima" autocomplete="given-name"
+                                value="{{ old('tanggal_terima') }}"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
+                            @error('tanggal_terima')
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="estimasi" class="block text-sm font-medium leading-6 text-gray-900">Estimasi
+                            Kupa</label>
+                        <div class="mt-2">
+                            <input type="date" autocomplete="given-name" wire:model="estimasi"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                         </div>
                     </div>
@@ -109,7 +131,7 @@
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
                                 disabled>
                             @error('jenis_sampel')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
                             @enderror
                         </div>
                     </div>
@@ -119,7 +141,8 @@
                         <div class="mt-2">
                             <input type="text" name="asal_sampel" id="asal_sampel" wire:model="asal_sampel"
                                 autocomplete="given-name" value=""
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+                                disabled>
                         </div>
                     </div>
                     <div class="sm:col-span-2">
@@ -129,6 +152,9 @@
                             <input type="number" name="no_kupa" id="no_kupa" wire:model="no_kupa"
                                 autocomplete="given-name" value=""
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            @error('no_kupa')
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
+                            @enderror
                         </div>
                     </div>
 
@@ -143,7 +169,7 @@
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                             @error('jumlah_sampel')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
                             @enderror
                         </div>
                     </div>
@@ -156,6 +182,9 @@
                                 value="" autocomplete="given-name"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
                                 {{-- placeholder="Nama Pelanggan" --}}>
+                            @error('nama_pengirim')
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
+                            @enderror
                         </div>
                     </div>
                     <div class="sm:col-span-2">
@@ -166,6 +195,9 @@
                             <input type="text" name="departemen" id="departemen" wire:model="departemen"
                                 autocomplete="given-name" value=""
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            @error('departemen')
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
+                            @enderror
                         </div>
                     </div>
                     <div class="sm:col-span-2">
@@ -175,6 +207,7 @@
                             <input type="text" name="kode_sampel" id="kode_sampel" wire:model="kode_sampel"
                                 autocomplete="given-name" value=""
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+
                         </div>
                     </div>
                     <div class="sm:col-span-2">
@@ -187,7 +220,7 @@
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
                             @error('kemasan_sampel')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
                             @enderror
                         </div>
                     </div>
@@ -204,7 +237,7 @@
                                 </option>
                             </select>
                             @error('kondisi_sampel')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
                             @enderror
                         </div>
                     </div>
@@ -221,7 +254,8 @@
                                     autocomplete="given-name"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 @error('nomor_lab_left')
-                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span>
+                                </p>
                                 @enderror
                             </div>
                             <div class="col-span-1">
@@ -229,7 +263,8 @@
                                     autocomplete="given-name"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                 @error('nomor_lab_right')
-                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span>
+                                </p>
                                 @enderror
                             </div>
                         </div>
@@ -238,7 +273,7 @@
                             <input type="text" wire:model="nomor_lab_left" id="nomor_lab_left" autocomplete="given-name"
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                             @error('nomor_lab_left')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
                             @enderror
                         </div>
                         @endif
@@ -251,34 +286,21 @@
                                 autocomplete="given-name" value=""
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                         </div>
+                        @error('nomor_surat')
+                        <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
+                        @enderror
                     </div>
-                    <div class="sm:col-span-2">
-                        <label for="estimasi" class="block text-sm font-medium leading-6 text-gray-900">Estimasi
-                            Kupa</label>
-                        <div class="mt-2">
-                            <input type="date" autocomplete="given-name" wire:model="estimasi"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
-                        </div>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="tanggal_terima" class="block text-sm font-medium leading-6 text-gray-900">Tanggal
-                            Terima<span style="color:red">*</span></label>
-                        <div class="mt-2">
-                            <input type="date" wire:model="tanggal_terima" id="tanggal_terima" autocomplete="given-name"
-                                value="{{ old('tanggal_terima') }}"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
 
-                            @error('tanggal_terima')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
+
                     <div class="sm:col-span-2">
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Tujuan</label>
                         <div class="mt-2">
                             <input type="text" name="tujuan" id="tujuan" wire:model="tujuan" autocomplete="given-name"
                                 value=""
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            @error('tujuan')
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
+                            @enderror
                         </div>
                     </div>
                     <div class="sm:col-span-2">
@@ -293,7 +315,7 @@
                                     Tinggi</option>
                             </select>
                             @error('skala_prioritas')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
                             @enderror
                         </div>
                     </div>
@@ -304,6 +326,9 @@
                             <input type="number" name="no_hp" id="no_hp" wire:model="no_hp" autocomplete="given-name"
                                 value=""
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
+                            @error('no_hp')
+                            <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
+                            @enderror
                         </div>
                     </div>
                     <div class="sm:col-span-2">
@@ -317,7 +342,8 @@
                                     <label for="personel" class="font-medium text-gray-900">Personel</label>
                                     <p class="text-gray-500 text-xs">(Tersedia dan Kompeten)</p>
                                     @error('personel')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message
+                                            }}</span></p>
                                     @enderror
                                 </div>
                             </div>
@@ -331,7 +357,8 @@
                                     <label for="alat" class="font-medium text-gray-900">Alat</label>
                                     <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
                                     @error('alat')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message
+                                            }}</span></p>
                                     @enderror
                                 </div>
                             </div>
@@ -344,7 +371,8 @@
                                     <label for="bahan" class="font-medium text-gray-900">Bahan</label>
                                     <p class="text-gray-500 text-xs">(Tersedia dan Baik)</p>
                                     @error('bahan')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message
+                                            }}</span></p>
                                     @enderror
                                 </div>
                             </div>
@@ -361,7 +389,8 @@
                                         placeholder="Ex: Imam@gmail.com; Kiky@gmail.com. Beri tanda pemisah ';'"
                                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                     @error('emailTo')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message
+                                            }}</span></p>
                                     @enderror
                                 </div>
                             </div>
@@ -374,7 +403,8 @@
                                         placeholder="Ex: Imam@gmail.com; Kiky@gmail.com. Beri tanda pemisah ';'"
                                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                     @error('emailCc')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message
+                                            }}</span></p>
                                     @enderror
                                 </div>
                             </div>
@@ -390,7 +420,8 @@
                                         value="{{ old('discount') }}"
                                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6">
                                     @error('discount')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message
+                                            }}</span></p>
                                     @enderror
                                 </div>
                             </div>
@@ -403,7 +434,8 @@
                                     <label for="confirmation" class="font-medium text-gray-900">Konfirmasi</label>
                                     <p class="text-gray-500 text-xs">(Langsung / Telepon / Email)</p>
                                     @error('confirmation')
-                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message
+                                            }}</span></p>
                                     @enderror
                                 </div>
                             </div>
@@ -448,6 +480,9 @@
                     </div>
 
                     <div class="sm:col-span-6">
+                        @error('oldform')
+                        <p class="text-red-600 text-sm mt-1 "> <span class="bg-red-100">{{ $message }}</span></p>
+                        @enderror
                         @foreach($oldform as $index => $parameter)
 
                         <div
@@ -509,12 +544,13 @@
 
                 </div>
                 {{-- Button --}}
-                <div class="mt-6 flex items-center justify-end gap-x-6">
-                    <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
-                    <button type="submit"
-                        class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
-                        Update Progress
-                        <div wire:loading>
+                <div class="mt-6 flex items-center justify-end gap-x-2">
+                    <button type="button" wire:click="cancelButton" wire:loading.attr="disabled"
+                        wire:loading.class="opacity-50"
+                        class="rounded-md bg-gray-100 px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+                        Cancel
+
+                        <div wire:loading wire:target="cancelButton">
                             <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin"
                                 viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -523,9 +559,57 @@
                                 <path
                                     d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
                                     fill="currentColor" />
-                            </svg>
                         </div>
                     </button>
+
+
+                    @if ($status_pengerjaan === 'Draft')
+                    <button type="button" wire:click="updateDraft" wire:loading.attr="disabled"
+                        wire:loading.class="opacity-50"
+                        class="rounded-md bg-amber-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600">
+                        Update Draft
+                        <div wire:loading wire:target="updateDraft">
+                            <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin"
+                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                    fill="#E5E7EB" />
+                                <path
+                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                    fill="currentColor" />
+                        </div>
+                    </button>
+                    <button type="button" wire:click="finishDraftToSave" wire:loading.attr="disabled"
+                        wire:loading.class="opacity-50"
+                        class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
+                        Simpan
+                        <div wire:loading wire:target="finishDraftToSave">
+                            <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin"
+                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                    fill="#E5E7EB" />
+                                <path
+                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                    fill="currentColor" />
+                        </div>
+                    </button>
+                    @else
+                    <button type="button" wire:click="save" wire:loading.attr="disabled" wire:loading.class="opacity-50"
+                        class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
+                        Update Kupa
+                        <div wire:loading wire:target="save">
+                            <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin"
+                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                    fill="#E5E7EB" />
+                                <path
+                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                    fill="currentColor" />
+                        </div>
+                    </button>
+                    @endif
                 </div>
 
             </div>
