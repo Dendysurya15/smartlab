@@ -46,6 +46,7 @@ class TrackSampel extends Model
         'kode',
         'skala_prioritas',
         'status',
+        'catatan',
     ];
     public function jenisSampel()
     {

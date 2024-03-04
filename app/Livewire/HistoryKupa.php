@@ -13,6 +13,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Illuminate\Support\Collection;
+use Filament\Support\Enums\ActionSize;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\ActionGroup;
@@ -25,6 +28,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Select;
 use Illuminate\Contracts\View\View;
 use Filament\Notifications\Notification;
 
@@ -189,6 +194,12 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->toggleable(isToggledHiddenByDefault: true)
 
                     ->size('xs'),
+                // ->afterStateUpdated(function ($record, $state) {
+                //     // Runs after the state is saved to the database.
+                // })
+                // ->modalHeading('Delete Kupa')
+                // ->modalSubheading(fn (TrackSampel $record) => "Anda yakin ingin menghapus parameter ini? Ketika dihapus tidak dapat di pulihkan kembali.")
+                // ->modalButton('Yes')
 
             ])->striped()
 
@@ -232,53 +243,90 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
 
             ])
-            // ->bulkActions([
-            //     BulkAction::make('delete')
-            //         ->requiresConfirmation()
-            //         ->action(fn (Collection $records) => $records->each->delete())
-            // ])
-            ->actions([
-                Action::make('export_kupa')
-                    ->label('Kupa')
-                    ->url(fn (TrackSampel $record): string => route('export.excel', $record->id))
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->color('success')
-                    ->visible(auth()->user()->can('export_kupa'))
-                    ->size('xs'),
-                Action::make('export_form_monitoring_kupa')
-                    ->label('Form Monitoring')
-                    ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->color('success')
-                    ->visible(auth()->user()->can('export_form_monitoring_kupa'))
-                    ->size('xs'),
-                Action::make('edit')
-                    ->label('Edit Kupa')
-                    ->url(fn (TrackSampel $record): string => route('history_sampel.edit', $record->id))
-                    ->icon('heroicon-o-pencil')->color('warning')
-                    ->openUrlInNewTab()
-                    ->visible(auth()->user()->can('edit_kupa'))
-                    ->size('xs'),
-
-                Action::make('delete')
-                    ->action(function (TrackSampel $record) {
-                        $record->delete();
-                        Notification::make()
-                            ->title("Berhasil di Hapus")
-                            ->success()
-                            ->send();
-                    })
-                    ->deselectRecordsAfterCompletion()
-                    ->icon('heroicon-o-trash')
-                    ->color('danger')
+            ->bulkActions([
+                BulkAction::make('delete')
                     ->requiresConfirmation()
-                    ->visible(auth()->user()->can('hapus_kupa'))
-                    ->modalHeading('Delete Kupa')
-                    ->modalSubheading(
-                        fn (TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat dipulihkan kembali."
-                    )
-                    ->modalButton('Yes')
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records) {
+                        $records->each(function (TrackSampel $record) {
+                            $record->delete();
+                            Notification::make()
+                                ->title("Berhasil di Hapus")
+                                ->body("Record dengan kode " . $record->kode_track . "  berhasil dihapus")
+                                ->success()
+                                ->send();
+                        });
+                    }),
+            ])
+            ->actions([
 
+                ActionGroup::make([
+                    Action::make('export_kupa')
+                        ->label(' Kupa')
+                        ->url(fn (TrackSampel $record): string => route('export.excel', $record->id))
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->visible(auth()->user()->can('export_kupa'))
+                        ->size('xs'),
+                    Action::make('export_form_monitoring_kupa')
+                        ->label(' Form Monitoring')
+                        ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->visible(auth()->user()->can('export_form_monitoring_kupa'))
+                        ->size('xs'),
+                    Action::make('edit')
+                        ->label('Edit Kupa')
+                        ->url(fn (TrackSampel $record): string => route('history_sampel.edit', $record->id))
+                        ->icon('heroicon-o-pencil')->color('warning')
+                        ->openUrlInNewTab()
+                        ->visible(auth()->user()->can('edit_kupa'))
+                        ->size('xs'),
+
+                    Action::make('delete')
+                        ->action(function (TrackSampel $record) {
+                            $record->delete();
+                            Notification::make()
+                                ->title("Berhasil di Hapus")
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->visible(auth()->user()->can('hapus_kupa'))
+                        ->modalHeading('Delete Kupa')
+                        ->modalSubheading(
+                            fn (TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat dipulihkan kembali."
+                        )
+                        ->modalButton('Yes'),
+                    EditAction::make('Verifikasi Status')
+                        ->label('Verifikasi Status')
+                        ->icon('heroicon-m-check-badge')
+                        ->modalHeading(fn (TrackSampel $record) => "Verifikasi Kupa " . $record->kode_track)
+                        ->modalSubmitActionLabel('Submit')
+                        ->form([
+                            Select::make('status')
+                                ->options([
+                                    'Approved' => 'Approved',
+                                    'Rejected' => 'Rejected',
+
+                                ])
+                        ])
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title('Verifikasi Berhasil')
+                                ->body(fn (TrackSampel $record) => "Verifikasi Kupa " . $record->kode_track . " telah di-" . $record->kode_track),
+                        )
+                        ->using(function (TrackSampel $record, array $data): TrackSampel {
+
+                            $record->update(['status' => $data['status'], 'status_changed_by' => auth()->user()->id]);
+
+                            return $record;
+                        })
+                ]),
             ]);
     }
 

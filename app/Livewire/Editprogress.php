@@ -26,8 +26,6 @@ class Editprogress extends Component
     public $sample;
     public $tanggal_memo;
     public $tanggal_terima;
-
-    public $updatedDraft = 'nais bro';
     public $estimasi;
     public $no_kupa;
     public $jenis_sampel;
@@ -70,6 +68,7 @@ class Editprogress extends Component
     public $selected_status;
     public $badge_color_status;
     public $kode_track;
+    public $catatan;
 
     public bool $successSubmit = false;
     public string $msgSuccess;
@@ -115,8 +114,6 @@ class Editprogress extends Component
         return view(
             'livewire.editprogress',
             [
-
-                'updatedDraft' => $this->updatedDraft,
                 'status_pengerjaan' => $query->status,
                 'jenisSampelOptions' => $jenisSampelOptions,
                 'list_parameter' => $list_parameter,
@@ -256,6 +253,7 @@ class Editprogress extends Component
         $this->no_kupa = $query->nomor_kupa;
         $this->jenis_sampel = $query->jenis_sampel;
         $this->asal_sampel = $query->asal_sampel;
+        $this->catatan = $query->catatan;
         $query = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
         $this->nama_jenis_sampel = JenisSampel::find($query->jenis_sampel)->nama;
 
@@ -480,6 +478,7 @@ class Editprogress extends Component
             $trackSampel->alat = ($this->alat ? 1 : 0);
             $trackSampel->bahan = ($this->bahan ? 1 : 0);
             $trackSampel->konfirmasi = ($this->confirmation ? 1 : 0);
+            $trackSampel->catatan = $this->catatan;
 
             if ($action === 'finishDraftToSave') {
                 $trackSampel->status = 'Waiting Approved';
@@ -556,9 +555,9 @@ class Editprogress extends Component
                     'type' => 'update',
                 ]);
 
-                Mail::to($recipients)
-                    ->cc($cc)
-                    ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
+                // Mail::to($recipients)
+                //     ->cc($cc)
+                //     ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
             } else if ($action === 'updateDraft') {
                 Notification::make()
                     ->title('Draft Tersimpan')
@@ -596,8 +595,6 @@ class Editprogress extends Component
         $this->reset([
             'foto_sampel',
         ]);
-
-        // $this->updatedDraft = 'bro';
     }
 
 

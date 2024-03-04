@@ -552,6 +552,22 @@
                         @endforeach
                     </div>
 
+                    <div class="col-span-full">
+                        <div class="grid grid-cols-1">
+
+                            <div class=" col-span-1">
+                                <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Catatan
+                                    (Opsional)</label>
+                                <div class="mt-2">
+                                    <div class="mt-2">
+                                        <textarea wire:model="catatan" rows="3"
+                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
 
 
                     <div class="sm:col-span-6  ">

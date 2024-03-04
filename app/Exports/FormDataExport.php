@@ -56,6 +56,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $row_satuan = $jenis_sample->parameterAnalisis->pluck('satuan');
 
         $tgl_penerimaan = tanggal_indo($tracksample->tanggal_terima, false, false, true);
+        $tgl_estimasi = tanggal_indo($tracksample->estimasi, false, false, true);
 
         $jenis_kupa = $jenis_sample->nama;
         $no_kupa = $tracksample->nomor_kupa;
@@ -81,9 +82,9 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $arr_per_column[0]['col_ppn'] = '';
         $arr_per_column[0]['col_total'] = '';
         $arr_per_column[0]['col_langsung'] = '';
-        $arr_per_column[0]['col_normal'] = '';
-        $arr_per_column[0]['col_abnormal'] = '';
-        $arr_per_column[0]['col_tanggal'] = '-';
+        $arr_per_column[0]['col_normal'] = $tracksample->kondisi_sampel == 'Normal' ? 1 : 0;
+        $arr_per_column[0]['col_abnormal'] = $tracksample->kondisi_sampel == 'Abnormal' ? 1 : 0;
+        $arr_per_column[0]['col_tanggal'] = $tgl_estimasi;
 
         $sub = 0;
         $final_total = 0;
@@ -165,6 +166,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
             // dd($newInputanParameters, $inputan_parameter);
 
+            dd($newInputanParameters);
             $row_count = count($newInputanParameters);
             $countnamaarr = count($namaArray ?? []);
             $this->semuaRowParameter = $row_count;

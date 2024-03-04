@@ -66,6 +66,7 @@ class InputProgress extends Component
     public $subtotal;
     public $jumsap = 0;
     public $list_metode = [];
+    public $catatan = '';
 
     public bool $successSubmit = false;
     public string $msgSuccess;
@@ -395,15 +396,16 @@ class InputProgress extends Component
             $trackSampel->last_update = $current;
             $trackSampel->admin = $userId;
             $trackSampel->no_hp = $this->no_hp;
-            $trackSampel->emailTo = $this->emailTo;
-            $trackSampel->personel = ($this->personel ? 1 : 0);
             $trackSampel->alat = ($this->alat ? 1 : 0);
+            $trackSampel->emailTo = $this->emailTo;
             $trackSampel->bahan = ($this->bahan ? 1 : 0);
+            $trackSampel->personel = ($this->personel ? 1 : 0);
             $trackSampel->konfirmasi = ($this->confirmation ? 1 : 0);
             $trackSampel->parameter_analisisid = $commonRandomString;
             $trackSampel->kode_track = $randomCode;
             $trackSampel->skala_prioritas = $this->skala_prioritas;
             $trackSampel->discount = $this->discount;
+            $trackSampel->catatan = $this->catatan;
             $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
 
             $getprogress = Progress::pluck('nama')->first();
@@ -472,9 +474,9 @@ class InputProgress extends Component
 
 
                     $nomorserif = '-';
-                    Mail::to($recipients)
-                        ->cc($cc)
-                        ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $nomorlab, $randomCode, $nomorserif));
+                    // Mail::to($recipients)
+                    //     ->cc($cc)
+                    //     ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $nomorlab, $randomCode, $nomorserif));
 
                     // return "Email sent successfully!";
 
