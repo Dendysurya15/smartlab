@@ -39,10 +39,10 @@ class RolesSeeder extends Seeder
         Permission::updateOrCreate(['name' => 'create_new_user']);
         Permission::updateOrCreate(['name' => 'update_status_pengerjaan_kupa']);
 
-        Role::updateOrCreate(['name' => 'Staff'])->givePermissionTo(['create_new_user', 'view_role_management', 'view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'update_status_pengerjaan_kupa', 'export_kupa', 'edit_kupa', 'hapus_kupa', 'input_kupa', 'export_form_monitoring_kupa']);
-        Role::updateOrCreate(['name' => 'Admin'])->givePermissionTo(['create_new_user', 'view_role_management', 'view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'update_status_pengerjaan_kupa', 'export_kupa', 'edit_kupa', 'hapus_kupa', 'input_kupa', 'export_form_monitoring_kupa']);
-        Role::updateOrCreate(['name' => 'Head Of Lab SRS'])->givePermissionTo(['view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'export_kupa']);
-        Role::updateOrCreate(['name' => 'Asmen Lab Analitik'])->givePermissionTo(['view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'export_kupa']);
+        Role::updateOrCreate(['name' => 'Staff'], ['alur_approved' => 2])->givePermissionTo(['create_new_user', 'view_role_management', 'view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'update_status_pengerjaan_kupa', 'export_kupa', 'edit_kupa', 'hapus_kupa', 'input_kupa', 'export_form_monitoring_kupa']);
+        Role::updateOrCreate(['name' => 'Admin'], ['alur_approved' => 1])->givePermissionTo(['create_new_user', 'view_role_management', 'view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'update_status_pengerjaan_kupa', 'export_kupa', 'edit_kupa', 'hapus_kupa', 'input_kupa', 'export_form_monitoring_kupa']);
+        Role::updateOrCreate(['name' => 'Head Of Lab SRS'], ['alur_approved' => 4])->givePermissionTo(['view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'export_kupa']);
+        Role::updateOrCreate(['name' => 'Asmen Lab Analitik'], ['alur_approved' => 3])->givePermissionTo(['view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'export_kupa']);
 
         // Assign all permissions to the superuser role
         $allPermissions = Permission::pluck('id')->toArray();

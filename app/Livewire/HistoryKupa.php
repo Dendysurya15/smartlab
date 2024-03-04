@@ -32,12 +32,24 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Illuminate\Contracts\View\View;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Role;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
 
     use InteractsWithTable;
     use InteractsWithForms;
+
+
+    public $rolesAuthUser;
+
+    public function mount()
+    {
+        // $this->roles = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name');
+
+        $this->rolesAuthUser = auth()->user()->roles[0]->name;
+    }
 
     public function table(Table $table): Table
     {
@@ -120,15 +132,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 TextColumn::make('status')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->formatStateUsing(function (TrackSampel $track) {
-                        if ($track->status_changed_by != null) {
-                            $user = User::find($track->status_changed_by);
-                            if ($user) {
-                                $roles = $user->getRoleNames();
-                                // dd($roles);
-                                return $track->status . ' by ' . ($roles->isNotEmpty() ? $roles->implode(', ') : 'No Role');
-                            } else {
-                                return $track->status;
-                            }
+                        if ($track->status_approved_by_role != null) {
+                            return $track->status . ' by ' . $track->status_approved_by_role;
                         } else {
                             return $track->status;
                         }
@@ -246,6 +251,9 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ->bulkActions([
                 BulkAction::make('delete')
                     ->requiresConfirmation()
+                    ->label('Hapus Kupa')
+                    ->icon('heroicon-m-trash')
+                    ->color('danger')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records) {
                         $records->each(function (TrackSampel $record) {
@@ -257,6 +265,22 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                 ->send();
                         });
                     }),
+                // BulkAction::make('Approved Group')
+                //     ->requiresConfirmation()
+                //     ->label('Approved')
+                //     ->icon('heroicon-m-check-badge')
+                //     ->color('success')
+                //     ->deselectRecordsAfterCompletion()
+                //     ->action(function (Collection $records) {
+                //         $records->each(function (TrackSampel $record) {
+                //             $record->delete();
+                //             Notification::make()
+                //                 ->title("Berhasil di Hapus")
+                //                 ->body("Record dengan kode " . $record->kode_track . "  berhasil dihapus")
+                //                 ->success()
+                //                 ->send();
+                //         });
+                //     }),
             ])
             ->actions([
 
@@ -302,8 +326,10 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         )
                         ->modalButton('Yes'),
                     EditAction::make('Verifikasi Status')
-                        ->label('Verifikasi Status')
-                        ->icon('heroicon-m-check-badge')
+                        ->label(fn (TrackSampel $record): string => checkApprovedLabelKupa($record))
+                        ->disabled(fn (TrackSampel $record): bool => checkApprovedKupa($this->rolesAuthUser, $record))
+                        ->icon(fn (TrackSampel $record): string => checkIconApproved($record))
+                        ->color(fn (TrackSampel $record): string => checkColorApproved($record))
                         ->modalHeading(fn (TrackSampel $record) => "Verifikasi Kupa " . $record->kode_track)
                         ->modalSubmitActionLabel('Submit')
                         ->form([
@@ -311,22 +337,23 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                 ->options([
                                     'Approved' => 'Approved',
                                     'Rejected' => 'Rejected',
-
                                 ])
                         ])
-                        ->successNotification(
-                            Notification::make()
+                        ->successNotification(function (Model $record) {
+                            return Notification::make()
                                 ->success()
                                 ->title('Verifikasi Berhasil')
-                                ->body(fn (TrackSampel $record) => "Verifikasi Kupa " . $record->kode_track . " telah di-" . $record->kode_track),
-                        )
+                                ->body(function () use ($record) {
+                                    return "Kupa " . $record->kode_track . " telah di-" . $record->status;
+                                });
+                        })
                         ->using(function (TrackSampel $record, array $data): TrackSampel {
 
-                            $record->update(['status' => $data['status'], 'status_changed_by' => auth()->user()->id]);
 
+                            $record->update(['status' => $data['status'], 'status_changed_by_id' => auth()->user()->id, 'status_approved_by_role' => auth()->user()->roles[0]->name]);
                             return $record;
                         })
-                ]),
+                ])->tooltip('Actions'),
             ]);
     }
 

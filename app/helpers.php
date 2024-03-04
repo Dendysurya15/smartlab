@@ -1,5 +1,7 @@
 <?php
 
+use Spatie\Permission\Models\Role;
+
 if (!function_exists('tanggal_indo')) {
     function tanggal_indo($tanggal, $cetak_hari = false, $cetak_bulan = false, $cetak_tanggal = false)
     {
@@ -123,5 +125,99 @@ if (!function_exists('generateRandomCode')) {
         }
 
         return $code;
+    }
+}
+
+if (!function_exists('checkApprovedKupa')) {
+    function checkApprovedKupa($role, $record)
+    {
+        $lastApprovedBy = $record->status_approved_by_role;
+        $statusKupa = $record->status;
+
+        if ($lastApprovedBy != null && $statusKupa == 'Approved') {
+
+            $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
+            $staffIndex = array_search($lastApprovedBy, $alurApproved);
+            $result = array_slice($alurApproved, $staffIndex + 1);
+
+
+
+            if (isset($result[0])) {
+                $canApprovedNowBy = $result[0];
+                if ($canApprovedNowBy == $role) {
+                    return False;
+                } else {
+                    return True;
+                }
+            } else {
+                return True;
+            }
+        } else {
+            if ($statusKupa == 'Draft') {
+                return True;
+            } else if ($statusKupa == 'Waiting Approved' && $role == 'Admin') {
+                return False;
+            } else {
+                return True;
+            }
+        }
+    }
+}
+
+
+if (!function_exists('checkApprovedLabelKupa')) {
+    function checkApprovedLabelKupa($record)
+    {
+        $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
+        $kupaFinishBy = last($alurApproved);
+
+
+        $main_title = 'Verifikasi Status';
+
+        if ($record->status == 'Rejected') {
+            return $main_title . ' (Rejected)';
+        } else if ($record->status == 'Draft') {
+            return $main_title . ' (On Draft)';
+        } else if ($record->status == 'Approved' && $record->status_approved_by_role == $kupaFinishBy) {
+            return 'Kupa Selesai';
+        } else {
+            return $main_title;
+        }
+    }
+}
+
+if (!function_exists('checkIconApproved')) {
+    function checkIconApproved($record)
+    {
+
+        $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
+        $kupaFinishBy = last($alurApproved);
+
+        if ($record->status == 'Rejected') {
+            return 'heroicon-o-x-mark';
+        } else if ($record->status == 'Draft') {
+            return 'heroicon-o-x-mark';
+        } else if ($record->status == 'Approved' && $record->status_approved_by_role == $kupaFinishBy) {
+            return 'heroicon-m-check';
+        } else {
+            return 'heroicon-m-check-badge';
+        }
+    }
+}
+
+if (!function_exists('checkColorApproved')) {
+    function checkColorApproved($record)
+    {
+
+        $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
+        $kupaFinishBy = last($alurApproved);
+
+        if ($record->status == 'Rejected') {
+            return 'danger';
+        } else if ($record->status == 'Approved' && $record->status_approved_by_role == $kupaFinishBy) {
+            return 'success';
+        } else {
+            return 'info';
+        }
     }
 }

@@ -482,7 +482,7 @@ class Editprogress extends Component
 
             if ($action === 'finishDraftToSave') {
                 $trackSampel->status = 'Waiting Approved';
-                $trackSampel->status_changed_by = null;
+                $trackSampel->status_changed_by_id = null;
             }
 
 

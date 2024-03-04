@@ -14,7 +14,8 @@ class TrackSampel extends Model
     protected $fillable = [
         'tanggal_memo',
         'tanggal_terima',
-        'status_changed_by',
+        'status_changed_by_id',
+        'status_approved_by_role',
         'jenis_sampel',
         'asal_sampel',
         'nomor_kupa',
