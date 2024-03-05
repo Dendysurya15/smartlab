@@ -46,6 +46,7 @@ class TrackSampel extends Model
         'discount',
         'kode',
         'skala_prioritas',
+        'status_timestamp',
         'status',
         'catatan',
     ];

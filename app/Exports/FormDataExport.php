@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Cknow\Money\Money;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Illuminate\Support\Carbon;
 
 class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
 {
@@ -48,6 +49,18 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $parameter_analisis_excel = $jenis_sample->parameter_analisis;
 
+
+        foreach ($jenis_sample->parameterAnalisis as $key => $value) {
+
+            $getunsur[] = [
+                'nama_unsur' => $value['nama_unsur'],
+                'metode_analisis' => $value['metode_analisis'],
+                'satuan' => $value['satuan'],
+            ];
+        }
+        // dd($getunsur);
+
+
         $array_param_analisis_excel = explode(',', $parameter_analisis_excel);
 
         $array_param_analisis_excel = array_map('trim', $array_param_analisis_excel);
@@ -60,6 +73,10 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $jenis_kupa = $jenis_sample->nama;
         $no_kupa = $tracksample->nomor_kupa;
+        $catatan = $tracksample->catatan;
+        $approval = $tracksample->status;
+        $approval_date = $tracksample->status_timestamp;
+        $memo_created = $tracksample->tanggal_memo;
         $nama_pengirim = $tracksample->nama_pengirim;
         $this->status = $tracksample->status;
 
@@ -94,7 +111,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $tracksample->parameter_analisisid)->get();
             $inputan_parameter = [];
             $inc = 0;
-
+            // dd($getTrack);
 
             foreach ($getTrack as $key => $value) {
                 $inputan_parameter[$inc]['nama'] = $value->ParameterAnalisis->nama_parameter;
@@ -128,7 +145,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $row_count = count($inputan_parameter);
 
 
-
+            // dd($inputan_parameter);
             $newInputanParameters = [];
 
             foreach ($inputan_parameter as $key => $value) {
@@ -139,17 +156,28 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     // Split the nama by comma
                     $namaArray = explode(',', $nama);
 
+                    // dd($namaArray);
                     // Iterate through the split nama and create new arrays
                     foreach ($namaArray as $index => $namaItem) {
-
+                        // dd($namaItem);
                         $lastKey = key(array_slice($namaArray, -1, 1, true));
-                        // dd($lastKey);
+                        // dd($namaItem);
+                        // nama_unsur
+                        // metode_analisis
+                        $mthod = ' ';
+                        $satuan = ' ';
+                        foreach ($getunsur as $key => $valuex) {
+                            if ($valuex['nama_unsur'] === trim($namaItem)) {
+                                $mthod = $valuex['metode_analisis'];
+                                $satuan = $valuex['satuan'];
+                            }
+                        }
                         array_unshift($newInputanParameters, [
                             "nama" => trim($namaItem),
                             "alias" => ($index === $lastKey ?  $value["alias"] : ''),
                             "col_verif" => ($index === $lastKey ?  $value["col_verif"] : ''),
-                            "satuan" => $value["satuan"], // Assuming satuan is same for all splitted items
-                            "metode" => $value["metode"], // Assuming metode is same for all splitted items
+                            "satuan" => $satuan,
+                            "metode" => $mthod,
                             "personel" => ($index === $lastKey ? $value["personel"] : ''),
                             "alat" => ($index === $lastKey ? $value["alat"] : ''),
                             "bahan" => ($index === $lastKey ? $value["bahan"] : ''),
@@ -166,7 +194,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
             // dd($newInputanParameters, $inputan_parameter);
 
-            dd($newInputanParameters);
+            // dd($newInputanParameters, $getunsur);
             $row_count = count($newInputanParameters);
             $countnamaarr = count($namaArray ?? []);
             $this->semuaRowParameter = $row_count;
@@ -218,7 +246,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $this->countnamaarr = $countnamaarr ?? 0;
 
-        // dd($this->countnamaarr);
+        // dd($approval_date);
         return view('excelView.exportexcel', [
             // 'trackdata' => $exportData,
             // 'tanggal' => $tanggalterima,
@@ -234,7 +262,11 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             'disclabel' => $discount,
             'discount' => Money::IDR($getdisc, true),
             'tanggal_penerimaan' => $tgl_penerimaan,
-            'kupa' => $arr_per_column
+            'kupa' => $arr_per_column,
+            'catatan' => $catatan,
+            'approval' => $approval,
+            'approval_date' => Carbon::parse($approval_date)->format('Y-m-d H:i'),
+            'memo_created' => Carbon::parse($memo_created)->format('Y-m-d H:i'),
         ]);
     }
 
@@ -302,6 +334,24 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $event->sheet->getStyle('L13')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('M13')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('Q13')->getAlignment()->setWrapText(true);
+                $tinggiDefaultKolom = 13 +  7 + $this->semuaRowParameter;
+                $kolumcatatan = "J$tinggiDefaultKolom";
+                $kolumcatatan1 = "B$tinggiDefaultKolom";
+                $kolumcatatan2 = "D$tinggiDefaultKolom";
+                // dd($kolumcatatan);
+
+                $event->sheet->getStyle($kolumcatatan)->getAlignment()
+                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT)
+                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP)
+                    ->setWrapText(true);
+                $event->sheet->getStyle($kolumcatatan1)->getAlignment()
+                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                    ->setWrapText(true);
+                $event->sheet->getStyle($kolumcatatan2)->getAlignment()
+                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                    ->setWrapText(true);
+
+                // $event->sheet->mergeCells("J25:J30");
             },
 
 
@@ -339,7 +389,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
     public function drawings()
     {
 
-        // dd($this->status);
+        // dd($this->semuaRowParameter);
 
         $tinggiDefaultKolom = 13 +  4 + 1 + 1 + 1 +  $this->semuaRowParameter;
 
@@ -358,24 +408,24 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $drawings[] = $drawing1;
 
         // Second Image
-        if ($this->status === 'Approved') {
-            $drawing2 = new Drawing();
-            $drawing2->setName('Logo2');
-            $drawing2->setDescription('This is my second logo');
-            $drawing2->setPath(public_path('images/bg_test.png'));
-            $drawing2->setHeight(70);
-            $drawing2->setCoordinates($lokasiKolomTtdPenerimaSampel);
-            $drawings[] = $drawing2;
-        }
+        // if ($this->status === 'Approved') {
+        //     $drawing2 = new Drawing();
+        //     $drawing2->setName('Logo2');
+        //     $drawing2->setDescription('This is my second logo');
+        //     $drawing2->setPath(public_path('images/bg_test.png'));
+        //     $drawing2->setHeight(70);
+        //     $drawing2->setCoordinates($lokasiKolomTtdPenerimaSampel);
+        //     $drawings[] = $drawing2;
+        // }
 
 
-        $drawing3 = new Drawing();
-        $drawing3->setName('Logo2');
-        $drawing3->setDescription('This is my second logo');
-        $drawing3->setPath(public_path('images/bg_test.png'));
-        $drawing3->setHeight(70);
-        $drawing3->setCoordinates($lokasiKolomTtdHeadOfLab);
-        $drawings[] = $drawing3;
+        // $drawing3 = new Drawing();
+        // $drawing3->setName('Logo2');
+        // $drawing3->setDescription('This is my second logo');
+        // $drawing3->setPath(public_path('images/bg_test.png'));
+        // $drawing3->setHeight(70);
+        // $drawing3->setCoordinates($lokasiKolomTtdHeadOfLab);
+        // $drawings[] = $drawing3;
 
 
         // Add more images as needed

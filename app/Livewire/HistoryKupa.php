@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
+use Filament\Infolists\Components\Card;
 use Illuminate\Contracts\View\View;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
@@ -349,8 +350,16 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         })
                         ->using(function (TrackSampel $record, array $data): TrackSampel {
 
+                            // dd(Carbon::now());
 
-                            $record->update(['status' => $data['status'], 'status_changed_by_id' => auth()->user()->id, 'status_approved_by_role' => auth()->user()->roles[0]->name]);
+                            $record->update(
+                                [
+                                    'status' => $data['status'],
+                                    'status_changed_by_id' => auth()->user()->id,
+                                    'status_approved_by_role' => auth()->user()->roles[0]->name,
+                                    'status_timestamp' => Carbon::now()->format('Y-m-d H:i:s'),
+                                ]
+                            );
                             return $record;
                         })
                 ])->tooltip('Actions'),
