@@ -350,14 +350,18 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         })
                         ->using(function (TrackSampel $record, array $data): TrackSampel {
 
-                            // dd(Carbon::now());
+                            if ($record->status_timestamp != null) {
+                                $status_timestamp = $record->status_timestamp . ' , ' . Carbon::now()->format('Y-m-d H:i:s') . ' , ';
+                            } else {
+                                $status_timestamp = Carbon::now()->format('Y-m-d H:i:s');
+                            }
 
                             $record->update(
                                 [
                                     'status' => $data['status'],
                                     'status_changed_by_id' => auth()->user()->id,
                                     'status_approved_by_role' => auth()->user()->roles[0]->name,
-                                    'status_timestamp' => Carbon::now()->format('Y-m-d H:i:s'),
+                                    'status_timestamp' => $status_timestamp,
                                 ]
                             );
                             return $record;

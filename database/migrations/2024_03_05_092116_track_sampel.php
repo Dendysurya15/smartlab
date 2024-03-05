@@ -49,7 +49,7 @@ return new class extends Migration
             $table->enum('status', ['Approved', 'Rejected', 'Waiting Approved', 'Draft'])->default('Waiting Approved');
             $table->integer('status_changed_by_id')->nullable();
             $table->string('status_approved_by_role', 50)->nullable();
-            $table->timestamp('status_timestamp')->CURRENT_TIMESTAMP();
+            $table->longText('status_timestamp')->nullable();
             $table->timestamps();
         });
     }

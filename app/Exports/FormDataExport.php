@@ -18,6 +18,7 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use Cknow\Money\Money;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Support\Carbon;
+use Spatie\Permission\Models\Role;
 
 class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
 {
@@ -49,6 +50,23 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $parameter_analisis_excel = $jenis_sample->parameter_analisis;
 
+        $timestampVerifikasiAdmin = '';
+        $timestampVerifikasiHeadOfLab = '';
+        $isVerifiedByHead = False;
+        if ($tracksample->status_timestamp != null) {
+            $string = rtrim($tracksample->status_timestamp, ', ');
+
+            $dateTimeArray = explode(' , ', $string);
+            $timestampVerifikasiAdmin = $dateTimeArray[0];
+
+            $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
+
+            if ($tracksample->status_approved_by_role == end($alurApproved)) {
+                $timestampVerifikasiHeadOfLab = end($dateTimeArray);
+                $isVerifiedByHead = True;
+            }
+        }
+
 
         foreach ($jenis_sample->parameterAnalisis as $key => $value) {
 
@@ -58,7 +76,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 'satuan' => $value['satuan'],
             ];
         }
-        // dd($getunsur);
 
 
         $array_param_analisis_excel = explode(',', $parameter_analisis_excel);
@@ -75,7 +92,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $no_kupa = $tracksample->nomor_kupa;
         $catatan = $tracksample->catatan;
         $approval = $tracksample->status;
-        $approval_date = $tracksample->status_timestamp;
+
         $memo_created = $tracksample->tanggal_memo;
         $nama_pengirim = $tracksample->nama_pengirim;
         $this->status = $tracksample->status;
@@ -246,12 +263,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $this->countnamaarr = $countnamaarr ?? 0;
 
-        // dd($approval_date);
         return view('excelView.exportexcel', [
-            // 'trackdata' => $exportData,
-            // 'tanggal' => $tanggalterima,
-            // 'jenissample' => $jenis_sample,
-            // 'pelanggan' => $pelanggan,
             'petugas_penerima_sampel' => $nama_petugas_penerima_sampel,
             'sub_total' => Money::IDR($sub, true),
             'ppn' => $ppn,
@@ -265,8 +277,12 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             'kupa' => $arr_per_column,
             'catatan' => $catatan,
             'approval' => $approval,
-            'approval_date' => Carbon::parse($approval_date)->format('Y-m-d H:i'),
+
             'memo_created' => Carbon::parse($memo_created)->format('Y-m-d H:i'),
+            'verifikasi_admin_timestamp' => $timestampVerifikasiAdmin,
+            'verifikasi_head_timestamp' => $timestampVerifikasiHeadOfLab,
+            'verified_by_head' => $tracksample->status_approved_by_role,
+            'isVerifiedByHead' => $isVerifiedByHead,
         ]);
     }
 

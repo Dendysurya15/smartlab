@@ -139,9 +139,6 @@ if (!function_exists('checkApprovedKupa')) {
             $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
             $staffIndex = array_search($lastApprovedBy, $alurApproved);
             $result = array_slice($alurApproved, $staffIndex + 1);
-
-
-
             if (isset($result[0])) {
                 $canApprovedNowBy = $result[0];
                 if ($canApprovedNowBy == $role) {
