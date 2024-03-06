@@ -134,7 +134,7 @@
                         <div class=" 2xl:block">
                             <ul class="pl-9 mt-1 @if(!in_array(Request::segment(1), ['history_sampel.index', 'input_progress.index'])){{ 'hidden' }}@endif"
                                 :class="open ? '!block' : 'hidden'">
-                                @can('edit_kupa')
+                                @can('input_kupa')
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('input_progress.index')){{ '!text-emerald-500' }}@endif"
                                         href="{{ route('input_progress.index') }}">
@@ -143,13 +143,14 @@
                                     </a>
                                 </li>
                                 @endcan
+                                @can('view_history_kupa')
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('history_sampel.index')){{ '!text-emerald-500' }}@endif"
                                         href="{{route('history_sampel.index')}}">
                                         <span class="text-sm font-medium  duration-200">History</span>
                                     </a>
                                 </li>
-
+                                @endcan
                             </ul>
                         </div>
                     </li>
@@ -174,7 +175,7 @@
                         </a>
                     </li>
                     <!-- System -->
-                    @can('edit_kupa')
+                    {{-- @can('edit_kupa') --}}
                     <li class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if(in_array(Request::segment(1), ['system', 'roles'])){{ 'bg-slate-900' }}@endif"
                         x-data="{ open: {{ in_array(Request::segment(1), ['system', 'roles']) ? 1 : 0 }} }">
                         <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if(in_array(Request::segment(1), ['system'])){{ 'hover:text-slate-200' }}@endif"
@@ -207,6 +208,7 @@
                             <ul class="pl-9 mt-1 @if(!in_array(Request::segment(1), ['system.index', 'roles'])){{ 'hidden' }}@endif"
                                 :class="open ? '!block' : 'hidden'">
 
+                                @can('view_halaman_parameter_analisis')
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('system.index')){{ '!text-emerald-500' }}@endif"
                                         href="{{ route('system.index') }}">
@@ -214,6 +216,7 @@
                                             Parameter Analisis</span>
                                     </a>
                                 </li>
+                                @endcan
                                 @can('view_role_management')
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('roles')){{ '!text-emerald-500' }}@endif"
@@ -227,7 +230,7 @@
                         </div>
 
                     </li>
-                    @endcan
+                    {{-- @endcan --}}
                 </ul>
             </div>
 
