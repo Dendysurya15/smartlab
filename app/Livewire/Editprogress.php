@@ -555,9 +555,9 @@ class Editprogress extends Component
                     'type' => 'update',
                 ]);
 
-                // Mail::to($recipients)
-                //     ->cc($cc)
-                //     ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
+                Mail::to($recipients)
+                    ->cc($cc)
+                    ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
             } else if ($action === 'updateDraft') {
                 Notification::make()
                     ->title('Draft Tersimpan')

@@ -474,12 +474,11 @@ class InputProgress extends Component
 
 
                     $nomorserif = '-';
-                    // Mail::to($recipients)
-                    //     ->cc($cc)
-                    //     ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $nomorlab, $randomCode, $nomorserif));
+                    Mail::to($recipients)
+                        ->cc($cc)
+                        ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $nomorlab, $randomCode, $nomorserif));
 
                     // return "Email sent successfully!";
-
                 } else if ($action === 'draft') {
                     Notification::make()
                         ->title('Draft Tersimpan')

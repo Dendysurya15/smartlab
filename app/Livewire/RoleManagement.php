@@ -31,6 +31,7 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\FromView;
+use Filament\Forms\Components\CheckboxList;
 
 class RoleManagement extends Component implements HasTable, HasForms
 {
@@ -54,6 +55,8 @@ class RoleManagement extends Component implements HasTable, HasForms
         $roles = Role::pluck('name', 'id');
         $permissionsAll = Permission::pluck('name', 'id')->toArray();
 
+
+
         return $table
             ->query(User::query())
             ->columns([
@@ -74,7 +77,13 @@ class RoleManagement extends Component implements HasTable, HasForms
 
                 TextColumn::make('created_at')
                     ->getStateUsing(function (User $user) {
+                        // dd($user);
                         $permissionsString = implode('.', $user->getAllPermissions()->pluck('name')->toArray());
+                        // dd($permissionsString);
+                        // dd($user);
+
+
+                        // $set('contactsOptions', $permissionsString);
                         return $permissionsString;
                     })
                     ->color('success')
@@ -91,30 +100,39 @@ class RoleManagement extends Component implements HasTable, HasForms
                             Select::make('Roles')
                                 ->options($roles)
                                 ->live(),
-                            ...array_map(function ($permission) {
-                                return Checkbox::make($permission)->inline()->label($permission);
-                            }, $permissionsAll),
+                            CheckboxList::make('Permission')
+                                ->options(fn () => Permission::pluck('name', 'name')->toArray() ?: [])
+                                ->columns(2)
+                                ->afterStateHydrated(function ($component, $state, User $user) {
+
+                                    $permissionsString = $user->getAllPermissions()->pluck('name')->toArray();
+                                    if (!filled($state)) {
+                                        $component->state($permissionsString);
+                                    }
+                                })
                         ])
                         ->using(function (User $record, array $data) use ($permissionsAll): User {
                             $user = User::find($record['id']);
 
+                            // dd($data);
 
                             if (!empty($data['Roles'])) {
+                                // Detach current roles and permissions
                                 $user->roles()->detach();
                                 $user->permissions()->detach();
-
+                                // Get the selected role
                                 $role = Role::where('id', $data['Roles'])->first();
-
-                                $permissions = [];
-                                foreach ($permissionsAll as $permission) {
-                                    if (!empty($data[$permission])) {
-                                        $permissions[] = $permission;
-                                    }
+                                if (!empty($data['Permission'])) {
+                                    // Assign the role to the user
+                                    // dd($role->name);
+                                    $staffRole = Role::where('name', $role->name)->first();
+                                    $staffRole->syncPermissions([]);
+                                    $staffRole->givePermissionTo($data['Permission']);
+                                    // Role::updateOrCreate(['name' => 'Admin'], ['alur_approved' => 1])->givePermissionTo(['export_kupa', 'input_kupa']);
+                                    $user->assignRole($role->name);
                                 }
-
-                                $user->assignRole($role->name);
-                                $role->syncPermissions($permissions);
                             }
+
                             return $record;
                         }),
 
