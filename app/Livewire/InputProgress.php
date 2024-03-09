@@ -53,7 +53,8 @@ class InputProgress extends Component
     public $no_hp;
     public $emailTo;
     public $emailCc;
-    public $foto_sampel;
+
+    public $foto_sampel = [];
     public $skala_prioritas;
     public $hargaparameter;
     public $parameterAnalisisOptions = [];
@@ -93,16 +94,33 @@ class InputProgress extends Component
         'no_hp' => 'required',
         'tujuan' => 'required|string',
         // 'emailTo' => 'required|email', // Assuming it's an email field
-        'foto_sampel' => 'max:5000',
+        // 'foto_sampel.*' => 'image|max:1024', // Adjust max file size if needed
         'formData' => 'required',
     ];
 
-    protected $messages = [
+    public function updatedFotoSampel()
+    {
+        $this->validate([
+            'foto_sampel.*' => 'image|max:1024', // Adjust max file size if needed
+        ]);
 
-        // 'email.required' => 'The Email Address cannot be empty.',
-        // 'email.email' => 'The Email Address format is not valid.',
-
-    ];
+        // Ensure maximum of 3 images
+        // if (count($this->foto_sampel) > 3) {
+        //     $this->addError('foto_sampel', 'You can upload a maximum of 3 images.');
+        //     Notification::make()
+        //         ->title('Hanya Bisa Max 3 Foto')
+        //         ->danger()
+        //         ->color('danger')
+        //         ->send();
+        //     $this->resetFotoSampel();
+        // }
+        if (count($this->foto_sampel) > 5) {
+            $this->addError('foto_sampel', 'You can upload a maximum of 5 images.');
+            $this->resetFotoSampel();
+        } else {
+            $this->resetErrorBag('foto_sampel'); // Clear any previous errors
+        }
+    }
 
 
     public function ChangeFieldParamAndNomorLab()
@@ -211,8 +229,9 @@ class InputProgress extends Component
 
     public function resetFotoSampel()
     {
-        $this->foto_sampel = null;
+        $this->foto_sampel = [];
     }
+
 
 
 
@@ -309,6 +328,8 @@ class InputProgress extends Component
     {
         $this->handleFormSubmission('draft');
     }
+
+
 
     public function save()
     {
@@ -410,11 +431,24 @@ class InputProgress extends Component
 
             $getprogress = Progress::pluck('nama')->first();
 
+
             if ($this->foto_sampel) {
-                $fileName = time() . '_' . $this->foto_sampel->getClientOriginalName();
-                $this->foto_sampel->storeAs('uploads', $fileName, 'public');
-                $trackSampel->foto_sampel = $fileName;
+                $filename = '';
+                foreach ($this->foto_sampel as $key => $value) {
+                    $filename .= $this->foto_sampel[$key]->getClientOriginalName() . '%';
+                    $fileNamex = $this->foto_sampel[$key]->getClientOriginalName();
+                    $this->foto_sampel[$key]->storeAs('uploads', $fileNamex, 'public');
+                }
+                $donefilename = rtrim($filename, '%');
+                $trackSampel->foto_sampel = $donefilename;
             }
+
+
+            // if ($this->foto_sampel) {
+            //     $fileName = time() . '_' . $this->foto_sampel->getClientOriginalName();
+            //     $this->foto_sampel->storeAs('uploads', $fileName, 'public');
+            //     $trackSampel->foto_sampel = $fileName;
+            // }
 
             if ($action === 'draft') {
                 $trackSampel->status = 'Draft';

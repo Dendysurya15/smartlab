@@ -23,6 +23,7 @@ use Filament\Notifications\Notification;
 
 class Editprogress extends Component
 {
+    use WithFileUploads;
     public $sample;
     public $tanggal_memo;
     public $tanggal_terima;
@@ -58,12 +59,13 @@ class Editprogress extends Component
     public $satuanparameter;
     public $totalsampelval;
     public $confirmation;
-    public $foto_sampel;
+    public $foto_sampel = [];
     public $emailTo;
     public $emailCc;
     public $parameterid;
     public $oldform = [];
     public $parameters = [];
+    public $newimg = [];
     public $nama_jenis_sampel;
     public $selected_status;
     public $badge_color_status;
@@ -189,6 +191,7 @@ class Editprogress extends Component
         $this->parameters = array_values($this->parameters); // Re-index the array
     }
 
+
     public function ChangeFieldParamAndNomorLab()
     {
         $selectedJenisSampel = JenisSampel::find($this->jenis_sampel);
@@ -219,6 +222,89 @@ class Editprogress extends Component
             $this->val_parameter = $options->pluck('id')->first();
         }
     }
+    public function removeimg($index)
+    {
+        $imageName = basename($index);
+        // dd($imageName);
+        $this->newimg = [];
+        $id = $this->sample;
+        $query = TrackSampel::find($id);
+        if ($query->foto_sampel) {
+            $fileArray = explode('%', $query->foto_sampel);
+            $filename = '';
+            // dd($fileArray);
+            foreach ($fileArray as $key => $value) {
+                if ($imageName != $value) {
+                    $filename .= $value . '%';
+                    $this->newimg[] = asset('storage/uploads/' . $value);
+                }
+            }
+            $newfilename = rtrim($filename, '%');
+
+            try {
+                DB::beginTransaction();
+
+                $id = $this->sample;
+                $trackSampel = TrackSampel::find($id);
+
+                $trackSampel->foto_sampel = $newfilename;
+
+                $trackSampel->save();
+
+                Notification::make()
+                    ->title('Foto Berhasil Di hapus')
+                    ->icon('heroicon-o-document-text')
+                    ->iconColor('success')
+                    ->success()
+                    ->send();
+
+
+                DB::commit();
+            } catch (Exception $e) {
+                DB::rollBack();
+                Notification::make()
+                    ->title('Error ' . $e->getMessage())
+                    ->danger()
+                    ->send();
+                $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
+                $this->errorSubmit = true;
+            }
+        }
+        // dd($index, $this->newimg, $newfilename);
+    }
+    public function updatedFotoSampel()
+    {
+        $this->validate([
+            'foto_sampel.*' => 'image|max:1024', // Adjust max file size if needed
+        ]);
+
+        // Ensure maximum of 3 images
+        // if (count($this->foto_sampel) > 3) {
+        //     $this->addError('foto_sampel', 'You can upload a maximum of 3 images.');
+        //     Notification::make()
+        //         ->title('Hanya Bisa Max 3 Foto')
+        //         ->danger()
+        //         ->color('danger')
+        //         ->send();
+        //     $this->resetFotoSampel();
+        // }
+        $mergedImages = array_merge($this->newimg, $this->foto_sampel);
+
+        // dd($mergedImages);
+
+        if (count($mergedImages) > 5) {
+            $this->addError('foto_sampel', 'You can upload a maximum of 5 images.');
+            $this->resetFotoSampel();
+        } else {
+            $this->resetErrorBag('foto_sampel'); // Clear any previous errors
+        }
+    }
+
+    public function resetFotoSampel()
+    {
+        $this->foto_sampel = [];
+    }
+
 
     public function mount()
     {
@@ -226,6 +312,13 @@ class Editprogress extends Component
 
         $id = $this->sample;
         $query = TrackSampel::find($id);
+        if ($query->foto_sampel) {
+            $fileArray = explode('%', $query->foto_sampel);
+            $this->newimg = [];
+            foreach ($fileArray as $key => $value) {
+                $this->newimg[] = asset('storage/uploads/' . $value);
+            }
+        }
         $this->selected_status = $query->status;
 
         if ($this->selected_status === 'Approved') {
@@ -293,8 +386,10 @@ class Editprogress extends Component
         $this->emailCc = $query->emailCc;
         $this->discount = $query->discount;
         $this->confirmation = ($query->konfirmasi == 1 ? True : False);
-        $this->foto_sampel = asset('storage/uploads/' . $query->foto_sampel);
-        // dd($this->foto_sampel);
+        // $this->foto_sampel = asset('storage/uploads/' . $query->foto_sampel);
+
+
+        // dd($this->newimg);
         $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $query->parameter_analisisid)->get()->toArray();
         $trackform = [];
 
@@ -391,7 +486,7 @@ class Editprogress extends Component
 
     private function handleFormSubmission($action)
     {
-
+        // dd($action);
         if ($action === 'finishDraftToSave') {
             $this->validate();
         }
@@ -448,6 +543,7 @@ class Editprogress extends Component
             }
         }
 
+        // dd($this->kode_track);
         try {
             DB::beginTransaction();
 
@@ -458,9 +554,6 @@ class Editprogress extends Component
             $trackSampel->jenis_sampel = $this->jenis_sampel;
             $trackSampel->tanggal_memo = $this->tanggal_memo;
             $trackSampel->tanggal_terima = $this->tanggal_terima;
-
-            // $trackSampel->status = $this->selected_status;
-            // $trackSampel->status_changed_by = auth()->user()->id;
             $trackSampel->asal_sampel = $this->asal_sampel;
             $trackSampel->nomor_kupa = $this->no_kupa;
             $trackSampel->nomor_lab = $this->nomor_lab_left . '-' . $this->nomor_lab_right;
@@ -479,6 +572,30 @@ class Editprogress extends Component
             $trackSampel->bahan = ($this->bahan ? 1 : 0);
             $trackSampel->konfirmasi = ($this->confirmation ? 1 : 0);
             $trackSampel->catatan = $this->catatan;
+
+            if ($this->foto_sampel) {
+                $filename = '';
+                $renewimg = '';
+                $imageName = [];
+                foreach ($this->newimg as $key => $value) {
+                    $imageName[] = basename($value);
+                }
+                foreach ($this->foto_sampel as $key => $value) {
+
+                    $filename .= $this->foto_sampel[$key]->getClientOriginalName() . '%';
+                    $fileNamex = $this->foto_sampel[$key]->getClientOriginalName();
+                    $fileName2[] = $this->foto_sampel[$key]->getClientOriginalName();
+                    $this->foto_sampel[$key]->storeAs('uploads', $fileNamex, 'public');
+                }
+                $mergedImages = array_merge($imageName, $fileName2);
+                foreach ($mergedImages as $key => $value) {
+                    $renewimg .= $value . '%';
+                }
+                $donefilename = rtrim($renewimg, '%');
+                $trackSampel->foto_sampel = $donefilename;
+                // dd($mergedImages, $donefilename);
+                // $trackSampel->foto_sampel = $donefilename;
+            }
 
             if ($action === 'finishDraftToSave') {
                 $trackSampel->status = 'Waiting Approved';
@@ -532,7 +649,9 @@ class Editprogress extends Component
             $form_hp = $this->no_hp;
 
             $nohp = numberformat($form_hp);
-
+            $nomorserif = '-';
+            $recipients = $this->emailTo;
+            $cc = $this->emailCc;
             DB::commit();
             if ($action === 'finishDraftToSave') {
 
@@ -544,15 +663,13 @@ class Editprogress extends Component
                     ->iconColor('success')
                     ->success()
                     ->send();
-                $nomorserif = '-';
-                $recipients = $this->emailTo;
-                $cc = $this->emailCc;
+
                 SendMsg::insert([
                     'no_surat' => $this->nomor_surat,
-                    'kodesample' => $this->kode_sampel,
+                    'kodesample' => $this->kode_track,
                     'penerima' => $nohp,
                     'progres' => $progress_now,
-                    'type' => 'update',
+                    'type' => 'input',
                 ]);
 
                 Mail::to($recipients)
@@ -576,6 +693,18 @@ class Editprogress extends Component
                     ->color('success')
 
                     ->send();
+
+                SendMsg::insert([
+                    'no_surat' => $this->nomor_surat,
+                    'kodesample' => $this->kode_track,
+                    'penerima' => $nohp,
+                    'progres' => $progress_now,
+                    'type' => 'update',
+                ]);
+
+                Mail::to($recipients)
+                    ->cc($cc)
+                    ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
             }
 
             $this->successSubmit = true;
