@@ -18,11 +18,14 @@ use Livewire\WithFileUploads;
 use Filament\Notifications\Actions\Action;
 use Illuminate\Validation\ValidationException;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\On;
 
 class InputProgress extends Component
 {
     use WithFileUploads;
     public $inputanParameter = [];
+    public $arr_foto_sampel = null;
     public $biayaParameter = [];
     public $parameterAnalisis = [];
     public $metodeAnalisis = [];
@@ -77,6 +80,8 @@ class InputProgress extends Component
     public $progress = 0;
 
     public $formData = [];
+
+    protected $listeners = ['arr_foto' => 'push_foto_to_other_component'];
 
     protected $rules = [
         'tanggal_terima' => 'required|date',
@@ -336,7 +341,11 @@ class InputProgress extends Component
         $this->handleFormSubmission('save');
     }
 
-
+    #[On('arr_foto')]
+    public function get_arr_foto($testBro)
+    {
+        dd($testBro);
+    }
     public function handleFormSubmission($action)
     {
 
@@ -480,6 +489,24 @@ class InputProgress extends Component
                 DB::commit();
 
                 if ($action === 'save') {
+                    // store image
+                    $livewireTmpPath = storage_path('app/livewire-tmp');
+                    $files = scandir($livewireTmpPath);
+                    $files = array_diff($files, ['.', '..']);
+                    foreach ($files as $fileName) {
+                        $tempFilePath = $livewireTmpPath . DIRECTORY_SEPARATOR . $fileName;
+
+                        $publicFileName = uniqid() . '_' . $fileName;
+                        $publicPath = 'foto_sampel/' . $publicFileName;
+
+                        // Move the file from its temporary location to the desired location within the public storage directory
+                        Storage::disk('public')->put($publicPath, file_get_contents($tempFilePath));
+
+                        // Delete the temporary file
+                        unlink($tempFilePath);
+                    }
+
+
                     $form_hp = $this->no_hp;
 
                     $nohp = numberformat($form_hp);

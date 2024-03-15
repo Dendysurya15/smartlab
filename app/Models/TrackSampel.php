@@ -11,6 +11,11 @@ class TrackSampel extends Model
 
     protected $table = 'track_sampel';
     public $timestamps = false;
+
+    protected $casts = [
+        'foto_sampel' => 'array',
+    ];
+
     protected $fillable = [
         'tanggal_memo',
         'tanggal_terima',
