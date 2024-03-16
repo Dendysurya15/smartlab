@@ -5,12 +5,9 @@ namespace App\Livewire;
 use App\Models\TrackSampel;
 use Livewire\Component;
 use Filament\Forms\Form;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\FileUpload;
-use Illuminate\Support\Facades\Storage;
 
 class AddImage extends Component implements HasForms
 {

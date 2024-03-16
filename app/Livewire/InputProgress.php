@@ -9,641 +9,256 @@ use App\Models\ParameterAnalisis;
 use App\Models\TrackSampel;
 use App\Models\SendMsg;
 use App\Models\TrackParameter;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
-use Livewire\WithFileUploads;
-use Filament\Notifications\Actions\Action;
-use Illuminate\Validation\ValidationException;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Storage;
-use Livewire\Attributes\On;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Illuminate\Contracts\View\View;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Illuminate\Support\Collection;
+use Closure;
+use Filament\Actions\Action as ActionsAction;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
+use Illuminate\Support\Str;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Builder;
+use Illuminate\Support\Facades\Mail;
+use Filament\Support\Enums\VerticalAlignment;
 
-class InputProgress extends Component
+class InputProgress extends Component implements HasForms
 {
-    use WithFileUploads;
-    public $inputanParameter = [];
-    public $arr_foto_sampel = null;
-    public $biayaParameter = [];
-    public $parameterAnalisis = [];
-    public $metodeAnalisis = [];
-    public $jenis_sampel = 5;
-    public $tanggal_memo;
-    public $tanggal_terima;
-    public $asal_sampel;
-    public $nomor_kupa;
-    public $nama_pengirim;
-    public $departemen;
-    public $kode_sampel;
-    public $jumlah_sampel;
-    public $kondisi_sampel;
-    public $kemasan_sampel;
-    public $personel;
-    public $alat;
-    public $bahan;
-    public $confirmation;
-    public $nomor_surat;
-    public $nomor_lab_left;
-    public $nomor_lab_right;
-    public $tgl_pengantaran_sampel;
-    public $jumlah_sampel_view;
-    public $estimasi;
-    public $tujuan;
-    public $last_update;
-    public $admin;
-    public $no_hp;
-    public $emailTo;
-    public $emailCc;
 
-    public $foto_sampel = [];
-    public $skala_prioritas;
-    public $hargaparameter;
-    public $parameterAnalisisOptions = [];
-    public $hargasample = [0];
-    public $satuanparameter;
-    public $namaparameter;
-    public $analisisparameter = [0];
-    public $val_parameter;
-    public $discount = 0;
-    public $subtotal;
-    public $jumsap = 0;
-    public $list_metode = [];
-    public $catatan = '';
+    use InteractsWithForms;
 
-    public bool $successSubmit = false;
-    public string $msgSuccess;
-    public bool $errorSubmit = false;
-    public string $msgError;
+    public static $paramstest = [];
 
-    public $progress = 0;
 
-    public $formData = [];
+    public ?array $data = [];
 
-    protected $listeners = ['arr_foto' => 'push_foto_to_other_component'];
-
-    protected $rules = [
-        'tanggal_terima' => 'required|date',
-        'jenis_sampel' => 'required',
-        'asal_sampel' => 'required|in:Internal,Eksternal',
-        'nomor_kupa' => 'required|numeric',
-        'discount' => 'required',
-        'nama_pengirim' => 'required|string',
-        'departemen' => 'required|string',
-        'jumlah_sampel' => 'required|numeric',
-        'kondisi_sampel' => 'required|string',
-        'kemasan_sampel' => 'required|string',
-        'nomor_surat' => 'required|string',
-        'estimasi' => 'required|date',
-        'no_hp' => 'required',
-        'tujuan' => 'required|string',
-        // 'emailTo' => 'required|email', // Assuming it's an email field
-        // 'foto_sampel.*' => 'image|max:1024', // Adjust max file size if needed
-        'formData' => 'required',
-    ];
-
-    public function updatedFotoSampel()
+    public function mount(): void
     {
-        $this->validate([
-            'foto_sampel.*' => 'image|max:1024', // Adjust max file size if needed
-        ]);
-
-        // Ensure maximum of 3 images
-        // if (count($this->foto_sampel) > 3) {
-        //     $this->addError('foto_sampel', 'You can upload a maximum of 3 images.');
-        //     Notification::make()
-        //         ->title('Hanya Bisa Max 3 Foto')
-        //         ->danger()
-        //         ->color('danger')
-        //         ->send();
-        //     $this->resetFotoSampel();
-        // }
-        if (count($this->foto_sampel) > 5) {
-            $this->addError('foto_sampel', 'You can upload a maximum of 5 images.');
-            $this->resetFotoSampel();
-        } else {
-            $this->resetErrorBag('foto_sampel'); // Clear any previous errors
-        }
+        $this->form->fill();
     }
 
-
-    public function ChangeFieldParamAndNomorLab()
+    public function form(Form $form): Form
     {
-        $selectedJenisSampel = JenisSampel::find($this->jenis_sampel);
-        if ($selectedJenisSampel) {
-            $current = Carbon::now()->format('y');
-            $this->nomor_lab_left = $current . $selectedJenisSampel->kode . '.';
-            $this->nomor_lab_right = $current . $selectedJenisSampel->kode . '.';
-            $options = ParameterAnalisis::where('id_jenis_sampel', $this->jenis_sampel)->get();
 
-            if ($selectedJenisSampel->nama != 'Pupuk Anorganik') {
-                $this->parameterAnalisisOptions = $options->groupBy('nama_parameter')->flatMap(function ($grouped) {
-                    return $grouped->count() > 1 ? $grouped->map(function ($item) {
-                        return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter . ' ' . $item->metode_analisis];
-                    }) : $grouped->map(function ($item) {
-                        return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter];
-                    });
-                })->values()->toArray();
-            } else {
-                $this->parameterAnalisisOptions = $options->groupBy('nama_parameter')->flatMap(function ($grouped) {
-                    return $grouped->count() > 1 ? $grouped->map(function ($item) {
-                        return ['id' => $item->id, 'nama_parameter_full' => $item->bahan_produk . ' ' . $item->nama_parameter . ' ' . $item->metode_analisis];
-                    }) : $grouped->map(function ($item) {
-                        return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter];
-                    });
-                })->values()->toArray();
-            }
-        }
+        return $form
+            ->schema([
+                Select::make('Jenis_Sampel')
+                    ->label('Jenis Sampel')
+                    ->options(JenisSampel::query()->pluck('nama', 'id'))
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                        // Retrieve the progress column value from the JenisSampel model based on the updated state
+                        $jenisSampel = JenisSampel::find($state);
+
+                        $params = ParameterAnalisis::where('id_jenis_sampel', $state)->pluck('nama_parameter', 'id')->toArray();
+
+                        $set('parametersAnal', $params);
+                        $set('testing1', $state);
+                        self::parametersAnal($get, $set);
+                        if ($jenisSampel) {
+                            $progress = $jenisSampel->progress;
+
+                            $progressArray = explode(',', $progress);
+
+                            foreach ($progressArray as $key => $value) {
+                                $option =  Progress::find($value);
+                                $getdata[] = $option->nama;
+                            }
+
+                            // dd($getdata);
+                            $set('progressOpt', $getdata);
+                        } else {
+                            // Handle the case where the JenisSampel with the given state is not found
+                        }
+                    })
+                    // ->required()
+                    ->live(),
+                Select::make('status_pengerjaan')
+                    ->label('Status Pengerjaan')
+                    // ->required()
+                    ->options(fn ($get) => $get('progressOpt') ?: []),
+                Select::make('Asalampel')
+                    ->label('Asal Sampel')
+                    ->options([
+                        'Internal' => 'Internal',
+                        'Eksternal' => 'Eksternal',
+                    ]),
+                DatePicker::make('Tanggal Memo')
+                    ->label('TanggalMemo')
+                    ->format('d/m/Y'),
+                DatePicker::make('Tanggal Terima')
+                    ->label('TanggalTerima')
+                    ->format('d/m/Y'),
+                DatePicker::make('Estimasi Kupa')
+                    ->label('Estimasikupa')
+                    ->format('d/m/Y'),
+                TextInput::make('Nomor Kupa')
+                    ->label('NomorKupa')
+                    ->numeric()
+                    ->minValue(1)
+                    // ->required()
+                    ->maxValue(1000)
+                    ->placeholder('Kupa'),
+                TextInput::make('Jumlah Sampel')
+                    ->label('JumlahSampel')
+                    ->numeric()
+                    ->minValue(1)
+                    // ->required()
+                    ->maxValue(1000)
+                    ->placeholder('Kupa'),
+                TextInput::make('Nama Pengirim')
+                    ->label('NamaPengirim')
+                    ->minLength(2)
+                    ->maxLength(255),
+                TextInput::make('Nama Departemen / Perusahaan')
+                    ->label('NamaDepartemen')
+                    ->minLength(2)
+                    ->maxLength(255),
+                TextInput::make('Nama Kode Sampel')
+                    ->label('Nama_Kode_Sampel')
+                    ->minLength(2)
+                    ->maxLength(255),
+                TextInput::make('Kemasan Sampel')
+                    ->label('KemasanSampel')
+                    ->minLength(2)
+                    ->maxLength(255),
+                Select::make('Kondisi Sampel')
+                    ->label('KondisiSampel')
+                    ->options([
+                        'Normal' => 'Normal',
+                        'Abnormal' => 'Abnormal',
+                    ]),
+                TextInput::make('Nomor Lab')
+                    ->label('NomorLab')
+                    ->minLength(2)
+                    ->prefix('24.C')
+                    ->maxLength(255),
+                TextInput::make('Nomor Surat')
+                    ->label('NomorSurat')
+                    ->minLength(2)
+                    ->maxLength(255),
+                TextInput::make('Tujuan')
+                    ->label('Tujuan')
+                    ->minLength(2)
+                    ->maxLength(255),
+                Select::make('Skala Prioritas Sampel')
+                    ->label('SkalaPrio')
+                    ->options([
+                        'Normal' => 'Normal',
+                        'Tinggi' => 'Tinggi',
+                    ]),
+                TextInput::make('Nomor Hp')
+                    ->label('NomorHp')
+                    ->numeric()
+                    ->tel()
+                    ->minLength(2)
+                    ->maxLength(255)
+                    ->prefix('+62'),
+                CheckboxList::make('Peralatan')
+                    ->label('Peralatan')
+                    ->options([
+                        'Personel' => 'Personel',
+                        'Alat' => 'Alat',
+                        'Bahan' => 'Bahan',
+                    ])
+                    ->descriptions([
+                        'Personel' => 'Tersedia dan Kompeten',
+                        'Alat' => 'Tersedia dan Baik',
+                        'Bahan' => 'Tersedia dan Baik',
+                    ])
+                    // ->required()
+                    ->columns(3),
+                TextInput::make('Emaiilto')
+                    ->label('Emaiilto')
+                    ->label('Email To')
+                    ->placeholder('Hanya untuk satu buah email')
+                    ->email()
+                    // ->required()
+                    ->maxLength(255),
+                TextInput::make('Emaiilcc')
+                    ->label('Emaiilcc')
+                    ->label('Email Cc')
+                    ->placeholder('Dapat Memasukan Lebih dari satu email dengan diakhiri dengan (;)')
+                    ->maxLength(255),
+
+                TextInput::make('Diskon')
+                    ->numeric()
+                    ->minLength(0)
+                    ->maxLength(2)
+                    ->prefix('%'),
+                Toggle::make('Konfirmasi')
+                    ->inline(false)
+                    ->label('Konfirmasi(Langsung / Telepon / Email)')
+                    ->onColor('success')
+                    ->offColor('danger'),
+
+                Section::make('pengujian_sampel')
+                    ->label('Pengujian Sampel')
+                    ->description('Peringatan untuk crosscheck ulang seluruh data yang ingin akan dimasukkan ke sistem!')
+                    ->schema([
+                        Repeater::make('repeater')
+                            ->schema([
+                                Select::make('status')
+                                    ->options(fn ($get) => $get('../../parametersAnal') ?: [])
+                                    // ->options(function (Get $get) {
+                                    //     dd($get('../../Jenis_Sampel'));
+                                    // })
+                                    ->afterStateUpdated(function ($set, $state) {
+                                        $params = ParameterAnalisis::find($state);
+                                        $set('parametersdata', $params->nama_unsur);
+                                        $set('harga_sampel', $params->harga);
+                                        $set('total_harga', $params->harga);
+                                        $set('total_sample', '1');
+                                    })
+                                    ->live(),
+                                TextInput::make('parametersdata'),
+                                TextInput::make('harga_sampel'),
+                                TextInput::make('total_harga'),
+                                TextInput::make('total_sample'),
+                            ])
+                            ->deletable(false)
+                            ->columnSpanFull()
+
+
+                    ])->columns(4),
+
+
+            ])
+            ->columns(3)
+            ->statePath('data');
     }
 
-    public function getlabstatus()
+    public static function parametersAnal(Get $get, Set $set): void
     {
-        $this->jumsap = $this->jumlah_sampel;
+        $selected = collect($get('Jenis_Sampel'));
 
-        // dd($jumsamp);
+        $params = ParameterAnalisis::where('id_jenis_sampel', $selected)->pluck('nama_parameter', 'id')->toArray();
+
+        // dd($params);
+
+        $set('testingaja', $params);
     }
 
-    public function addParameter()
+    public function create(): void
     {
-
-        $this->val_parameter = $this->val_parameter ?? $this->parameterAnalisisOptions[0]['id'];
-        $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
-
-        $this->hargaparameter = $defaultParameterAnalisis->harga;
-        $this->satuanparameter = $defaultParameterAnalisis->satuan;
-        $this->analisisparameter = $defaultParameterAnalisis->metode_analisis;
-
-        $sub_total = $this->hargaparameter * 1;
-        $total = $sub_total;
-
-        $newForm = [
-            'nama_parameter' => $defaultParameterAnalisis->nama_parameter,
-            'id_parameter' => $defaultParameterAnalisis->id,
-            'jumlahsample' => 'Jumlah Sampel',
-            'hargassample' => 'Harga Sampel',
-            // 'personel' => True,
-            // 'alat' => True,
-            // 'bahan' => True,
-            'subtotal' => 'Sub Total',
-            'totaljudul' => 'Total',
-            'list_metode' => $this->analisisparameter,
-            'jumlah_sampel' => 1,
-            'harga_sampel' =>  $this->hargaparameter,
-            'satuan' => '',
-            'sub_total' => $sub_total,
-            'totalharga' => $total
-        ];
-
-        $this->formData[] = $newForm;
+        dd($this->form->getState());
     }
 
-    public function gethargasample($index)
+    public function render(): View
     {
-
-        $form = $this->formData[$index];
-        $harga = $this->formData[$index]['harga_sampel'];
-        $sub_totalx[$index] = $harga *  $this->formData[$index]['jumlah_sampel'];
-        $totalharga[$index] = $sub_totalx[$index] +  $sub_totalx[$index];
-        $this->formData[$index]['sub_total'] = $sub_totalx[$index];
-        $this->formData[$index]['totalharga'] = $totalharga[$index];
-    }
-
-    public function removeParameter($index)
-    {
-        // Log::info('Removing parameter at index ' . $index);
-        // dd($this->formData[$index]);
-
-        if (isset($this->formData[$index])) {
-            unset($this->formData[$index]);
-        }
-    }
-
-
-    public function updatedInputanParameter($value, $index)
-    {
-        $list = explode('.', $index);
-
-        if ($list[1] == 'parameter_id') {
-            $hargaSelected = ParameterAnalisis::find((int)$value)->harga;
-            $this->biayaParameter[$list[0]]['harga_sampel'] = $hargaSelected;
-        }
-    }
-
-
-
-    public function resetFotoSampel()
-    {
-        $this->foto_sampel = [];
-    }
-
-
-
-
-    public function mount()
-    {
-
-        $current = Carbon::now();
-        $formattedDateTime = $current->format('Y-m-d\TH:i');
-
-        // dd($formattedDateTime);
-
-        $this->tanggal_memo = $formattedDateTime;
-        // $current = $current->format('y');
-
-        // $this->tanggal_memo = date('Y-m-d\TH:i', strtotime('2024-02-28 10:20 PM'));
-
-        // dd($formattedDateTime, $this->tanggal_memo);
-        if ($current->format('H:i') > '12:59') {
-            // Add one day if the time is after 12:59 AM
-            $this->tanggal_terima = $current->addDay()->toDateString();
-        } else {
-            $this->tanggal_terima = $current->toDateString();
-        }
-        $jumlah_sampel_default = 1;
-        $this->jumlah_sampel = $jumlah_sampel_default;
-        $this->kondisi_sampel = 'Normal';
-        $this->asal_sampel = 'Internal';
-        $this->discount = 0;
-        $this->skala_prioritas = 'Normal';
-        $this->estimasi = Carbon::now()->toDateString();
-        $this->tgl_pengantaran_sampel = Carbon::now()->toDateString();
-        $defaultJenisSampel = JenisSampel::first();
-        $this->nomor_lab_left = $current . $defaultJenisSampel->kode . '.';
-        $this->nomor_lab_right = $current . $defaultJenisSampel->kode . '.';
-        $this->jenis_sampel = $defaultJenisSampel ? $defaultJenisSampel->id : null;
-        $this->ChangeFieldParamAndNomorLab();
-    }
-
-
-    public function updateHargaSampel()
-    {
-        foreach ($this->formData as $index => $inputan) {
-            $curr_jumlah_sampel = $inputan['jumlah_sampel'];
-            $curr_harga_sampel = $inputan['harga_sampel'];
-            $curr_sub_total = $curr_jumlah_sampel * $curr_harga_sampel;
-            $this->formData[$index]['totalharga'] = $curr_sub_total;
-        }
-    }
-
-    public function getJumlahSampel()
-    {
-
-        foreach ($this->inputanParameter as $index => $inputan) {
-            if (isset($this->biayaParameter[$index])) {
-                $this->biayaParameter[$index]['jumlah_sampel'] = $inputan['jumlah_per_parameter'];
-                $this->biayaParameter[$index]['sub_total'] = $this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter'];
-                $this->biayaParameter[$index]['total'] = ($this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter']) + $this->biayaParameter[$index]['harga_sampel'] * $inputan['jumlah_per_parameter'];
-            }
-        }
-    }
-
-    public function render()
-    {
-        $jenisSampelOptions = JenisSampel::all();
-
-        return view(
-            'livewire.input-progress',
-            [
-                'jenisSampelOptions' => $jenisSampelOptions,
-            ]
-        );
-    }
-
-    public function updatePPN()
-    {
-        foreach ($this->formData as $index => $inputan) {
-            $this->formData[$index]['totalharga'] = $this->formData[$index]['ppn'] + $this->formData[$index]['sub_total'];
-        }
-    }
-
-    public function resetForm()
-    {
-        $this->biayaParameter = []; // Reset parameters array
-        $this->formData = []; // Reset metode array
-
-    }
-
-    public function cancelButton()
-    {
-        $this->redirect('history_sampel');
-    }
-
-    public function draftKupa()
-    {
-        $this->handleFormSubmission('draft');
-    }
-
-
-
-    public function save()
-    {
-        $this->handleFormSubmission('save');
-    }
-
-    #[On('arr_foto')]
-    public function get_arr_foto($testBro)
-    {
-        dd($testBro);
-    }
-    public function handleFormSubmission($action)
-    {
-
-
-
-        if ($action === 'save') {
-
-            $this->validate();
-        }
-
-
-        $formData = array_filter($this->formData, function ($item) {
-            return !empty($item['nama_parameter']);
-        });
-
-        // dd($formData);
-        $currentDateTime = Carbon::now();
-
-        // Get the hour, minutes, and seconds
-        $thisHour = $currentDateTime->hour;
-        $thisMinute = $currentDateTime->minute;
-        $thisSecond = $currentDateTime->second;
-
-        // Alternatively, you can chain the methods to get the hour, minutes, and seconds directly
-        list($thisHour, $thisMinute, $thisSecond) = explode(':', $currentDateTime->toTimeString());
-
-        // You can also get the time formatted as HH:MM:SS
-        $thisTime = $currentDateTime->toTimeString(); // Format: HH:MM:SS
-
-
-        // dd($thisTime, $this->tanggal_memo);
-        $userId = 1;
-        if (auth()->check()) {
-            $user = auth()->user();
-            $userId = $user->id;
-        }
-
-        do {
-            $randomCode = generateRandomCode();
-            $existingTrackSampel = TrackSampel::where('kode_Track', $randomCode)->first();
-        } while ($existingTrackSampel);
-
-        $current = Carbon::now();
-        $current = $current->format('Y-m-d H:i:s');
-        // dd($this->nomor_lab_left, $this->nomor_lab_right);
-        $nomorlab =  $this->nomor_lab_left . '-' . $this->nomor_lab_right;
-
-
-        $commonRandomString = generateRandomString(rand(5, 10));
-
-
-
-        $recipients = array_email($this->emailTo);
-        $cc = array_email($this->emailCc);
-
-        // dd($this->personel, $this->alat, $this->bahan);
-        // dd($this->discount);
-        try {
-            DB::beginTransaction();
-
-            $trackSampel = new TrackSampel();
-            $trackSampel->jenis_sampel = $this->jenis_sampel;
-            $trackSampel->tanggal_memo = $this->tanggal_memo;
-            $trackSampel->tanggal_terima = $this->tanggal_terima;
-            $trackSampel->asal_sampel = $this->asal_sampel;
-            $trackSampel->nomor_kupa = $this->nomor_kupa;
-            $trackSampel->nama_pengirim = $this->nama_pengirim;
-            $trackSampel->departemen = $this->departemen;
-            $trackSampel->kode_sampel = $this->kode_sampel;
-            $trackSampel->jumlah_sampel = $this->jumlah_sampel;
-            $trackSampel->kondisi_sampel = $this->kondisi_sampel;
-            $trackSampel->kemasan_sampel = $this->kemasan_sampel;
-            $trackSampel->nomor_surat = $this->nomor_surat;
-            $trackSampel->nomor_lab =  $nomorlab;
-            $trackSampel->estimasi = $this->estimasi;
-            $trackSampel->tujuan = $this->tujuan;
-            $trackSampel->progress = 4;
-            $trackSampel->last_update = $current;
-            $trackSampel->admin = $userId;
-            $trackSampel->no_hp = $this->no_hp;
-            $trackSampel->alat = ($this->alat ? 1 : 0);
-            $trackSampel->emailTo = $this->emailTo;
-            $trackSampel->bahan = ($this->bahan ? 1 : 0);
-            $trackSampel->personel = ($this->personel ? 1 : 0);
-            $trackSampel->konfirmasi = ($this->confirmation ? 1 : 0);
-            $trackSampel->parameter_analisisid = $commonRandomString;
-            $trackSampel->kode_track = $randomCode;
-            $trackSampel->skala_prioritas = $this->skala_prioritas;
-            $trackSampel->discount = $this->discount;
-            $trackSampel->catatan = $this->catatan;
-            $trackSampel->tanggal_pengantaran = $this->tgl_pengantaran_sampel;
-
-            $getprogress = Progress::pluck('nama')->first();
-
-
-            if ($this->foto_sampel) {
-                $filename = '';
-                foreach ($this->foto_sampel as $key => $value) {
-                    $filename .= $this->foto_sampel[$key]->getClientOriginalName() . '%';
-                    $fileNamex = $this->foto_sampel[$key]->getClientOriginalName();
-                    $this->foto_sampel[$key]->storeAs('uploads', $fileNamex, 'public');
-                }
-                $donefilename = rtrim($filename, '%');
-                $trackSampel->foto_sampel = $donefilename;
-            }
-
-
-            // if ($this->foto_sampel) {
-            //     $fileName = time() . '_' . $this->foto_sampel->getClientOriginalName();
-            //     $this->foto_sampel->storeAs('uploads', $fileName, 'public');
-            //     $trackSampel->foto_sampel = $fileName;
-            // }
-
-            if ($action === 'draft') {
-                $trackSampel->status = 'Draft';
-            }
-
-            $saveResult = $trackSampel->save();
-
-            if ($saveResult) {
-
-                $trackParameters = [];
-
-                if ($formData !== []) {
-                    foreach ($formData as $data) {
-                        $dataToInsert[] = [
-                            'id_parameter' => $data['id_parameter'],
-                            'jumlah' => $data['jumlah_sampel'],
-                            'totalakhir' => $data['totalharga'],
-                            // 'personel' => $data['personel'] == True ? 1 : 0,
-                            // 'alat' => $data['alat'] == True ? 1 : 0,
-                            // 'bahan' => $data['bahan'] == True ? 1 : 0,
-                            'id_tracksampel' => $commonRandomString,
-                        ];
-                    }
-
-                    TrackParameter::insert($dataToInsert);
-                }
-
-                //to store to database below code
-                DB::commit();
-
-                if ($action === 'save') {
-                    // store image
-                    $livewireTmpPath = storage_path('app/livewire-tmp');
-                    $files = scandir($livewireTmpPath);
-                    $files = array_diff($files, ['.', '..']);
-                    foreach ($files as $fileName) {
-                        $tempFilePath = $livewireTmpPath . DIRECTORY_SEPARATOR . $fileName;
-
-                        $publicFileName = uniqid() . '_' . $fileName;
-                        $publicPath = 'foto_sampel/' . $publicFileName;
-
-                        // Move the file from its temporary location to the desired location within the public storage directory
-                        Storage::disk('public')->put($publicPath, file_get_contents($tempFilePath));
-
-                        // Delete the temporary file
-                        unlink($tempFilePath);
-                    }
-
-
-                    $form_hp = $this->no_hp;
-
-                    $nohp = numberformat($form_hp);
-                    SendMsg::insert([
-                        'no_surat' => $this->nomor_surat,
-                        'kodesample' => $randomCode,
-                        'penerima' => $nohp,
-                        'progres' => $getprogress,
-                        'type' => 'input',
-                    ]);
-
-                    Notification::make()
-                        ->title('Berhasil disimpan')
-                        ->body(' Record berhasil disimpan dengan kode track ' . $randomCode)
-                        ->icon('heroicon-o-document-text')
-                        ->iconColor('success')
-                        ->color('success')
-                        ->actions([
-                            Action::make('view')
-                                ->button()
-                                ->url(route('history_sampel.index')),
-
-                        ])
-                        ->success()
-                        ->send();
-
-
-                    $nomorserif = '-';
-                    Mail::to($recipients)
-                        ->cc($cc)
-                        ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $nomorlab, $randomCode, $nomorserif));
-
-                    // return "Email sent successfully!";
-                } else if ($action === 'draft') {
-                    Notification::make()
-                        ->title('Draft Tersimpan')
-                        ->body(' Record Kupa draft berhasil disimpan dengan kode track' . $randomCode)
-                        ->icon('heroicon-o-document-text')
-                        ->iconColor('warning')
-                        ->color('warning')
-                        ->actions([
-                            Action::make('view')
-                                ->button()
-                                ->url(route('history_sampel.index')),
-
-                        ])
-                        ->send();
-                }
-
-                $this->successSubmit = true;
-                $this->msgSuccess = $randomCode;
-
-                $this->reset([
-                    'jenis_sampel',
-                    'tanggal_memo',
-                    'tanggal_terima',
-                    'asal_sampel',
-                    'nomor_kupa',
-                    'nama_pengirim',
-                    'departemen',
-                    'kode_sampel',
-                    'jumlah_sampel',
-                    'kondisi_sampel',
-                    'kemasan_sampel',
-                    'formData',
-                    // 'alat',
-                    // 'bahan',
-                    'nomor_surat',
-                    // 'nomor_lab',
-                    'estimasi',
-                    'tujuan',
-                    'last_update',
-                    'admin',
-                    'no_hp',
-                    'emailTo',
-                    'emailCc',
-                    'foto_sampel',
-                    'skala_prioritas'
-                ]);
-
-
-
-                // dd($recipients);
-
-            } else {
-                DB::rollBack();
-                Notification::make()
-                    ->title('Error ')
-                    ->danger()
-                    ->color('danger')
-                    ->send();
-
-                $this->msgError = 'An error occurred while saving the data: ';
-                // Set the error flag
-                $this->errorSubmit = true;
-            }
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            Notification::make()
-                ->title('Error ' . $e->getMessage())
-                ->danger()
-                ->color('danger')
-                ->send();
-
-            // session()->flash('errorSubmit', 'An error occurred while saving the data. ' .  $e->getMessage());
-            $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
-            // Set the error flag
-            $this->errorSubmit = true;
-        }
-
-        $this->reset([
-            'jenis_sampel',
-            'tanggal_memo',
-            'tanggal_terima',
-            'asal_sampel',
-            'nomor_kupa',
-            'nama_pengirim',
-            'departemen',
-            'kode_sampel',
-            'jumlah_sampel',
-            'kondisi_sampel',
-            'kemasan_sampel',
-            'formData',
-            // 'alat',
-            // 'bahan',
-            'nomor_surat',
-            // 'nomor_lab',
-            'estimasi',
-            'tujuan',
-            'last_update',
-            'admin',
-            'no_hp',
-            'emailTo',
-            'emailCc',
-            'foto_sampel',
-            'skala_prioritas'
-        ]);
+        return view('livewire.input-progress');
     }
 }
