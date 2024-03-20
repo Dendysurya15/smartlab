@@ -316,7 +316,7 @@ class Editprogress extends Component
             $fileArray = explode('%', $query->foto_sampel);
             $this->newimg = [];
             foreach ($fileArray as $key => $value) {
-                $this->newimg[] = asset('storage/uploads/' . $value);
+                $this->newimg[] = asset('storage/' . $value);
             }
         }
         $this->selected_status = $query->status;
@@ -354,7 +354,7 @@ class Editprogress extends Component
             $nomor_lab = $query->nomor_lab;
             $arr_nomor_lab = explode('-', $nomor_lab);
             $this->nomor_lab_left = $arr_nomor_lab[0];
-            $this->nomor_lab_right = $arr_nomor_lab[1];
+            $this->nomor_lab_right = $arr_nomor_lab[1] ?? 'Tes';
         } else {
             $this->nomor_lab_left = '';
             $this->nomor_lab_right = '';

@@ -11,7 +11,6 @@ use App\Models\SendMsg;
 use App\Models\TrackParameter;
 use Livewire\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -20,21 +19,21 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Illuminate\Support\Collection;
-use Closure;
-use Filament\Actions\Action as ActionsAction;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Illuminate\Support\Str;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Fieldset;
+
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Builder;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+use Filament\Notifications\Actions\Action;
 use Illuminate\Support\Facades\Mail;
-use Filament\Support\Enums\VerticalAlignment;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Split;
 
 class InputProgress extends Component implements HasForms
 {
@@ -64,10 +63,9 @@ class InputProgress extends Component implements HasForms
                         $jenisSampel = JenisSampel::find($state);
 
                         $params = ParameterAnalisis::where('id_jenis_sampel', $state)->pluck('nama_parameter', 'id')->toArray();
-
+                        // dd($jenisSampel->kode);
                         $set('parametersAnal', $params);
-                        $set('testing1', $state);
-                        self::parametersAnal($get, $set);
+                        $set('preflab', $jenisSampel->kode);
                         if ($jenisSampel) {
                             $progress = $jenisSampel->progress;
 
@@ -84,83 +82,141 @@ class InputProgress extends Component implements HasForms
                             // Handle the case where the JenisSampel with the given state is not found
                         }
                     })
-                    // ->required()
+                    ->required()
                     ->live(),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
-                    // ->required()
+                    ->disabled(function ($get) {
+                        return is_null($get('Jenis_Sampel'));
+                    })
+                    ->required()
                     ->options(fn ($get) => $get('progressOpt') ?: []),
                 Select::make('Asalampel')
                     ->label('Asal Sampel')
+                    ->required()
                     ->options([
                         'Internal' => 'Internal',
                         'Eksternal' => 'Eksternal',
                     ]),
-                DatePicker::make('Tanggal Memo')
-                    ->label('TanggalMemo')
-                    ->format('d/m/Y'),
-                DatePicker::make('Tanggal Terima')
-                    ->label('TanggalTerima')
-                    ->format('d/m/Y'),
-                DatePicker::make('Estimasi Kupa')
-                    ->label('Estimasikupa')
-                    ->format('d/m/Y'),
-                TextInput::make('Nomor Kupa')
-                    ->label('NomorKupa')
+                DateTimePicker::make('TanggalMemo')
+                    ->label('Tanggal Memo')
+                    ->required()
+                    ->default(function (Get $get, Set $set) {
+                        $date = now();
+
+                        $set('tanggalnowmemo', $date);
+                        return $date;
+                    })
+                    ->seconds(true),
+                DatePicker::make('TanggalTerima')
+                    ->label('Tanggal Terima')
+                    ->required()
+                    ->default(function (Get $get, Set $set) {
+                        // $date = '23-04-1997';
+                        $date = $get('tanggalnowmemo');
+                        $carbonDate = Carbon::parse($date);
+
+                        // Check if the hour is greater than or equal to 12
+                        if ($carbonDate->hour >= 12) {
+                            // Add one day if the hour is greater than or equal to 12
+                            $newDate = $carbonDate->addDay()->toDateString();
+                        } else {
+                            // Use the current date if the hour is less than 12
+                            $newDate = $carbonDate->toDateString();
+                        }
+                        // dd($date, $newDate);
+                        return $newDate;
+                    })
+                    ->format('Y-m-d H:m:s'),
+                DatePicker::make('EstimasiKupa')
+                    ->label('Estimasi Kupa')
+                    ->required()
+                    ->format('Y-m-d H:m:s'),
+                TextInput::make('NomorKupa')
+                    ->label('Nomor Kupa')
                     ->numeric()
                     ->minValue(1)
-                    // ->required()
+                    ->required()
                     ->maxValue(1000)
                     ->placeholder('Kupa'),
-                TextInput::make('Jumlah Sampel')
-                    ->label('JumlahSampel')
+                TextInput::make('JumlahSampel')
+                    ->label('Jumlah Sampel')
                     ->numeric()
                     ->minValue(1)
-                    // ->required()
+                    ->required()
+
                     ->maxValue(1000)
+                    ->live()
                     ->placeholder('Kupa'),
-                TextInput::make('Nama Pengirim')
-                    ->label('NamaPengirim')
+                TextInput::make('NamaPengirim')
+                    ->label('Nama Pengirim')
+                    ->required()
                     ->minLength(2)
                     ->maxLength(255),
-                TextInput::make('Nama Departemen / Perusahaan')
-                    ->label('NamaDepartemen')
+                TextInput::make('NamaDep')
+                    ->label('Nama Departemen')
                     ->minLength(2)
+                    ->required()
                     ->maxLength(255),
-                TextInput::make('Nama Kode Sampel')
-                    ->label('Nama_Kode_Sampel')
+                TextInput::make('NamaKodeSampel')
+                    ->label('Nama Kode Sampel')
                     ->minLength(2)
+                    ->required()
                     ->maxLength(255),
-                TextInput::make('Kemasan Sampel')
-                    ->label('KemasanSampel')
+                TextInput::make('KemasanSampel')
+                    ->label('Kemasan Sampel')
                     ->minLength(2)
+                    ->required()
                     ->maxLength(255),
-                Select::make('Kondisi Sampel')
-                    ->label('KondisiSampel')
+                Select::make('KondisiSampel')
+                    ->label('Kondisi Sampel')
+                    ->required()
                     ->options([
                         'Normal' => 'Normal',
                         'Abnormal' => 'Abnormal',
                     ]),
-                TextInput::make('Nomor Lab')
-                    ->label('NomorLab')
+                Split::make([
+                    TextInput::make('lab_kiri')
+                        ->label('Nomor Lab')
+                        ->minLength(2)
+                        ->required()
+                        ->prefix(function (Get $get) {
+                            // dd($get('preflab'));
+                            $lastTwoDigitsOfYear = Carbon::now()->format('y');
+                            return $lastTwoDigitsOfYear . '-' . $get('preflab');
+                        })
+                        ->maxLength(255),
+                    TextInput::make('lab_kanan')
+                        ->label('Nomor Lab Kanan')
+                        ->minLength(2)
+                        ->required()
+                        ->prefix(function (Get $get) {
+                            // dd($get('preflab'));
+                            $lastTwoDigitsOfYear = Carbon::now()->format('y');
+                            return $lastTwoDigitsOfYear . '-' . $get('preflab');
+                        })
+                        ->maxLength(255)
+                        ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
+                ])->from('md'),
+
+                TextInput::make('NomorSurat')
+                    ->label('Nomor Surat')
                     ->minLength(2)
-                    ->prefix('24.C')
-                    ->maxLength(255),
-                TextInput::make('Nomor Surat')
-                    ->label('NomorSurat')
-                    ->minLength(2)
+                    ->required()
                     ->maxLength(255),
                 TextInput::make('Tujuan')
                     ->label('Tujuan')
                     ->minLength(2)
+                    ->required()
                     ->maxLength(255),
-                Select::make('Skala Prioritas Sampel')
-                    ->label('SkalaPrio')
+                Select::make('SkalaPrioritas')
+                    ->label('Skala Prioritas Sampel')
+                    ->required()
                     ->options([
                         'Normal' => 'Normal',
                         'Tinggi' => 'Tinggi',
                     ]),
-                TextInput::make('Nomor Hp')
+                TextInput::make('NomorHp')
                     ->label('NomorHp')
                     ->numeric()
                     ->tel()
@@ -186,7 +242,7 @@ class InputProgress extends Component implements HasForms
                     ->label('Email To')
                     ->placeholder('Hanya untuk satu buah email')
                     ->email()
-                    // ->required()
+                    ->required()
                     ->maxLength(255),
                 TextInput::make('Emaiilcc')
                     ->label('Emaiilcc')
@@ -205,56 +261,233 @@ class InputProgress extends Component implements HasForms
                     ->onColor('success')
                     ->offColor('danger'),
 
-                Section::make('pengujian_sampel')
+                Section::make('Pengujian sampel')
                     ->label('Pengujian Sampel')
                     ->description('Peringatan untuk crosscheck ulang seluruh data yang ingin akan dimasukkan ke sistem!')
                     ->schema([
                         Repeater::make('repeater')
+                            ->label('Parameter')
                             ->schema([
-                                Select::make('status')
-                                    ->options(fn ($get) => $get('../../parametersAnal') ?: [])
-                                    // ->options(function (Get $get) {
-                                    //     dd($get('../../Jenis_Sampel'));
-                                    // })
-                                    ->afterStateUpdated(function ($set, $state) {
-                                        $params = ParameterAnalisis::find($state);
-                                        $set('parametersdata', $params->nama_unsur);
-                                        $set('harga_sampel', $params->harga);
-                                        $set('total_harga', $params->harga);
-                                        $set('total_sample', '1');
-                                    })
-                                    ->live(),
-                                TextInput::make('parametersdata'),
-                                TextInput::make('harga_sampel'),
-                                TextInput::make('total_harga'),
-                                TextInput::make('total_sample'),
+                                Grid::make(5)
+                                    ->schema([
+                                        Select::make('status')
+                                            ->options(fn ($get) => $get('../../parametersAnal') ?: [])
+                                            ->required()
+                                            ->afterStateUpdated(function ($set, $state) {
+                                                $params = ParameterAnalisis::find($state);
+                                                $set('parametersdata', $params->nama_unsur);
+                                                $set('harga_sampel', $params->harga);
+                                                $set('total_harga', $params->harga);
+                                                // $set('total_sample', '3');
+                                            })
+                                            ->disabled(function ($get) {
+                                                return is_null($get('../../parametersAnal'));
+                                            })
+                                            ->live(),
+                                        TextInput::make('total_sample')
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                                self::updateTotals($get, $set);
+                                            })
+                                            ->required()
+                                            ->disabled(function ($get) {
+                                                return is_null($get('../../parametersAnal'));
+                                            })
+                                            ->live(true),
+                                        TextInput::make('parametersdata')
+                                            ->disabled(function ($get) {
+                                                return is_null($get('../../parametersAnal'));
+                                            }),
+                                        TextInput::make('harga_sampel')
+                                            ->label('Harga')
+                                            ->disabled(function ($get) {
+                                                return is_null($get('../../parametersAnal'));
+                                            })
+                                            ->readOnly(),
+                                        TextInput::make('subtotal')
+                                            ->label('Total')
+                                            ->disabled(function ($get) {
+                                                return is_null($get('../../parametersAnal'));
+                                            })
+                                            ->afterStateHydrated(function (Get $get, Set $set) {
+                                                self::updateTotals($get, $set);
+                                            })
+                                    ])
+
                             ])
-                            ->deletable(false)
+                            ->deletable(true)
                             ->columnSpanFull()
+                        // ->columns(4)
 
 
                     ])->columns(4),
 
+                Textarea::make('catatan')
+                    ->rows(10)
+                    ->columnSpanFull(),
 
+                Section::make('Upload')
+                    ->description('Upload Foto Sampel')
+                    ->schema([
+                        FileUpload::make('foto_sampel')
+                            ->label('Uplod Foto Sampel (Maks 5 Foto)')
+                            ->image()
+                            ->imageEditor()
+                            ->imageEditorEmptyFillColor('#000000')
+                            ->multiple()
+                            ->maxFiles(5)
+                            ->fetchFileInformation(false)
+                            ->maxSize(3000)
+                            ->uploadingMessage('Upoad Foto Sampel...')
+                            ->acceptedFileTypes(['image/png', 'image/jpg', 'image/jpeg']),
+
+                    ])
             ])
             ->columns(3)
             ->statePath('data');
     }
 
-    public static function parametersAnal(Get $get, Set $set): void
+    public static function updateTotals(Get $get, Set $set): void
     {
-        $selected = collect($get('Jenis_Sampel'));
 
-        $params = ParameterAnalisis::where('id_jenis_sampel', $selected)->pluck('nama_parameter', 'id')->toArray();
+        $selectedProducts = $get('total_sample');
+        $harga = $get('total_harga');
+        // dd($selectedProducts);
 
-        // dd($params);
+        // Calculate subtotal based on the selected products and quantities
+        $subtotal = $harga * $selectedProducts;
 
-        $set('testingaja', $params);
+        // Update the state with the new values
+        $set('subtotal', $subtotal);
     }
 
     public function create(): void
     {
-        dd($this->form->getState());
+        // dd($this->form->getState());
+        $form = $this->form->getState();
+        // dd($form);
+        $current = Carbon::now();
+        $randomCode = generateRandomCode();
+        $current = $current->format('Y-m-d H:i:s');
+        $userId = 1;
+        if (auth()->check()) {
+            $user = auth()->user();
+            $userId = $user->id;
+        }
+
+        $Alat = 'Alat';
+        $Personel = 'Personel';
+        $bahan = 'Bahan';
+        $checkalat = in_array($Alat, $form['Peralatan']);
+        $checkpersonel = in_array($Personel, $form['Peralatan']);
+        $checkbahan = in_array($bahan, $form['Peralatan']);
+
+        $commonRandomString = generateRandomString(rand(5, 10));
+        $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
+
+        try {
+            DB::beginTransaction();
+            $trackSampel = new TrackSampel();
+            $trackSampel->jenis_sampel = $form['Jenis_Sampel'];
+            $trackSampel->tanggal_memo = $form['TanggalMemo'];
+            $trackSampel->tanggal_terima = $form['TanggalTerima'];
+            $trackSampel->asal_sampel = $form['Asalampel'];
+            $trackSampel->nomor_kupa = $form['NomorKupa'];
+            $trackSampel->nama_pengirim = $form['NamaPengirim'];
+            $trackSampel->departemen = $form['NamaDep'];
+            $trackSampel->kode_sampel = $form['NamaKodeSampel'];
+            $trackSampel->jumlah_sampel = $form['JumlahSampel'];
+            $trackSampel->kondisi_sampel = $form['KondisiSampel'];
+            $trackSampel->kemasan_sampel = $form['KemasanSampel'];
+            $trackSampel->nomor_surat = $form['NomorSurat'];
+            $trackSampel->nomor_lab = $NomorLab;
+            $trackSampel->estimasi = $form['EstimasiKupa'];
+            $trackSampel->tujuan = $form['Tujuan'];
+            $trackSampel->progress = 4;
+            $trackSampel->last_update = $current;
+            $trackSampel->admin = $userId;
+            $trackSampel->no_hp = $form['NomorHp'];
+            $trackSampel->alat = ($checkalat ? 1 : 0);
+            $trackSampel->emailTo = $form['Emaiilto'];
+            $trackSampel->bahan = ($checkbahan ? 1 : 0);
+            $trackSampel->personel = ($checkpersonel ? 1 : 0);
+            $trackSampel->konfirmasi = ($form['Konfirmasi'] ? 1 : 0);
+            $trackSampel->parameter_analisisid = $commonRandomString;
+            $trackSampel->kode_track = $randomCode;
+            $trackSampel->skala_prioritas = $form['SkalaPrioritas'];
+            $trackSampel->discount = $form['Diskon'];
+            $trackSampel->catatan = $form['catatan'];
+            // dd($trackSampel->toArray()); 
+            if ($form['foto_sampel']) {
+                $filename = '';
+                foreach ($form['foto_sampel'] as $key => $value) {
+                    $filename .= $value . '%';
+                }
+                $donefilename = rtrim($filename, '%');
+                $trackSampel->foto_sampel = $donefilename;
+            }
+
+            // dd($form['repeater']);
+            if ($form['repeater'] !== []) {
+                foreach ($form['repeater'] as $data) {
+                    $dataToInsert[] = [
+                        'id_parameter' => $data['status'],
+                        'jumlah' => $data['total_sample'],
+                        'totalakhir' => $data['subtotal'],
+                        'id_tracksampel' => $commonRandomString,
+                    ];
+                }
+                // dd($dataToInsert);
+                TrackParameter::insert($dataToInsert);
+            }
+            $trackSampel->save();
+
+
+            $getprogress = Progress::pluck('nama')->first();
+
+            DB::commit();
+
+
+            // $nohp = numberformat($form['NomorHp']);
+            // SendMsg::insert([
+            //     'no_surat' => $form['NomorSurat'],
+            //     'kodesample' => $randomCode,
+            //     'penerima' => $nohp,
+            //     'progres' => $getprogress,
+            //     'type' => 'input',
+            // ]);
+            Notification::make()
+                ->title('Berhasil disimpan')
+                ->body(' Record berhasil disimpan dengan kode track ' . $randomCode)
+                ->icon('heroicon-o-document-text')
+                ->iconColor('success')
+                ->color('success')
+                ->actions([
+                    Action::make('view')
+                        ->button()
+                        ->url(route('history_sampel.index')),
+
+                ])
+                ->success()
+                ->send();
+
+
+            $nomorserif = '-';
+
+
+            // Mail::to($form['Emaiilto'])
+            //     ->cc($form['Emaiilcc'])
+            //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $form['NomorLab'], $randomCode, $nomorserif));
+
+            $this->form->fill();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Notification::make()
+                ->title('Error ' . $e->getMessage())
+                ->danger()
+                ->color('danger')
+                ->send();
+        }
     }
 
     public function render(): View
