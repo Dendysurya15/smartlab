@@ -2,803 +2,749 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Mail\EmailPelanggan;
 use App\Models\JenisSampel;
+use App\Models\Progress;
 use App\Models\ParameterAnalisis;
 use App\Models\TrackSampel;
-use App\Models\ProgressPengerjaan;
-use App\Models\TrackParameter;
 use App\Models\SendMsg;
-use Carbon\Carbon;
-use Exception;
+use App\Models\TrackParameter;
+use App\Models\ProgressPengerjaan;
+use Livewire\Component;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Illuminate\Contracts\View\View;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Toggle;
+
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Support\Facades\DB;
-use Livewire\WithFileUploads;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\MinotoringExport;
-use App\Exports\MonitoringKupaExport;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Carbon;
 use Filament\Notifications\Actions\Action;
-use App\Mail\EmailPelanggan;
+use Illuminate\Support\Facades\Mail;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Split;
+use Filament\Forms\Components\ToggleButtons;
 
-class Editprogress extends Component
+class Editprogress extends Component implements HasForms
 {
-    use WithFileUploads;
+    use InteractsWithForms;
     public $sample;
-    public $tanggal_memo;
-    public $tanggal_terima;
-    public $estimasi;
-    public $no_kupa;
-    public $jenis_sampel;
-    public $nomor_lab_left;
-    public $nomor_lab_right;
-    public $parameterAnalisisOptions = [];
-    public $get_progress = [];
-    public $changeautoprogress;
-    public $prameterproggres = [];
-    public $asal_sampel;
-    public $nomor_lab;
-    public $departemen;
-    public $nama_pengirim;
-    public $kode_sampel;
-    public $jumlah_sampel;
-    public $tgl_pengantaran_sampel;
-    public $kondisi_sampel;
-    public $kemasan_sampel;
-    public $personel;
-    public $alat;
-    public $bahan;
-    public $skala_prioritas;
-    public $nomor_surat;
-    public $tujuan;
-    public $no_hp;
-    public $discount;
-    public $val_parameter;
-    public $analisisparameter;
-    public $hargaparameter;
-    public $satuanparameter;
-    public $totalsampelval;
-    public $confirmation;
-    public $foto_sampel = [];
-    public $emailTo;
-    public $emailCc;
-    public $parameterid;
-    public $oldform = [];
-    public $parameters = [];
-    public $newimg = [];
-    public $nama_jenis_sampel;
-    public $selected_status;
-    public $badge_color_status;
-    public $kode_track;
-    public $catatan;
 
-    public bool $successSubmit = false;
-    public string $msgSuccess;
-    public bool $errorSubmit = false;
-    public string $msgError;
-    public $isExporting = false; // Add this property in your Livewire component
+    public static $paramstest = [];
 
+    public $opt;
+    public ?array $data = [];
 
-    public function render()
+    public function mount(): void
     {
-        $jenisSampelOptions = JenisSampel::all();
+        $this->opt = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
 
-        $query = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
-        $progressQuery = JenisSampel::with('parameterAnalisis')->find($query->jenis_sampel);
+        $getparam = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $this->opt->parameter_analisisid)->get()->toArray();
 
-        $relationship = $progressQuery->parameterAnalisis;
-        if ($progressQuery->nama != 'Pupuk Anorganik') {
-            $list_parameter = $relationship->groupBy('nama_parameter')->flatMap(function ($grouped) {
-                return $grouped->count() > 1 ? $grouped->map(function ($item) {
-                    return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter . ' ' . $item->metode_analisis];
-                }) : $grouped->map(function ($item) {
-                    return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter];
-                });
-            })->values()->toArray();
-        } else {
-            $list_parameter = $relationship->groupBy('nama_parameter')->flatMap(function ($grouped) {
-                return $grouped->count() > 1 ? $grouped->map(function ($item) {
-                    return ['id' => $item->id, 'nama_parameter_full' => $item->bahan_produk . ' ' . $item->nama_parameter . ' ' . $item->metode_analisis];
-                }) : $grouped->map(function ($item) {
-                    return ['id' => $item->id, 'nama_parameter_full' => $item->nama_parameter];
-                });
-            })->values()->toArray();
-        }
-        $arr_progress = explode(',', $progressQuery->progress);
+        // dd($getparam, $this->opt->parameter_analisisid);
 
-        $progressOptions = [];
+        $newData['Jenis_Sampel'] = $this->opt->jenis_sampel;
+        $newData['status_pengerjaan'] = $this->opt->progress;
+        $newData['Asalampel'] = $this->opt->asal_sampel;
+        $newData['TanggalMemo'] = $this->opt->tanggal_memo;
+        $newData['TanggalTerima'] = $this->opt->tanggal_terima;
+        $newData['EstimasiKupa'] = $this->opt->estimasi;
+        $newData['NomorKupa'] = $this->opt->nomor_kupa;
+        $newData['JumlahSampel'] = $this->opt->jumlah_sampel;
+        $newData['NamaPengirim'] = $this->opt->nama_pengirim;
+        $newData['NamaDep'] = $this->opt->departemen;
+        $newData['NamaKodeSampel'] = $this->opt->kode_sampel;
+        $newData['KemasanSampel'] = $this->opt->kemasan_sampel;
+        $newData['KondisiSampel'] = $this->opt->kondisi_sampel;
 
-        foreach ($arr_progress as $progressId) {
-            $queryProgress = ProgressPengerjaan::find($progressId);
-            $progressOptions[$queryProgress->id] = $queryProgress->nama;
-        }
+        $nolab = $this->opt->nomor_lab;
+        $string = $nolab;
+        $parts = explode('$', $string);
+        $newData['lab_kiri'] = $parts[0];
+        $newData['lab_kanan'] = $parts[1] ?? '-';
 
-        return view(
-            'livewire.editprogress',
-            [
-                'status_pengerjaan' => $query->status,
-                'jenisSampelOptions' => $jenisSampelOptions,
-                'list_parameter' => $list_parameter,
-                'listProgress' => $progressOptions,
-                'oldform' => $this->oldform,
+        $newData['NomorSurat'] = $this->opt->nomor_surat;
+        $newData['Tujuan'] = $this->opt->tujuan;
+        $newData['SkalaPrioritas'] = $this->opt->skala_prioritas;
+        $newData['NomorHp'] = $this->opt->no_hp;
 
-            ]
-        );
-    }
+        $alat = $this->opt->alat;
+        $bahan = $this->opt->bahan;
+        $personel = $this->opt->personel;
 
-    public function addParameter()
-    {
+        $getarray = array_filter([
+            $alat ? 'Alat' : null,
+            $bahan ? 'Bahan' : null,
+            $personel ? 'Personel' : null,
+        ]);
+        $newData['Peralatan'] = array_values($getarray);
 
-        $this->val_parameter = $this->val_parameter ?? $this->parameterAnalisisOptions[0]['id'];
-        $defaultParameterAnalisis = ParameterAnalisis::Where('id', $this->val_parameter)->first();
+        $newData['Emaiilto'] = $this->opt->emailTo;
+        $newData['Emaiilcc'] = "";
+        $newData['Diskon'] = $this->opt->discount;
+        $newData['Konfirmasi'] = $this->opt->konfirmasi == 1 ? true : false;
 
-        $this->hargaparameter = $defaultParameterAnalisis->harga;
-        $this->satuanparameter = $defaultParameterAnalisis->satuan;
-        $this->analisisparameter = $defaultParameterAnalisis->metode_analisis;
-        $this->personel = $this->personel == True ? True : False;
-        $this->alat = $this->alat == True ? True : False;
-        $this->bahan = $this->bahan == True ? True : False;
-        $total = $this->hargaparameter * 1;
-        $defaultppn = 11;
-
-        $this->oldform[] = [
-            'jumlah' => 1,
-            'value' => '',
-            'nama_parameters' => $defaultParameterAnalisis->nama_parameter,
-            'metode_analisis' => $this->analisisparameter,
-            'harga' => $this->hargaparameter,
-            'total' => $total,
-            'personel' =>   $this->personel,
-            'alat' =>    $this->alat,
-            'bahan' =>    $this->bahan,
-            'id_parameter' => $this->parameterid = $defaultParameterAnalisis->id,
-            'judulppn' => $defaultppn . "% PPN"
-        ];
-    }
-
-    public function totalsampel($index)
-    {
-        $form = $this->parameters[$index];
-        $jumlahsample = $form['jumlah'];
-        $hargasampel = $form['harga_ori'] * $jumlahsample;
-        $ppn = hitungPPN($hargasampel);
-        $total = $hargasampel + $ppn;
-
-        // Update the parameters array
-        $this->parameters[$index]['sub_total'] = $hargasampel;
-        $this->parameters[$index]['ppn'] = $ppn;
-        $this->parameters[$index]['total'] = $total;
-    }
-
-
-    public function changeppn($index)
-    {
-        $form = $this->parameters[$index];
-        $sub_total = $form['sub_total'];
-        $ppn = $form['ppn'];
-
-        $subtotal = ($sub_total * $ppn) / 100;
-        $total = $subtotal + $sub_total;
-
-        $this->parameters[$index]['total'] = $total;
-        $this->parameters[$index]['judulppn'] = $ppn . "% PPN";
-    }
-
-
-    public function removeParameter($index)
-    {
-        unset($this->parameters[$index]);
-        $this->parameters = array_values($this->parameters); // Re-index the array
-    }
-
-
-    public function ChangeFieldParamAndNomorLab()
-    {
-        $selectedJenisSampel = JenisSampel::find($this->jenis_sampel);
-        $progres = $selectedJenisSampel->progress;
-        // dd($this->jenis_sampel, $progres);
-
-        $progressIds = explode(',', $progres);
-
-        // dd($progressIds);
-        $id = $this->sample;
-
-        $query = TrackSampel::find($id);
-
-        // dd($query);
-
-        $trackprogres = $query->progress;
-
-        // dd($trackprogres);
-
-
-        // dd($options2);
-        if ($selectedJenisSampel) {
-            $options = ParameterAnalisis::where('id_jenis_sampel', $this->jenis_sampel)->get();
-            $options2 = ProgressPengerjaan::whereIn('id', $progressIds)->get();
-            // $this->parameterAnalisisOptions = $options->pluck('nama', 'id')->toArray();
-            $this->prameterproggres = $options2->pluck('nama', 'id')->toArray();
-            $this->get_progress = $trackprogres;
-            $this->val_parameter = $options->pluck('id')->first();
-        }
-    }
-    public function removeimg($index)
-    {
-        $imageName = basename($index);
-        // dd($imageName);
-        $this->newimg = [];
-        $id = $this->sample;
-        $query = TrackSampel::find($id);
-        if ($query->foto_sampel) {
-            $fileArray = explode('%', $query->foto_sampel);
-            $filename = '';
-            // dd($fileArray);
-            foreach ($fileArray as $key => $value) {
-                if ($imageName != $value) {
-                    $filename .= $value . '%';
-                    $this->newimg[] = asset('storage/uploads/' . $value);
-                }
+        $params = ParameterAnalisis::where('id_jenis_sampel', $this->opt->jenis_sampel)->pluck('nama_parameter', 'id')->toArray();
+        $newData['Diskon'] = $this->opt->discount;
+        $newData['repeater']['status'] = $params;
+        // dd($getparam);
+        foreach ($getparam as $key => $value) {
+            foreach ($value as $key1 => $value1) if (is_array($value1)) {
+                $newData['repeater'][] = [
+                    'status' => $value['id_parameter'],
+                    'total_sample' => $value['jumlah'],
+                    'parametersdata' => $value1['nama_unsur'],
+                    'harga_sampel' => $value1['harga'],
+                    'subtotal' => $value['totalakhir']
+                ];
             }
-            $newfilename = rtrim($filename, '%');
+        }
+        $img = $this->opt->foto_sampel;
+        $img = explode('%', $img);
+        // dd($img, $getparam);
+
+        $newData['catatan'] = $this->opt->catatan;
+        $newData['foto_sampel'] = $img;
+        $newData['status_data'] = $this->opt->status;
+
+
+
+        $this->form->fill($newData);
+    }
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+
+                ToggleButtons::make('status_data')
+                    ->label('Status Data')
+                    ->options([
+                        'Approved' => 'Approved',
+                        'Rejected' => 'Rejected',
+                        'Waiting Approved' => 'Waiting Approved',
+                        'Draft' => 'Draft'
+                    ])
+                    ->colors([
+                        'Approved' => 'success',
+                        'Rejected' => 'danger',
+                        'Waiting Approved' => 'info',
+                        'Draft' => 'warning'
+                    ])
+                    ->icons([
+                        'Approved' => 'heroicon-o-document-check',
+                        'Rejected' => 'heroicon-o-archive-box-x-mark',
+                        'Waiting Approved' => 'heroicon-o-clock',
+                        'Draft' => 'heroicon-o-document-magnifying-glass'
+                    ])
+                    ->disabled()
+                    ->inline(),
+                Select::make('Jenis_Sampel')
+                    ->label('Jenis Sampel')
+                    ->options(JenisSampel::query()->pluck('nama', 'id'))
+                    ->disabled(),
+                Select::make('status_pengerjaan')
+                    ->label('Status Pengerjaan')
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->options(function () {
+                        $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
+                        // dd($jenisSampel);
+                        $progress = $jenisSampel->progress;
+
+                        $progressArray = explode(',', $progress);
+
+                        // dd($progressArray);
+
+                        foreach ($progressArray as $key => $value) {
+                            $option =  Progress::find($value);
+                            $getdata[$value] = $option->nama;
+                        }
+                        // dd($getdata);
+                        return $getdata;
+                    }),
+                Select::make('Asalampel')
+                    ->label('Asal Sampel')
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->options([
+                        'Internal' => 'Internal',
+                        'Eksternal' => 'Eksternal',
+                    ]),
+                DateTimePicker::make('TanggalMemo')
+                    ->label('Tanggal Memo')
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->seconds(true),
+                DatePicker::make('TanggalTerima')
+                    ->label('Tanggal Terima')
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->format('Y-m-d H:m:s'),
+                DatePicker::make('EstimasiKupa')
+                    ->label('Estimasi Kupa')
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->format('Y-m-d H:m:s'),
+                TextInput::make('NomorKupa')
+                    ->numeric()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->label('Nomor Kupa'),
+                TextInput::make('JumlahSampel')
+                    ->label('Jumlah Sampel')
+                    ->numeric()
+                    ->minValue(1)
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->maxValue(1000)
+                    ->live(),
+                TextInput::make('NamaPengirim')
+                    ->label('Nama Pengirim')
+                    ->required()
+                    ->minLength(2)
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->maxLength(255),
+                TextInput::make('NamaDep')
+                    ->label('Nama Departemen')
+                    ->minLength(2)
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->maxLength(255),
+                TextInput::make('NamaKodeSampel')
+                    ->label('Nama Kode Sampel')
+                    ->minLength(2)
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->maxLength(255),
+                TextInput::make('KemasanSampel')
+                    ->label('Kemasan Sampel')
+                    ->minLength(2)
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->required()
+                    ->maxLength(255),
+                Select::make('KondisiSampel')
+                    ->label('Kondisi Sampel')
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->options([
+                        'Normal' => 'Normal',
+                        'Abnormal' => 'Abnormal',
+                    ]),
+                Split::make([
+                    TextInput::make('lab_kiri')
+                        ->label('Nomor Lab')
+                        ->minLength(2)
+                        ->required()
+                        ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                        ->prefix(function (Get $get) {
+                            // dd($get('preflab'));
+                            $lastTwoDigitsOfYear = Carbon::now()->format('y');
+                            return $lastTwoDigitsOfYear . '-' . $get('preflab');
+                        })
+                        ->maxLength(255),
+                    TextInput::make('lab_kanan')
+                        ->label('Nomor Lab Kanan')
+                        ->minLength(2)
+                        ->required()
+                        ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                        ->prefix(function (Get $get) {
+                            // dd($get('preflab'));
+                            $lastTwoDigitsOfYear = Carbon::now()->format('y');
+                            return $lastTwoDigitsOfYear . '-' . $get('preflab');
+                        })
+                        ->maxLength(255)
+                        ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
+                ])->from('md'),
+
+                TextInput::make('NomorSurat')
+                    ->label('Nomor Surat')
+                    ->minLength(2)
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->maxLength(255),
+                TextInput::make('Tujuan')
+                    ->label('Tujuan')
+                    ->minLength(2)
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->maxLength(255),
+                Select::make('SkalaPrioritas')
+                    ->label('Skala Prioritas Sampel')
+                    ->required()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->options([
+                        'Normal' => 'Normal',
+                        'Tinggi' => 'Tinggi',
+                    ]),
+                TextInput::make('NomorHp')
+                    ->label('NomorHp')
+                    ->numeric()
+                    ->tel()
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->placeholder('852xxxxxx')
+                    ->minLength(2)
+                    ->maxLength(255)
+                    ->prefix('+62'),
+                CheckboxList::make('Peralatan')
+                    ->label('Peralatan')
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->options([
+                        'Personel' => 'Personel',
+                        'Alat' => 'Alat',
+                        'Bahan' => 'Bahan',
+                    ])
+                    ->descriptions([
+                        'Personel' => 'Tersedia dan Kompeten',
+                        'Alat' => 'Tersedia dan Baik',
+                        'Bahan' => 'Tersedia dan Baik',
+                    ])
+                    ->columns(3),
+                TextInput::make('Emaiilto')
+                    ->label('Emaiilto')
+                    ->label('Email To')
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->placeholder('Hanya untuk satu buah email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('Emaiilcc')
+                    ->label('Emaiilcc')
+                    ->label('Email Cc')
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->placeholder('Dapat Memasukan Lebih dari satu email dengan diakhiri dengan (;)')
+                    ->maxLength(255),
+                TextInput::make('Diskon')
+                    ->numeric()
+                    ->minLength(0)
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->maxLength(2)
+                    ->prefix('%'),
+                Toggle::make('Konfirmasi')
+                    ->inline(false)
+                    ->label('Konfirmasi(Langsung / Telepon / Email)')
+                    ->onColor('success')
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->offColor('danger'),
+
+                Section::make('Pengujian sampel')
+                    ->label('Pengujian Sampel')
+                    ->description('Peringatan untuk crosscheck ulang seluruh data yang ingin akan dimasukkan ke sistem!')
+                    ->schema([
+                        Repeater::make('repeater')
+                            ->label('Parameter')
+                            ->schema([
+                                Grid::make(5)
+                                    ->schema([
+                                        Select::make('status')
+                                            ->options(function () {
+                                                $params = ParameterAnalisis::where('id_jenis_sampel', $this->opt->jenis_sampel)->pluck('nama_parameter', 'id')->toArray();
+
+                                                // dd($params);
+                                                return $params;
+                                            })
+
+                                            ->afterStateUpdated(function ($set, $state) {
+                                                $params = ParameterAnalisis::find($state);
+                                                $set('parametersdata', $params->nama_unsur);
+                                                $set('harga_sampel', $params->harga);
+                                                $set('total_harga', $params->harga);
+                                                // $set('total_sample', '3');
+                                            })
+                                            ->required(function () {
+                                                $data = $this->opt->status;
+
+                                                // dd($data);
+                                                if ($data === 'Approved' || $data === 'Draft') {
+                                                    $data = true;
+                                                } else {
+                                                    $data = false;
+                                                }
+
+                                                return $data;
+                                            })
+                                            ->live(),
+                                        TextInput::make('total_sample')
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                                self::updateTotals($get, $set);
+                                            })
+                                            ->numeric()
+                                            ->minValue(1)
+                                            ->required(fn ($get): bool => !is_null($get('status')) ? true : false)
+                                            ->maxValue(1000)
+                                            ->disabled(function ($get) {
+                                                return is_null($get('status'));
+                                            })
+                                            ->live(true),
+                                        TextInput::make('parametersdata')
+                                            ->readOnly()
+                                            ->disabled(function ($get) {
+                                                return is_null($get('status'));
+                                            }),
+                                        TextInput::make('harga_sampel')
+                                            ->label('Harga')
+                                            ->disabled(function ($get) {
+                                                return is_null($get('status'));
+                                            })
+                                            ->readOnly(),
+                                        TextInput::make('subtotal')
+                                            ->label('Total')
+                                            ->readOnly()
+                                            ->disabled(function ($get) {
+                                                return is_null($get('status'));
+                                            })
+                                        // ->afterStateHydrated(function (Get $get, Set $set) {
+                                        //     self::updateTotals($get, $set);
+                                        // })
+                                    ])
+                            ])
+                            ->deletable(true)
+                            ->columnSpanFull()
+                        // ->columns(4)
+
+
+                    ])->columns(4),
+
+                Textarea::make('catatan')
+                    ->rows(10)
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->columnSpanFull(),
+
+                Section::make('Upload')
+
+                    ->description('Upload Foto Sampel')
+                    ->schema([
+                        FileUpload::make('foto_sampel')
+                            ->label('Uplod Foto Sampel (Maks 5 Foto)')
+                            ->image()
+                            ->imageEditor()
+                            ->imageEditorEmptyFillColor('#000000')
+                            ->multiple()
+                            ->maxFiles(5)
+                            ->fetchFileInformation(false)
+                            ->maxSize(3000)
+                            ->uploadingMessage('Upoad Foto Sampel...')
+                            ->acceptedFileTypes(['image/png', 'image/jpg', 'image/jpeg']),
+
+                    ])
+            ])
+            ->columns(3)
+            ->statePath('data');
+    }
+
+    public static function updateTotals(Get $get, Set $set): void
+    {
+
+        $selectedProducts = $get('total_sample') == '' ? 0 : $get('total_sample');
+
+        // dd($selectedProducts);
+        $harga = $get('total_harga');
+        // dd($selectedProducts);
+
+        // Calculate subtotal based on the selected products and quantities
+        $subtotal = $harga * $selectedProducts;
+
+        // Update the state with the new values
+        $set('subtotal', $subtotal);
+    }
+
+
+    public function create(): void
+    {
+        // dd($this->form->getState());
+        $form = $this->form->getState();
+        $current = Carbon::now();
+        $randomCode = generateRandomCode();
+        $current = $current->format('Y-m-d H:i:s');
+        $userId = 1;
+        if (auth()->check()) {
+            $user = auth()->user();
+            $userId = $user->id;
+        }
+
+
+        $commonRandomString = generateRandomString(rand(5, 10));
+        $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
+
+        if ($this->opt->status === "Approved") {
+            $Alat = 'Alat';
+            $Personel = 'Personel';
+            $bahan = 'Bahan';
+            $checkalat = in_array($Alat, $form['Peralatan']);
+            $checkpersonel = in_array($Personel, $form['Peralatan']);
+            $checkbahan = in_array($bahan, $form['Peralatan']);
 
             try {
                 DB::beginTransaction();
-
                 $id = $this->sample;
                 $trackSampel = TrackSampel::find($id);
+                $trackSampel->tanggal_memo = $form['TanggalMemo'];
+                $trackSampel->tanggal_terima = $form['TanggalTerima'];
+                $trackSampel->asal_sampel = $form['Asalampel'];
+                $trackSampel->nomor_kupa = $form['NomorKupa'];
+                $trackSampel->nama_pengirim = $form['NamaPengirim'];
+                $trackSampel->departemen = $form['NamaDep'];
+                $trackSampel->kode_sampel = $form['NamaKodeSampel'];
+                $trackSampel->jumlah_sampel = $form['JumlahSampel'];
+                $trackSampel->kondisi_sampel = $form['KondisiSampel'];
+                $trackSampel->kemasan_sampel = $form['KemasanSampel'];
+                $trackSampel->nomor_surat = $form['NomorSurat'];
+                $trackSampel->nomor_lab = $NomorLab;
+                $trackSampel->estimasi = $form['EstimasiKupa'];
+                $trackSampel->tujuan = $form['Tujuan'];
+                $trackSampel->progress = $form['status_pengerjaan'];
+                $trackSampel->last_update = $current;
+                $trackSampel->admin = $userId;
+                $trackSampel->no_hp = $form['NomorHp'];
+                $trackSampel->alat = ($checkalat ? 1 : 0);
+                $trackSampel->emailTo = $form['Emaiilto'];
+                $trackSampel->bahan = ($checkbahan ? 1 : 0);
+                $trackSampel->personel = ($checkpersonel ? 1 : 0);
+                $trackSampel->konfirmasi = ($form['Konfirmasi'] ? 1 : 0);
+                $trackSampel->skala_prioritas = $form['SkalaPrioritas'];
+                $trackSampel->discount = $form['Diskon'];
+                $trackSampel->catatan = $form['catatan'];
+                // dd($trackSampel->toArray()); 
+                if (!empty($form['foto_sampel'])) {
+                    $filename = '';
 
-                $trackSampel->foto_sampel = $newfilename;
+                    foreach ($form['foto_sampel'] as $key => $value) {
+                        $filename .= $value . '%';
+                    }
+                    $donefilename = rtrim($filename, '%');
+                    $trackSampel->foto_sampel = $donefilename;
+                } else {
+                    $trackSampel->foto_sampel = null;
+                }
 
+
+                // dd($form['repeater']);
+                if ($form['repeater'] !== []) {
+                    $idparams = $this->opt->parameter_analisisid;
+                    TrackParameter::where('id_tracksampel', $idparams)->delete();
+                    foreach ($form['repeater'] as $data) {
+
+                        if ($data['status'] != null) {
+                            $dataToInsert[] = [
+                                'id_parameter' => $data['status'],
+                                'jumlah' => $data['total_sample'],
+                                'totalakhir' => $data['subtotal'],
+                                'id_tracksampel' => $idparams,
+                            ];
+                        }
+                    }
+
+                    // dd($idparams, $dataToInsert);
+
+                    TrackParameter::insert($dataToInsert);
+                }
                 $trackSampel->save();
 
-                Notification::make()
-                    ->title('Foto Berhasil Di hapus')
-                    ->icon('heroicon-o-document-text')
-                    ->iconColor('success')
-                    ->success()
-                    ->send();
 
+                $getprogress = Progress::pluck('nama')->first();
 
                 DB::commit();
-            } catch (Exception $e) {
-                DB::rollBack();
-                Notification::make()
-                    ->title('Error ' . $e->getMessage())
-                    ->danger()
-                    ->send();
-                $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
-                $this->errorSubmit = true;
-            }
-        }
-        // dd($index, $this->newimg, $newfilename);
-    }
-    public function updatedFotoSampel()
-    {
-        $this->validate([
-            'foto_sampel.*' => 'image|max:1024', // Adjust max file size if needed
-        ]);
 
-        // Ensure maximum of 3 images
-        // if (count($this->foto_sampel) > 3) {
-        //     $this->addError('foto_sampel', 'You can upload a maximum of 3 images.');
-        //     Notification::make()
-        //         ->title('Hanya Bisa Max 3 Foto')
-        //         ->danger()
-        //         ->color('danger')
-        //         ->send();
-        //     $this->resetFotoSampel();
-        // }
-        $mergedImages = array_merge($this->newimg, $this->foto_sampel);
 
-        // dd($mergedImages);
-
-        if (count($mergedImages) > 5) {
-            $this->addError('foto_sampel', 'You can upload a maximum of 5 images.');
-            $this->resetFotoSampel();
-        } else {
-            $this->resetErrorBag('foto_sampel'); // Clear any previous errors
-        }
-    }
-
-    public function resetFotoSampel()
-    {
-        $this->foto_sampel = [];
-    }
-
-
-    public function mount()
-    {
-
-
-        $id = $this->sample;
-        $query = TrackSampel::find($id);
-        if ($query->foto_sampel) {
-            $fileArray = explode('%', $query->foto_sampel);
-            $this->newimg = [];
-            foreach ($fileArray as $key => $value) {
-                $this->newimg[] = asset('storage/' . $value);
-            }
-        }
-        $this->selected_status = $query->status;
-
-        if ($this->selected_status === 'Approved') {
-            $this->badge_color_status = 'bg-emerald-600';
-        } elseif ($this->selected_status === 'Rejected') {
-            $this->badge_color_status = 'bg-red-600';
-        } elseif ($this->selected_status === 'Draft') {
-            $this->badge_color_status = 'bg-yellow-500';
-        } else if ($this->selected_status === 'Waiting Approved') {
-            $this->badge_color_status = 'bg-gray-500';
-        }
-
-
-
-        $this->kode_track = $query->kode_track;
-        $this->tanggal_memo = $query->tanggal_memo;
-        //     ? Carbon::parse($query->tanggal_memo)->format('Y-m-d')
-        //     : null;
-        $this->tanggal_terima = $query->tanggal_terima
-            ? Carbon::parse($query->tanggal_terima)->format('Y-m-d')
-            : null;
-        $this->estimasi = $query->estimasi
-            ? Carbon::parse($query->estimasi)->format('Y-m-d')
-            : null;
-        $this->no_kupa = $query->nomor_kupa;
-        $this->jenis_sampel = $query->jenis_sampel;
-        $this->asal_sampel = $query->asal_sampel;
-        $this->catatan = $query->catatan;
-        $query = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
-        $this->nama_jenis_sampel = JenisSampel::find($query->jenis_sampel)->nama;
-
-        if ($query->nomor_lab != null) {
-            $nomor_lab = $query->nomor_lab;
-            $arr_nomor_lab = explode('-', $nomor_lab);
-            $this->nomor_lab_left = $arr_nomor_lab[0];
-            $this->nomor_lab_right = $arr_nomor_lab[1] ?? 'Tes';
-        } else {
-            $this->nomor_lab_left = '';
-            $this->nomor_lab_right = '';
-        }
-
-        $this->tgl_pengantaran_sampel = $query->tanggal_pengantaran
-            ? Carbon::parse($query->tanggal_pengantaran)->format('Y-m-d')
-            : null;
-        $this->jumlah_sampel = $query->jumlah_sampel;
-        $this->kondisi_sampel = $query->kondisi_sampel;
-        $this->kemasan_sampel = $query->kemasan_sampel;
-        $this->skala_prioritas = $query->skala_prioritas;
-        // $this->skala_prioritas = $query->skala_prioritas;
-        // $this->personel = True;
-        // $this->alat = True;
-        // $this->bahan = True;
-
-        $this->personel = ($query->personel == 1 ? True : False);
-        $this->alat = ($query->alat == 1 ? True : False);
-        $this->bahan = ($query->bahan == 1 ? True : False);
-
-        $this->nama_pengirim = $query->nama_pengirim;
-        $this->departemen = $query->departemen;
-        $this->kode_sampel = $query->kode_sampel;
-        $this->nomor_surat = $query->nomor_surat;
-        $this->tujuan = $query->tujuan;
-        $this->no_hp = $query->no_hp;
-        $this->emailTo = $query->emailTo;
-        $this->emailCc = $query->emailCc;
-        $this->discount = $query->discount;
-        $this->confirmation = ($query->konfirmasi == 1 ? True : False);
-        // $this->foto_sampel = asset('storage/uploads/' . $query->foto_sampel);
-
-
-        // dd($this->newimg);
-        $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $query->parameter_analisisid)->get()->toArray();
-        $trackform = [];
-
-        foreach ($getTrack as $key => $value) {
-            $harga = $value['parameter_analisis']['harga'];
-            $total = $value['jumlah'] * $harga;
-
-            $trackform[$key] = [
-                'id' => $value['id'],
-                'harga' => $harga,
-                'metode_analisis' => $value['parameter_analisis']['metode_analisis'],
-                'nama_parameters' => $value['parameter_analisis']['nama_parameter'],
-                'jumlah' => $value['jumlah'],
-                'total' => $total,
-                // 'personel' => $value['personel'] === 1 ? True : ($value['personel'] === 0 ? False : False),
-                // 'alat' => $value['alat'] === 1 ? True : ($value['alat'] === 0 ? False : False),
-                // 'bahan' => $value['bahan'] === 1 ? True : ($value['bahan'] === 0 ? False : False),
-                'id_parameter' => $value['id_parameter'],
-                'judulppn' => "11% PPN",
-            ];
-        }
-
-        $this->oldform = $trackform;
-
-        $this->ChangeFieldParamAndNomorLab();
-    }
-
-
-
-    public function hapusItem($index)
-    {
-        // Remove the item with the specified index from the $oldform array
-        unset($this->oldform[$index]);
-        // Re-index the array to maintain sequential keys
-        $this->oldform = array_values($this->oldform);
-    }
-
-
-    public function totalsampelold($index)
-    {
-        $form = $this->oldform[$index];
-        $jumlahsample = $form['jumlah'];
-        $hargasampel = $form['harga'] * $jumlahsample;
-        $this->oldform[$index]['total'] = $hargasampel;
-    }
-
-    public function updateHargaSampel()
-    {
-
-        foreach ($this->oldform as $index => $inputan) {
-            $curr_jumlah_sampel = $this->oldform[$index]['jumlah'];
-            $curr_harga_sampel = $this->oldform[$index]['harga'];
-            $curr_sub_total = $curr_jumlah_sampel * $curr_harga_sampel;
-            $this->oldform[$index]['total'] = $curr_sub_total;
-        }
-    }
-
-    public function ppnold($index)
-    {
-        $form = $this->oldform[$index];
-        $sub_total = $form['subtotal'];
-        $ppn = $form['ppn'];
-
-        $subtotal = ($sub_total * $ppn) / 100;
-        $total = $subtotal + $sub_total;
-
-        $this->oldform[$index]['harga_total'] = $total;
-        $this->oldform[$index]['judulppn'] = $ppn . "% PPN";
-    }
-
-
-    public function cancelButton()
-    {
-        return redirect()->to(route('history_sampel.index'));
-    }
-
-    public function updateDraft()
-    {
-
-        $this->handleFormSubmission('updateDraft');
-    }
-
-    public function finishDraftToSave()
-    {
-        $this->handleFormSubmission('finishDraftToSave');
-    }
-
-    public function save()
-    {
-        if (!$this->isExporting) {
-            $this->handleFormSubmission('save');
-        }
-    }
-
-    private function handleFormSubmission($action)
-    {
-        // dd($action);
-        if ($action === 'finishDraftToSave') {
-            $this->validate();
-        }
-
-        $id = $this->sample;
-        $query = TrackSampel::find($id);
-
-        // form lama bawaan query 
-        $oldparameteredit = $this->oldform;
-
-
-        $last_update = $query->last_update;
-
-
-        $timeupdate = Carbon::now()->format('y-m-d H:i:s');
-
-        $queryJenisSampel = JenisSampel::find($query->jenis_sampel);
-        $list_progress = explode(',', $queryJenisSampel->progress);
-
-        $processed_progress = [];
-        foreach ($list_progress as $list) {
-            $processed_progress[] = $list;
-            if ($list == $query->progress) {
-                break;
-            }
-        }
-
-        $trackid = $query->parameter_analisisid;
-
-
-        $querytrack = TrackParameter::where('id_tracksampel', $trackid)->get()->toArray();
-
-        $idold = [];
-
-        foreach ($querytrack as $key2 => $value2) {
-            $found = false;
-
-            foreach ($oldparameteredit as $key => $value) {
-                if ($value['id'] == $value2['id']) {
-                    $found = true;
-                    break;
-                }
-            }
-
-            if (!$found) {
-                $idold[] = $value2['id'];
-            }
-        }
-
-        $newParams = [];
-        foreach ($oldparameteredit as $key => $value) {
-            if (!array_key_exists('id', $value)) {
-                $newParams[] = $value;
-            }
-        }
-
-        // dd($this->kode_track);
-        try {
-            DB::beginTransaction();
-
-            $id = $this->sample;
-            $trackSampel = TrackSampel::find($id);
-
-            $progress_now =  ProgressPengerjaan::where('id', $this->get_progress)->first()->nama;
-            $trackSampel->jenis_sampel = $this->jenis_sampel;
-            $trackSampel->tanggal_memo = $this->tanggal_memo;
-            $trackSampel->tanggal_terima = $this->tanggal_terima;
-            $trackSampel->asal_sampel = $this->asal_sampel;
-            $trackSampel->nomor_kupa = $this->no_kupa;
-            $trackSampel->nomor_lab = $this->nomor_lab_left . '-' . $this->nomor_lab_right;
-            $trackSampel->nama_pengirim = $this->nama_pengirim;
-            $trackSampel->departemen = $this->departemen;
-            $trackSampel->kode_sampel = $this->kode_sampel;
-            $trackSampel->kemasan_sampel = $this->kemasan_sampel;
-            $trackSampel->nomor_surat = $this->nomor_surat;
-            $trackSampel->estimasi = $this->estimasi;
-            $trackSampel->tujuan = $this->tujuan;
-            $trackSampel->no_hp = $this->no_hp;
-            $trackSampel->emailTo = $this->emailTo;
-            $trackSampel->emailCc = $this->emailCc;
-            $trackSampel->personel = ($this->personel ? 1 : 0);
-            $trackSampel->alat = ($this->alat ? 1 : 0);
-            $trackSampel->bahan = ($this->bahan ? 1 : 0);
-            $trackSampel->konfirmasi = ($this->confirmation ? 1 : 0);
-            $trackSampel->catatan = $this->catatan;
-
-            if ($this->foto_sampel) {
-                $filename = '';
-                $renewimg = '';
-                $imageName = [];
-                foreach ($this->newimg as $key => $value) {
-                    $imageName[] = basename($value);
-                }
-                foreach ($this->foto_sampel as $key => $value) {
-
-                    $filename .= $this->foto_sampel[$key]->getClientOriginalName() . '%';
-                    $fileNamex = $this->foto_sampel[$key]->getClientOriginalName();
-                    $fileName2[] = $this->foto_sampel[$key]->getClientOriginalName();
-                    $this->foto_sampel[$key]->storeAs('uploads', $fileNamex, 'public');
-                }
-                $mergedImages = array_merge($imageName, $fileName2);
-                foreach ($mergedImages as $key => $value) {
-                    $renewimg .= $value . '%';
-                }
-                $donefilename = rtrim($renewimg, '%');
-                $trackSampel->foto_sampel = $donefilename;
-                // dd($mergedImages, $donefilename);
-                // $trackSampel->foto_sampel = $donefilename;
-            }
-
-            if ($action === 'finishDraftToSave') {
-                $trackSampel->status = 'Waiting Approved';
-                $trackSampel->status_changed_by_id = null;
-            }
-
-
-            // jika ada progress yang berbeda
-            if (!in_array($this->get_progress, $processed_progress)) {
-                $trackSampel->progress = $this->get_progress;
-                $trackSampel->last_update = $last_update . ',' . $timeupdate;
-            }
-
-            $trackSampel->save();
-
-            TrackParameter::whereIn('id', $idold)->delete();
-
-            foreach ($oldparameteredit as $key => $value) {
-                if (array_key_exists('id', $value)) {
-                    TrackParameter::where('id', $value['id'])->update([
-                        'jumlah' => $value['jumlah'],
-                        'totalakhir' => $value['total'],
-                        'id_tracksampel' => $trackid,
-                        // 'personel' => $value['personel'] == True ? 1 : 0,
-                        // 'alat' => $value['alat'] == True ? 1 : 0,
-                        // 'bahan' => $value['bahan'] == True ? 1 : 0,
-                        'id_parameter' => $value['id_parameter'],
-                    ]);
-                }
-            }
-
-            if ($newParams != []) {
-                $trackParameters = [];
-
-                foreach ($newParams as $key => $value) {
-                    $trackParameters[] = [
-                        'jumlah' => $value['jumlah'],
-                        'totalakhir' => $value['total'],
-                        'id_tracksampel' => $trackid,
-                        // 'personel' => $value['personel'] == True ? 1 : 0,
-                        // 'alat' => $value['alat'] == True ? 1 : 0,
-                        // 'bahan' => $value['bahan'] == True ? 1 : 0,
-                        'id_parameter' => $value['id_parameter'],
-                    ];
-                }
-
-                TrackParameter::insert($trackParameters);
-            }
-
-
-            $form_hp = $this->no_hp;
-
-            $nohp = numberformat($form_hp);
-            $nomorserif = '-';
-            $recipients = $this->emailTo;
-            $cc = $this->emailCc;
-            DB::commit();
-            if ($action === 'finishDraftToSave') {
-
-
+                // $nohp = numberformat($form['NomorHp']);
+                // SendMsg::insert([
+                //     'no_surat' => $form['NomorSurat'],
+                //     'kodesample' => $randomCode,
+                //     'penerima' => $nohp,
+                //     'progres' => $getprogress,
+                //     'type' => 'input',
+                // ]);
                 Notification::make()
                     ->title('Berhasil disimpan')
-                    ->body(' Record status menjadi Waiting Approved')
-                    ->icon('heroicon-o-document-text')
-                    ->iconColor('success')
-                    ->success()
-                    ->send();
-
-                SendMsg::insert([
-                    'no_surat' => $this->nomor_surat,
-                    'kodesample' => $this->kode_track,
-                    'penerima' => $nohp,
-                    'progres' => $progress_now,
-                    'type' => 'input',
-                ]);
-
-                Mail::to($recipients)
-                    ->cc($cc)
-                    ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
-            } else if ($action === 'updateDraft') {
-                Notification::make()
-                    ->title('Draft Tersimpan')
-                    ->body('Draft berhasil diupdate ')
-                    ->icon('heroicon-o-document-text')
-                    ->iconColor('warning')
-                    ->color('warning')
-
-                    ->send();
-            } else if ($action === 'save') {
-                Notification::make()
-                    ->title('Berhasil Update')
-                    ->body('Kupa berhasil diupdate ')
+                    ->body(' Record berhasil Di update')
                     ->icon('heroicon-o-document-text')
                     ->iconColor('success')
                     ->color('success')
-
+                    ->success()
                     ->send();
 
-                SendMsg::insert([
-                    'no_surat' => $this->nomor_surat,
-                    'kodesample' => $this->kode_track,
-                    'penerima' => $nohp,
-                    'progres' => $progress_now,
-                    'type' => 'update',
-                ]);
 
-                Mail::to($recipients)
-                    ->cc($cc)
-                    ->send(new EmailPelanggan($this->tanggal_terima, $this->nomor_surat, $this->nomor_lab_left . '-' . $this->nomor_lab_right, $this->kode_sampel, $nomorserif));
+                $nomorserif = '-';
+
+
+                // Mail::to($form['Emaiilto'])
+                //     ->cc($form['Emaiilcc'])
+                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+
+                // $this->form->fill();
+            } catch (\Exception $e) {
+                DB::rollBack();
+
+                Notification::make()
+                    ->title('Error ' . $e->getMessage())
+                    ->danger()
+                    ->color('danger')
+                    ->send();
             }
-
-            $this->successSubmit = true;
-            $this->msgSuccess = $query->kode_track;
-            $this->selected_status = $this->selected_status;
-            $this->badge_color_status = $this->selected_status === 'Approved' ? 'bg-emerald-600' : ($this->selected_status === 'Rejected' ? 'bg-red-600' : ($this->selected_status === 'Waiting Approved' ? 'bg-yellow-500' : ($this->selected_status === 'Draft' ? 'bg-amber-600' : '')));
-        } catch (Exception $e) {
-            DB::rollBack();
+        } elseif ($this->opt->status === "Rejected") {
             Notification::make()
-                ->title('Error ' . $e->getMessage())
+                ->title('Status Rejected Tidak Bisa di simpan')
                 ->danger()
+                ->color('danger')
                 ->send();
-            $this->msgError = 'An error occurred while saving the data: ' . $e->getMessage();
-            $this->errorSubmit = true;
-        }
+        } elseif ($this->opt->status === "Draft") {
+            $Alat = 'Alat';
+            $Personel = 'Personel';
+            $bahan = 'Bahan';
+            $checkalat = in_array($Alat, $form['Peralatan']);
+            $checkpersonel = in_array($Personel, $form['Peralatan']);
+            $checkbahan = in_array($bahan, $form['Peralatan']);
 
-        $this->reset([
-            'foto_sampel',
-        ]);
-    }
+            try {
+                DB::beginTransaction();
+                $id = $this->sample;
+                $trackSampel = TrackSampel::find($id);
+                $trackSampel->tanggal_memo = $form['TanggalMemo'];
+                $trackSampel->tanggal_terima = $form['TanggalTerima'];
+                $trackSampel->asal_sampel = $form['Asalampel'];
+                $trackSampel->nomor_kupa = $form['NomorKupa'];
+                $trackSampel->nama_pengirim = $form['NamaPengirim'];
+                $trackSampel->departemen = $form['NamaDep'];
+                $trackSampel->kode_sampel = $form['NamaKodeSampel'];
+                $trackSampel->jumlah_sampel = $form['JumlahSampel'];
+                $trackSampel->kondisi_sampel = $form['KondisiSampel'];
+                $trackSampel->kemasan_sampel = $form['KemasanSampel'];
+                $trackSampel->nomor_surat = $form['NomorSurat'];
+                $trackSampel->nomor_lab = $NomorLab;
+                $trackSampel->estimasi = $form['EstimasiKupa'];
+                $trackSampel->tujuan = $form['Tujuan'];
+                $trackSampel->progress = $form['status_pengerjaan'];
+                $trackSampel->last_update = $current;
+                $trackSampel->admin = $userId;
+                $trackSampel->no_hp = $form['NomorHp'];
+                $trackSampel->alat = ($checkalat ? 1 : 0);
+                $trackSampel->emailTo = $form['Emaiilto'];
+                $trackSampel->bahan = ($checkbahan ? 1 : 0);
+                $trackSampel->personel = ($checkpersonel ? 1 : 0);
+                $trackSampel->konfirmasi = ($form['Konfirmasi'] ? 1 : 0);
+                $trackSampel->skala_prioritas = $form['SkalaPrioritas'];
+                $trackSampel->discount = $form['Diskon'];
+                $trackSampel->catatan = $form['catatan'];
+                $trackSampel->status = 'Waiting Approved';
+                // dd($trackSampel->toArray()); 
+                if (!empty($form['foto_sampel'])) {
+                    $filename = '';
+
+                    foreach ($form['foto_sampel'] as $key => $value) {
+                        $filename .= $value . '%';
+                    }
+                    $donefilename = rtrim($filename, '%');
+                    $trackSampel->foto_sampel = $donefilename;
+                } else {
+                    $trackSampel->foto_sampel = null;
+                }
 
 
+                // dd($form['repeater']);
+                if ($form['repeater'] !== []) {
+                    $idparams = $this->opt->parameter_analisisid;
+                    TrackParameter::where('id_tracksampel', $idparams)->delete();
+                    foreach ($form['repeater'] as $data) {
 
-    private function isDataModified($oldparameteredit)
-    {
-        // Check if any changes have been made to the data in $oldparameteredit
+                        if ($data['status'] != null) {
+                            $dataToInsert[] = [
+                                'id_parameter' => $data['status'],
+                                'jumlah' => $data['total_sample'],
+                                'totalakhir' => $data['subtotal'],
+                                'id_tracksampel' => $idparams,
+                            ];
+                        }
+                    }
+
+                    // dd($idparams, $dataToInsert);
+
+                    TrackParameter::insert($dataToInsert);
+                }
+                $trackSampel->save();
 
 
+                $getprogress = Progress::pluck('nama')->first();
 
-        foreach ($oldparameteredit as $key => $value) {
-            if (array_key_exists('id', $value)) {
-                // If any id exists, changes have been made
-                return true;
+                DB::commit();
+
+
+                // $nohp = numberformat($form['NomorHp']);
+                // SendMsg::insert([
+                //     'no_surat' => $form['NomorSurat'],
+                //     'kodesample' => $randomCode,
+                //     'penerima' => $nohp,
+                //     'progres' => $getprogress,
+                //     'type' => 'input',
+                // ]);
+                Notification::make()
+                    ->title('Berhasil disimpan')
+                    ->body(' Record berhasil Di update')
+                    ->icon('heroicon-o-document-text')
+                    ->iconColor('success')
+                    ->color('success')
+                    ->success()
+                    ->send();
+
+
+                $nomorserif = '-';
+
+
+                // Mail::to($form['Emaiilto'])
+                //     ->cc($form['Emaiilcc'])
+                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+
+                // $this->form->fill();
+            } catch (\Exception $e) {
+                DB::rollBack();
+
+                Notification::make()
+                    ->title('Error ' . $e->getMessage())
+                    ->danger()
+                    ->color('danger')
+                    ->send();
             }
+        } elseif ($this->opt->status === "Waiting Approved") {
+            Notification::make()
+                ->title('Harap beri Approval Terlebih Dahulu Sebelum Mengedit')
+                ->danger()
+                ->actions([
+                    Action::make('view')
+                        ->button()
+                        ->url(route('history_sampel.index')),
+
+                ])
+                ->color('danger')
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Terjadi Kesalahan Tidak Terduga Hubungi Admin')
+                ->danger()
+                ->actions([
+                    Action::make('view')
+                        ->button()
+                        ->url(route('history_sampel.index')),
+
+                ])
+                ->color('danger')
+                ->send();
         }
-
-
-
-
-        // Check if any changes have been made to the properties of $trackSampel
-        // $propertiesToCheck = [
-        //     'jenis_sampel', 'tanggal_memo', 'tanggal_terima',
-        //     'status', 'asal_sampel', 'nomor_kupa',
-        //     'nomor_lab_left', 'nomor_lab_right', 'nama_pengirim',
-        //     'departemen', 'kode_sampel', 'nomor_surat',
-        //     'estimasi', 'tujuan', 'no_hp', 'emailTo', 'emailCc'
-        // ];
-
-        // foreach ($propertiesToCheck as $property) {
-        //     if ($this->$property !== $this->trackSampel->$property) {
-        //         // If any property is different, changes have been made
-        //         return true;
-        //     }
-        // }
-
-        // // If no changes have been detected
-        // return false;
     }
-
-    public function exportExcel()
+    public function render(): View
     {
-        $this->isExporting = true; // Set the flag to true when exporting Excel
-        $id = $this->sample;
 
-        return Excel::download(new MonitoringKupaExport($id), 'Data_Lab.xlsx');
+
+        return view(
+            'livewire.editprogress'
+        );
     }
-
-    // public function export()
-    // {
-    //     $this->isExporting = true; // Set the flag to true when exporting Excel
-    //     $id = $this->sample;
-
-    //     // return Excel::download(new FormDataExport($id), 'Data_Lab.xlsx');
-    //     return Excel::download(new MinotoringExport, 'invoices.xlsx', true, ['X-Vapor-Base64-Encode' => 'True']);
-    // }
-
-
-    protected $rules = [
-        'tanggal_terima' => 'required|date',
-        'jenis_sampel' => 'required',
-        'asal_sampel' => 'required|in:Internal,Eksternal',
-        'no_kupa' => 'required|numeric',
-        'discount' => 'required',
-        'nama_pengirim' => 'required|string',
-        'departemen' => 'required|string',
-        'jumlah_sampel' => 'required|numeric',
-        'kondisi_sampel' => 'required|string',
-        'kemasan_sampel' => 'required|string',
-        'nomor_surat' => 'required|string',
-        'estimasi' => 'required|date',
-        'no_hp' => 'required',
-        'tujuan' => 'required|string',
-        // 'emailTo' => 'required|email', // Assuming it's an email field
-        'foto_sampel' => 'max:5000',
-        'oldform' => 'required',
-    ];
 }
