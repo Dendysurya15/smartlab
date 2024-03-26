@@ -33,12 +33,6 @@ class Notification extends Component
             ];
         }
 
-        // dd($data, $getnotif);
-
         return view('livewire.notification', ['data' => $data]);
-    }
-
-    public function mount()
-    {
     }
 }

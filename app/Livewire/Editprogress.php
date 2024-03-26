@@ -130,7 +130,7 @@ class Editprogress extends Component implements HasForms
             ->schema([
 
                 ToggleButtons::make('status_data')
-                    ->label('Status Data')
+                    ->label('Status Form')
                     ->options([
                         'Approved' => 'Approved',
                         'Rejected' => 'Rejected',

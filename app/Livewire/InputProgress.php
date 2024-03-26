@@ -346,12 +346,21 @@ class InputProgress extends Component implements HasForms
                             ->acceptedFileTypes(['image/png', 'image/jpg', 'image/jpeg']),
 
                     ]),
-                Toggle::make('drafting')
-                    ->label('Simpan sebagai Draft')
-                    ->default(false)
-                    ->onIcon('heroicon-o-document-magnifying-glass')
-                    ->offIcon('heroicon-o-clock')
-                    ->live()
+                Grid::make(3)
+                    ->schema([
+
+                        Toggle::make('drafting')
+                            ->columnStart([
+                                'sm' => 4,
+                                'xl' => 4,
+                                '2xl' => 4,
+                            ])
+                            ->label('Simpan sebagai Draft')
+                            ->default(false)
+                            ->onIcon('heroicon-o-document-magnifying-glass')
+                            ->offIcon('heroicon-o-clock')
+                            ->live()
+                    ])
             ])
             ->columns(3)
             ->statePath('data');
