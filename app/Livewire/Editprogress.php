@@ -45,6 +45,7 @@ class Editprogress extends Component implements HasForms
     public static $paramstest = [];
 
     public $opt;
+    public $database;
     public ?array $data = [];
 
     public function mount(): void
@@ -119,7 +120,7 @@ class Editprogress extends Component implements HasForms
         $newData['foto_sampel'] = $img;
         $newData['status_data'] = $this->opt->status;
 
-
+        $this->database = $newData;
 
         $this->form->fill($newData);
     }
@@ -473,6 +474,7 @@ class Editprogress extends Component implements HasForms
         }
 
 
+        // dd('dispatch');
         $commonRandomString = generateRandomString(rand(5, 10));
         $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
 
@@ -556,14 +558,36 @@ class Editprogress extends Component implements HasForms
                 DB::commit();
 
 
-                // $nohp = numberformat($form['NomorHp']);
-                // SendMsg::insert([
-                //     'no_surat' => $form['NomorSurat'],
-                //     'kodesample' => $randomCode,
-                //     'penerima' => $nohp,
-                //     'progres' => $getprogress,
-                //     'type' => 'input',
-                // ]);
+                $nohp = formatPhoneNumber($form['NomorHp']);
+                SendMsg::insert([
+                    'no_surat' => $form['NomorSurat'],
+                    'kodesample' => $randomCode,
+                    'penerima' => $nohp,
+                    'progres' => $getprogress,
+                    'type' => 'input',
+                ]);
+
+                $now = Carbon::now();
+
+                if ($now->hour >= 5 && $now->hour < 12) {
+                    $greeting = "Selamat Pagi";
+                } elseif ($now->hour >= 12 && $now->hour < 18) {
+                    $greeting = "Selamat Siang";
+                } else {
+                    $greeting = "Selamat Malam";
+                }
+                $nomorserif = '-';
+                Mail::to($form['Emaiilto'])
+                    ->cc($form['Emaiilcc'])
+                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+                $dataarr = "$greeting\n"
+                    . "Yth. Pelanggan Setia Lab CBI,\n"
+                    . "Sampel anda telah kami update dengan no surat *{$form['NomorSurat']}*.\n"
+                    . "Progress saat ini: *$getprogress*\n"
+                    . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
+                    . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
+
+                sendwhatsapp($dataarr, $nohp);
                 Notification::make()
                     ->title('Berhasil disimpan')
                     ->body(' Record berhasil Di update')
@@ -572,16 +596,6 @@ class Editprogress extends Component implements HasForms
                     ->color('success')
                     ->success()
                     ->send();
-
-
-                $nomorserif = '-';
-
-
-                // Mail::to($form['Emaiilto'])
-                //     ->cc($form['Emaiilcc'])
-                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
-
-                // $this->form->fill();
             } catch (\Exception $e) {
                 DB::rollBack();
 
@@ -678,14 +692,40 @@ class Editprogress extends Component implements HasForms
                 DB::commit();
 
 
-                // $nohp = numberformat($form['NomorHp']);
-                // SendMsg::insert([
-                //     'no_surat' => $form['NomorSurat'],
-                //     'kodesample' => $randomCode,
-                //     'penerima' => $nohp,
-                //     'progres' => $getprogress,
-                //     'type' => 'input',
-                // ]);
+                $nohp = formatPhoneNumber($form['NomorHp']);
+
+                SendMsg::insert([
+                    'no_surat' => $form['NomorSurat'],
+                    'kodesample' => $randomCode,
+                    'penerima' => $nohp,
+                    'progres' => $getprogress,
+                    'type' => 'input',
+                ]);
+
+                $now = Carbon::now();
+
+                // Determine the greeting based on the time of day
+                if ($now->hour >= 5 && $now->hour < 12) {
+                    $greeting = "Selamat Pagi";
+                } elseif ($now->hour >= 12 && $now->hour < 18) {
+                    $greeting = "Selamat Siang";
+                } else {
+                    $greeting = "Selamat Malam";
+                }
+                $nomorserif = '-';
+
+
+                Mail::to($form['Emaiilto'])
+                    ->cc($form['Emaiilcc'])
+                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+                $dataarr = "$greeting\n"
+                    . "Yth. Pelanggan Setia Lab CBI,\n"
+                    . "Sampel anda telah kami terima dengan no surat *{$form['NomorSurat']}*.\n"
+                    . "Progress saat ini: *$getprogress*\n"
+                    . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
+                    . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
+
+                sendwhatsapp($dataarr, $nohp);
                 Notification::make()
                     ->title('Berhasil disimpan')
                     ->body(' Record berhasil Di update')
@@ -696,14 +736,7 @@ class Editprogress extends Component implements HasForms
                     ->send();
 
 
-                $nomorserif = '-';
-
-
-                // Mail::to($form['Emaiilto'])
-                //     ->cc($form['Emaiilcc'])
-                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
-
-                // $this->form->fill();
+                $this->dispatch('refresh-form');
             } catch (\Exception $e) {
                 DB::rollBack();
 
