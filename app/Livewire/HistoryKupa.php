@@ -10,31 +10,22 @@ use Livewire\Component;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Support\Collection;
-use Filament\Support\Enums\ActionSize;
-use Filament\Tables\Columns\SelectColumn;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Grouping\Group;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\Card;
 use Illuminate\Contracts\View\View;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -328,7 +319,28 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->modalButton('Yes'),
                     EditAction::make('Verifikasi Status')
                         ->label(fn (TrackSampel $record): string => checkApprovedLabelKupa($record))
-                        ->disabled(fn (TrackSampel $record): bool => checkApprovedKupa($this->rolesAuthUser, $record))
+                        // ->disabled(fn (TrackSampel $record): bool => checkApprovedKupa($this->rolesAuthUser, $record))
+                        ->disabled(function (TrackSampel $record) {
+                            $user = Auth::user();
+                            $roles = $user->getRoleNames();
+
+
+
+                            if (checkApprovedLabelKupa($record) === 'Kupa Selesai' || checkApprovedLabelKupa($record) === 'Verifikasi Status (On Draft)') {
+                                $func = True;
+                            } elseif ($roles[0] === 'Head Of Lab SRS' || $roles[0] === 'Admin') {
+                                $func = False;
+                            } else {
+                                $func = True;
+                            }
+                            // if ($roles[0] === 'Head Of Lab SRS' || $roles[0] === 'Admin') {
+                            //     $func = False;
+                            // } else {
+                            //     $func = true;
+                            // }
+
+                            return $func;
+                        })
                         ->icon(fn (TrackSampel $record): string => checkIconApproved($record))
                         ->color(fn (TrackSampel $record): string => checkColorApproved($record))
                         ->modalHeading(fn (TrackSampel $record) => "Verifikasi Kupa " . $record->kode_track)
