@@ -450,7 +450,6 @@ class Editprogress extends Component implements HasForms
                         FileUpload::make('foto_sampel')
                             ->label('Uplod Foto Sampel (Maks 5 Foto)')
                             ->image()
-
                             ->imageEditorEmptyFillColor('#000000')
                             ->multiple()
                             ->maxFiles(5)
@@ -478,6 +477,18 @@ class Editprogress extends Component implements HasForms
                                     $data = true;
                                 } else {
                                     $data = false;
+                                }
+
+                                return $data;
+                            })
+                            ->disabled(function () {
+                                $data = $this->opt->status;
+
+                                // dd($data);
+                                if ($data === 'Approved' || $data === 'Draft') {
+                                    $data = false;
+                                } else {
+                                    $data = true;
                                 }
 
                                 return $data;
