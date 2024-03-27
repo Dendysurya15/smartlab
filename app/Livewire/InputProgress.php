@@ -144,7 +144,8 @@ class InputProgress extends Component implements HasForms
                     ->label('Jumlah Sampel')
                     ->numeric()
                     ->minValue(1)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    // ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required()
                     ->maxValue(1000)
                     ->live(),
                 TextInput::make('NamaPengirim')
@@ -496,6 +497,7 @@ class InputProgress extends Component implements HasForms
                 Mail::to($form['Emaiilto'])
                     ->cc($form['Emaiilcc'])
                     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"
                     . "Sampel anda telah kami terima dengan no surat *{$form['NomorSurat']}*.\n"
@@ -606,13 +608,7 @@ class InputProgress extends Component implements HasForms
 
 
                 $nohp = numberformat($form['NomorHp']);
-                // SendMsg::insert([
-                //     'no_surat' => $form['NomorSurat'],
-                //     'kodesample' => $randomCode,
-                //     'penerima' => $nohp,
-                //     'progres' => $getprogress,
-                //     'type' => 'input',
-                // ]);
+
                 Notification::make()
                     ->title('Berhasil disimpan')
                     ->body('Draft Berhasil Disaimpan dengan Kode ' . $randomCode)
@@ -630,12 +626,6 @@ class InputProgress extends Component implements HasForms
 
 
                 $nomorserif = '-';
-
-
-                // Mail::to($form['Emaiilto'])
-                //     ->cc($form['Emaiilcc'])
-                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
-
                 $this->form->fill();
             } catch (\Exception $e) {
                 DB::rollBack();

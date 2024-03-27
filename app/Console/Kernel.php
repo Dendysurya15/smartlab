@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('app:sendnotif')->dailyAt('8:00');
-        $schedule->command('app:checkbot')->hourly();
+        // $schedule->command('app:checkbot')->hourly();
+        $schedule->command('app:checkbot')->everyMinute();
     }
 
 

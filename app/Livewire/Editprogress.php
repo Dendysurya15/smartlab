@@ -46,41 +46,27 @@ class Editprogress extends Component implements HasForms
 
     public $opt;
     public $database;
+    public $getparam;
+    public $labkiri;
+    public $labkanan;
+    public $Peralatan;
+    public $foto_sampel;
+    public $Konfirmasi;
     public ?array $data = [];
 
     public function mount(): void
     {
         $this->opt = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
 
-        $getparam = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $this->opt->parameter_analisisid)->get()->toArray();
+        $this->getparam = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $this->opt->parameter_analisisid)->get()->toArray();
 
-        // dd($getparam, $this->opt->parameter_analisisid);
 
-        $newData['Jenis_Sampel'] = $this->opt->jenis_sampel;
-        $newData['status_pengerjaan'] = $this->opt->progress;
-        $newData['Asalampel'] = $this->opt->asal_sampel;
-        $newData['TanggalMemo'] = $this->opt->tanggal_memo;
-        $newData['TanggalTerima'] = $this->opt->tanggal_terima;
-        $newData['EstimasiKupa'] = $this->opt->estimasi;
-        $newData['NomorKupa'] = $this->opt->nomor_kupa;
-        $newData['JumlahSampel'] = $this->opt->jumlah_sampel;
-        $newData['NamaPengirim'] = $this->opt->nama_pengirim;
-        $newData['NamaDep'] = $this->opt->departemen;
-        $newData['NamaKodeSampel'] = $this->opt->kode_sampel;
-        $newData['KemasanSampel'] = $this->opt->kemasan_sampel;
-        $newData['KondisiSampel'] = $this->opt->kondisi_sampel;
 
         $nolab = $this->opt->nomor_lab;
         $string = $nolab;
         $parts = explode('$', $string);
-        $newData['lab_kiri'] = $parts[0];
-        $newData['lab_kanan'] = $parts[1] ?? '-';
-
-        $newData['NomorSurat'] = $this->opt->nomor_surat;
-        $newData['Tujuan'] = $this->opt->tujuan;
-        $newData['SkalaPrioritas'] = $this->opt->skala_prioritas;
-        $newData['NomorHp'] = $this->opt->no_hp;
-
+        $this->labkiri = $parts[0];
+        $this->labkanan = $parts[1] ?? '-';
         $alat = $this->opt->alat;
         $bahan = $this->opt->bahan;
         $personel = $this->opt->personel;
@@ -90,39 +76,12 @@ class Editprogress extends Component implements HasForms
             $bahan ? 'Bahan' : null,
             $personel ? 'Personel' : null,
         ]);
-        $newData['Peralatan'] = array_values($getarray);
-
-        $newData['Emaiilto'] = $this->opt->emailTo;
-        $newData['Emaiilcc'] = "";
-        $newData['Diskon'] = $this->opt->discount;
-        $newData['Konfirmasi'] = $this->opt->konfirmasi == 1 ? true : false;
-
-        $params = ParameterAnalisis::where('id_jenis_sampel', $this->opt->jenis_sampel)->pluck('nama_parameter', 'id')->toArray();
-        $newData['Diskon'] = $this->opt->discount;
-        $newData['repeater']['status'] = $params;
-        // dd($getparam);
-        foreach ($getparam as $key => $value) {
-            foreach ($value as $key1 => $value1) if (is_array($value1)) {
-                $newData['repeater'][] = [
-                    'status' => $value['id_parameter'],
-                    'total_sample' => $value['jumlah'],
-                    'parametersdata' => $value1['nama_unsur'],
-                    'harga_sampel' => $value1['harga'],
-                    'subtotal' => $value['totalakhir']
-                ];
-            }
-        }
+        $this->Peralatan = array_values($getarray);
+        $this->Konfirmasi = $this->opt->konfirmasi == 1 ? true : false;
         $img = $this->opt->foto_sampel;
         $img = explode('%', $img);
-        // dd($img, $getparam);
-
-        $newData['catatan'] = $this->opt->catatan;
-        $newData['foto_sampel'] = $img;
-        $newData['status_data'] = $this->opt->status;
-
-        $this->database = $newData;
-
-        $this->form->fill($newData);
+        $this->foto_sampel = $img;
+        $this->form->fill();
     }
     public function form(Form $form): Form
     {
@@ -149,15 +108,18 @@ class Editprogress extends Component implements HasForms
                         'Waiting Approved' => 'heroicon-o-clock',
                         'Draft' => 'heroicon-o-document-magnifying-glass'
                     ])
+                    ->default($this->opt->status)
                     ->disabled()
                     ->inline(),
                 Select::make('Jenis_Sampel')
                     ->label('Jenis Sampel')
+                    ->default($this->opt->jenis_sampel)
                     ->options(JenisSampel::query()->pluck('nama', 'id'))
                     ->disabled(),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
                     ->required()
+                    ->default($this->opt->progress)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options(function () {
                         $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
@@ -178,6 +140,7 @@ class Editprogress extends Component implements HasForms
                 Select::make('Asalampel')
                     ->label('Asal Sampel')
                     ->required()
+                    ->default($this->opt->asal_sampel)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options([
                         'Internal' => 'Internal',
@@ -186,26 +149,31 @@ class Editprogress extends Component implements HasForms
                 DateTimePicker::make('TanggalMemo')
                     ->label('Tanggal Memo')
                     ->required()
+                    ->default($this->opt->tanggal_memo)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->seconds(true),
                 DatePicker::make('TanggalTerima')
                     ->label('Tanggal Terima')
                     ->required()
+                    ->default($this->opt->tanggal_terima)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->format('Y-m-d H:m:s'),
                 DatePicker::make('EstimasiKupa')
                     ->label('Estimasi Kupa')
                     ->required()
+                    ->default($this->opt->estimasi)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->format('Y-m-d H:m:s'),
                 TextInput::make('NomorKupa')
                     ->numeric()
+                    ->default($this->opt->nomor_kupa)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->label('Nomor Kupa'),
                 TextInput::make('JumlahSampel')
                     ->label('Jumlah Sampel')
                     ->numeric()
                     ->minValue(1)
+                    ->default($this->opt->jumlah_sampel)
                     ->required()
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxValue(1000)
@@ -213,6 +181,7 @@ class Editprogress extends Component implements HasForms
                 TextInput::make('NamaPengirim')
                     ->label('Nama Pengirim')
                     ->required()
+                    ->default($this->opt->nama_pengirim)
                     ->minLength(2)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
@@ -220,23 +189,27 @@ class Editprogress extends Component implements HasForms
                     ->label('Nama Departemen')
                     ->minLength(2)
                     ->required()
+                    ->default($this->opt->departemen)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 TextInput::make('NamaKodeSampel')
                     ->label('Nama Kode Sampel')
                     ->minLength(2)
+                    ->default($this->opt->kode_sampel)
                     ->required()
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 TextInput::make('KemasanSampel')
                     ->label('Kemasan Sampel')
                     ->minLength(2)
+                    ->default($this->opt->kemasan_sampel)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->required()
                     ->maxLength(255),
                 Select::make('KondisiSampel')
                     ->label('Kondisi Sampel')
                     ->required()
+                    ->default($this->opt->kondisi_sampel)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options([
                         'Normal' => 'Normal',
@@ -247,6 +220,7 @@ class Editprogress extends Component implements HasForms
                         ->label('Nomor Lab')
                         ->minLength(2)
                         ->required()
+                        ->default($this->labkiri)
                         ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             // dd($get('preflab'));
@@ -258,6 +232,7 @@ class Editprogress extends Component implements HasForms
                         ->label('Nomor Lab Kanan')
                         ->minLength(2)
                         ->required()
+                        ->default($this->labkanan)
                         ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             // dd($get('preflab'));
@@ -272,17 +247,20 @@ class Editprogress extends Component implements HasForms
                     ->label('Nomor Surat')
                     ->minLength(2)
                     ->required()
+                    ->default($this->opt->nomor_surat)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 TextInput::make('Tujuan')
                     ->label('Tujuan')
                     ->minLength(2)
                     ->required()
+                    ->default($this->opt->tujuan)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 Select::make('SkalaPrioritas')
                     ->label('Skala Prioritas Sampel')
                     ->required()
+                    ->default($this->opt->skala_prioritas)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options([
                         'Normal' => 'Normal',
@@ -292,6 +270,7 @@ class Editprogress extends Component implements HasForms
                     ->label('NomorHp')
                     ->numeric()
                     ->tel()
+                    ->default($this->opt->no_hp)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->placeholder('852xxxxxx')
                     ->minLength(2)
@@ -310,6 +289,7 @@ class Editprogress extends Component implements HasForms
                         'Alat' => 'Tersedia dan Baik',
                         'Bahan' => 'Tersedia dan Baik',
                     ])
+                    ->default($this->Peralatan)
                     ->columns(3),
                 TextInput::make('Emaiilto')
                     ->label('Emaiilto')
@@ -317,6 +297,7 @@ class Editprogress extends Component implements HasForms
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->placeholder('Hanya untuk satu buah email')
                     ->email()
+                    ->default($this->opt->emailTo)
                     ->required()
                     ->maxLength(255),
                 TextInput::make('Emaiilcc')
@@ -327,12 +308,14 @@ class Editprogress extends Component implements HasForms
                     ->maxLength(255),
                 TextInput::make('Diskon')
                     ->numeric()
+                    ->default($this->opt->discount)
                     ->minLength(0)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(2)
                     ->prefix('%'),
                 Toggle::make('Konfirmasi')
                     ->inline(false)
+                    ->default($this->Konfirmasi)
                     ->label('Konfirmasi(Langsung / Telepon / Email)')
                     ->onColor('success')
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
@@ -404,12 +387,49 @@ class Editprogress extends Component implements HasForms
                                             ->disabled(function ($get) {
                                                 return is_null($get('status'));
                                             })
-                                        // ->afterStateHydrated(function (Get $get, Set $set) {
-                                        //     self::updateTotals($get, $set);
-                                        // })
                                     ])
                             ])
-                            ->deletable(true)
+                            ->default(function () {
+                                $newData = [];
+                                foreach ($this->getparam as $key => $value) {
+                                    foreach ($value as $key1 => $value1) if (is_array($value1)) {
+                                        $newData[] = [
+                                            'status' => $value['id_parameter'],
+                                            'total_sample' => $value['jumlah'],
+                                            'parametersdata' => $value1['nama_unsur'],
+                                            'harga_sampel' => $value1['harga'],
+                                            'subtotal' => $value['totalakhir']
+                                        ];
+                                    }
+                                }
+                                // dd($newData);
+                                return $newData;
+                            })
+                            ->addable(function () {
+                                $data = $this->opt->status;
+
+                                // dd($data);
+                                if ($data === 'Approved' || $data === 'Draft') {
+                                    $data = true;
+                                } else {
+                                    $data = false;
+                                }
+
+                                return $data;
+                            })
+
+                            ->deletable(function () {
+                                $data = $this->opt->status;
+
+                                // dd($data);
+                                if ($data === 'Approved' || $data === 'Draft') {
+                                    $data = true;
+                                } else {
+                                    $data = false;
+                                }
+
+                                return $data;
+                            })
                             ->columnSpanFull()
                         // ->columns(4)
 
@@ -418,23 +438,50 @@ class Editprogress extends Component implements HasForms
 
                 Textarea::make('catatan')
                     ->rows(10)
+                    ->default($this->opt->catatan)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->columnSpanFull(),
 
                 Section::make('Upload')
 
                     ->description('Upload Foto Sampel')
+
                     ->schema([
                         FileUpload::make('foto_sampel')
                             ->label('Uplod Foto Sampel (Maks 5 Foto)')
                             ->image()
-                            ->imageEditor()
+
                             ->imageEditorEmptyFillColor('#000000')
                             ->multiple()
                             ->maxFiles(5)
                             ->fetchFileInformation(false)
                             ->maxSize(3000)
+                            ->default($this->foto_sampel)
                             ->uploadingMessage('Upoad Foto Sampel...')
+                            ->deletable(function () {
+                                $data = $this->opt->status;
+
+                                // dd($data);
+                                if ($data === 'Approved' || $data === 'Draft') {
+                                    $data = true;
+                                } else {
+                                    $data = false;
+                                }
+
+                                return $data;
+                            })
+                            ->imageEditor(function () {
+                                $data = $this->opt->status;
+
+                                // dd($data);
+                                if ($data === 'Approved' || $data === 'Draft') {
+                                    $data = true;
+                                } else {
+                                    $data = false;
+                                }
+
+                                return $data;
+                            })
                             ->acceptedFileTypes(['image/png', 'image/jpg', 'image/jpeg']),
 
                     ])
@@ -580,6 +627,7 @@ class Editprogress extends Component implements HasForms
                 Mail::to($form['Emaiilto'])
                     ->cc($form['Emaiilcc'])
                     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"
                     . "Sampel anda telah kami update dengan no surat *{$form['NomorSurat']}*.\n"
@@ -718,6 +766,7 @@ class Editprogress extends Component implements HasForms
                 Mail::to($form['Emaiilto'])
                     ->cc($form['Emaiilcc'])
                     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"
                     . "Sampel anda telah kami terima dengan no surat *{$form['NomorSurat']}*.\n"
