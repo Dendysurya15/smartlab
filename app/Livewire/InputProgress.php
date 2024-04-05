@@ -35,6 +35,7 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Split;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Support\RawJs;
 
 class InputProgress extends Component implements HasForms
 {
@@ -145,8 +146,8 @@ class InputProgress extends Component implements HasForms
                     ->numeric()
                     ->minValue(1)
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
-                    // ->required()
                     ->maxValue(1000)
+
                     ->live(),
                 TextInput::make('NamaPengirim')
                     ->label('Nama Pengirim')
@@ -162,7 +163,19 @@ class InputProgress extends Component implements HasForms
                     ->label('Nama Kode Sampel')
                     ->minLength(2)
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255),
+
+                TextInput::make('NamaKodeSampeljamak')
+                    ->label('Nama Kode Sampel')
+                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
+                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
+                    ->mask(RawJs::make(<<<'JS'
+                        $input.split('\n').map(item => item.trim().replace(/\s+/g, '/')).join('/')
+                    JS)),
+
+
                 TextInput::make('KemasanSampel')
                     ->label('Kemasan Sampel')
                     ->minLength(2)
@@ -179,12 +192,20 @@ class InputProgress extends Component implements HasForms
                     TextInput::make('lab_kiri')
                         ->label('Nomor Lab')
                         ->minLength(2)
-                        ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
-                        ->prefix(function (Get $get) {
-                            // dd($get('preflab'));
+                        ->required(fn (Get $get): bool => $get('drafting') !== true)
+                        ->prefix(function (Get $get, Set $set) {
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
+                        ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                            if (!is_numeric($state)) {
+                                $data = '';
+                            } else {
+                                $data = (int)$state + $get('JumlahSampel');
+                            }
+                            $set('lab_kanan', $data);
+                        })
+                        ->live()
                         ->maxLength(255),
                     TextInput::make('lab_kanan')
                         ->label('Nomor Lab Kanan')
@@ -385,7 +406,7 @@ class InputProgress extends Component implements HasForms
     {
         // dd($this->form->getState());
         $form = $this->form->getState();
-        // dd($form);
+        dd($form);
 
         $current = Carbon::now();
         $randomCode = generateRandomCode();
@@ -495,9 +516,9 @@ class InputProgress extends Component implements HasForms
                 $nomorserif = '-';
 
 
-                Mail::to($form['Emaiilto'])
-                    ->cc($form['Emaiilcc'])
-                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+                // Mail::to($form['Emaiilto'])
+                //     ->cc($form['Emaiilcc'])
+                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
 
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"
