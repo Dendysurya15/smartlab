@@ -144,8 +144,8 @@ class InputProgress extends Component implements HasForms
                     ->label('Jumlah Sampel')
                     ->numeric()
                     ->minValue(1)
-                    // ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
-                    ->required()
+                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    // ->required()
                     ->maxValue(1000)
                     ->live(),
                 TextInput::make('NamaPengirim')
@@ -220,7 +220,7 @@ class InputProgress extends Component implements HasForms
                     ->label('NomorHp')
                     ->numeric()
                     ->tel()
-                    ->placeholder('852xxxxxx')
+                    ->placeholder('85200000000 (Contoh Nomor HP)')
                     ->minLength(2)
                     ->maxLength(255)
                     ->prefix('+62'),
@@ -472,6 +472,7 @@ class InputProgress extends Component implements HasForms
 
 
                 $nohp = formatPhoneNumber($form['NomorHp']);
+                // dd($nohp);
 
                 SendMsg::insert([
                     'no_surat' => $form['NomorSurat'],
@@ -505,7 +506,7 @@ class InputProgress extends Component implements HasForms
                     . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
                     . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
 
-                sendwhatsapp($dataarr, $nohp);
+                // sendwhatsapp($dataarr, $nohp);
                 Notification::make()
                     ->title('Berhasil disimpan')
                     ->body(' Record berhasil disimpan dengan kode track ' . $randomCode)
@@ -608,6 +609,7 @@ class InputProgress extends Component implements HasForms
 
 
                 $nohp = numberformat($form['NomorHp']);
+                dd($nohp);
 
                 Notification::make()
                     ->title('Berhasil disimpan')

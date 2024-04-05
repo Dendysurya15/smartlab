@@ -87,6 +87,9 @@ if (!function_exists('numberformat')) {
         if (strpos($number, '0') === 0) {
             // Replace '0' with '62'
             return '62' . substr($number, 1);
+        } else if (strpos($number, '8') === 0) {
+            // Replace '0' with '62'
+            return '62' . $number;
         } else {
             // If it doesn't start with '0', return as is
             return $number;

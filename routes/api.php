@@ -22,19 +22,24 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::get('/send-mail', function () {
+Route::get('/sendmail', function () {
     $recipients = 'valentinojaja@gmail.com';
     $cc = 'elsamayanti.putrisim@gmail.com';
     $tgl = '02-16-2024';
     $nomor_surat = 'Testtest';
     $nomorlab = 'testomg';
+    $randomCode = 'testtest';
+    $nomorserif = 'aaaa';
     try {
         Mail::to($recipients)
             ->cc($cc)
-            ->send(new EmailPelanggan($tgl, $nomor_surat, $nomorlab));
+            ->send(new EmailPelanggan($tgl, $nomor_surat, $nomorlab, $randomCode, $nomorserif));
 
         return "Email sent successfully!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
+});
+Route::get('testing', function () {
+    return 'hello';
 });

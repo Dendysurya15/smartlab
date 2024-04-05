@@ -60,7 +60,7 @@ class Editprogress extends Component implements HasForms
 
         $this->getparam = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $this->opt->parameter_analisisid)->get()->toArray();
 
-
+        // dd($this->opt);
 
         $nolab = $this->opt->nomor_lab;
         $string = $nolab;
@@ -223,9 +223,10 @@ class Editprogress extends Component implements HasForms
                         ->default($this->labkiri)
                         ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
-                            // dd($get('preflab'));
+                            $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
+
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
-                            return $lastTwoDigitsOfYear . '-' . $get('preflab');
+                            return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
                         })
                         ->maxLength(255),
                     TextInput::make('lab_kanan')
@@ -235,9 +236,10 @@ class Editprogress extends Component implements HasForms
                         ->default($this->labkanan)
                         ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
-                            // dd($get('preflab'));
+                            $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
+
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
-                            return $lastTwoDigitsOfYear . '-' . $get('preflab');
+                            return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
                         })
                         ->maxLength(255)
                         ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
@@ -272,7 +274,7 @@ class Editprogress extends Component implements HasForms
                     ->tel()
                     ->default($this->opt->no_hp)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                    ->placeholder('852xxxxxx')
+                    ->placeholder('85200000000 (Contoh Nomor HP)')
                     ->minLength(2)
                     ->maxLength(255)
                     ->prefix('+62'),
@@ -617,6 +619,8 @@ class Editprogress extends Component implements HasForms
 
 
                 $nohp = formatPhoneNumber($form['NomorHp']);
+
+                // dd($nohp);
                 SendMsg::insert([
                     'no_surat' => $form['NomorSurat'],
                     'kodesample' => $randomCode,
@@ -646,7 +650,7 @@ class Editprogress extends Component implements HasForms
                     . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
                     . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
 
-                sendwhatsapp($dataarr, $nohp);
+                // sendwhatsapp($dataarr, $nohp);
                 Notification::make()
                     ->title('Berhasil disimpan')
                     ->body(' Record berhasil Di update')
@@ -785,7 +789,7 @@ class Editprogress extends Component implements HasForms
                     . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
                     . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
 
-                sendwhatsapp($dataarr, $nohp);
+                // sendwhatsapp($dataarr, $nohp);
                 Notification::make()
                     ->title('Berhasil disimpan')
                     ->body(' Record berhasil Di update')
