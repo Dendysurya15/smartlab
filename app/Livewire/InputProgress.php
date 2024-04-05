@@ -36,6 +36,10 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Split;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Support\RawJs;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
+use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
+use Ysfkaya\FilamentPhoneInput\Infolists\PhoneInputNumberType;
 
 class InputProgress extends Component implements HasForms
 {
@@ -191,7 +195,7 @@ class InputProgress extends Component implements HasForms
                 Split::make([
                     TextInput::make('lab_kiri')
                         ->label('Nomor Lab')
-                        ->minLength(2)
+                        ->minLength(1)
                         ->required(fn (Get $get): bool => $get('drafting') !== true)
                         ->prefix(function (Get $get, Set $set) {
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
@@ -209,7 +213,7 @@ class InputProgress extends Component implements HasForms
                         ->maxLength(255),
                     TextInput::make('lab_kanan')
                         ->label('Nomor Lab Kanan')
-                        ->minLength(2)
+                        ->minLength(1)
                         ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                         ->prefix(function (Get $get) {
                             // dd($get('preflab'));
@@ -237,14 +241,6 @@ class InputProgress extends Component implements HasForms
                         'Normal' => 'Normal',
                         'Tinggi' => 'Tinggi',
                     ]),
-                TextInput::make('NomorHp')
-                    ->label('NomorHp')
-                    ->numeric()
-                    ->tel()
-                    ->placeholder('85200000000 (Contoh Nomor HP)')
-                    ->minLength(2)
-                    ->maxLength(255)
-                    ->prefix('+62'),
                 CheckboxList::make('Peralatan')
                     ->label('Peralatan')
                     ->options([
@@ -260,16 +256,13 @@ class InputProgress extends Component implements HasForms
                     // ->required()
                     ->columns(3),
                 TextInput::make('Emaiilto')
-                    ->label('Emaiilto')
                     ->label('Email To')
-                    ->placeholder('Hanya untuk satu buah email')
-                    ->email()
+                    ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 TextInput::make('Emaiilcc')
-                    ->label('Emaiilcc')
                     ->label('Email Cc')
-                    ->placeholder('Dapat Memasukan Lebih dari satu email dengan diakhiri dengan (;)')
+                    ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
                     ->maxLength(255),
 
                 TextInput::make('Diskon')
@@ -277,8 +270,19 @@ class InputProgress extends Component implements HasForms
                     ->minLength(0)
                     ->maxLength(2)
                     ->prefix('%'),
+                Repeater::make('nomerhpuser')
+                    ->label('Nomor Hp')
+                    ->schema([
+                        PhoneInput::make('NomorHp')
+                            ->label('Masukan Nomor Hp')
+                            ->defaultCountry('id')
+                            ->onlyCountries(['tr', 'us', 'gb', 'id']),
+                    ])
+                    ->default([])
+                    ->columns(1),
                 Toggle::make('Konfirmasi')
                     ->inline(false)
+                    ->default(true)
                     ->label('Konfirmasi(Langsung / Telepon / Email)')
                     ->onColor('success')
                     ->offColor('danger'),
@@ -406,7 +410,7 @@ class InputProgress extends Component implements HasForms
     {
         // dd($this->form->getState());
         $form = $this->form->getState();
-        dd($form);
+        // dd($form);
 
         $current = Carbon::now();
         $randomCode = generateRandomCode();
@@ -439,7 +443,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->nomor_kupa = $form['NomorKupa'];
                 $trackSampel->nama_pengirim = $form['NamaPengirim'];
                 $trackSampel->departemen = $form['NamaDep'];
-                $trackSampel->kode_sampel = $form['NamaKodeSampel'];
+                $trackSampel->kode_sampel = $form['NamaKodeSampel'] ?? $form['NamaKodeSampeljamak'];
                 $trackSampel->jumlah_sampel = $form['JumlahSampel'];
                 $trackSampel->kondisi_sampel = $form['KondisiSampel'];
                 $trackSampel->kemasan_sampel = $form['KemasanSampel'];
@@ -450,9 +454,12 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->progress = 4;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
-                $trackSampel->no_hp = $form['NomorHp'];
+                $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
+                $combinedNomorHp = implode(',', $nomorHpArray);
+                $trackSampel->no_hp = $combinedNomorHp;
                 $trackSampel->alat = ($checkalat ? 1 : 0);
                 $trackSampel->emailTo = $form['Emaiilto'];
+                $trackSampel->emailCc = $form['Emaiilcc'];
                 $trackSampel->bahan = ($checkbahan ? 1 : 0);
                 $trackSampel->personel = ($checkpersonel ? 1 : 0);
                 $trackSampel->konfirmasi = ($form['Konfirmasi'] ? 1 : 0);
@@ -484,24 +491,33 @@ class InputProgress extends Component implements HasForms
                     // dd($dataToInsert);
                     TrackParameter::insert($dataToInsert);
                 }
-                $trackSampel->save();
-
-
                 $getprogress = Progress::pluck('nama')->first();
 
-                DB::commit();
 
 
-                $nohp = formatPhoneNumber($form['NomorHp']);
-                // dd($nohp);
 
-                SendMsg::insert([
-                    'no_surat' => $form['NomorSurat'],
-                    'kodesample' => $randomCode,
-                    'penerima' => $nohp,
-                    'progres' => $getprogress,
-                    'type' => 'input',
-                ]);
+                // $nohp = formatPhoneNumber($form['nomerhpuser']);
+                // dd($form['nomerhpuser']);
+                if ($form['nomerhpuser'] !== []) {
+                    foreach ($form['nomerhpuser'] as $data) {
+                        $dataToInsert2[] = [
+                            'no_surat' => $form['NomorSurat'],
+                            'kodesample' => $randomCode,
+                            'penerima' => $data,
+                            'progres' => $getprogress,
+                            'type' => 'input',
+                        ];
+                    }
+                    // dd($dataToInsert);
+                    SendMsg::insert($dataToInsert2);
+                }
+                // SendMsg::insert([
+                //     'no_surat' => $form['NomorSurat'],
+                //     'kodesample' => $randomCode,
+                //     'penerima' => $nohp,
+                //     'progres' => $getprogress,
+                //     'type' => 'input',
+                // ]);
 
                 $now = Carbon::now();
 
@@ -514,19 +530,22 @@ class InputProgress extends Component implements HasForms
                     $greeting = "Selamat Malam";
                 }
                 $nomorserif = '-';
+                $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
+                $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
-
-                // Mail::to($form['Emaiilto'])
-                //     ->cc($form['Emaiilcc'])
-                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
-
+                if ($emailAddresses !== null) {
+                    Mail::to($emailAddresses)
+                        ->cc($emailcc)
+                        ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+                }
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"
                     . "Sampel anda telah kami terima dengan no surat *{$form['NomorSurat']}*.\n"
                     . "Progress saat ini: *$getprogress*\n"
                     . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
                     . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
-
+                $trackSampel->save();
+                DB::commit();
                 // sendwhatsapp($dataarr, $nohp);
                 Notification::make()
                     ->title('Berhasil disimpan')
@@ -558,6 +577,7 @@ class InputProgress extends Component implements HasForms
 
             // dd('send');
             try {
+                $getprogress = Progress::pluck('nama')->first();
                 DB::beginTransaction();
                 $trackSampel = new TrackSampel();
                 $trackSampel->jenis_sampel = $form['Jenis_Sampel'];
@@ -577,10 +597,13 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = 4;
                 $trackSampel->last_update = $current;
+                $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
+                $combinedNomorHp = implode(',', $nomorHpArray);
+                $trackSampel->no_hp = $combinedNomorHp;
                 $trackSampel->admin = $userId;
-                $trackSampel->no_hp = $form['NomorHp'];
                 $trackSampel->alat = ($checkalat ? 1 : 0);
                 $trackSampel->emailTo = $form['Emaiilto'];
+                $trackSampel->emailCc = $form['Emaiilcc'];
                 $trackSampel->bahan = ($checkbahan ? 1 : 0);
                 $trackSampel->personel = ($checkpersonel ? 1 : 0);
                 $trackSampel->konfirmasi = ($form['Konfirmasi'] ? 1 : 0);
@@ -599,7 +622,25 @@ class InputProgress extends Component implements HasForms
                     $donefilename = rtrim($filename, '%');
                     $trackSampel->foto_sampel = $donefilename;
                 }
+                // dd($form['nomerhpuser']);
 
+                if ($form['nomerhpuser'] !== []) {
+
+                    // dd($form['nomerhpuser']);
+                    foreach ($form['nomerhpuser'] as $data) {
+
+                        $dataToInsert[] = [
+                            'no_surat' => $form['NomorSurat'] ?? '-',
+                            'kodesample' => $randomCode,
+                            'penerima' =>  str_replace('+', '', $data['NomorHp']),
+                            'progres' => $getprogress,
+                            'type' => 'input',
+                        ];
+                    }
+
+                    // dd($dataToInsert);
+                    SendMsg::insert($dataToInsert);
+                }
                 // dd($form['repeater']);
                 if ($form['repeater'] !== []) {
 
@@ -607,7 +648,7 @@ class InputProgress extends Component implements HasForms
                         foreach ($form['repeater'] as $data) {
 
                             if ($data['status'] != null) {
-                                $dataToInsert[] = [
+                                $dataToInsert2[] = [
                                     'id_parameter' => $data['status'],
                                     'jumlah' => $data['total_sample'],
                                     'totalakhir' => $data['subtotal'],
@@ -616,21 +657,13 @@ class InputProgress extends Component implements HasForms
                             }
                         }
                         // dd($dataToInsert);
-                        TrackParameter::insert($dataToInsert);
+                        TrackParameter::insert($dataToInsert2);
                     } else {
                         # code...
                     }
                 }
                 $trackSampel->save();
-
-
-                $getprogress = Progress::pluck('nama')->first();
-
                 DB::commit();
-
-
-                $nohp = numberformat($form['NomorHp']);
-                dd($nohp);
 
                 Notification::make()
                     ->title('Berhasil disimpan')
@@ -646,9 +679,6 @@ class InputProgress extends Component implements HasForms
                     ])
                     ->success()
                     ->send();
-
-
-                $nomorserif = '-';
                 $this->form->fill();
             } catch (\Exception $e) {
                 DB::rollBack();

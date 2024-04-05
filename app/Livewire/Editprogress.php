@@ -639,8 +639,12 @@ class Editprogress extends Component implements HasForms
                     $greeting = "Selamat Malam";
                 }
                 $nomorserif = '-';
-                Mail::to($form['Emaiilto'])
-                    ->cc($form['Emaiilcc'])
+
+                $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
+                $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
+
+                Mail::to($emailAddresses)
+                    ->cc($emailcc)
                     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
 
                 $dataarr = "$greeting\n"
@@ -778,8 +782,12 @@ class Editprogress extends Component implements HasForms
                 $nomorserif = '-';
 
 
-                Mail::to($form['Emaiilto'])
-                    ->cc($form['Emaiilcc'])
+                $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
+                $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
+
+
+                Mail::to($emailAddresses)
+                    ->cc($emailcc)
                     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
 
                 $dataarr = "$greeting\n"
