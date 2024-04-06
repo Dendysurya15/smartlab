@@ -255,38 +255,47 @@ class InputProgress extends Component implements HasForms
                     ])
                     // ->required()
                     ->columns(3),
-                TextInput::make('Emaiilto')
-                    ->label('Email To')
-                    ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
-                    ->maxLength(255),
-                TextInput::make('Emaiilcc')
-                    ->label('Email Cc')
-                    ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
-                    ->maxLength(255),
 
-                TextInput::make('Diskon')
-                    ->numeric()
-                    ->minLength(0)
-                    ->maxLength(2)
-                    ->prefix('%'),
-                Repeater::make('nomerhpuser')
-                    ->label('Nomor Hp')
+
+
+                Section::make()
                     ->schema([
-                        PhoneInput::make('NomorHp')
-                            ->label('Masukan Nomor Hp')
-                            ->defaultCountry('id')
-                            ->onlyCountries(['tr', 'us', 'gb', 'id']),
-                    ])
-                    ->default([])
-                    ->columns(1),
-                Toggle::make('Konfirmasi')
-                    ->inline(false)
-                    ->default(true)
-                    ->label('Konfirmasi(Langsung / Telepon / Email)')
-                    ->onColor('success')
-                    ->offColor('danger'),
+                        TextInput::make('Emaiilto')
+                            ->label('Email To')
+                            ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
+                            ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                            ->maxLength(255),
+                        TextInput::make('Emaiilcc')
+                            ->label('Email Cc')
+                            ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
+                            ->maxLength(255),
 
+                        TextInput::make('Diskon')
+                            ->numeric()
+                            ->minLength(0)
+                            ->maxLength(2)
+                            ->prefix('%'),
+                        Toggle::make('Konfirmasi')
+                            ->inline(false)
+                            ->default(true)
+                            ->label('Konfirmasi(Langsung / Telepon / Email)')
+                            ->onColor('success')
+                            ->offColor('danger'),
+                        Repeater::make('nomerhpuser')
+                            ->label('Nomor Hp')
+                            ->schema([
+                                PhoneInput::make('NomorHp')
+                                    ->label('Masukan Nomor Hp')
+                                    ->defaultCountry('id')
+
+                                    ->onlyCountries(['tr', 'us', 'gb', 'id']),
+                            ])
+                            ->default([])
+                            ->grid(4)
+                            ->columnSpanFull()
+
+                    ])
+                    ->columns(4),
                 Section::make('Pengujian sampel')
                     ->label('Pengujian Sampel')
                     ->description('Peringatan untuk crosscheck ulang seluruh data yang ingin akan dimasukkan ke sistem!')
@@ -503,7 +512,7 @@ class InputProgress extends Component implements HasForms
                         $dataToInsert2[] = [
                             'no_surat' => $form['NomorSurat'],
                             'kodesample' => $randomCode,
-                            'penerima' => $data,
+                            'penerima' =>  str_replace('+', '', $data['NomorHp']),
                             'progres' => $getprogress,
                             'type' => 'input',
                         ];

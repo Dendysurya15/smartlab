@@ -36,6 +36,11 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Split;
 use Filament\Forms\Components\ToggleButtons;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
+use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
+use Ysfkaya\FilamentPhoneInput\Infolists\PhoneInputNumberType;
+use Filament\Support\RawJs;
 
 class Editprogress extends Component implements HasForms
 {
@@ -196,9 +201,20 @@ class Editprogress extends Component implements HasForms
                     ->label('Nama Kode Sampel')
                     ->minLength(2)
                     ->default($this->opt->kode_sampel)
-                    ->required()
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255),
+
+                TextInput::make('NamaKodeSampeljamak')
+                    ->label('Nama Kode Sampel')
+                    ->default($this->opt->kode_sampel)
+                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
+                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
+                    ->mask(RawJs::make(<<<'JS'
+                        $input.split('\n').map(item => item.trim().replace(/\s+/g, '/')).join('/')
+                    JS)),
+
                 TextInput::make('KemasanSampel')
                     ->label('Kemasan Sampel')
                     ->minLength(2)
@@ -218,7 +234,7 @@ class Editprogress extends Component implements HasForms
                 Split::make([
                     TextInput::make('lab_kiri')
                         ->label('Nomor Lab')
-                        ->minLength(2)
+                        ->minLength(1)
                         ->required()
                         ->default($this->labkiri)
                         ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
@@ -228,10 +244,19 @@ class Editprogress extends Component implements HasForms
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
                             return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
                         })
+                        ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                            if (!is_numeric($state)) {
+                                $data = '';
+                            } else {
+                                $data = (int)$state + $get('JumlahSampel');
+                            }
+                            $set('lab_kanan', $data);
+                        })
+                        ->live()
                         ->maxLength(255),
                     TextInput::make('lab_kanan')
                         ->label('Nomor Lab Kanan')
-                        ->minLength(2)
+                        ->minLength(1)
                         ->required()
                         ->default($this->labkanan)
                         ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
@@ -268,16 +293,7 @@ class Editprogress extends Component implements HasForms
                         'Normal' => 'Normal',
                         'Tinggi' => 'Tinggi',
                     ]),
-                TextInput::make('NomorHp')
-                    ->label('NomorHp')
-                    ->numeric()
-                    ->tel()
-                    ->default($this->opt->no_hp)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                    ->placeholder('85200000000 (Contoh Nomor HP)')
-                    ->minLength(2)
-                    ->maxLength(255)
-                    ->prefix('+62'),
+
                 CheckboxList::make('Peralatan')
                     ->label('Peralatan')
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
@@ -294,19 +310,17 @@ class Editprogress extends Component implements HasForms
                     ->default($this->Peralatan)
                     ->columns(3),
                 TextInput::make('Emaiilto')
-                    ->label('Emaiilto')
                     ->label('Email To')
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                    ->placeholder('Hanya untuk satu buah email')
-                    ->email()
+                    ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
                     ->default($this->opt->emailTo)
                     ->required()
                     ->maxLength(255),
                 TextInput::make('Emaiilcc')
-                    ->label('Emaiilcc')
                     ->label('Email Cc')
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                    ->placeholder('Dapat Memasukan Lebih dari satu email dengan diakhiri dengan (;)')
+                    ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
+                    ->default($this->opt->emailCc)
                     ->maxLength(255),
                 TextInput::make('Diskon')
                     ->numeric()
@@ -315,6 +329,7 @@ class Editprogress extends Component implements HasForms
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(2)
                     ->prefix('%'),
+
                 Toggle::make('Konfirmasi')
                     ->inline(false)
                     ->default($this->Konfirmasi)
@@ -322,6 +337,31 @@ class Editprogress extends Component implements HasForms
                     ->onColor('success')
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->offColor('danger'),
+                Section::make()
+                    ->schema([
+                        Repeater::make('nomerhpuser')
+                            ->label('Nomor Hp')
+                            ->schema([
+                                PhoneInput::make('NomorHp')
+                                    ->label('Masukan Nomor Hp')
+                                    ->defaultCountry('id')
+
+                                    ->onlyCountries(['tr', 'us', 'gb', 'id']),
+                            ])
+                            ->default(function () {
+                                $newData = [];
+                                $nomerhp = explode(',', $this->opt->no_hp);
+                                // dd($nomerhp);
+                                foreach ($nomerhp as $key => $value) {
+                                    $newData[] = [
+                                        'NomorHp' => $value
+                                    ];
+                                }
+                                return $newData;
+                            })
+                            ->grid(4)
+                            ->columnSpanFull(),
+                    ]),
 
                 Section::make('Pengujian sampel')
                     ->label('Pengujian Sampel')
@@ -545,6 +585,11 @@ class Editprogress extends Component implements HasForms
             $checkalat = in_array($Alat, $form['Peralatan']);
             $checkpersonel = in_array($Personel, $form['Peralatan']);
             $checkbahan = in_array($bahan, $form['Peralatan']);
+            // dd($form['status_pengerjaan'], $this->opt->progress);
+
+            $lastUpdate = implode('$', [$this->opt->last_update, $current]);
+
+            // dd($this->opt->last_update, $current, $lastUpdate);
 
             try {
                 DB::beginTransaction();
@@ -556,7 +601,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->nomor_kupa = $form['NomorKupa'];
                 $trackSampel->nama_pengirim = $form['NamaPengirim'];
                 $trackSampel->departemen = $form['NamaDep'];
-                $trackSampel->kode_sampel = $form['NamaKodeSampel'];
+                $trackSampel->kode_sampel = $form['NamaKodeSampel'] ?? $form['NamaKodeSampeljamak'];
                 $trackSampel->jumlah_sampel = $form['JumlahSampel'];
                 $trackSampel->kondisi_sampel = $form['KondisiSampel'];
                 $trackSampel->kemasan_sampel = $form['KemasanSampel'];
@@ -565,9 +610,13 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->estimasi = $form['EstimasiKupa'];
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
-                $trackSampel->last_update = $current;
+                if ($form['status_pengerjaan'] !== $this->opt->progress) {
+                    $trackSampel->last_update = $lastUpdate;
+                }
                 $trackSampel->admin = $userId;
-                $trackSampel->no_hp = $form['NomorHp'];
+                $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
+                $combinedNomorHp = implode(',', $nomorHpArray);
+                $trackSampel->no_hp = $combinedNomorHp;
                 $trackSampel->alat = ($checkalat ? 1 : 0);
                 $trackSampel->emailTo = $form['Emaiilto'];
                 $trackSampel->bahan = ($checkbahan ? 1 : 0);
@@ -610,24 +659,23 @@ class Editprogress extends Component implements HasForms
 
                     TrackParameter::insert($dataToInsert);
                 }
-                $trackSampel->save();
 
 
                 $getprogress = Progress::pluck('nama')->first();
 
-                DB::commit();
-
-
-                $nohp = formatPhoneNumber($form['NomorHp']);
-
-                // dd($nohp);
-                SendMsg::insert([
-                    'no_surat' => $form['NomorSurat'],
-                    'kodesample' => $randomCode,
-                    'penerima' => $nohp,
-                    'progres' => $getprogress,
-                    'type' => 'input',
-                ]);
+                if ($form['nomerhpuser'] !== []) {
+                    foreach ($form['nomerhpuser'] as $data) {
+                        $dataToInsert2[] = [
+                            'no_surat' => $form['NomorSurat'],
+                            'kodesample' => $randomCode,
+                            'penerima' =>  str_replace('+', '', $data['NomorHp']),
+                            'progres' => $getprogress,
+                            'type' => 'update',
+                        ];
+                    }
+                    // dd($dataToInsert);
+                    SendMsg::insert($dataToInsert2);
+                }
 
                 $now = Carbon::now();
 
@@ -653,6 +701,9 @@ class Editprogress extends Component implements HasForms
                     . "Progress saat ini: *$getprogress*\n"
                     . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
                     . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
+                $trackSampel->save();
+
+                DB::commit();
 
                 // sendwhatsapp($dataarr, $nohp);
                 Notification::make()
@@ -696,7 +747,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->nomor_kupa = $form['NomorKupa'];
                 $trackSampel->nama_pengirim = $form['NamaPengirim'];
                 $trackSampel->departemen = $form['NamaDep'];
-                $trackSampel->kode_sampel = $form['NamaKodeSampel'];
+                $trackSampel->kode_sampel = $form['NamaKodeSampel'] ?? $form['NamaKodeSampeljamak'];
                 $trackSampel->jumlah_sampel = $form['JumlahSampel'];
                 $trackSampel->kondisi_sampel = $form['KondisiSampel'];
                 $trackSampel->kemasan_sampel = $form['KemasanSampel'];
@@ -707,7 +758,9 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->progress = $form['status_pengerjaan'];
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
-                $trackSampel->no_hp = $form['NomorHp'];
+                $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
+                $combinedNomorHp = implode(',', $nomorHpArray);
+                $trackSampel->no_hp = $combinedNomorHp;
                 $trackSampel->alat = ($checkalat ? 1 : 0);
                 $trackSampel->emailTo = $form['Emaiilto'];
                 $trackSampel->bahan = ($checkbahan ? 1 : 0);
@@ -751,23 +804,33 @@ class Editprogress extends Component implements HasForms
 
                     TrackParameter::insert($dataToInsert);
                 }
-                $trackSampel->save();
 
 
                 $getprogress = Progress::pluck('nama')->first();
 
-                DB::commit();
 
+                // $nohp = formatPhoneNumber($form['NomorHp']);
 
-                $nohp = formatPhoneNumber($form['NomorHp']);
-
-                SendMsg::insert([
-                    'no_surat' => $form['NomorSurat'],
-                    'kodesample' => $randomCode,
-                    'penerima' => $nohp,
-                    'progres' => $getprogress,
-                    'type' => 'input',
-                ]);
+                // SendMsg::insert([
+                //     'no_surat' => $form['NomorSurat'],
+                //     'kodesample' => $randomCode,
+                //     'penerima' => $nohp,
+                //     'progres' => $getprogress,
+                //     'type' => 'input',
+                // ]);
+                if ($form['nomerhpuser'] !== []) {
+                    foreach ($form['nomerhpuser'] as $data) {
+                        $dataToInsert2[] = [
+                            'no_surat' => $form['NomorSurat'],
+                            'kodesample' => $randomCode,
+                            'penerima' =>  str_replace('+', '', $data['NomorHp']),
+                            'progres' => $getprogress,
+                            'type' => 'input',
+                        ];
+                    }
+                    // dd($dataToInsert);
+                    SendMsg::insert($dataToInsert2);
+                }
 
                 $now = Carbon::now();
 
@@ -796,6 +859,9 @@ class Editprogress extends Component implements HasForms
                     . "Progress saat ini: *$getprogress*\n"
                     . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
                     . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
+                $trackSampel->save();
+
+                DB::commit();
 
                 // sendwhatsapp($dataarr, $nohp);
                 Notification::make()
