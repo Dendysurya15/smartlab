@@ -38,7 +38,7 @@ class MonitoringKupaExport implements FromView, ShouldAutoSize, WithColumnWidths
 
         $tracksample = TrackSampel::findOrFail($this->id);
         $tanggal_terima = Carbon::parse($tracksample['tanggal_terima']);
-
+        // dd($tracksample);
 
         $trackparam = $tracksample->trackParameters;
 

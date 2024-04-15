@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\FormDataExport;
 use App\Exports\MonitoringKupaExport;
+use App\Exports\MonitoringKupabulk;
 use App\Http\Requests\InputProgressRequest;
 use App\Models\JenisSampel;
 use App\Models\ProgressPengerjaan;
@@ -11,6 +12,7 @@ use App\Models\TrackSampel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Livewire\Attributes\On;
 
 class HistoryKupaController extends Controller
 {
@@ -192,15 +194,27 @@ class HistoryKupaController extends Controller
     {
         $query = TrackSampel::find($id);
 
+        // dd($query);
+
         $filename = 'Kupa ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
 
         return Excel::download(new FormDataExport($id), $filename);
     }
-
     public function exportFormMonitoringKupa($id)
     {
+
+        // dd('not array');
         $query = TrackSampel::find($id);
         $filename = 'Form Monitoring Sampel ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
         return Excel::download(new MonitoringKupaExport($id), $filename);
+    }
+    public function exportFormMonitoringKupabulk($id)
+    {
+        // $idsArray = explode('$', $id);
+        // $queries = TrackSampel::whereIn('id', $idsArray)->get();
+
+        // // dd($queries);
+        $filename = 'Form Monitoring Sampel bulanan.xlsx';
+        return Excel::download(new MonitoringKupabulk($id), $filename);
     }
 }

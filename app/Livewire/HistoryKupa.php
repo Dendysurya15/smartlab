@@ -23,16 +23,18 @@ use Filament\Forms\Components\Select;
 use Illuminate\Contracts\View\View;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Traits\HasRoles;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
+use App\Exports\MonitoringKupabulk;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
 
     use InteractsWithTable;
     use InteractsWithForms;
-
+    public $openurl;
 
     public $rolesAuthUser;
 
@@ -212,30 +214,32 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         }
                         return  'Skala Prioritas : ' . ($data['value'] === 'normal' ? 'Normal' : 'Tinggi');
                     }),
-                // Filter::make('tanggal_terima')
-                //     ->form([
-                //         DatePicker::make('Range Tanggal Awal'),
-                //         DatePicker::make('Range Tanggal Akhir')->default(now()),
-                //     ])
-                //     ->query(function (Builder $query, array $data): Builder {
-                //         return $query
-                //             ->when(
-                //                 $data['Range Tanggal Awal'],
-                //                 fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
-                //             )
-                //             ->when(
-                //                 $data['Range Tanggal Akhir'],
-                //                 fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '<=', $date),
-                //             );
-                //     })
-                //     ->indicateUsing(function (array $data): ?string {
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('Tanggal terima dari'),
+                        DatePicker::make('created_until')
+                            ->label('Tanggal terima sampai'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        // dd($data);
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                function (Builder $query, $date) {
+                                    // dd($query->whereDate('tanggal_terima', '>=', $date));
 
-                //         if (!$data['Range Tanggal Awal']) {
-                //             return null;
-                //         }
-
-                //         return 'Mulai dari ' . Carbon::parse($data['Range Tanggal Awal'])->toFormattedDateString() . ' hingga ' . Carbon::parse($data['Range Tanggal Akhir'])->toFormattedDateString();
-                //     }),
+                                    return $query->whereDate('tanggal_terima', '>=', $date);
+                                }
+                                // fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                function (Builder $query, $date) {
+                                    return $query->whereDate('tanggal_terima', '<=', $date);
+                                }
+                            );
+                    })
 
 
 
@@ -257,28 +261,27 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                 ->send();
                         });
                     }),
-                // BulkAction::make('Approved Group')
-                //     ->requiresConfirmation()
-                //     ->label('Approved')
-                //     ->icon('heroicon-m-check-badge')
-                //     ->color('success')
-                //     ->deselectRecordsAfterCompletion()
-                //     ->action(function (Collection $records) {
-                //         $records->each(function (TrackSampel $record) {
-                //             $record->delete();
-                //             Notification::make()
-                //                 ->title("Berhasil di Hapus")
-                //                 ->body("Record dengan kode " . $record->kode_track . "  berhasil dihapus")
-                //                 ->success()
-                //                 ->send();
-                //         });
-                //     }),
+                BulkAction::make('export')
+                    ->label('Form Monitoring')
+                    ->button()
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records) {
+                        $records->each(function ($record) use (&$recordIds) {
+                            $recordIds[] = $record->id;
+                        });
+
+                        $data = implode('$', $recordIds);
+                        $filename = 'Form Monitoring Sampel bulanan.xlsx';
+                        return Excel::download(new MonitoringKupabulk($data), $filename);
+                    })
             ])
             ->actions([
 
                 ActionGroup::make([
                     Action::make('export_kupa')
-                        ->label(' Kupa')
+                        ->label('Kupa')
                         ->url(fn (TrackSampel $record): string => route('export.excel', $record->id))
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
@@ -381,6 +384,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 ])->tooltip('Actions'),
             ]);
     }
+
+
 
     public function render(): View
     {
