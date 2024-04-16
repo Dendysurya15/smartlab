@@ -170,8 +170,8 @@ if (!function_exists('checkApprovedLabelKupa')) {
     {
         $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
         $kupaFinishBy = last($alurApproved);
-
-
+        $roles = auth()->user()->roles[0]->name;
+        // dd($alurApproved);
         $main_title = 'Verifikasi Status';
 
         if ($record->status == 'Rejected') {
@@ -180,6 +180,10 @@ if (!function_exists('checkApprovedLabelKupa')) {
             return $main_title . ' (On Draft)';
         } else if ($record->status == 'Approved' && $record->status_approved_by_role == $kupaFinishBy) {
             return 'Kupa Selesai';
+        } else if ($record->status == 'Waiting Head Approved' && $roles === 'Admin') {
+            return 'Waiting Head Approved';
+        } else if ($record->status == 'Waiting Admin Approved'  && $roles === 'Head Of Lab SRS') {
+            return 'Waiting Admin Approved';
         } else {
             return $main_title;
         }
@@ -192,13 +196,15 @@ if (!function_exists('checkIconApproved')) {
 
         $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
         $kupaFinishBy = last($alurApproved);
-
+        $roles = auth()->user()->roles[0]->name;
         if ($record->status == 'Rejected') {
             return 'heroicon-o-x-mark';
         } else if ($record->status == 'Draft') {
             return 'heroicon-o-x-mark';
         } else if ($record->status == 'Approved' && $record->status_approved_by_role == $kupaFinishBy) {
             return 'heroicon-m-check';
+        } else if ($record->status == 'Waiting Admin Approved' && $roles === 'Head Of Lab SRS') {
+            return 'heroicon-o-x-mark';
         } else {
             return 'heroicon-m-check-badge';
         }

@@ -28,6 +28,9 @@ use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Exports\MonitoringKupabulk;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
+use Filament\Tables\Grouping\Group;
+use Filament\Tables\Columns\ToggleColumn;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -107,7 +110,51 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->searchable()
                     ->sortable()
                     ->size('xs'),
+                TextColumn::make('status')
+                    ->badge()
+                    ->formatStateUsing(function (TrackSampel $track) {
+                        if ($track->status_changed_by_id != null) {
 
+                            $user = User::find($track->status_changed_by_id);
+                            // dd($user);
+                            if ($user && $track->status !== 'Waiting Head Approved') {
+                                $roles = $user->getRoleNames();
+                                // dd($roles);
+                                return $track->status . ' by ' . ($roles->isNotEmpty() ? $roles->implode(', ') : 'No Role');
+                            } else {
+                                return $track->status;
+                            }
+                        } else {
+                            return $track->status;
+                        }
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->color(function (TrackSampel $track) {
+                        $result = '';
+                        switch ($track->status) {
+                            case 'Approved':
+                                $result = 'success';
+                                break;
+                            case 'Waiting Admin Approved':
+                                $result = 'gray';
+                                break;
+                            case 'Waiting Head Approved':
+                                $result = 'info';
+                                break;
+                            case 'Rejected':
+                                $result = 'danger';
+                                break;
+                            case 'Draft':
+                                $result = 'warning';
+                                break;
+                            default:
+                                $result = 'gray';
+                        }
+                        return $result;
+                    })
+                    ->searchable()
+                    ->sortable()
+                    ->size('xs'),
                 TextColumn::make('estimasi')
                     ->formatStateUsing(function (TrackSampel $track) {
                         return tanggal_indo($track->estimasi, false, false, true);
@@ -123,42 +170,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->searchable()
                     ->sortable()
                     ->size('xs'),
-                TextColumn::make('status')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->formatStateUsing(function (TrackSampel $track) {
-                        if ($track->status_approved_by_role != null) {
-                            return $track->status . ' by ' . $track->status_approved_by_role;
-                        } else {
-                            return $track->status;
-                        }
-                    })
-                    ->limit(23)
-                    ->searchable()
-                    ->badge()
-                    ->color(function (TrackSampel $track) {
-                        $result = '';
-                        switch ($track->status) {
-                            case 'Approved':
-                                $result = 'success';
-                                break;
-                            case 'Waiting Approved':
-                                $result = 'gray';
-                                break;
-                            case 'Rejected':
-                                $result = 'danger';
-                                break;
-                            case 'Draft':
-                                $result = 'warning';
-                                break;
-                            default:
-                                $result = 'gray';
-                        }
-
-                        return $result;
-                    })
-                    ->sortable()
-                    ->size('xs'),
-
                 TextColumn::make('skala_prioritas')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable()
@@ -201,7 +212,12 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 // ->modalButton('Yes')
 
             ])->striped()
-
+            ->groups([
+                Group::make('jenisSampel.nama')
+                    ->label('Jenis Sampel'),
+                Group::make('status')
+                    ->label('Status'),
+            ])
             ->filters([
                 SelectFilter::make('skala_prioritas')
                     ->options([
@@ -267,6 +283,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->deselectRecordsAfterCompletion()
+                    ->modalHeading('Perhatian')
+                    ->modalSubheading(
+                        "Harap Memilih data yang tidak dalam kondisi status Draft"
+                    )
+                    ->modalButton('Export Kupa')
                     ->action(function (Collection $records) {
                         $records->each(function ($record) use (&$recordIds) {
                             $recordIds[] = $record->id;
@@ -320,27 +341,25 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             fn (TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat dipulihkan kembali."
                         )
                         ->modalButton('Yes'),
-                    EditAction::make('Verifikasi Status')
+                    EditAction::make('Verifikasi_Status')
                         ->label(fn (TrackSampel $record): string => checkApprovedLabelKupa($record))
-                        // ->disabled(fn (TrackSampel $record): bool => checkApprovedKupa($this->rolesAuthUser, $record))
                         ->disabled(function (TrackSampel $record) {
                             $user = Auth::user();
                             $roles = $user->getRoleNames();
-
-
-
-                            if (checkApprovedLabelKupa($record) === 'Kupa Selesai' || checkApprovedLabelKupa($record) === 'Verifikasi Status (On Draft)') {
-                                $func = True;
-                            } elseif ($roles[0] === 'Head Of Lab SRS' || $roles[0] === 'Admin') {
-                                $func = False;
+                            $roles = auth()->user()->roles[0]->name;
+                            $admin = $record->approveby_admin;
+                            $head = $record->approveby_head;
+                            if ($admin == 1 && $roles == 'Admin') {
+                                $func = true;
+                            } elseif ($head == 1 && $roles == 'Head Of Lab SRS') {
+                                $func = true;
+                            } elseif ($admin == 0 && $roles == 'Head Of Lab SRS') {
+                                $func = true;
+                            } elseif ($record->status === 'Rejected') {
+                                $func = true;
                             } else {
-                                $func = True;
+                                $func = false;
                             }
-                            // if ($roles[0] === 'Head Of Lab SRS' || $roles[0] === 'Admin') {
-                            //     $func = False;
-                            // } else {
-                            //     $func = true;
-                            // }
 
                             return $func;
                         })
@@ -354,15 +373,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                     'Approved' => 'Approved',
                                     'Rejected' => 'Rejected',
                                 ])
+                                ->required()
                         ])
-                        ->successNotification(function (Model $record) {
-                            return Notification::make()
-                                ->success()
-                                ->title('Verifikasi Berhasil')
-                                ->body(function () use ($record) {
-                                    return "Kupa " . $record->kode_track . " telah di-" . $record->status;
-                                });
-                        })
                         ->using(function (TrackSampel $record, array $data): TrackSampel {
 
                             if ($record->status_timestamp != null) {
@@ -370,15 +382,65 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             } else {
                                 $status_timestamp = Carbon::now()->format('Y-m-d H:i:s');
                             }
+                            $state = $data['status'];
+                            $admin = $record->approveby_admin;
+                            $head = $record->approveby_head;
+                            $statusadmin = $admin;
+                            $statushead = $head;
+                            $userRole = auth()->user()->roles[0]->name;
 
-                            $record->update(
-                                [
-                                    'status' => $data['status'],
-                                    'status_changed_by_id' => auth()->user()->id,
-                                    'status_approved_by_role' => auth()->user()->roles[0]->name,
-                                    'status_timestamp' => $status_timestamp,
-                                ]
-                            );
+
+                            if ($userRole === 'Admin') {
+                                if ($state === 'Approved' && $head == 0) {
+                                    $statusadmin = 1;
+                                    $statusdata = 'Waiting Head Approved';
+                                } elseif ($state === 'Approved' && $head == 1) {
+                                    $statusadmin = 1;
+                                    $statusdata = 'Approved';
+                                } else {
+                                    $statusadmin = 0;
+                                    $statusdata = 'Rejected';
+                                }
+                            } elseif ($userRole === 'Head Of Lab SRS') {
+                                if ($state === 'Approved' && $admin == 0) {
+                                    $statushead = 1;
+                                    $statusdata = 'Rejected';
+                                } elseif ($state === 'Approved' && $admin == 1) {
+                                    $statushead = 1;
+                                    $statusdata = 'Approved';
+                                } else {
+                                    $statushead = 0;
+                                    $statusdata = 'Rejected';
+                                }
+                            }
+                            // dd($statusdata);
+                            try {
+                                DB::beginTransaction();
+                                $id = $record->id;
+                                $trackSampel = TrackSampel::find($id);
+                                $trackSampel->approveby_admin = $statusadmin;
+                                $trackSampel->approveby_head = $statushead;
+                                $trackSampel->status = $statusdata;
+                                $trackSampel->status_changed_by_id = auth()->user()->id;
+                                $trackSampel->status_approved_by_role = auth()->user()->roles[0]->name;
+                                $trackSampel->status_timestamp = $status_timestamp;
+                                $trackSampel->save();
+
+                                DB::commit();
+                                Notification::make()
+                                    ->success()
+                                    ->title('Verifikasi Berhasil')
+                                    ->body("Kupa " . $record->kode_track . " telah di-" . $statusdata)
+                                    ->send();
+                            } catch (\Throwable $th) {
+                                DB::rollBack();
+
+                                Notification::make()
+                                    ->title('Error ' . $th->getMessage())
+                                    ->danger()
+                                    ->color('danger')
+                                    ->send();
+                            }
                             return $record;
                         })
                 ])->tooltip('Actions'),
