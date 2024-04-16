@@ -91,7 +91,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $jenis_kupa = $jenis_sample->nama;
         $no_kupa = $tracksample->nomor_kupa;
         $catatan = $tracksample->catatan;
-        $approval = $tracksample->status;
+        $approval = $tracksample->approveby_admin ? 'Approved' : $tracksample->status;
 
         $memo_created = $tracksample->tanggal_memo;
         $nama_pengirim = $tracksample->nama_pengirim;
@@ -423,28 +423,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $drawing1->setCoordinates('B1');
         $drawings[] = $drawing1;
 
-        // Second Image
-        // if ($this->status === 'Approved') {
-        //     $drawing2 = new Drawing();
-        //     $drawing2->setName('Logo2');
-        //     $drawing2->setDescription('This is my second logo');
-        //     $drawing2->setPath(public_path('images/bg_test.png'));
-        //     $drawing2->setHeight(70);
-        //     $drawing2->setCoordinates($lokasiKolomTtdPenerimaSampel);
-        //     $drawings[] = $drawing2;
-        // }
-
-
-        // $drawing3 = new Drawing();
-        // $drawing3->setName('Logo2');
-        // $drawing3->setDescription('This is my second logo');
-        // $drawing3->setPath(public_path('images/bg_test.png'));
-        // $drawing3->setHeight(70);
-        // $drawing3->setCoordinates($lokasiKolomTtdHeadOfLab);
-        // $drawings[] = $drawing3;
-
-
-        // Add more images as needed
 
         return $drawings;
     }
