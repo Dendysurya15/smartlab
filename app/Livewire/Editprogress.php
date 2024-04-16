@@ -92,7 +92,6 @@ class Editprogress extends Component implements HasForms
     {
         return $form
             ->schema([
-
                 ToggleButtons::make('status_data')
                     ->label('Status Form')
                     ->options([
@@ -113,7 +112,16 @@ class Editprogress extends Component implements HasForms
                         'Waiting Approved' => 'heroicon-o-clock',
                         'Draft' => 'heroicon-o-document-magnifying-glass'
                     ])
-                    ->default($this->opt->status)
+                    ->default(function () {
+                        // dd($this->opt->status);
+                        if ($this->opt->status === 'Waiting Head Approved') {
+                            return  'Approved';
+                        } elseif ($this->opt->status === 'Waiting Admin Approved') {
+                            return  'Waiting Approved';
+                        } else {
+                            return  $this->opt->status;
+                        }
+                    })
                     ->disabled()
                     ->inline(),
                 Select::make('Jenis_Sampel')
@@ -348,6 +356,7 @@ class Editprogress extends Component implements HasForms
 
                                     ->onlyCountries(['tr', 'us', 'gb', 'id']),
                             ])
+                            ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                             ->default(function () {
                                 $newData = [];
                                 $nomerhp = explode(',', $this->opt->no_hp);
@@ -501,9 +510,9 @@ class Editprogress extends Component implements HasForms
                             ->uploadingMessage('Upoad Foto Sampel...')
                             ->deletable(function () {
                                 $data = $this->opt->status;
-
+                                // Waiting Head Approved
                                 // dd($data);
-                                if ($data === 'Approved' || $data === 'Draft') {
+                                if ($data === 'Approved' || $data === 'Draft' || $data === 'Waiting Head Approved') {
                                     $data = true;
                                 } else {
                                     $data = false;
@@ -515,7 +524,7 @@ class Editprogress extends Component implements HasForms
                                 $data = $this->opt->status;
 
                                 // dd($data);
-                                if ($data === 'Approved' || $data === 'Draft') {
+                                if ($data === 'Approved' || $data === 'Draft' || $data === 'Waiting Head Approved') {
                                     $data = true;
                                 } else {
                                     $data = false;
@@ -527,7 +536,7 @@ class Editprogress extends Component implements HasForms
                                 $data = $this->opt->status;
 
                                 // dd($data);
-                                if ($data === 'Approved' || $data === 'Draft') {
+                                if ($data === 'Approved' || $data === 'Draft' || $data === 'Waiting Head Approved') {
                                     $data = false;
                                 } else {
                                     $data = true;
@@ -577,8 +586,8 @@ class Editprogress extends Component implements HasForms
         // dd('dispatch');
         $commonRandomString = generateRandomString(rand(5, 10));
         $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
-
-        if ($this->opt->status === "Approved") {
+        // dd($this->opt->status);
+        if ($this->opt->status === "Approved" || $this->opt->status === "Waiting Head Approved") {
             $Alat = 'Alat';
             $Personel = 'Personel';
             $bahan = 'Bahan';
@@ -639,7 +648,7 @@ class Editprogress extends Component implements HasForms
                 }
 
 
-                // dd($form['repeater']);
+                // dd($this->opt->parameter_analisisid);
                 if ($form['repeater'] !== []) {
                     $idparams = $this->opt->parameter_analisisid;
                     TrackParameter::where('id_tracksampel', $idparams)->delete();
@@ -884,7 +893,7 @@ class Editprogress extends Component implements HasForms
                     ->color('danger')
                     ->send();
             }
-        } elseif ($this->opt->status === "Waiting Approved") {
+        } elseif ($this->opt->status === "Waiting Admin Approved") {
             Notification::make()
                 ->title('Harap beri Approval Terlebih Dahulu Sebelum Mengedit')
                 ->danger()
