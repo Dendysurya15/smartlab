@@ -289,12 +289,29 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     )
                     ->modalButton('Export Kupa')
                     ->action(function (Collection $records) {
-                        $records->each(function ($record) use (&$recordIds) {
-                            $recordIds[] = $record->id;
+                        $recordIds = [];
+                        $jenis_sampel = [];
+                        $dates = [];
+                        $year = [];
+
+                        $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
+                            if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                                $recordIds[] = $record->id;
+                            }
+                            $jenis_sampel[] = $record->jenisSampel->nama;
+                            $carbonDate = Carbon::parse($record->tanggal_memo);
+                            $dates[] = $carbonDate->format('F');
+                            $year[] = $carbonDate->format('Y');
                         });
 
+                        $jenis_sample_final = implode(',', array_unique($jenis_sampel));
+                        $dates_final = implode(',', array_unique($dates));
+                        $year_final = implode(',', array_unique($year));
+                        // dd($recordIds, $records);
                         $data = implode('$', $recordIds);
-                        $filename = 'Form Monitoring Sampel bulanan.xlsx';
+
+                        // Concatenate strings and variables using the concatenation operator (.)
+                        $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
                         return Excel::download(new MonitoringKupabulk($data), $filename);
                     })
             ])
