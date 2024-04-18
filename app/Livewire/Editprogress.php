@@ -676,7 +676,7 @@ class Editprogress extends Component implements HasForms
                     foreach ($form['nomerhpuser'] as $data) {
                         $dataToInsert2[] = [
                             'no_surat' => $form['NomorSurat'],
-                            'kodesample' => $randomCode,
+                            'kodesample' => $this->opt->kode_track,
                             'penerima' =>  str_replace('+', '', $data['NomorHp']),
                             'progres' => $getprogress,
                             'type' => 'update',
@@ -702,7 +702,7 @@ class Editprogress extends Component implements HasForms
 
                 Mail::to($emailAddresses)
                     ->cc($emailcc)
-                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
 
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"
@@ -831,7 +831,7 @@ class Editprogress extends Component implements HasForms
                     foreach ($form['nomerhpuser'] as $data) {
                         $dataToInsert2[] = [
                             'no_surat' => $form['NomorSurat'],
-                            'kodesample' => $randomCode,
+                            'kodesample' => $this->opt->kode_track,
                             'penerima' =>  str_replace('+', '', $data['NomorHp']),
                             'progres' => $getprogress,
                             'type' => 'input',
@@ -860,7 +860,7 @@ class Editprogress extends Component implements HasForms
 
                 Mail::to($emailAddresses)
                     ->cc($emailcc)
-                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
 
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"
