@@ -27,6 +27,8 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Exports\MonitoringKupabulk;
+use App\Exports\LogbookBulkExport;
+use App\Exports\LogbookBulk;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Grouping\Group;
@@ -313,7 +315,45 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         // Concatenate strings and variables using the concatenation operator (.)
                         $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
                         return Excel::download(new MonitoringKupabulk($data), $filename);
-                    })
+                    }),
+                BulkAction::make('export_logbook')
+                    ->label('Logbook Export')
+                    ->button()
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->deselectRecordsAfterCompletion()
+                    ->modalHeading('Perhatian')
+                    ->modalSubheading(
+                        "Harap Memilih data yang tidak dalam kondisi status Draft"
+                    )
+                    ->modalButton('Export Kupa')
+                    ->action(function (Collection $records) {
+                        $recordIds = [];
+                        $jenis_sampel = [];
+                        $dates = [];
+                        $year = [];
+
+                        $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
+                            if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                                $recordIds[] = $record->id;
+                            }
+                            $jenis_sampel[] = $record->jenisSampel->nama;
+                            $carbonDate = Carbon::parse($record->tanggal_memo);
+                            $dates[] = $carbonDate->format('F');
+                            $year[] = $carbonDate->format('Y');
+                        });
+
+                        $jenis_sample_final = implode(',', array_unique($jenis_sampel));
+                        $dates_final = implode(',', array_unique($dates));
+                        $year_final = implode(',', array_unique($year));
+                        // dd($recordIds, $records);
+                        $data = implode('$', $recordIds);
+
+                        // Concatenate strings and variables using the concatenation operator (.)
+                        $filename = 'Logbook Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
+                        return Excel::download(new LogbookBulkExport($data), $filename);
+                    }),
+
             ])
             ->actions([
 
@@ -323,12 +363,52 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->url(fn (TrackSampel $record): string => route('export.excel', $record->id))
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
+                        ->disabled(function (TrackSampel $record) {
+                            if ($record->status === 'Draft') {
+                                $func = true;
+                            } else {
+                                $func = false;
+                            }
+
+                            return $func;
+                        })
                         ->visible(auth()->user()->can('export_kupa'))
                         ->size('xs'),
                     Action::make('export_form_monitoring_kupa')
                         ->label(' Form Monitoring')
                         ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
                         ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->disabled(function (TrackSampel $record) {
+                            if ($record->status === 'Draft') {
+                                $func = true;
+                            } else {
+                                $func = false;
+                            }
+
+                            return $func;
+                        })
+                        ->visible(auth()->user()->can('export_form_monitoring_kupa'))
+                        ->size('xs'),
+                    Action::make('export_logbook')
+                        ->label(' Logbook')
+                        // ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
+                        ->action(function (TrackSampel $records) {
+
+                            // Concatenate strings and variables using the concatenation operator (.)
+                            $filename = 'Logbook Sampel.xlsx';
+                            return Excel::download(new LogbookBulk($records->id), $filename);
+                        })
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->disabled(function (TrackSampel $record) {
+                            if ($record->status === 'Draft') {
+                                $func = true;
+                            } else {
+                                $func = false;
+                            }
+
+                            return $func;
+                        })
                         ->color('success')
                         ->visible(auth()->user()->can('export_form_monitoring_kupa'))
                         ->size('xs'),
@@ -373,6 +453,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             } elseif ($admin == 0 && $roles == 'Head Of Lab SRS') {
                                 $func = true;
                             } elseif ($record->status === 'Rejected') {
+                                $func = true;
+                            } elseif ($record->status === 'Draft') {
                                 $func = true;
                             } else {
                                 $func = false;
