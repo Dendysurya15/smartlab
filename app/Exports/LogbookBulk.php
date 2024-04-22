@@ -19,8 +19,9 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use OpenSpout\Common\Entity\Style\Border;
 use Cknow\Money\Money;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class LogbookBulk implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
+class LogbookBulk implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings, WithTitle
 {
 
     private $id;
@@ -50,22 +51,47 @@ class LogbookBulk implements FromView, ShouldAutoSize, WithColumnWidths, WithEve
                 $jumlah_per_parameter[] = $trackParameter->jumlah;
             }
         }
+        $newArray = [];
+        foreach ($nama_parameter as $item) {
+            if (strpos($item, ',') !== false) {
+                $explodedItems = array_map('trim', explode(',', $item));
+                $newArray = array_merge($newArray, $explodedItems);
+            } else {
+                $newArray[] = $item;
+            }
+        }
+        $total_namaparams = 13 - count($newArray);
+        // dd($newArray);
 
+        $timestamp = strtotime($queries->tanggal_terima);
+        $year = date('Y', $timestamp);
+        $lab =  substr($year, 2) . '-' . $queries->jenisSampel->kode;
+        $Nomorlab = explode('$', $queries->nomor_lab);
+        $Nomorlab = array_filter($Nomorlab, function ($value) {
+            return $value !== "-";
+        });
+        $countlab = count($Nomorlab);
+        $timestamp = strtotime($queries->tanggal_terima);
+        $tanggal_terima = date('Y-m-d', $timestamp);
+        $timestamp2 = strtotime($queries->tanggal_penyelesaian);
+        $tanggal_penyelesaian = date('Y-m-d', $timestamp);
         // dd($queries);
-        $result[] = [
+        $result[0] = [
             'col' => ' ',
-            'id' => $inc++,
-            'tanggalterima' => $tanggal_terima->format('Y-m-d'),
-            'jenis_sample' => $queries->jenisSampel->nama,
-            'asal_sampel' => $queries->asal_sampel,
-            'pelanggan' => $queries->nama_pengirim,
-            'nomor_kupa' => $queries->nomor_kupa,
-            'Parameter' => $nama_parameter,
-            'nomor_lab' => $queries->nomor_lab,
+            'id' => 1,
+            'nomor_lab' => $lab . $Nomorlab[0],
+            'mark' => count($newArray),
+            'notmark' => $total_namaparams,
+            'jumlah_sampel' => $queries->jumlah_sampel,
+            'tanggal_terima' => $tanggal_terima,
+            'kondisi_sampel' => $queries->kondisi_sampel,
+            'tanggal_penyelesaian' => $tanggal_penyelesaian,
+            'no_order' => $queries->id,
+            'jenis_sampel' => $queries->jenisSampel->nama
         ];
 
         // dd($result);
-        return view('excelView.logbookbulk', ['data' => $result]);
+        return view('excelView.logbookbulk', ['data' => $result, 'namaparams' => $newArray, 'total_namaparams' => $total_namaparams]);
     }
     public function registerEvents(): array
     {
@@ -140,6 +166,10 @@ class LogbookBulk implements FromView, ShouldAutoSize, WithColumnWidths, WithEve
     }
 
 
+    public function title(): string
+    {
+        return 'ID ' . $this->id;
+    }
     public function columnWidths(): array
     {
         return [

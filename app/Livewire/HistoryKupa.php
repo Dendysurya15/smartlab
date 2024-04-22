@@ -394,9 +394,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->label(' Logbook')
                         // ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
                         ->action(function (TrackSampel $records) {
+                            // dd($records);
+                            $jenis_sample_final = $records->jenisSampel->nama;
+                            $carbonDate = Carbon::parse($records->tanggal_memo);
+                            $dates_final = $carbonDate->format('F');
+                            $year = $carbonDate->format('Y');
+
 
                             // Concatenate strings and variables using the concatenation operator (.)
-                            $filename = 'Logbook Sampel.xlsx';
+                            $filename = 'Logbook Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year . '.xlsx';
                             return Excel::download(new LogbookBulk($records->id), $filename);
                         })
                         ->icon('heroicon-o-document-arrow-down')
