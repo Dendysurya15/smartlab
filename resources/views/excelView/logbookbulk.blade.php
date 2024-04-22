@@ -199,10 +199,10 @@
         <tbody>
             <tr>
                 <td></td>
-                <td style="text-align: center;border:1px solid black" colspan="3" rowspan="5">Erna</td>
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">Wulan</td>
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">ShaidShadin</td>
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">Riski</td>
+                <td style="text-align: center;border:1px solid black" colspan="3" rowspan="5">Ernawati</td>
+                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">Wulan Permata Ardean</td>
+                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">Syahid Shadiqin</td>
+                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">Riski Fitri Kurnia</td>
                 <td colspan="4" rowspan="6" style="vertical-align: top;text-align:left;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
             </tr>
             <tr>

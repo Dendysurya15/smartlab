@@ -1,7 +1,6 @@
 <x-authentication-layout>
     <h1 class="text-3xl text-slate-800 dark:text-slate-700 font-bold mb-6">{{ __('Selamat Datang!') }} </h1>
-    <h1 class="italic mb-4">Silahkan masukkan username dan password untuk masuk ke sistem web <span
-            class="text-emerald-600 font-medium">Smart Lab</span>!</h1>
+    <h1 class="italic mb-4">Silahkan masukkan username dan password untuk masuk ke sistem web <span class="text-emerald-600 font-medium">Smart Lab</span>!</h1>
     @if (session('status'))
     <div class="mb-4 font-medium text-sm text-green-600">
         {{ session('status') }}
@@ -21,9 +20,7 @@
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <span class="text-gray-500 sm:text-sm"></span>
                         </div>
-                        <input type="text" name="email" id="price"
-                            class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-2 ring-inset ring-emerald-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-700 sm:text-sm sm:leading-6"
-                            placeholder="Masukkan Email">
+                        <input type="text" name="email" class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-2 ring-inset ring-emerald-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-700 sm:text-sm sm:leading-6" placeholder="Masukkan Email">
                     </div>
                 </div>
             </div>
@@ -35,9 +32,7 @@
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <span class="text-gray-500 sm:text-sm"></span>
                         </div>
-                        <input type="password" name="password" id="price"
-                            class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-2 ring-inset ring-emerald-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-700 sm:text-sm sm:leading-6"
-                            placeholder="Masukkan Password">
+                        <input type="password" name="password" class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-2 ring-inset ring-emerald-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-700 sm:text-sm sm:leading-6" placeholder="Masukkan Password">
                     </div>
                 </div>
                 {{--
@@ -49,13 +44,13 @@
             {{-- @if (Route::has('password.request'))
             <div class="mr-1">
                 <a class="text-sm underline hover:no-underline" href="{{ route('password.request') }}">
-                    {{ __('Forgot Password?') }}
-                </a>
-            </div>
-            @endif --}}
-            <x-button>
-                {{ __('Masuk') }}
-            </x-button>
+            {{ __('Forgot Password?') }}
+            </a>
+        </div>
+        @endif --}}
+        <x-button>
+            {{ __('Masuk') }}
+        </x-button>
         </div>
     </form>
     <x-validation-errors class="mt-4" />
