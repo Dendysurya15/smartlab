@@ -56,6 +56,7 @@ class Editprogress extends Component implements HasForms
     public $labkanan;
     public $Peralatan;
     public $foto_sampel;
+    public $kode_sampel;
     public $Konfirmasi;
     public ?array $data = [];
 
@@ -67,6 +68,10 @@ class Editprogress extends Component implements HasForms
 
         // dd($this->opt);
 
+
+        $this->kode_sampel = explode('/', $this->opt->kode_sampel);
+
+        // dd($kode_sampel);
         $nolab = $this->opt->nomor_lab;
         $string = $nolab;
         $parts = explode('$', $string);
@@ -205,7 +210,7 @@ class Editprogress extends Component implements HasForms
                     ->default($this->opt->departemen)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
-                TextInput::make('NamaKodeSampel')
+                Textarea::make('NamaKodeSampel')
                     ->label('Nama Kode Sampel')
                     ->minLength(2)
                     ->default($this->opt->kode_sampel)
@@ -213,15 +218,19 @@ class Editprogress extends Component implements HasForms
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255),
 
-                TextInput::make('NamaKodeSampeljamak')
+                Textarea::make('NamaKodeSampeljamak')
                     ->label('Nama Kode Sampel')
-                    ->default($this->opt->kode_sampel)
+                    ->default(function () {
+                        $data = $this->opt->kode_sampel;
+                        // dd($data);
+                        $data_with_newlines = str_replace("$", "\n", $data);
+                        return $data_with_newlines;
+                    })
+
+                    ->autosize()
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
-                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
-                    ->mask(RawJs::make(<<<'JS'
-                        $input.split('\n').map(item => item.trim().replace(/\s+/g, '/')).join('/')
-                    JS)),
+                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
 
                 TextInput::make('KemasanSampel')
                     ->label('Kemasan Sampel')
@@ -360,11 +369,13 @@ class Editprogress extends Component implements HasForms
                             ->default(function () {
                                 $newData = [];
                                 $nomerhp = explode(',', $this->opt->no_hp);
-                                // dd($nomerhp);
-                                foreach ($nomerhp as $key => $value) {
-                                    $newData[] = [
-                                        'NomorHp' => $value
-                                    ];
+                                // dd(empty($this->opt->no_hp));
+                                if (!empty($this->opt->no_hp)) {
+                                    foreach ($nomerhp as $key => $value) {
+                                        $newData[] = [
+                                            'NomorHp' => $value
+                                        ];
+                                    }
                                 }
                                 return $newData;
                             })
@@ -437,6 +448,33 @@ class Editprogress extends Component implements HasForms
                                             ->readOnly()
                                             ->disabled(function ($get) {
                                                 return is_null($get('status'));
+                                            }),
+                                        CheckboxList::make('nama_lab')
+                                            ->label('Nama Lab')
+                                            ->columns(2)
+                                            ->bulkToggleable()
+                                            ->default([])
+                                            ->options(function (Get $get) {
+                                                $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($this->opt->kode_sampel));
+                                                $array = explode('$', $NamaKodeSampeljamak);
+                                                $result = array_combine($array, $array);
+
+                                                return $result;
+                                            })
+                                            ->disabled(function ($get) {
+                                                return is_null($get('status'));
+                                            })
+                                            ->required(function () {
+                                                $data = $this->opt->status;
+
+                                                // dd($data);
+                                                if ($data === 'Approved' || $data === 'Draft') {
+                                                    $data = true;
+                                                } else {
+                                                    $data = false;
+                                                }
+
+                                                return $data;
                                             })
                                     ])
                             ])
@@ -444,12 +482,16 @@ class Editprogress extends Component implements HasForms
                                 $newData = [];
                                 foreach ($this->getparam as $key => $value) {
                                     foreach ($value as $key1 => $value1) if (is_array($value1)) {
+                                        // dd($value);
+                                        $namakode_sampel = $value['namakode_sampel'];
+                                        $array = explode('$', $namakode_sampel);
                                         $newData[] = [
                                             'status' => $value['id_parameter'],
                                             'total_sample' => $value['jumlah'],
                                             'parametersdata' => $value1['nama_unsur'],
                                             'harga_sampel' => $value1['harga'],
-                                            'subtotal' => $value['totalakhir']
+                                            'subtotal' => $value['totalakhir'],
+                                            'nama_lab' => $array
                                         ];
                                     }
                                 }

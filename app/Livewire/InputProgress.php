@@ -37,9 +37,7 @@ use Filament\Forms\Components\Split;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Support\RawJs;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
-use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
-use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
-use Ysfkaya\FilamentPhoneInput\Infolists\PhoneInputNumberType;
+use Filament\Forms\Components\KeyValue;
 
 class InputProgress extends Component implements HasForms
 {
@@ -47,7 +45,7 @@ class InputProgress extends Component implements HasForms
     use InteractsWithForms;
 
     public static $paramstest = [];
-
+    public $opt;
     protected $casts = [
         'drafting' => 'boolean',
     ];
@@ -55,6 +53,9 @@ class InputProgress extends Component implements HasForms
 
     public function mount(): void
     {
+        $this->opt = TrackSampel::with('trackParameters')->orderBy('id', 'desc')->first();
+
+        // dd($this->opt);
         $this->form->fill();
     }
 
@@ -69,11 +70,15 @@ class InputProgress extends Component implements HasForms
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         // Retrieve the progress column value from the JenisSampel model based on the updated state
                         $jenisSampel = JenisSampel::find($state);
-
+                        // dd($state);
                         $params = ParameterAnalisis::where('id_jenis_sampel', $state)->pluck('nama_parameter', 'id')->toArray();
-                        // dd($jenisSampel->kode);
+                        $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $state)->orderBy('id', 'desc')->first();
+
+                        // dd($getlates_id->nomor_kupa ?? null);
                         $set('parametersAnal', $params);
                         $set('preflab', $jenisSampel->kode);
+                        $set('NomorKupa', isset($getlates_id->nomor_kupa) ? $getlates_id->nomor_kupa + 1 : 1);
+
                         if ($jenisSampel) {
                             $progress = $jenisSampel->progress;
 
@@ -86,8 +91,6 @@ class InputProgress extends Component implements HasForms
 
                             // dd($getdata);
                             $set('progressOpt', $getdata);
-                        } else {
-                            // Handle the case where the JenisSampel with the given state is not found
                         }
                     })
                     ->required()
@@ -170,15 +173,22 @@ class InputProgress extends Component implements HasForms
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255),
 
-                TextInput::make('NamaKodeSampeljamak')
+                Textarea::make('NamaKodeSampeljamak')
                     ->label('Nama Kode Sampel')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
-                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
-                    ->mask(RawJs::make(<<<'JS'
-                        $input.split('\n').map(item => item.trim().replace(/\s+/g, '/')).join('/')
-                    JS)),
+                    ->autosize()
+                    ->live()
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
 
+                        $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
+                        $array = explode('$', $NamaKodeSampeljamak);
+                        $result = array_combine($array, $array);
+                        // dd($result);
+
+                        $set('setoption_costumparams', $result);
+                    })
+                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
 
                 TextInput::make('KemasanSampel')
                     ->label('Kemasan Sampel')
@@ -296,6 +306,7 @@ class InputProgress extends Component implements HasForms
 
                     ])
                     ->columns(4),
+
                 Section::make('Pengujian sampel')
                     ->label('Pengujian Sampel')
                     ->description('Peringatan untuk crosscheck ulang seluruh data yang ingin akan dimasukkan ke sistem!')
@@ -313,7 +324,6 @@ class InputProgress extends Component implements HasForms
                                                 $set('parametersdata', $params->nama_unsur);
                                                 $set('harga_sampel', $params->harga);
                                                 $set('total_harga', $params->harga);
-                                                // $set('total_sample', '3');
                                             })
                                             ->disabled(function ($get) {
                                                 return is_null($get('../../parametersAnal'));
@@ -350,17 +360,25 @@ class InputProgress extends Component implements HasForms
                                             })
                                             ->afterStateHydrated(function (Get $get, Set $set) {
                                                 self::updateTotals($get, $set);
+                                            }),
+                                        CheckboxList::make('nama_lab')
+                                            ->label('Nama Lab')
+                                            ->columns(2)
+                                            ->bulkToggleable()
+                                            ->default([])
+                                            ->options(function (Get $get) {
+                                                return $get('../../setoption_costumparams');
                                             })
+                                            ->disabled(function ($get) {
+                                                return is_null($get('parametersdata'));
+                                            })
+                                            ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
                                     ])
 
                             ])
                             ->deletable(true)
                             ->columnSpanFull()
-                        // ->columns(4)
-
-
                     ])->columns(4),
-
                 Textarea::make('catatan')
                     ->rows(10)
                     ->columnSpanFull(),
@@ -436,7 +454,10 @@ class InputProgress extends Component implements HasForms
         $checkalat = in_array($Alat, $form['Peralatan']);
         $checkpersonel = in_array($Personel, $form['Peralatan']);
         $checkbahan = in_array($bahan, $form['Peralatan']);
-        // dd($form['drafting']);
+        // dd($form['tags']);
+        $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($form['NamaKodeSampeljamak']));
+
+        // dd($NamaKodeSampeljamak);
         $commonRandomString = generateRandomString(rand(5, 10));
         $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
         if ($form['drafting'] !== true) {
@@ -452,7 +473,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->nomor_kupa = $form['NomorKupa'];
                 $trackSampel->nama_pengirim = $form['NamaPengirim'];
                 $trackSampel->departemen = $form['NamaDep'];
-                $trackSampel->kode_sampel = $form['NamaKodeSampel'] ?? $form['NamaKodeSampeljamak'];
+                $trackSampel->kode_sampel = $form['NamaKodeSampel'] ?? $NamaKodeSampeljamak;
                 $trackSampel->jumlah_sampel = $form['JumlahSampel'];
                 $trackSampel->kondisi_sampel = $form['KondisiSampel'];
                 $trackSampel->kemasan_sampel = $form['KemasanSampel'];
@@ -487,13 +508,15 @@ class InputProgress extends Component implements HasForms
                     $trackSampel->foto_sampel = $donefilename;
                 }
 
-                // dd($form['repeater']);
+
                 if ($form['repeater'] !== []) {
+                    // dd($form['repeater']);
                     foreach ($form['repeater'] as $data) {
                         $dataToInsert[] = [
                             'id_parameter' => $data['status'],
                             'jumlah' => $data['total_sample'],
                             'totalakhir' => $data['subtotal'],
+                            'namakode_sampel' => implode('$', $data['nama_lab']),
                             'id_tracksampel' => $commonRandomString,
                         ];
                     }
@@ -596,7 +619,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->nomor_kupa = $form['NomorKupa'];
                 $trackSampel->nama_pengirim = $form['NamaPengirim'];
                 $trackSampel->departemen = $form['NamaDep'];
-                $trackSampel->kode_sampel = $form['NamaKodeSampel'];
+                $trackSampel->kode_sampel = $form['NamaKodeSampel'] ?? $NamaKodeSampeljamak;
                 $trackSampel->jumlah_sampel = $form['JumlahSampel'];
                 $trackSampel->kondisi_sampel = $form['KondisiSampel'];
                 $trackSampel->kemasan_sampel = $form['KemasanSampel'];
@@ -655,12 +678,13 @@ class InputProgress extends Component implements HasForms
 
                     if ($form['repeater'][0]['status'] != null) {
                         foreach ($form['repeater'] as $data) {
-
+                            // dd($form['repeater']);
                             if ($data['status'] != null) {
                                 $dataToInsert2[] = [
                                     'id_parameter' => $data['status'],
                                     'jumlah' => $data['total_sample'],
                                     'totalakhir' => $data['subtotal'],
+                                    'namakode_sampel' => implode('$', $data['nama_lab']),
                                     'id_tracksampel' => $commonRandomString,
                                 ];
                             }
