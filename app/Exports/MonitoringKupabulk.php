@@ -22,7 +22,7 @@ use Cknow\Money\Money;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class MonitoringKupabulk implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
+class MonitoringKupabulk implements FromView, ShouldAutoSize, WithEvents, WithDrawings
 {
     private $id;
 

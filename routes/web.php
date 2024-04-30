@@ -3,18 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\MemberController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\JobController;
-use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\HistoryKupaController;
 use App\Http\Controllers\InputProgressController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TrackSampelController;
-use App\Http\Controllers\UserRoleController;
+use App\Http\Controllers\ExcelmanagementController;
 
 
 /*
@@ -63,6 +56,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::resource('system', SystemController::class);
     Route::get('/roles', [SystemController::class, 'roles'])->name('roles');
+    Route::get('/excelsettings', [ExcelmanagementController::class, 'index'])->name('excelsettings');
 
     Route::post('delete-data/{id}', [SystemController::class, 'delete_parameter_and_metode'])->name('delete-data');
 });

@@ -376,7 +376,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->size('xs'),
                     Action::make('export_form_monitoring_kupa')
                         ->label(' Form Monitoring')
-                        ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
+                        // ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
                         ->disabled(function (TrackSampel $record) {
@@ -387,6 +387,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             }
 
                             return $func;
+                        })
+                        ->action(function (TrackSampel $records) {
+                            // dd($records);
+                            $jenis_sample_final = $records->jenisSampel->nama;
+                            $carbonDate = Carbon::parse($records->tanggal_memo);
+                            $dates_final = $carbonDate->format('F');
+                            $year = $carbonDate->format('Y');
+                            $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year . '.xlsx';
+                            return Excel::download(new MonitoringKupabulk($records->id), $filename);
                         })
                         ->visible(auth()->user()->can('export_form_monitoring_kupa'))
                         ->size('xs'),

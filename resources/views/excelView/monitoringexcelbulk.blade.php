@@ -170,51 +170,51 @@
         <tbody>
             @foreach ($data as $item)
             @php
-              $kodasampel = explode('/', $item['kode_sampel']);
+            $kodasampel = explode('$', $item['kode_sampel']);
             @endphp
             <tr>
-              <td style="border: 1px solid black">{{ $item['col'] }}</td>
-              <td style="border: 1px solid black; vertical-align: top;">{{ $item['id'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['tanggalterima'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['jenis_sample'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['asal_sampel'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['memo_pengantar'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['nama_pengirim'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['departemen'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['nomor_kupa'] }}</td>
-          
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">
-                @foreach ($kodasampel as $kode)
-                  {{ $kode }}<br>  @endforeach
-              </td>
-          
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">
-                {{ $item['jumlah_parameter'] }}
-              </td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">
-                @foreach($item['jumlah_sampel'] as $item1)
-                {{$item1 }}<br>
-                @endforeach
-              </td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">
-                @foreach($item['parameter_analisis'] as $item3)
-                {{$item3 }}<br>
-                @endforeach
-              </td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">
-                @foreach($item['biaya_analisa'] as $item4)
-                {{$item4 }}<br>
-                @endforeach
-              </td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">
-                @foreach($item['sub_total_per_parameter'] as $item5)
-                {{$item5 }}<br>
-                @endforeach
-              </td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['estimasi'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['tanggal_serif'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['no_serif'] }}</td>
-              <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['tanggal_kirim_sertif'] }}</td>
+                <td style="border: 1px solid black">{{ $item['col'] }}</td>
+                <td style="border: 1px solid black; vertical-align: top;">{{ $item['id'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['tanggalterima'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['jenis_sample'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['asal_sampel'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['memo_pengantar'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['nama_pengirim'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['departemen'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['nomor_kupa'] }}</td>
+
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">
+                    @foreach ($kodasampel as $kode)
+                    {{ $kode }}<br> @endforeach
+                </td>
+
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">
+                    {{ $item['jumlah_parameter'] }}
+                </td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">
+                    @foreach($item['jumlah_sampel'] as $item1)
+                    {{$item1 }}<br>
+                    @endforeach
+                </td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">
+                    @foreach($item['parameter_analisis'] as $item3)
+                    {{$item3 }}<br>
+                    @endforeach
+                </td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">
+                    @foreach($item['biaya_analisa'] as $item4)
+                    {{$item4 }}<br>
+                    @endforeach
+                </td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">
+                    @foreach($item['sub_total_per_parameter'] as $item5)
+                    {{$item5 }}<br>
+                    @endforeach
+                </td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['estimasi'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['tanggal_serif'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['no_serif'] }}</td>
+                <td style="border: 1px solid black;vertical-align: top; text-align: right">{{ $item['tanggal_kirim_sertif'] }}</td>
             </tr>
             <tr>
                 <td style="border: 1px solid black"></td>
@@ -300,11 +300,11 @@
                 <td style="border: 1px solid black"></td>
                 <td style="border: 1px solid black"></td>
             </tr>
-          @endforeach
-          
-        
+            @endforeach
+
+
         </tbody>
-        
+
     </table>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
