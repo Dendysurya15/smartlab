@@ -98,11 +98,11 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $this->status = $tracksample->status;
 
         $arr_per_column = [];
-
+        $nolab = explode('$', $tracksample->nomor_lab);
         $arr_per_column[0]['col_no_surat'] = $tracksample->nomor_surat;
         $arr_per_column[0]['col_kemasan'] = $tracksample->kemasan_sampel;
         $arr_per_column[0]['col_jum_sampel'] = $tracksample->jumlah_sampel;
-        $arr_per_column[0]['col_no_lab'] = $tracksample->nomor_lab;
+        $arr_per_column[0]['col_no_lab'] = $nolab[0];
         $arr_per_column[0]['col_param'] = $array_param_analisis_excel[0];
         $arr_per_column[0]['col_mark'] = '';
         $arr_per_column[0]['col_metode'] = $row_metode[0];
@@ -252,7 +252,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     $arr_per_column[$i]['col_no_surat'] = '';
                     $arr_per_column[$i]['col_kemasan'] = '';
                     $arr_per_column[$i]['col_jum_sampel'] = '';
-                    $arr_per_column[$i]['col_no_lab'] = '';
+                    $arr_per_column[$i]['col_no_lab'] = ($i == 1) ? ($nolab[1] ?? '') : '';
                     $arr_per_column[$i]['col_langsung'] = '';
                     $arr_per_column[$i]['col_normal'] = '';
                     $arr_per_column[$i]['col_abnormal'] = '';
@@ -261,6 +261,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             }
         }
 
+        // dd($arr_per_column);
         $this->countnamaarr = $countnamaarr ?? 0;
 
         return view('excelView.exportexcel', [
@@ -277,7 +278,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             'kupa' => $arr_per_column,
             'catatan' => $catatan,
             'approval' => $approval,
-
             'memo_created' => Carbon::parse($memo_created)->format('Y-m-d H:i'),
             'verifikasi_admin_timestamp' => $timestampVerifikasiAdmin,
             'verifikasi_head_timestamp' => $timestampVerifikasiHeadOfLab,

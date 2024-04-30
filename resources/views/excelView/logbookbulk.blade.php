@@ -169,11 +169,17 @@
                 <td></td>
                 <td style="border: 1px solid black;text-align:center;"> {{$item['id']}} </td>
                 <td style="border: 1px solid black;text-align:center;"> {{$item['nomor_lab']}} </td>
-                @for ($i = 0; $i < $item['mark']; $i++) <td style="border: 1px solid black;text-align:center;"> √</td>
+                @foreach ($namaparams as $param)
+                <td style="border: 1px solid black;text-align:center;">
+                    @if (in_array($param, $item['parameter_sampel']))
+                    √
+                    @endif
+                </td>
+                @endforeach
+                @for ($i = 0; $i < ($total_namaparams + 3); $i++) <th style="border: 1px solid black;text-align:center;">
+
+                    </th>
                     @endfor
-                    @for ($i = 0; $i < ($item['notmark'] + 3);$i++) <td style="border: 1px solid black;text-align:center;">
-                        </td>
-                        @endfor
             </tr>
             @endforeach
 

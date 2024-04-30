@@ -217,7 +217,7 @@ class InputProgress extends Component implements HasForms
                             } else {
                                 $data = (int)$state + $get('JumlahSampel');
                             }
-                            $set('lab_kanan', $data);
+                            $set('lab_kanan', $data - 1);
                         })
                         ->live()
                         ->maxLength(255),
@@ -362,7 +362,7 @@ class InputProgress extends Component implements HasForms
                                                 self::updateTotals($get, $set);
                                             }),
                                         CheckboxList::make('nama_lab')
-                                            ->label('Nama Lab')
+                                            ->label('Nama Kode Sampel')
                                             ->columns(2)
                                             ->bulkToggleable()
                                             ->default([])

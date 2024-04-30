@@ -50,6 +50,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             // dd($value);
             $tanggal_terima = Carbon::parse($value->tanggal_terima);
             $trackparam = $value->trackParameters;
+            $namakode_sampel = explode('$', $value->kode_sampel);
 
             $nama_parameter = [];
             $hargatotal = 0;
@@ -57,6 +58,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $hargaasli = [];
             $harga_total_per_sampel = [];
             $jumlah_per_parameter = [];
+            $namakode_sampelparams = [];
             foreach ($trackparam as $trackParameter) {
 
                 if ($trackParameter->ParameterAnalisis) {
@@ -64,6 +66,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                     $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
                     $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
                     $jumlah_per_parameter[] = $trackParameter->jumlah;
+                    $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
                 }
                 $hargatotal += $trackParameter->totalakhir;
                 $jumlah_per_parametertotal += $trackParameter->jumlah;
@@ -77,9 +80,29 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                     $newArray[] = $item;
                 }
             }
-            $total_namaparams = 13 - count($newArray);
-            // dd($newArray);
+            $sampel_data = [];
+            // dd($namakode_sampelparams);
+            $inc = 0;
+            foreach ($namakode_sampelparams as $attribute => $items) {
+                foreach ($items as $item) {
+                    if (!isset($sampel_data[$item])) {
+                        $sampel_data[$item] = [];
+                    }
 
+                    $explodedAttributes = strpos($attribute, ',') !== false ? explode(',', $attribute) : [$attribute];
+
+                    // Merge the exploded attributes only if they are not already present in the array
+                    foreach ($explodedAttributes as $attr) {
+                        $trimmedAttr = trim($attr); // Trim the attribute to remove any leading or trailing spaces
+                        if (!in_array($trimmedAttr, $sampel_data[$item])) {
+                            $sampel_data[$item][] = $trimmedAttr;
+                        }
+                    }
+                }
+            }
+
+            // dd($sampel_data);
+            $total_namaparams = 13 - count($newArray);
             $timestamp = strtotime($value->tanggal_terima);
             $year = date('Y', $timestamp);
             $lab =  substr($year, 2) . '-' . $value->jenisSampel->kode;
@@ -90,50 +113,31 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $countlab = count($Nomorlab);
             $timestamp = strtotime($value->tanggal_terima);
             $tanggal_terima = date('Y-m-d', $timestamp);
-            $timestamp2 = strtotime($value->tanggal_penyelesaian);
             $tanggal_penyelesaian = date('Y-m-d', $timestamp);
-            if ($countlab > 1) {
-                $totalsum_lab = $Nomorlab[1] - $Nomorlab[0];
-                for ($i = 0; $i <= $totalsum_lab; $i++) {
-                    $newlab_array[$i] = $lab . ($Nomorlab[0] + $i);
-                    $no_col[$i] = $i + 1;
+            $inc = 0;
+            $startingValue = $Nomorlab[0]; // Assuming $Nomorlab[0] is 22
+            $data = count($namakode_sampel);
+            // dd($namakode_sampel, $sampel_data);
+            foreach ($namakode_sampel as $keyx => $valuex) {
+                foreach ($sampel_data as $keyx2 => $valuex2) {
+                    if ($valuex === $keyx2) {
+                        $result[$valuex]['id'] = $inc++;
+                        $result[$valuex]['nomor_lab'] = $lab .  ($startingValue + $inc - 1);
 
-                    $result[$i] = [
-                        'col' => ' ',
-                        'id' => $i + 1,
-                        'nomor_lab' => $lab . ($Nomorlab[0] + $i),
-                        'mark' => count($newArray),
-                        'notmark' => $total_namaparams,
-                        'jumlah_sampel' => $value->jumlah_sampel,
-                        'tanggal_terima' => $tanggal_terima,
-                        'kondisi_sampel' => $value->kondisi_sampel,
-                        'tanggal_penyelesaian' => $tanggal_penyelesaian,
-                        'no_order' => $value->id,
-                        'jenis_sampel' => $value->jenisSampel->nama
-                    ];
+                        $result[$valuex]['jumlah_sampel'] = $value->jumlah_sampel;
+                        $result[$valuex]['tanggal_terima'] = $tanggal_terima;
+                        $result[$valuex]['kondisi_sampel'] = $value->kondisi_sampel;
+                        $result[$valuex]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
+                        $result[$valuex]['no_order'] = $value->id;
+                        $result[$valuex]['jenis_sampel'] = $value->jenisSampel->nama;
+                        $result[$valuex]['parameter_sampel'] = $valuex2;
+                    }
                 }
-            } else {
-                $totalsum_lab = 1;
-                $newlab_array = $lab . $Nomorlab[0];
-                $no_col[0] =  1;
-
-                $result[0] = [
-                    'col' => ' ',
-                    'id' => 1,
-                    'nomor_lab' => $lab . $Nomorlab[0],
-                    'mark' => count($newArray),
-                    'notmark' => $total_namaparams,
-                    'jumlah_sampel' => $value->jumlah_sampel,
-                    'tanggal_terima' => $tanggal_terima,
-                    'kondisi_sampel' => $value->kondisi_sampel,
-                    'tanggal_penyelesaian' => $tanggal_penyelesaian,
-                    'no_order' => $value->id,
-                    'jenis_sampel' => $value->jenisSampel->nama
-                ];
             }
+
             // dd($result);
         }
-        // dd($result);
+        // dd($newArray, $result);
 
 
         return view('excelView.logbookbulk', ['data' => $result, 'namaparams' => $newArray, 'total_namaparams' => $total_namaparams]);

@@ -267,7 +267,7 @@ class Editprogress extends Component implements HasForms
                             } else {
                                 $data = (int)$state + $get('JumlahSampel');
                             }
-                            $set('lab_kanan', $data);
+                            $set('lab_kanan', $data) - 1;
                         })
                         ->live()
                         ->maxLength(255),
@@ -450,7 +450,7 @@ class Editprogress extends Component implements HasForms
                                                 return is_null($get('status'));
                                             }),
                                         CheckboxList::make('nama_lab')
-                                            ->label('Nama Lab')
+                                            ->label('Nama Kode Sampel')
                                             ->columns(2)
                                             ->bulkToggleable()
                                             ->default([])

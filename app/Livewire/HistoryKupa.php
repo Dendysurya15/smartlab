@@ -317,7 +317,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         return Excel::download(new MonitoringKupabulk($data), $filename);
                     }),
                 BulkAction::make('export_logbook')
-                    ->label('Logbook Export')
+                    ->label('Identitas Export')
                     ->button()
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
@@ -350,7 +350,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         $data = implode('$', $recordIds);
 
                         // Concatenate strings and variables using the concatenation operator (.)
-                        $filename = 'Logbook Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
+                        $filename = 'Identitas Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
                         return Excel::download(new LogbookBulkExport($data), $filename);
                     }),
 
@@ -391,7 +391,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->visible(auth()->user()->can('export_form_monitoring_kupa'))
                         ->size('xs'),
                     Action::make('export_logbook')
-                        ->label(' Logbook')
+                        ->label('Identitas')
                         // ->url(fn (TrackSampel $record): string => route('export.form-monitoring-kupa', $record->id))
                         ->action(function (TrackSampel $records) {
                             // dd($records);
@@ -402,8 +402,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
 
                             // Concatenate strings and variables using the concatenation operator (.)
-                            $filename = 'Logbook Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year . '.xlsx';
-                            return Excel::download(new LogbookBulk($records->id), $filename);
+                            $filename = 'Identitas Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year . '.xlsx';
+                            return Excel::download(new LogbookBulkExport($records->id), $filename);
                         })
                         ->icon('heroicon-o-document-arrow-down')
                         ->disabled(function (TrackSampel $record) {
