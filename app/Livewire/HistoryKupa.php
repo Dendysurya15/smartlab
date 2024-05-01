@@ -353,7 +353,43 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         $filename = 'Identitas Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
                         return Excel::download(new LogbookBulkExport($data), $filename);
                     }),
+                BulkAction::make('export_pdf')
+                    ->label('VR PDF')
+                    ->button()
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->deselectRecordsAfterCompletion()
+                    ->modalHeading('Perhatian')
+                    ->modalSubheading(
+                        "Harap Memilih data yang tidak dalam kondisi status Draft"
+                    )
+                    ->modalButton('Export Kupa')
+                    ->action(function (Collection $records) {
+                        $recordIds = [];
+                        $jenis_sampel = [];
+                        $dates = [];
+                        $year = [];
 
+                        $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
+                            if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                                $recordIds[] = $record->id;
+                            }
+                            $jenis_sampel[] = $record->jenisSampel->nama;
+                            $carbonDate = Carbon::parse($record->tanggal_memo);
+                            $dates[] = $carbonDate->format('F');
+                            $year[] = $carbonDate->format('Y');
+                        });
+
+                        $jenis_sample_final = implode(',', array_unique($jenis_sampel));
+                        $dates_final = implode(',', array_unique($dates));
+                        $year_final = implode(',', array_unique($year));
+                        // dd($recordIds, $records);
+                        $data = implode('$', $recordIds);
+
+                        // Concatenate strings and variables using the concatenation operator (.)
+                        $filename = 'Identitas Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
+                        return Excel::download(new LogbookBulkExport($data), $filename);
+                    }),
             ])
             ->actions([
 
