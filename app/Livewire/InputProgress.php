@@ -45,7 +45,6 @@ class InputProgress extends Component implements HasForms
     use InteractsWithForms;
 
     public static $paramstest = [];
-    public $opt;
     protected $casts = [
         'drafting' => 'boolean',
     ];
@@ -53,9 +52,7 @@ class InputProgress extends Component implements HasForms
 
     public function mount(): void
     {
-        $this->opt = TrackSampel::with('trackParameters')->orderBy('id', 'desc')->first();
 
-        // dd($this->opt);
         $this->form->fill();
     }
 
@@ -74,11 +71,16 @@ class InputProgress extends Component implements HasForms
                         $params = ParameterAnalisis::where('id_jenis_sampel', $state)->pluck('nama_parameter', 'id')->toArray();
                         $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $state)->orderBy('id', 'desc')->first();
 
-                        // dd($getlates_id->nomor_kupa ?? null);
+                        // dd($getlates_id->nomor_lab ?? null);
+
+
+
                         $set('parametersAnal', $params);
                         $set('preflab', $jenisSampel->kode);
                         $set('NomorKupa', isset($getlates_id->nomor_kupa) ? $getlates_id->nomor_kupa + 1 : 1);
-
+                        $set('JumlahSampel', '');
+                        $set('lab_kiri', '');
+                        $set('lab_kanan', '');
                         if ($jenisSampel) {
                             $progress = $jenisSampel->progress;
 
@@ -153,13 +155,33 @@ class InputProgress extends Component implements HasForms
                     ->numeric()
                     ->minValue(1)
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
-                    ->maxValue(1000)
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                        $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $get('Jenis_Sampel'))->orderBy('id', 'desc')->first();
 
+
+                        $nomorlab = isset($getlates_id->nomor_lab) ?  explode('$', $getlates_id->nomor_lab) : null;
+
+                        if ($nomorlab != null) {
+                            $data_labkiri =  $nomorlab[1] + 1;
+                            $data_labkanan = (int)$state + $data_labkiri - 1;
+                            // dd($data);
+
+                            $set('lab_kiri', $data_labkiri);
+                            $set('lab_kanan', $data_labkanan);
+                            $set('NamaKodeSampeljamak', '');
+                        } else {
+                            $set('lab_kiri', '');
+                            $set('lab_kanan', '');
+                            $set('NamaKodeSampeljamak', '');
+                        }
+                    })
+                    ->maxValue(1000)
                     ->live(),
                 TextInput::make('NamaPengirim')
                     ->label('Nama Pengirim')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->minLength(2)
+
                     ->maxLength(255),
                 TextInput::make('NamaDep')
                     ->label('Nama Departemen')
@@ -169,6 +191,7 @@ class InputProgress extends Component implements HasForms
                 TextInput::make('NamaKodeSampel')
                     ->label('Nama Kode Sampel')
                     ->minLength(2)
+
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255),
@@ -184,9 +207,20 @@ class InputProgress extends Component implements HasForms
                         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
                         $array = explode('$', $NamaKodeSampeljamak);
                         $result = array_combine($array, $array);
-                        // dd($result);
-
-                        $set('setoption_costumparams', $result);
+                        $jumlahsample = $get('JumlahSampel');
+                        $jumlah_kodesampel = count($result);
+                        // dd($jumlah_kodesampel == (int)$jumlahsample);
+                        if ((int)$jumlahsample !== $jumlah_kodesampel) {
+                            Notification::make()
+                                ->title('Jumlah Kode sampel tidak sama dengan jumlah sampel haraf dicek terlebih dahulu')
+                                ->iconColor('warning')
+                                ->color('warning')
+                                ->success()
+                                ->send();
+                            $set('setoption_costumparams', []);
+                        } else {
+                            $set('setoption_costumparams', $result);
+                        }
                     })
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
 
@@ -212,6 +246,8 @@ class InputProgress extends Component implements HasForms
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
                         ->afterStateUpdated(function (Get $get, Set $set, $state) {
+
+
                             if (!is_numeric($state)) {
                                 $data = '';
                             } else {
@@ -219,6 +255,7 @@ class InputProgress extends Component implements HasForms
                             }
                             $set('lab_kanan', $data - 1);
                         })
+                        ->numeric()
                         ->live()
                         ->maxLength(255),
                     TextInput::make('lab_kanan')

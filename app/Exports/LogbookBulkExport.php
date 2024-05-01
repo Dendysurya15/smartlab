@@ -51,7 +51,9 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $tanggal_terima = Carbon::parse($value->tanggal_terima);
             $trackparam = $value->trackParameters;
             $namakode_sampel = explode('$', $value->kode_sampel);
+            $namakode_sampel = array_map('trim', $namakode_sampel);
 
+            // dd($namakode_sampel);
             $nama_parameter = [];
             $hargatotal = 0;
             $jumlah_per_parametertotal = 0;
@@ -80,8 +82,9 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                     $newArray[] = $item;
                 }
             }
+
+
             $sampel_data = [];
-            // dd($namakode_sampelparams);
             $inc = 0;
             foreach ($namakode_sampelparams as $attribute => $items) {
                 foreach ($items as $item) {
@@ -115,15 +118,16 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $tanggal_terima = date('Y-m-d', $timestamp);
             $tanggal_penyelesaian = date('Y-m-d', $timestamp);
             $inc = 0;
+            $inc2 = 1;
             $startingValue = $Nomorlab[0]; // Assuming $Nomorlab[0] is 22
             $data = count($namakode_sampel);
             // dd($namakode_sampel, $sampel_data);
             foreach ($namakode_sampel as $keyx => $valuex) {
                 foreach ($sampel_data as $keyx2 => $valuex2) {
                     if ($valuex === $keyx2) {
-                        $result[$valuex]['id'] = $inc++;
+                        $result[$valuex]['id'] = $inc2++;
+                        $result[$valuex]['id_data'] = $inc++;
                         $result[$valuex]['nomor_lab'] = $lab .  ($startingValue + $inc - 1);
-
                         $result[$valuex]['jumlah_sampel'] = $value->jumlah_sampel;
                         $result[$valuex]['tanggal_terima'] = $tanggal_terima;
                         $result[$valuex]['kondisi_sampel'] = $value->kondisi_sampel;
@@ -135,7 +139,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                 }
             }
 
-            // dd($result);
+            // dd($result, $namakode_sampel, $sampel_data);
         }
         // dd($newArray, $result);
 
