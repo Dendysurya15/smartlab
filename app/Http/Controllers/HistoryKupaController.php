@@ -13,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\Attributes\On;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Cknow\Money\Money;
 
 class HistoryKupaController extends Controller
 {
@@ -85,51 +87,11 @@ class HistoryKupaController extends Controller
         }
 
 
-        // dd($arr_progress, $progressOptions);
-
-
-
-
-        $getparams = $query->trackParameters;
-
-
         $newquery = TrackSampel::with('trackParameters')->where('id', $id)->first();
-
-        // $newquery = DB::connection('mysql')
-        //     ->table('track_parameter')
-        //     ->select('track_parameter.*', 'parameter_analisis.nama')
-        //     ->join('track_sampel', 'track_sampel.parameter_analisisid', '=', 'track_parameter.id_tracksampel')
-        //     ->join('parameter_analisis', 'parameter_analisis.id', '=', 'track_parameter.id_parameter')
-        //     ->where('track_sampel.id', $id)
-        //     ->get();
-        // dd($newquery, $id);
-        // $analisis = DB::connection('mysql')
-        //     ->table('metode_analisis')
-        //     ->select('metode_analisis.*')
-        //     ->get();
 
 
         $newquery = json_decode($newquery, true);
-        // $analisis = $analisis->groupBy(['id_parameter']);
-        // $analisis = json_decode($analisis, true);
-        // dd($newquery, $analisis);
 
-        $list_metode = [];
-        // foreach ($newquery as $key => $value) {
-        //     foreach ($analisis as $key2 => $value2) {
-        //         if ($value['id_parameter'] == $key2) {
-
-        //             $list_metode[$key]['id'] =  $value['id'];
-        //             $list_metode[$key]['jumlah'] =  $value['jumlah'];
-        //             $list_metode[$key]['totalakhir'] =  $value['totalakhir'];
-        //             $list_metode[$key]['id_tracksampel'] =  $value['id_tracksampel'];
-        //             $list_metode[$key]['id_parameter'] =  $value['id_parameter'];
-        //             $list_metode[$key]['nama'] =  $value['nama'];
-        //             $list_metode[$key]['metodeanalisis'] =  $value2;
-        //         }
-        //     }
-        // }
-        // dd($list_metode);
 
         return view('pages/historySampel/edit', ['sampel' => $query]);
     }
@@ -200,14 +162,7 @@ class HistoryKupaController extends Controller
 
         return Excel::download(new FormDataExport($id), $filename);
     }
-    public function exportFormMonitoringKupa($id)
-    {
 
-        // dd('not array');
-        $query = TrackSampel::find($id);
-        $filename = 'Form Monitoring Sampel ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
-        return Excel::download(new MonitoringKupaExport($id), $filename);
-    }
     public function exportFormMonitoringKupabulk($id)
     {
         // $idsArray = explode('$', $id);
@@ -216,5 +171,83 @@ class HistoryKupaController extends Controller
         // // dd($queries);
         $filename = 'Form Monitoring Sampel bulanan.xlsx';
         return Excel::download(new MonitoringKupabulk($id), $filename);
+    }
+
+    public function exportvr($ids)
+    {
+        $data = $ids;
+
+        $id = explode('$', $data);
+
+        $queries = TrackSampel::whereIn('id', $id)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
+
+        // dd($queries);
+        $result = [];
+        $inc = 1;
+        foreach ($queries as $key => $value) {
+            $tanggal_terima = Carbon::parse($value->tanggal_terima);
+            $tanggal_memo = Carbon::parse($value->tanggal_memo);
+            $estimasi = Carbon::parse($value->estimasi);
+            $trackparam = $value->trackParameters;
+
+            $nama_parameter = [];
+            $hargatotal = 0;
+            $jumlah_per_parametertotal = 0;
+            $hargaasli = [];
+            $harga_total_per_sampel = [];
+            $jumlah_per_parameter = [];
+            foreach ($trackparam as $trackParameter) {
+
+                if ($trackParameter->ParameterAnalisis) {
+                    $nama_parameter[] = $trackParameter->ParameterAnalisis->nama_parameter;
+                    $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
+                    $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
+                    $jumlah_per_parameter[] = $trackParameter->jumlah;
+                }
+                $hargatotal += $trackParameter->totalakhir;
+                $jumlah_per_parametertotal += $trackParameter->jumlah;
+            }
+            $harga_total_dengan_ppn = Money::IDR(hitungPPN($hargatotal), true);
+            $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($hargatotal, true));
+
+            $discountDecimal = $value->discount != 0 ? $value->discount / 100 : 0;
+            $discount = $totalppn_harga->multiply($discountDecimal);
+
+            $total_akhir = $totalppn_harga->subtract($discount);
+            // dd($totalppn_harga, $discountDecimal, $discount, $total_akhir);
+            $result[] = [
+                'col' => ' ',
+                'id' => $inc++,
+                'tanggalterima' => $tanggal_terima->format('Y-m-d'),
+                'jenis_sample' => $value->jenisSampel->nama,
+                'asal_sampel' => $value->asal_sampel,
+                'memo_pengantar' => $tanggal_memo->format('Y-m-d'),
+                'nama_pengirim' => $value->nama_pengirim,
+                'departemen' => $value->departemen,
+                'nomor_kupa' => $value->nomor_kupa,
+                'kode_sampel' => $value->kode_sampel,
+                'jumlah_parameter' => $jumlah_per_parametertotal,
+                'jumlah_sampel' => $jumlah_per_parameter,
+                'parameter_analisis' => $nama_parameter,
+                'biaya_analisa' => $hargaasli,
+                'sub_total_per_parameter' => $harga_total_per_sampel,
+                'estimasi' => $estimasi->format('Y-m-d'),
+                'tanggal_serif' => '-',
+                'no_serif' => '-',
+                'tanggal_kirim_sertif' => '-',
+                'sub_total_akhir' => Money::IDR($hargatotal, true),
+                'harga_total_dengan_ppn' => $harga_total_dengan_ppn,
+                'diskon' => $discount,
+                'total' => $total_akhir,
+                'text_disc' => $value->discount,
+            ];
+        }
+        // dd($result);
+        $filename = 'testing.pdf';
+        $pdf = PDF::loadView('pdfview.vrdata');
+        $pdf->set_paper('A2', 'landscape');
+
+        return $pdf->stream($filename);
+        // return $pdf->download($filename);
     }
 }

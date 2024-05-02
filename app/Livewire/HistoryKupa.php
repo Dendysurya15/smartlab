@@ -32,7 +32,10 @@ use App\Exports\LogbookBulk;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Grouping\Group;
-use Filament\Tables\Columns\ToggleColumn;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Actions\CreateAction;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -363,7 +366,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->modalSubheading(
                         "Harap Memilih data yang tidak dalam kondisi status Draft"
                     )
-                    ->modalButton('Export Kupa')
+                    ->modalButton('Export VR')
                     ->action(function (Collection $records) {
                         $recordIds = [];
                         $jenis_sampel = [];
@@ -379,17 +382,12 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $dates[] = $carbonDate->format('F');
                             $year[] = $carbonDate->format('Y');
                         });
-
-                        $jenis_sample_final = implode(',', array_unique($jenis_sampel));
-                        $dates_final = implode(',', array_unique($dates));
-                        $year_final = implode(',', array_unique($year));
-                        // dd($recordIds, $records);
                         $data = implode('$', $recordIds);
 
-                        // Concatenate strings and variables using the concatenation operator (.)
-                        $filename = 'Identitas Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
-                        return Excel::download(new LogbookBulkExport($data), $filename);
-                    }),
+                        // Redirect with a target attribute for opening in a new tab
+                        return redirect()->route('exportvr', $data)->with('target', '_blank');
+                    })
+
             ])
             ->actions([
 
@@ -597,7 +595,16 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ]);
     }
 
+    private function renderpdfdata($id)
+    {
+        $data = $id;
+        // dd($data);
+        $pdf = PDF::loadView('pdfview.vrdata', []);
 
+        $customPaper = array(360, 360, 360, 360);
+        $pdf->set_paper('A2', 'landscape');
+        return $pdf->stream('testiing');
+    }
 
     public function render(): View
     {

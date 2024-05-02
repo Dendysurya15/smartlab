@@ -43,6 +43,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('input_progress', InputProgressController::class);
     Route::resource('history_sampel', HistoryKupaController::class);
     Route::get('get-progress-options', [HistoryKupaController::class, 'getProgressOptions']);
+    Route::get('exportvr/{id}', [HistoryKupaController::class, 'exportvr'])->name('exportvr');
     Route::get('exportexcel', function () {
         return view('excelView.exportotexcel');
     });
