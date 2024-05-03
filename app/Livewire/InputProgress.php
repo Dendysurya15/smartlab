@@ -404,7 +404,11 @@ class InputProgress extends Component implements HasForms
                                             ->bulkToggleable()
                                             ->default([])
                                             ->options(function (Get $get) {
-                                                return $get('../../setoption_costumparams');
+                                                if (is_null($get('parametersdata'))) {
+                                                    return [];
+                                                } else {
+                                                    return $get('../../setoption_costumparams');
+                                                }
                                             })
                                             ->disabled(function ($get) {
                                                 return is_null($get('parametersdata'));
@@ -632,6 +636,7 @@ class InputProgress extends Component implements HasForms
                     ->send();
 
                 $this->form->fill();
+                $form['repeater'] = [];
             } catch (\Exception $e) {
                 DB::rollBack();
 
@@ -750,6 +755,7 @@ class InputProgress extends Component implements HasForms
                     ->success()
                     ->send();
                 $this->form->fill();
+                $form['repeater'] = [];
             } catch (\Exception $e) {
                 DB::rollBack();
 
