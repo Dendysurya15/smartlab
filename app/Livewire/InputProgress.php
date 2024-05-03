@@ -160,9 +160,16 @@ class InputProgress extends Component implements HasForms
 
 
                         $nomorlab = isset($getlates_id->nomor_lab) ?  explode('$', $getlates_id->nomor_lab) : null;
-
+                        // dd($nomorlab);
                         if ($nomorlab != null) {
-                            $data_labkiri =  $nomorlab[1] + 1;
+                            $nomorlabdata = $nomorlab[1];
+                            // dd($nomorlabdata);
+                            if ($nomorlabdata !== '-') {
+                                $data_labkiri =  (int)$nomorlab[1] + 1;
+                            } else {
+                                $data_labkiri =  (int)$nomorlab[0] + 1;
+                            }
+
                             $data_labkanan = (int)$state + $data_labkiri - 1;
                             // dd($data);
 
@@ -514,8 +521,11 @@ class InputProgress extends Component implements HasForms
         $checkalat = in_array($Alat, $form['Peralatan']);
         $checkpersonel = in_array($Personel, $form['Peralatan']);
         $checkbahan = in_array($bahan, $form['Peralatan']);
-        // dd($form['tags']);
-        $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($form['NamaKodeSampeljamak']));
+
+        $kodesampeldata = $form['NamaKodeSampeljamak'] ?? $form['NamaKodeSampel'];
+
+        // dd($kodesampeldata);
+        $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($kodesampeldata));
 
         // dd($NamaKodeSampeljamak);
         $commonRandomString = generateRandomString(rand(5, 10));
