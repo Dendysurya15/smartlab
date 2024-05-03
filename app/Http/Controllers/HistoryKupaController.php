@@ -179,75 +179,151 @@ class HistoryKupaController extends Controller
 
         $id = explode('$', $data);
 
-        $queries = TrackSampel::whereIn('id', $id)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
+        $queries = TrackSampel::whereIn('id', $id)
+            ->with('trackParameters')
+            ->with('progressSampel')
+            ->with('jenisSampel')
+            ->get();
 
+        $queries = $queries->groupBy(['jenis_sampel', 'nomor_kupa']);
         // dd($queries);
+
         $result = [];
-        $inc = 1;
         foreach ($queries as $key => $value) {
-            $tanggal_terima = Carbon::parse($value->tanggal_terima);
-            $tanggal_memo = Carbon::parse($value->tanggal_memo);
-            $estimasi = Carbon::parse($value->estimasi);
-            $trackparam = $value->trackParameters;
+            foreach ($value as $key1 => $value1) {
+                $kode_sampel = [];
+                $nomor_lab = [];
+                $nama_parameter = [];
+                foreach ($value1 as $key2 => $value2) {
+                    $jenissample = $value2->jenisSampel->nama;
+                    $jumlahsample = $value2['jumlah_sampel'];
+                    $kdsmpel = $value2['kode_sampel'];
+                    $nolab = $value2['nomor_lab'];
+                    $trackparam = $value2->trackParameters;
+                    $carbonDate = Carbon::parse($value2['tanggal_terima']);
+                    $carbonDate2 = Carbon::parse($value2['estimasi']);
+                    $nama_parameter = [];
+                    $hargatotal = 0;
+                    $jumlah_per_parametertotal = 0;
+                    $hargaasli = [];
+                    $harga_total_per_sampel = [];
+                    $jumlah_per_parameter = [];
+                    $namakode_sampelparams = [];
+                    foreach ($trackparam as $trackParameter) {
 
-            $nama_parameter = [];
-            $hargatotal = 0;
-            $jumlah_per_parametertotal = 0;
-            $hargaasli = [];
-            $harga_total_per_sampel = [];
-            $jumlah_per_parameter = [];
-            foreach ($trackparam as $trackParameter) {
+                        if ($trackParameter->ParameterAnalisis) {
+                            $nama_parameter[] = $trackParameter->ParameterAnalisis->nama_parameter;
+                            $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
+                            $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
+                            $jumlah_per_parameter[] = $trackParameter->jumlah;
+                            $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                        }
+                        $hargatotal += $trackParameter->totalakhir;
+                        $jumlah_per_parametertotal += $trackParameter->jumlah;
+                    }
+                    $harga_total_dengan_ppn = Money::IDR(hitungPPN($hargatotal), true);
+                    $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($hargatotal, true));
 
-                if ($trackParameter->ParameterAnalisis) {
-                    $nama_parameter[] = $trackParameter->ParameterAnalisis->nama_parameter;
-                    $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
-                    $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
-                    $jumlah_per_parameter[] = $trackParameter->jumlah;
+                    $discountDecimal = $value2->discount != 0 ? $value2->discount / 100 : 0;
+                    $discount = $totalppn_harga->multiply($discountDecimal);
+
+                    $total_akhir = $totalppn_harga->subtract($discount);
+                    $newnamaparameter = [];
+
+                    $newArray = [];
+                    foreach ($nama_parameter as $item) {
+                        if (strpos($item, ',') !== false) {
+                            $explodedItems = array_map('trim', explode(',', $item));
+                            $newArray = array_merge($newArray, $explodedItems);
+                        } else {
+                            $newArray[] = $item;
+                        }
+                    }
+                    $sampel_data = [];
+
+                    foreach ($namakode_sampelparams as $attribute => $items) {
+                        foreach ($items as $item) {
+                            if (!isset($sampel_data[$item])) {
+                                $sampel_data[$item] = [];
+                            }
+
+                            $explodedAttributes = strpos($attribute, ',') !== false ? explode(',', $attribute) : [$attribute];
+
+                            // Merge the exploded attributes only if they are not already present in the array
+                            foreach ($explodedAttributes as $attr) {
+                                $trimmedAttr = trim($attr); // Trim the attribute to remove any leading or trailing spaces
+                                if (!in_array($trimmedAttr, $sampel_data[$item])) {
+                                    $sampel_data[$item][] = $trimmedAttr;
+                                }
+                            }
+                        }
+                    }
+                    // dd($newArray, $sampel_data);
+
+                    foreach ($nama_parameter as $item) {
+                        if (strpos($item, ',') !== false) {
+                            $explodedItems = array_map('trim', explode(',', $item));
+                            $newnamaparameter = array_merge($newnamaparameter, $explodedItems);
+                        } else {
+                            $newnamaparameter[] = $item;
+                        }
+                    }
                 }
-                $hargatotal += $trackParameter->totalakhir;
-                $jumlah_per_parametertotal += $trackParameter->jumlah;
+
+                $kode_sampel = explode('$', $kdsmpel);
+
+                // dd($kode_sampel, $sampel_data);
+                $nomor_lab = explode('$', $nolab);
+                $new_sampel = [];
+                $incc = 0;
+                foreach ($sampel_data as $keyx => $valuex) {
+                    $new_sampel[$incc++] = implode(',', $valuex);
+                }
+
+                // dd($kode_sampel, $new_sampel);
+                for ($i = 0; $i < $jumlahsample; $i++) {
+
+                    $result[$key][$key1][$i]['jenis_sample'] = $jenissample;
+                    $result[$key][$key1][$i]['jumlah_sampel'] = ($i == 0) ? $jumlahsample : 'null';
+                    $result[$key][$key1][$i]['kode_sampel'] = $new_sampel[$i];
+                    $result[$key][$key1][$i]['nomor_lab'] = $nomor_lab[0] + $i;
+                    $result[$key][$key1][$i]['nama_pengirim'] = $value2['nama_pengirim'];
+                    $result[$key][$key1][$i]['asal_sampel'] = $value2['asal_sampel'];
+                    $result[$key][$key1][$i]['departemen'] = $value2['departemen'];
+                    $result[$key][$key1][$i]['nomor_surat'] = $value2['nomor_surat'];
+                    $result[$key][$key1][$i]['nomor_kupa'] = $value2['nomor_kupa'];
+                    $result[$key][$key1][$i]['tanggal_terima'] = $carbonDate->format('Y-m-d');
+                    $result[$key][$key1][$i]['tanggal_memo'] = $value2['tanggal_memo'];
+                    $result[$key][$key1][$i]['Jumlah_Parameter'] = count($newnamaparameter);
+                    $result[$key][$key1][$i]['Parameter_Analisa'] = implode(',', $nama_parameter);
+                    $result[$key][$key1][$i]['tujuan'] = $value2['tujuan'];
+                    $result[$key][$key1][$i]['estimasi'] = $carbonDate2->format('Y-m-d');
+                    $result[$key][$key1][$i]['Tanggal_Selesai_Analisa'] = '-';
+                    $result[$key][$key1][$i]['Tanggal_Rilis_Sertifikat'] = '-';
+                    $result[$key][$key1][$i]['No_sertifikat'] = '-';
+                    $result[$key][$key1][$i]['total'] = ($i == 0) ? $total_akhir : 'null';
+                }
             }
-            $harga_total_dengan_ppn = Money::IDR(hitungPPN($hargatotal), true);
-            $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($hargatotal, true));
-
-            $discountDecimal = $value->discount != 0 ? $value->discount / 100 : 0;
-            $discount = $totalppn_harga->multiply($discountDecimal);
-
-            $total_akhir = $totalppn_harga->subtract($discount);
-            // dd($totalppn_harga, $discountDecimal, $discount, $total_akhir);
-            $result[] = [
-                'col' => ' ',
-                'id' => $inc++,
-                'tanggalterima' => $tanggal_terima->format('Y-m-d'),
-                'jenis_sample' => $value->jenisSampel->nama,
-                'asal_sampel' => $value->asal_sampel,
-                'memo_pengantar' => $tanggal_memo->format('Y-m-d'),
-                'nama_pengirim' => $value->nama_pengirim,
-                'departemen' => $value->departemen,
-                'nomor_kupa' => $value->nomor_kupa,
-                'kode_sampel' => $value->kode_sampel,
-                'jumlah_parameter' => $jumlah_per_parametertotal,
-                'jumlah_sampel' => $jumlah_per_parameter,
-                'parameter_analisis' => $nama_parameter,
-                'biaya_analisa' => $hargaasli,
-                'sub_total_per_parameter' => $harga_total_per_sampel,
-                'estimasi' => $estimasi->format('Y-m-d'),
-                'tanggal_serif' => '-',
-                'no_serif' => '-',
-                'tanggal_kirim_sertif' => '-',
-                'sub_total_akhir' => Money::IDR($hargatotal, true),
-                'harga_total_dengan_ppn' => $harga_total_dengan_ppn,
-                'diskon' => $discount,
-                'total' => $total_akhir,
-                'text_disc' => $value->discount,
-            ];
+            $result[$key]['jenis'] = $jenissample;
         }
+
         // dd($result);
+        $data = [
+            'data' => $result,
+        ];
         $filename = 'testing.pdf';
-        $pdf = PDF::loadView('pdfview.vrdata');
+        $pdf = Pdf::setPaper('letter', 'portrait');
+        $pdf->setOptions([
+            'dpi' => 100,
+            'defaultFont' => 'Nunito, sans-serif', 'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true, 'isJavascriptEnabled' => true
+        ]);
+
+        // $pdf->setOptions(['dpi' => 150, 'isHtml5ParserEnabled' => true, 'defaultFont' => 'sans-serif']);
+        $pdf->loadView('pdfview.vrdata', $data);
         $pdf->set_paper('A2', 'landscape');
 
-        return $pdf->stream($filename);
-        // return $pdf->download($filename);
+        // return $pdf->stream($filename);
+        return $pdf->download($filename);
     }
 }

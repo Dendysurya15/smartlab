@@ -195,6 +195,11 @@ class Editprogress extends Component implements HasForms
                     ->required()
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxValue(1000)
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                        $set('lab_kiri', '');
+                        $set('lab_kanan', '');
+                        $set('NamaKodeSampeljamak', '');
+                    })
                     ->live(),
                 TextInput::make('NamaPengirim')
                     ->label('Nama Pengirim')
@@ -226,8 +231,28 @@ class Editprogress extends Component implements HasForms
                         $data_with_newlines = str_replace("$", "\n", $data);
                         return $data_with_newlines;
                     })
-
+                    ->live()
                     ->autosize()
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+
+                        $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
+                        $array = explode('$', $NamaKodeSampeljamak);
+                        $result = array_combine($array, $array);
+                        $jumlahsample = $get('JumlahSampel');
+                        $jumlah_kodesampel = count($result);
+                        // dd($jumlah_kodesampel == (int)$jumlahsample);
+                        if ((int)$jumlahsample !== $jumlah_kodesampel) {
+                            Notification::make()
+                                ->title('Jumlah Kode sampel tidak sama dengan jumlah sampel haraf dicek terlebih dahulu')
+                                ->iconColor('warning')
+                                ->color('warning')
+                                ->success()
+                                ->send();
+                            $set('setoption_costumparams', []);
+                        } else {
+                            $set('setoption_costumparams', $result);
+                        }
+                    })
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
@@ -453,13 +478,17 @@ class Editprogress extends Component implements HasForms
                                             ->label('Nama Kode Sampel')
                                             ->columns(2)
                                             ->bulkToggleable()
-                                            ->default([])
                                             ->options(function (Get $get) {
-                                                $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($this->opt->kode_sampel));
-                                                $array = explode('$', $NamaKodeSampeljamak);
-                                                $result = array_combine($array, $array);
+                                                $data = $get('../../setoption_costumparams');
+                                                if ($data != null || $data != []) {
+                                                    return $get('../../setoption_costumparams');
+                                                } else {
+                                                    $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($this->opt->kode_sampel));
+                                                    $array = explode('$', $NamaKodeSampeljamak);
+                                                    $result = array_combine($array, $array);
 
-                                                return $result;
+                                                    return $result;
+                                                }
                                             })
                                             ->disabled(function ($get) {
                                                 return is_null($get('status'));
@@ -613,7 +642,7 @@ class Editprogress extends Component implements HasForms
 
     public function create(): void
     {
-        // dd($this->form->getState());
+        dd($this->form->getState());
         $form = $this->form->getState();
         $current = Carbon::now();
         $randomCode = generateRandomCode();

@@ -357,7 +357,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         return Excel::download(new LogbookBulkExport($data), $filename);
                     }),
                 BulkAction::make('export_pdf')
-                    ->label('VR PDF')
+                    ->label('PDF')
                     ->button()
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
@@ -461,6 +461,23 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->color('success')
                         ->visible(auth()->user()->can('export_form_monitoring_kupa'))
                         ->size('xs'),
+                    Action::make('export_vr')
+                        ->label('PDF')
+                        ->url(fn (TrackSampel $record): string => route('exportvr', $record->id))
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->disabled(function (TrackSampel $record) {
+                            if ($record->status === 'Draft') {
+                                $func = true;
+                            } else {
+                                $func = false;
+                            }
+
+                            return $func;
+                        })
+                        ->openUrlInNewTab()
+                        ->color('success')
+                        ->visible(auth()->user()->can('export_form_monitoring_kupa'))
+                        ->size('xs'),
                     Action::make('edit')
                         ->label('Edit Kupa')
                         ->url(fn (TrackSampel $record): string => route('history_sampel.edit', $record->id))
@@ -523,6 +540,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                 ])
                                 ->required()
                         ])
+                        ->successNotification(null)
                         ->using(function (TrackSampel $record, array $data): TrackSampel {
 
                             if ($record->status_timestamp != null) {

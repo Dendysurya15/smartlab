@@ -3,10 +3,7 @@
 namespace App\Exports;
 
 use App\Models\TrackSampel;
-use App\Models\TrackParameter;
-use App\Models\MetodeAnalisis;
-use App\Models\JenisSampel;
-use App\Models\ParameterAnalisis;
+use App\Models\ExcelManagement;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
@@ -42,7 +39,10 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
         // dd($this->id);
         $idsArray = explode('$', $this->id);
         $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
-
+        $petugas = ExcelManagement::where('status', 1)->get();
+        $petugas = $petugas->groupBy(['jabatan']);
+        $petugas = json_decode($petugas, true);
+        // dd($petugas);
         // dd($queries);
         $result = [];
         $inc = 1;
@@ -143,8 +143,20 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
         }
         // dd($newArray, $result);
 
-
-        return view('excelView.logbookbulk', ['data' => $result, 'namaparams' => $newArray, 'total_namaparams' => $total_namaparams]);
+        $PenerimaSampel = $petugas['Petugas Penerima Sampel'][0]['nama'];
+        $Preparasi = $petugas['Petugas Preparasi'][0]['nama'];
+        $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
+        $Penyelia = $petugas['Penyelia'][0]['nama'];
+        // dd($PenerimaSampel);
+        return view('excelView.logbookbulk', [
+            'data' => $result,
+            'namaparams' => $newArray,
+            'total_namaparams' => $total_namaparams,
+            'PenerimaSampel' => $PenerimaSampel,
+            'Preparasi' => $Preparasi,
+            'Staff' => $Staff,
+            'Penyelia' => $Penyelia,
+        ]);
     }
 
 

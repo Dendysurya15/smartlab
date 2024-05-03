@@ -205,12 +205,23 @@
         <tbody>
             <tr>
                 <td></td>
-                <td style="text-align: center;border:1px solid black" colspan="3" rowspan="5">Ernawati</td>
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">Wulan Permata Ardean</td>
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">Syahid Shadiqin</td>
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">Riski Fitri Kurnia</td>
+
+
+                <td style="text-align: center;border:1px solid black" colspan="3" rowspan="5">{{$PenerimaSampel}}</td>
+
+
+                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">{{$Penyelia}}</td>
+
+
+                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">{{$Preparasi}}</td>
+
+
+                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">{{$Staff}}</td>
+
+
                 <td colspan="4" rowspan="6" style="vertical-align: top;text-align:left;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
             </tr>
+
             <tr>
                 <td></td>
 
@@ -230,10 +241,12 @@
             </tr>
             <tr>
                 <td></td>
+
                 <td style="text-align: center;border:1px solid black" colspan="3">Petugas Penerima Sampel</td>
                 <td style="text-align: center;border:1px solid black" colspan="2">Penyelia</td>
                 <td style="text-align: center;border:1px solid black" colspan="2">Petugas Preparasi</td>
                 <td style="text-align: center;border:1px solid black" colspan="2">Staff Kimia dan Lingkungan</td>
+
             </tr>
         </tbody>
     </table>
