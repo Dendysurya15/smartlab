@@ -13,53 +13,7 @@
 
             <div class="p-5">
                 @livewire('table-parameter')
-                @livewire('addparameters')
             </div>
         </div>
     </div>
 </x-app-layout>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script>
-    // setTimeout(function() {
-    //     var successMessage = document.getElementById('successMessage');
-    //     if (successMessage) {
-    //         successMessage.style.display = 'none';
-    //     }
-    // }, 2000);
-
-
-    // window.addEventListener('showSweetAlert', event => {
-    //     Swal.fire({
-    //         title: event.detail.title,
-    //         text: event.detail.text,
-    //         icon: event.detail.icon,
-    //         showCancelButton: true,
-    //         confirmButtonText: event.detail.confirmButtonText,
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-
-    //             window.livewire.emit(event.detail.onConfirmed, event.detail.id);
-    //         }
-    //     });
-    // });
-
-    // window.addEventListener('showDeleteSuccessAlert', event => {
-    //     Swal.fire({
-    //         title: event.detail.title,
-    //         text: event.detail.text,
-    //         icon: event.detail.icon,
-    //         showCancelButton: true,
-    //         confirmButtonText: event.detail.confirmButtonText,
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             // Emit a new event for reloading the page
-    //             window.livewire.emit('reloadPageAfterDelete');
-    //         }
-    //     });
-    // });
-    // // Refresh the Livewire component when the 'dataDeleted' event is emitted
-    // Livewire.on('dataDeleted', () => {
-    //     location.reload();
-    // });
-</script>

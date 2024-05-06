@@ -97,7 +97,7 @@ class TableParameter extends Component  implements HasTable, HasForms
                                 ->body('Parameters successfully added')
                                 ->send();
 
-                            return true; // Indicate success
+                            return new ParameterAnalisis();
                         } catch (\Exception $e) {
                             DB::rollBack();
 
@@ -108,7 +108,7 @@ class TableParameter extends Component  implements HasTable, HasForms
                                 ->body('Error occurred during parameter addition')
                                 ->send();
 
-                            return false; // Indicate failure
+                            return null; // Indicate failure by returning null
                         }
                     })
             ])
@@ -162,7 +162,7 @@ class TableParameter extends Component  implements HasTable, HasForms
                     ->icon('heroicon-o-trash')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->visible(auth()->user()->can('edit_data'))
+                    ->visible(auth()->user()->can('view_role_management'))
                     ->modalHeading('Delete Kupa')
                     ->modalSubheading(fn (ParameterAnalisis $record) => "Anda yakin ingin menghapus parameter ini? Ketika dihapus tidak dapat di pulihkan kembali.")
                     ->modalButton('Yes')
