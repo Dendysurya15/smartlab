@@ -19,7 +19,13 @@ use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
+use Illuminate\Support\Facades\DB;
+use Filament\Notifications\Notification;
 
 class TableParameter extends Component  implements HasTable, HasForms
 {
@@ -30,6 +36,82 @@ class TableParameter extends Component  implements HasTable, HasForms
     {
         return $table
             ->query(ParameterAnalisis::query())
+            ->headerActions([
+                CreateAction::make()
+                    ->model(ParameterAnalisis::class)
+                    ->label('Tambah Parameter')
+                    ->form([
+                        Section::make()
+                            ->description('Tambahkan Parameter baru')
+                            ->schema([
+                                Repeater::make('parameters')
+                                    ->schema([
+                                        Select::make('jenis')
+                                            ->options(JenisSampel::query()->pluck('nama', 'id')),
+                                        TextInput::make('namaparameter')
+                                            ->required()
+                                            ->label('Nama Parameter')
+                                            ->maxLength(255),
+
+                                        TextInput::make('hargaparams')
+                                            ->required()
+                                            ->label('Harga Parameter')
+                                            ->numeric()
+                                            ->maxLength(255),
+                                        TextInput::make('namametode')
+                                            ->required()
+                                            ->label('Nama Metode')
+                                            ->maxLength(255),
+                                        TextInput::make('namasatuan')
+                                            ->required()
+                                            ->label('Nama Satuan')
+                                            ->maxLength(255),
+                                    ])
+                                    ->columns(3)
+
+                            ])
+                    ])
+                    ->successNotification(null)
+                    ->using(function (array $data, string $model): ParameterAnalisis {
+                        $parametersToInsert = [];
+                        foreach ($data as $key => $value) {
+                            foreach ($value as $key1 => $value1) {
+                                $parametersToInsert[] = [
+                                    'nama_parameter' => $value1['namaparameter'],
+                                    'metode_analisis' => $value1['namametode'],
+                                    'harga' => $value1['hargaparams'],
+                                    'satuan' => $value1['namasatuan'],
+                                    'id_jenis_sampel' => $value1['jenis'],
+                                ];
+                            }
+                        }
+
+                        try {
+                            DB::beginTransaction();
+                            $model::insert($parametersToInsert);
+                            DB::commit();
+
+                            Notification::make()
+                                ->success()
+                                ->title('Success')
+                                ->body('Parameters successfully added')
+                                ->send();
+
+                            return true; // Indicate success
+                        } catch (\Exception $e) {
+                            DB::rollBack();
+
+                            Notification::make()
+                                ->danger()
+                                ->title('Error ' . $e->getMessage())
+                                ->color('danger')
+                                ->body('Error occurred during parameter addition')
+                                ->send();
+
+                            return false; // Indicate failure
+                        }
+                    })
+            ])
             ->columns([
                 TextInputColumn::make('nama_parameter')
                     ->label('Nama Parameter')

@@ -234,7 +234,6 @@ class Editprogress extends Component implements HasForms
                     ->live()
                     ->autosize()
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
-
                         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
                         $array = explode('$', $NamaKodeSampeljamak);
                         $result = array_combine($array, $array);
@@ -642,7 +641,7 @@ class Editprogress extends Component implements HasForms
 
     public function create(): void
     {
-        dd($this->form->getState());
+        // dd($this->form->getState());
         $form = $this->form->getState();
         $current = Carbon::now();
         $randomCode = generateRandomCode();

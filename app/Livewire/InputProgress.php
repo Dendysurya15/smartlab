@@ -38,6 +38,7 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Support\RawJs;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Filament\Forms\Components\KeyValue;
+use Illuminate\Support\Facades\Log;
 
 class InputProgress extends Component implements HasForms
 {
@@ -70,11 +71,6 @@ class InputProgress extends Component implements HasForms
                         // dd($state);
                         $params = ParameterAnalisis::where('id_jenis_sampel', $state)->pluck('nama_parameter', 'id')->toArray();
                         $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $state)->orderBy('id', 'desc')->first();
-
-                        // dd($getlates_id->nomor_lab ?? null);
-
-
-
                         $set('parametersAnal', $params);
                         $set('preflab', $jenisSampel->kode);
                         $set('NomorKupa', isset($getlates_id->nomor_kupa) ? $getlates_id->nomor_kupa + 1 : 1);
@@ -94,23 +90,47 @@ class InputProgress extends Component implements HasForms
                             // dd($getdata);
                             $set('progressOpt', $getdata);
                         }
+
+                        session()->put('Jenis_Sampel', $state);
+                        session()->put('status_pengerjaan', $getdata);
+                        session()->put('parametersAnal', $params);
+                        session()->put('NomorKupa',  isset($getlates_id->nomor_kupa) ? $getlates_id->nomor_kupa + 1 : 1);
+                        // $storedState = session()->get('Jenis_Sampel');
+                        // dd($storedState);
                     })
                     ->required()
+                    ->default(session()->get('Jenis_Sampel'))
                     ->live(),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
                     ->disabled(function ($get) {
                         return is_null($get('Jenis_Sampel'));
                     })
+
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
-                    ->options(fn ($get) => $get('progressOpt') ?: []),
+                    ->options(function (Get $get) {
+                        // dd($state);
+                        return $get('progressOpt') ?:  session()->get('status_pengerjaan') ?: [];
+                    })
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('status_pengerjaan2', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('status_pengerjaan2')),
                 Select::make('Asalampel')
                     ->label('Asal Sampel')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->options([
                         'Internal' => 'Internal',
                         'Eksternal' => 'Eksternal',
-                    ]),
+                    ])
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('Asalampel', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('Asalampel')),
                 DateTimePicker::make('TanggalMemo')
                     ->label('Tanggal Memo')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
@@ -118,8 +138,13 @@ class InputProgress extends Component implements HasForms
                         $date = now();
 
                         $set('tanggalnowmemo', $date);
-                        return $date;
+                        return session()->get('TanggalMemo') ?: $date;
                     })
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('TanggalMemo', $state);
+                    })
+                    // ->live()
                     ->seconds(true),
                 DatePicker::make('TanggalTerima')
                     ->label('Tanggal Terima')
@@ -138,16 +163,33 @@ class InputProgress extends Component implements HasForms
                             $newDate = $carbonDate->toDateString();
                         }
                         // dd($date, $newDate);
-                        return $newDate;
+                        return session()->get('TanggalTerima') ?: $newDate;
                     })
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('TanggalTerima', $state);
+                    })
+                    ->live()
                     ->format('Y-m-d H:m:s'),
                 DatePicker::make('EstimasiKupa')
                     ->label('Estimasi Kupa')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('EstimasiKupa', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('EstimasiKupa'))
                     ->format('Y-m-d H:m:s'),
                 TextInput::make('NomorKupa')
                     ->numeric()
                     ->minValue(1)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('NomorKupa', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('NomorKupa'))
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->label('Nomor Kupa'),
                 TextInput::make('JumlahSampel')
@@ -158,7 +200,7 @@ class InputProgress extends Component implements HasForms
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $get('Jenis_Sampel'))->orderBy('id', 'desc')->first();
 
-
+                        // dd($_SESSION)
                         $nomorlab = isset($getlates_id->nomor_lab) ?  explode('$', $getlates_id->nomor_lab) : null;
                         // dd($nomorlab);
                         if ($nomorlab != null) {
@@ -175,25 +217,41 @@ class InputProgress extends Component implements HasForms
 
                             $set('lab_kiri', $data_labkiri);
                             $set('lab_kanan', $data_labkanan);
+                            session()->put('lab_kiri', $data_labkiri);
+                            session()->put('lab_kanan', $data_labkanan);
+
                             $set('NamaKodeSampeljamak', '');
                         } else {
                             $set('lab_kiri', '');
                             $set('lab_kanan', '');
                             $set('NamaKodeSampeljamak', '');
                         }
+                        session()->put('JumlahSampel', $state);
                     })
+                    ->default(session()->get('JumlahSampel'))
                     ->maxValue(1000)
                     ->live(),
                 TextInput::make('NamaPengirim')
                     ->label('Nama Pengirim')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->minLength(2)
-
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('NamaPengirim', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('NamaPengirim'))
                     ->maxLength(255),
                 TextInput::make('NamaDep')
                     ->label('Nama Departemen')
                     ->minLength(2)
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('NamaDep', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('NamaDep'))
                     ->maxLength(255),
                 TextInput::make('NamaKodeSampel')
                     ->label('Nama Kode Sampel')
@@ -202,7 +260,7 @@ class InputProgress extends Component implements HasForms
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
-
+                        session()->put('NamaKodeSampel', $state);
                         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
                         $array = explode('$', $NamaKodeSampeljamak);
                         $result = array_combine($array, $array);
@@ -217,10 +275,13 @@ class InputProgress extends Component implements HasForms
                                 ->success()
                                 ->send();
                             $set('setoption_costumparams', []);
+                            session()->put('setoption_costumparams', []);
                         } else {
                             $set('setoption_costumparams', $result);
+                            session()->put('setoption_costumparams', $result);
                         }
                     })
+                    ->default(session()->get('NamaKodeSampel'))
                     ->live(),
                 Textarea::make('NamaKodeSampeljamak')
                     ->label('Nama Kode Sampel')
@@ -229,7 +290,7 @@ class InputProgress extends Component implements HasForms
                     ->autosize()
                     ->live()
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
-
+                        session()->put('NamaKodeSampeljamak', $state);
                         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
                         $array = explode('$', $NamaKodeSampeljamak);
                         $result = array_combine($array, $array);
@@ -244,20 +305,35 @@ class InputProgress extends Component implements HasForms
                                 ->success()
                                 ->send();
                             $set('setoption_costumparams', []);
+                            session()->put('setoption_costumparams', []);
                         } else {
                             $set('setoption_costumparams', $result);
+                            session()->put('setoption_costumparams', $result);
                         }
                     })
+                    ->default(session()->get('NamaKodeSampeljamak'))
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
 
                 TextInput::make('KemasanSampel')
                     ->label('Kemasan Sampel')
                     ->minLength(2)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('KemasanSampel', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('KemasanSampel'))
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 Select::make('KondisiSampel')
                     ->label('Kondisi Sampel')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('KondisiSampel', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('KondisiSampel'))
                     ->options([
                         'Normal' => 'Normal',
                         'Abnormal' => 'Abnormal',
@@ -275,13 +351,16 @@ class InputProgress extends Component implements HasForms
 
 
                             if (!is_numeric($state)) {
-                                $data = '';
+                                $data = 0;
                             } else {
                                 $data = (int)$state + $get('JumlahSampel');
                             }
                             $set('lab_kanan', $data - 1);
+                            session()->put('lab_kiri', $state);
+                            session()->put('lab_kanan', $data - 1);
                         })
                         ->numeric()
+                        ->default(session()->get('lab_kiri'))
                         ->live()
                         ->maxLength(255),
                     TextInput::make('lab_kanan')
@@ -293,6 +372,7 @@ class InputProgress extends Component implements HasForms
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
+                        ->default(session()->get('lab_kanan'))
                         ->maxLength(255)
                         ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
                 ])->from('md'),
@@ -300,16 +380,34 @@ class InputProgress extends Component implements HasForms
                 TextInput::make('NomorSurat')
                     ->label('Nomor Surat')
                     ->minLength(2)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('NomorSurat', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('NomorSurat'))
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 TextInput::make('Tujuan')
                     ->label('Tujuan')
                     ->minLength(2)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('Tujuan', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('Tujuan'))
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 Select::make('SkalaPrioritas')
                     ->label('Skala Prioritas Sampel')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('SkalaPrioritas', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('SkalaPrioritas'))
                     ->options([
                         'Normal' => 'Normal',
                         'Tinggi' => 'Tinggi',
@@ -326,7 +424,12 @@ class InputProgress extends Component implements HasForms
                         'Alat' => 'Tersedia dan Baik',
                         'Bahan' => 'Tersedia dan Baik',
                     ])
-                    // ->required()
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('Peralatan', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('Peralatan'))
                     ->columns(3),
 
 
@@ -336,10 +439,22 @@ class InputProgress extends Component implements HasForms
                         TextInput::make('Emaiilto')
                             ->label('Email To')
                             ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
+                            ->afterStateUpdated(function ($state) {
+                                // dd($state);
+                                session()->put('Emaiilto', $state);
+                            })
+                            ->live()
+                            ->default(session()->get('Emaiilto'))
                             ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                             ->maxLength(255),
                         TextInput::make('Emaiilcc')
                             ->label('Email Cc')
+                            ->afterStateUpdated(function ($state) {
+                                // dd($state);
+                                session()->put('Emaiilcc', $state);
+                            })
+                            ->live()
+                            ->default(session()->get('Emaiilcc'))
                             ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
                             ->maxLength(255),
 
@@ -347,10 +462,22 @@ class InputProgress extends Component implements HasForms
                             ->numeric()
                             ->minLength(0)
                             ->maxLength(2)
+                            ->afterStateUpdated(function ($state) {
+                                // dd($state);
+                                session()->put('Diskon', $state);
+                            })
+                            ->live()
+                            ->default(session()->get('Diskon'))
                             ->prefix('%'),
                         Toggle::make('Konfirmasi')
                             ->inline(false)
                             ->default(true)
+                            ->afterStateUpdated(function ($state) {
+                                // dd($state);
+                                session()->put('Konfirmasi', $state);
+                            })
+                            ->live()
+                            ->default(session()->get('Konfirmasi'))
                             ->label('Konfirmasi(Langsung / Telepon / Email)')
                             ->onColor('success')
                             ->offColor('danger'),
@@ -363,7 +490,12 @@ class InputProgress extends Component implements HasForms
 
                                     ->onlyCountries(['tr', 'us', 'gb', 'id']),
                             ])
-                            ->default([])
+                            ->afterStateUpdated(function ($state) {
+                                // dd($state);
+                                session()->put('nomerhpuser', $state);
+                            })
+                            ->live()
+                            ->default(session()->get('nomerhpuser') ?: [])
                             ->grid(4)
                             ->columnSpanFull()
 
@@ -380,7 +512,7 @@ class InputProgress extends Component implements HasForms
                                 Grid::make(5)
                                     ->schema([
                                         Select::make('status')
-                                            ->options(fn ($get) => $get('../../parametersAnal') ?: [])
+                                            ->options(fn ($get) => $get('../../parametersAnal') ?: session()->get('parametersAnal') ?: [])
                                             ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
                                             ->afterStateUpdated(function ($set, $state) {
                                                 $params = ParameterAnalisis::find($state);
@@ -389,7 +521,20 @@ class InputProgress extends Component implements HasForms
                                                 $set('total_harga', $params->harga);
                                             })
                                             ->disabled(function ($get) {
-                                                return is_null($get('../../parametersAnal'));
+
+                                                $data = $get('../../parametersAnal');
+                                                $data2 = session()->get('parametersAnal');
+                                                // dd($data, $data2);
+                                                if ($data != null || $data2 != null) {
+                                                    // dd('false');
+                                                    return false;
+                                                } elseif ($data == null && $data2 == null) {
+                                                    // dd('true');
+                                                    return true;
+                                                } else {
+                                                    // dd('true');
+                                                    return true;
+                                                }
                                             })
                                             ->live(),
                                         TextInput::make('total_sample')
@@ -430,10 +575,11 @@ class InputProgress extends Component implements HasForms
                                             ->bulkToggleable()
                                             ->default([])
                                             ->options(function (Get $get) {
-                                                if (is_null($get('parametersdata'))) {
+                                                // dd(session()->get('setoption_costumparams'));
+                                                if (is_null($get('parametersdata')) || is_null(session()->get('setoption_costumparams'))) {
                                                     return [];
                                                 } else {
-                                                    return $get('../../setoption_costumparams');
+                                                    return $get('../../setoption_costumparams') ?: session()->get('setoption_costumparams');
                                                 }
                                             })
                                             ->disabled(function ($get) {
@@ -448,6 +594,12 @@ class InputProgress extends Component implements HasForms
                     ])->columns(4),
                 Textarea::make('catatan')
                     ->rows(10)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('catatan', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('catatan'))
                     ->columnSpanFull(),
 
                 Section::make('Upload')
@@ -479,6 +631,11 @@ class InputProgress extends Component implements HasForms
                             ->default(false)
                             ->onIcon('heroicon-o-document-magnifying-glass')
                             ->offIcon('heroicon-o-clock')
+                            ->afterStateUpdated(function ($state) {
+                                // dd($state);
+                                session()->put('drafting', $state);
+                            })
+                            ->default(session()->get('drafting'))
                             ->live()
                     ])
             ])
@@ -502,10 +659,36 @@ class InputProgress extends Component implements HasForms
 
     public function create(): void
     {
-        // dd($this->form->getState());
-        $form = $this->form->getState();
-        // dd($form);
 
+        session()->forget('Jenis_Sampel');
+        session()->forget('status_pengerjaan');
+        session()->forget('status_pengerjaan2');
+        session()->forget('Asalampel');
+        session()->forget('TanggalMemo');
+        session()->forget('TanggalTerima');
+        session()->forget('EstimasiKupa');
+        session()->forget('NomorKupa');
+        session()->forget('lab_kiri');
+        session()->forget('lab_kanan');
+        session()->forget('JumlahSampel');
+        session()->forget('NamaDep');
+        session()->forget('NamaKodeSampel');
+        session()->forget('setoption_costumparams');
+        session()->forget('NamaKodeSampeljamak');
+        session()->forget('KemasanSampel');
+        session()->forget('NomorSurat');
+        session()->forget('Tujuan');
+        session()->forget('SkalaPrioritas');
+        session()->forget('Peralatan');
+        session()->forget('Emaiilto');
+        session()->forget('Emaiilcc');
+        session()->forget('Diskon');
+        session()->forget('Konfirmasi');
+        session()->forget('nomerhpuser');
+        session()->forget('catatan');
+        session()->forget('drafting');
+
+        $form = $this->form->getState();
         $current = Carbon::now();
         $randomCode = generateRandomCode();
         $current = $current->format('Y-m-d H:i:s');
@@ -530,6 +713,9 @@ class InputProgress extends Component implements HasForms
         // dd($NamaKodeSampeljamak);
         $commonRandomString = generateRandomString(rand(5, 10));
         $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
+
+
+
         if ($form['drafting'] !== true) {
             // dd('bukan Draft');
 
@@ -613,13 +799,6 @@ class InputProgress extends Component implements HasForms
                     // dd($dataToInsert);
                     SendMsg::insert($dataToInsert2);
                 }
-                // SendMsg::insert([
-                //     'no_surat' => $form['NomorSurat'],
-                //     'kodesample' => $randomCode,
-                //     'penerima' => $nohp,
-                //     'progres' => $getprogress,
-                //     'type' => 'input',
-                // ]);
 
                 $now = Carbon::now();
 
@@ -646,6 +825,8 @@ class InputProgress extends Component implements HasForms
                     . "Progress saat ini: *$getprogress*\n"
                     . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
                     . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
+
+
                 $trackSampel->save();
                 DB::commit();
                 // sendwhatsapp($dataarr, $nohp);
@@ -676,9 +857,7 @@ class InputProgress extends Component implements HasForms
                     ->send();
             }
         } else {
-            // dd('Ini draft');
 
-            // dd('send');
             try {
                 $getprogress = Progress::pluck('nama')->first();
                 DB::beginTransaction();
@@ -744,12 +923,10 @@ class InputProgress extends Component implements HasForms
                     // dd($dataToInsert);
                     SendMsg::insert($dataToInsert);
                 }
-                // dd($form['repeater']);
-                if ($form['repeater'] !== []) {
 
+                if ($form['repeater'] !== []) {
                     if ($form['repeater'][0]['status'] != null) {
                         foreach ($form['repeater'] as $data) {
-                            // dd($form['repeater']);
                             if ($data['status'] != null) {
                                 $dataToInsert2[] = [
                                     'id_parameter' => $data['status'],
@@ -760,12 +937,11 @@ class InputProgress extends Component implements HasForms
                                 ];
                             }
                         }
-                        // dd($dataToInsert);
+                        // dd('repeater  save');
                         TrackParameter::insert($dataToInsert2);
-                    } else {
-                        # code...
                     }
                 }
+                // dd('draft');
                 $trackSampel->save();
                 DB::commit();
 
@@ -783,10 +959,14 @@ class InputProgress extends Component implements HasForms
                     ])
                     ->success()
                     ->send();
+
                 $this->form->fill();
                 $form['repeater'] = [];
             } catch (\Exception $e) {
                 DB::rollBack();
+
+                // Log or debug the error message to identify the issue
+                Log::error('Error in catch block: ' . $e->getMessage());
 
                 Notification::make()
                     ->title('Error ' . $e->getMessage())

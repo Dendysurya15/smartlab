@@ -311,7 +311,7 @@ class HistoryKupaController extends Controller
         $data = [
             'data' => $result,
         ];
-        $filename = 'testing.pdf';
+        $filename = 'PDF Kupa.pdf';
         $pdf = Pdf::setPaper('letter', 'portrait');
         $pdf->setOptions([
             'dpi' => 100,
