@@ -585,8 +585,24 @@ class InputProgress extends Component implements HasForms
                                             ->options(function (Get $get) {
                                                 return $get('../../setoption_costumparams') ?: session()->get('setoption_costumparams') ?: [];
                                             })
+                                            // ->disabled(function ($get) {
+                                            //     return is_null($get('parametersdata'));
+                                            // })
                                             ->disabled(function ($get) {
-                                                return is_null($get('parametersdata'));
+
+                                                $data = $get('../../setoption_costumparams');
+                                                $data2 = session()->get('setoption_costumparams');
+                                                // dd($data, $data2);
+                                                if ($data != null || $data2 != null) {
+                                                    // dd('false');
+                                                    return false;
+                                                } elseif ($data == null && $data2 == null) {
+                                                    // dd('true');
+                                                    return true;
+                                                } else {
+                                                    // dd('true');
+                                                    return true;
+                                                }
                                             })
                                             ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
                                     ])

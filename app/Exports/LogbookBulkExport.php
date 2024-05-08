@@ -64,11 +64,24 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             foreach ($trackparam as $trackParameter) {
 
                 if ($trackParameter->ParameterAnalisis) {
-                    $nama_parameter[] = $trackParameter->ParameterAnalisis->nama_parameter;
+                    $nama_params = $trackParameter->ParameterAnalisis->nama_parameter;
+                    $namaunsur = $trackParameter->ParameterAnalisis->nama_unsur;
+
+                    if (strpos($nama_params, ',') !== false) {
+                        $nama_parameter[] = $nama_params;
+                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                    } else if ($namaunsur === '-' || $namaunsur === '' || $namaunsur === null) {
+                        $nama_parameter[] = $nama_params;
+                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                    } else {
+                        $nama_parameter[] = $namaunsur;
+                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
+                    }
+
+
                     $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
                     $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
                     $jumlah_per_parameter[] = $trackParameter->jumlah;
-                    $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
                 }
                 $hargatotal += $trackParameter->totalakhir;
                 $jumlah_per_parametertotal += $trackParameter->jumlah;
@@ -82,7 +95,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                     $newArray[] = $item;
                 }
             }
-
+            // dd($newArray, $nama_parameter);
 
             $sampel_data = [];
             $inc = 0;
@@ -104,11 +117,11 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                 }
             }
 
-            // dd($sampel_data);
+            // dd($sampel_data, $namakode_sampelparams);
             $total_namaparams = 13 - count($newArray);
             $timestamp = strtotime($value->tanggal_terima);
             $year = date('Y', $timestamp);
-            $lab =  substr($year, 2) . '-' . $value->jenisSampel->kode;
+            $lab =  substr($year, 2) . $value->jenisSampel->kode . '.';
             $Nomorlab = explode('$', $value->nomor_lab);
             $Nomorlab = array_filter($Nomorlab, function ($value) {
                 return $value !== "-";
@@ -119,15 +132,17 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $tanggal_penyelesaian = date('Y-m-d', $timestamp);
             $inc = 0;
             $inc2 = 1;
-            $startingValue = $Nomorlab[0]; // Assuming $Nomorlab[0] is 22
+            $startingValue = $Nomorlab[0];
             $data = count($namakode_sampel);
             // dd($namakode_sampel, $sampel_data);
             foreach ($namakode_sampel as $keyx => $valuex) {
                 foreach ($sampel_data as $keyx2 => $valuex2) {
                     if ($valuex === $keyx2) {
+                        $nolabdata = $startingValue + $inc - 1;
+                        $nolabdata = formatLabNumber($nolabdata);
                         $result[$valuex]['id'] = $inc2++;
                         $result[$valuex]['id_data'] = $inc++;
-                        $result[$valuex]['nomor_lab'] = $lab .  ($startingValue + $inc - 1);
+                        $result[$valuex]['nomor_lab'] = $lab .  $nolabdata;
                         $result[$valuex]['jumlah_sampel'] = $value->jumlah_sampel;
                         $result[$valuex]['tanggal_terima'] = $tanggal_terima;
                         $result[$valuex]['kondisi_sampel'] = $value->kondisi_sampel;

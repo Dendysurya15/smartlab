@@ -96,13 +96,32 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         $memo_created = $tracksample->tanggal_memo;
         $nama_pengirim = $tracksample->nama_pengirim;
         $this->status = $tracksample->status;
+        $year = Carbon::parse($tracksample->tanggal_terima)->year;
+        $kode_sampel = $tracksample->jenisSampel->kode;
+        $year = substr($year, 2);
+        $nolab = explode('$', $tracksample->nomor_lab);
+
+
+        // Format the left lab number
+        $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
+
+        // Check if the right lab number exists
+        if (isset($nolab[1])) {
+            // Format the right lab number
+            $labkanan = $year . $kode_sampel . '.' . formatLabNumber($nolab[1]);
+        } else {
+            $labkanan = '';
+        }
+
+
+        // dd($labkanan);
+
 
         $arr_per_column = [];
-        $nolab = explode('$', $tracksample->nomor_lab);
         $arr_per_column[0]['col_no_surat'] = $tracksample->nomor_surat;
         $arr_per_column[0]['col_kemasan'] = $tracksample->kemasan_sampel;
         $arr_per_column[0]['col_jum_sampel'] = $tracksample->jumlah_sampel;
-        $arr_per_column[0]['col_no_lab'] = $nolab[0];
+        $arr_per_column[0]['col_no_lab'] = $labkiri;
         $arr_per_column[0]['col_param'] = $array_param_analisis_excel[0];
         $arr_per_column[0]['col_mark'] = '';
         $arr_per_column[0]['col_metode'] = $row_metode[0];
@@ -252,7 +271,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     $arr_per_column[$i]['col_no_surat'] = '';
                     $arr_per_column[$i]['col_kemasan'] = '';
                     $arr_per_column[$i]['col_jum_sampel'] = '';
-                    $arr_per_column[$i]['col_no_lab'] = ($i == 1) ? ($nolab[1] ?? '') : '';
+                    $arr_per_column[$i]['col_no_lab'] = ($i == 1) ? $labkanan : '';
                     $arr_per_column[$i]['col_langsung'] = '';
                     $arr_per_column[$i]['col_normal'] = '';
                     $arr_per_column[$i]['col_abnormal'] = '';

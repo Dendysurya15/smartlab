@@ -270,3 +270,13 @@ if (!function_exists('formatPhoneNumber')) {
         return $phoneNumber;
     }
 }
+if (!function_exists('formatLabNumber')) {
+    function formatLabNumber($number)
+    {
+        if ($number >= 1000) {
+            return number_format($number / 1000, 3, '.', '');
+        } else {
+            return $number;
+        }
+    }
+}

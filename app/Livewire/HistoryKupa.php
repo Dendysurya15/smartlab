@@ -28,14 +28,12 @@ use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Exports\MonitoringKupabulk;
 use App\Exports\LogbookBulkExport;
-use App\Exports\LogbookBulk;
+use App\Exports\pdfpr;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Grouping\Group;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Actions\CreateAction;
+
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -68,11 +66,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         return tanggal_indo($track->tanggal_terima, false, false, true);
                     })
                     ->toggleable(isToggledHiddenByDefault: false)
-                    // ->searchable(query: function (Builder $query, string $search): Builder {
-                    //     $originalFormat = tanggal_indo($search);
-
-                    //     return $query->orWhere('tanggal_terima', 'like', "%{$search}%");
-                    // })
                     ->sortable()
                     ->size('xs'),
                 TextColumn::make('jenisSampel.nama')
@@ -357,7 +350,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         return Excel::download(new LogbookBulkExport($data), $filename);
                     }),
                 BulkAction::make('export_pdf')
-                    ->label('PDF')
+                    ->label('PR PDF')
                     ->button()
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
@@ -386,7 +379,44 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                         // Redirect with a target attribute for opening in a new tab
                         return redirect()->route('exportvr', $data)->with('target', '_blank');
-                    })
+                    }),
+                BulkAction::make('export_excelpr')
+                    ->label('PR Excel')
+                    ->button()
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->deselectRecordsAfterCompletion()
+                    ->modalHeading('Perhatian')
+                    ->modalSubheading(
+                        "Harap Memilih data yang tidak dalam kondisi status Draft"
+                    )
+                    ->modalButton('Export PR')
+                    ->action(function (Collection $records) {
+                        $recordIds = [];
+                        $jenis_sampel = [];
+                        $dates = [];
+                        $year = [];
+
+                        $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
+                            if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                                $recordIds[] = $record->id;
+                            }
+                            $jenis_sampel[] = $record->jenisSampel->nama;
+                            $carbonDate = Carbon::parse($record->tanggal_memo);
+                            $dates[] = $carbonDate->format('F');
+                            $year[] = $carbonDate->format('Y');
+                        });
+
+                        $jenis_sample_final = implode(',', array_unique($jenis_sampel));
+                        $dates_final = implode(',', array_unique($dates));
+                        $year_final = implode(',', array_unique($year));
+                        // dd($recordIds, $records);
+                        $data = implode('$', $recordIds);
+
+                        // Concatenate strings and variables using the concatenation operator (.)
+                        $filename = 'PR Kupa ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
+                        return Excel::download(new pdfpr($data), $filename);
+                    }),
 
             ])
             ->actions([
@@ -462,8 +492,36 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->visible(auth()->user()->can('export_form_monitoring_kupa'))
                         ->size('xs'),
                     Action::make('export_vr')
-                        ->label('PDF')
+                        ->label('PR PDF')
                         ->url(fn (TrackSampel $record): string => route('exportvr', $record->id))
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->disabled(function (TrackSampel $record) {
+                            if ($record->status === 'Draft') {
+                                $func = true;
+                            } else {
+                                $func = false;
+                            }
+
+                            return $func;
+                        })
+                        ->openUrlInNewTab()
+                        ->color('success')
+                        ->visible(auth()->user()->can('export_form_monitoring_kupa'))
+                        ->size('xs'),
+                    Action::make('export_vr_excel')
+                        ->label('PR Excel')
+                        ->action(function (TrackSampel $records) {
+                            // dd($records);
+                            $jenis_sample_final = $records->jenisSampel->nama;
+                            $carbonDate = Carbon::parse($records->tanggal_memo);
+                            $dates_final = $carbonDate->format('F');
+                            $year = $carbonDate->format('Y');
+
+
+                            // Concatenate strings and variables using the concatenation operator (.)
+                            $filename = 'PR Kupa ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year . '.xlsx';
+                            return Excel::download(new pdfpr($records->id), $filename);
+                        })
                         ->icon('heroicon-o-document-arrow-down')
                         ->disabled(function (TrackSampel $record) {
                             if ($record->status === 'Draft') {
