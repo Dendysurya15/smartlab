@@ -44,8 +44,8 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         // dd($test);
 
         $tracksample = TrackSampel::findOrFail($this->id);
-        $nama_petugas_penerima_sampel = User::find($tracksample->admin)->name;
-
+        $nama_petugas_penerima_sampel = User::find($tracksample->status_changed_by_id)->name;
+        // dd($nama_petugas_penerima_sampel);
         $jenis_sample = JenisSampel::with('parameterAnalisis')->where('id', $tracksample->jenis_sampel)->first();
 
         $parameter_analisis_excel = $jenis_sample->parameter_analisis;

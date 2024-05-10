@@ -127,9 +127,9 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                 return $value !== "-";
             });
             $countlab = count($Nomorlab);
-            $timestamp = strtotime($value->tanggal_terima);
+            $timestamp2 = strtotime($value->estimasi);
             $tanggal_terima = date('Y-m-d', $timestamp);
-            $tanggal_penyelesaian = date('Y-m-d', $timestamp);
+            $tanggal_penyelesaian = date('Y-m-d', $timestamp2);
             $inc = 0;
             $inc2 = 1;
             $startingValue = $Nomorlab[0];
@@ -147,7 +147,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                         $result[$valuex]['tanggal_terima'] = $tanggal_terima;
                         $result[$valuex]['kondisi_sampel'] = $value->kondisi_sampel;
                         $result[$valuex]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
-                        $result[$valuex]['no_order'] = $value->id;
+                        $result[$valuex]['no_order'] = $value->nomor_kupa;
                         $result[$valuex]['jenis_sampel'] = $value->jenisSampel->nama;
                         $result[$valuex]['parameter_sampel'] = $valuex2;
                     }
