@@ -114,8 +114,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         if ($track->status_changed_by_id != null) {
 
                             $user = User::find($track->status_changed_by_id);
-                            // dd($user);
-                            if ($user && $track->status !== 'Waiting Head Approved') {
+                            // dd($track);
+                            if ($user && $track->status !== 'Waiting Head Approval') {
                                 $roles = $user->getRoleNames();
                                 // dd($roles);
                                 return $track->status . ' by ' . ($roles->isNotEmpty() ? $roles->implode(', ') : 'No Role');
@@ -133,10 +133,10 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             case 'Approved':
                                 $result = 'success';
                                 break;
-                            case 'Waiting Admin Approved':
+                            case 'Waiting Admin Approval':
                                 $result = 'gray';
                                 break;
-                            case 'Waiting Head Approved':
+                            case 'Waiting Head Approval':
                                 $result = 'info';
                                 break;
                             case 'Rejected':
@@ -617,7 +617,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             if ($userRole === 'Admin') {
                                 if ($state === 'Approved' && $head == 0) {
                                     $statusadmin = 1;
-                                    $statusdata = 'Waiting Head Approved';
+                                    $statusdata = 'Waiting Head Approval';
                                 } elseif ($state === 'Approved' && $head == 1) {
                                     $statusadmin = 1;
                                     $statusdata = 'Approved';
