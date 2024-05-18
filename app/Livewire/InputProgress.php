@@ -543,6 +543,7 @@ class InputProgress extends Component implements HasForms
                                                     return true;
                                                 }
                                             })
+                                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                             ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
                                             ->live(),
                                         TextInput::make('total_sample')

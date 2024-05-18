@@ -165,7 +165,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
         // dd($PenerimaSampel);
         return view('excelView.logbookbulk', [
             'data' => $result,
-            'namaparams' => $newArray,
+            'namaparams' => $uniqueArray = array_unique($newArray),
             'total_namaparams' => $total_namaparams,
             'PenerimaSampel' => $PenerimaSampel,
             'Preparasi' => $Preparasi,

@@ -41,7 +41,7 @@ class InputProgressController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(InputProgressRequest $request)
+    public function store(Request $request)
     {
         $userId = 1;
         if (auth()->check()) {

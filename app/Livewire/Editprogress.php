@@ -423,7 +423,7 @@ class Editprogress extends Component implements HasForms
                                                 // dd($params);
                                                 return $params;
                                             })
-
+                                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                             ->afterStateUpdated(function ($set, $state) {
                                                 $params = ParameterAnalisis::find($state);
                                                 $set('parametersdata', $params->nama_unsur);
