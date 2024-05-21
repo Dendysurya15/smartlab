@@ -6,13 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
 
 </head>
 
 <body>
 
+    <style>
+        .getborder {
+            border: 1px solid black;
+            vertical-align: middle;
+        }
+    </style>
 
     <table>
 
@@ -21,14 +27,12 @@
             <tr>
                 <th></th>
                 <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
-                <td colspan="16"
-                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
+                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
                     PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16"
-                    style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
+                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
                     RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
@@ -38,7 +42,7 @@
             <tr>
                 <th></th>
                 <td colspan="16" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
-                    {{$jenis_kupa}}
+                    {{$jenis_kupa ?? 0}}
                 </td>
             </tr>
             <tr>
@@ -83,12 +87,12 @@
                     Tanggal Penerimaan
                 </th>
                 <th colspan="2" style="border-top:1px solid black;">
-                    : {{$tanggal_penerimaan}}
+                    : {{$tanggal_penerimaan ?? 0}}
                 </th>
 
                 <th colspan="10" style="border-top: 1px solid black;"></th>
                 <th colspan="3" style="border-top: 1px solid black;">Jenis Sampel</th>
-                <th style="border-top: 1px solid black;border-right: 1px solid black;">: {{$jenis_kupa}}</th>
+                <th style="border-top: 1px solid black;border-right: 1px solid black;">: {{$jenis_kupa ?? 0}}</th>
             </tr>
             <tr>
                 <th></th>
@@ -96,12 +100,12 @@
                     No. Kaji Ulang
                 </th>
                 <th style="border-bottom: 1px solid black;">
-                    : {{$no_kupa}}
+                    : {{$no_kupa ?? 0}}
                 </th>
 
                 <th colspan="11" style="border-bottom: 1px solid blacck;"></th>
                 <th colspan="3" style="border-bottom: 1px solid black;">Nama Pelanggan</th>
-                <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$nama_pengirim}}</th>
+                <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$nama_pengirim ?? 0}}</th>
             </tr>
             <tr>
                 <td colspan="20"></td> <!-- Replace "20" with the total number of columns in your table -->
@@ -193,210 +197,80 @@
         </thead>
         <tbody>
 
-            @foreach ($kupa as $data)
-            <tr style="border-left:1px solid black;border-right:1px solid black">
+            @foreach ($data as $key => $items)
+            <tr>
                 <td></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_no_surat']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_kemasan']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_no_lab']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_param']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">
-                    {{ $data['col_mark'] == 1 ? '✓' : '' }}
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_metode']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_satuan']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;"> {{ $data['col_personel'] == 1 ?
-                    '✓' : '' }}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;"> {{ $data['col_alat'] == 1 ? '✓'
-                    : '' }}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;"> {{ $data['col_bahan'] == 1 ? '✓'
-                    : '' }}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_jum_sampel_2']}}
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_harga'] == '-' ? ' '
-                    :$data['col_harga'] }}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_sub_total'] == '-' ?
-                    ' ' :$data['col_sub_total']}}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{ $data['col_verif'] == 1 ? '✓'
-                    : '' }}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{ $data['col_normal'] == 1 ? '✓'
-                    : '' }}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{ $data['col_abnormal'] == 1 ?
-                    '✓'
-                    : '' }}</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;">{{$data['col_tanggal']}}</td>
+                @if ($key == 0)
+                <td rowspan="{{ $total_row }}" style="border: 1px solid black; vertical-align: top; text-align: left">{{ $items['no_surat'] }}</td>
+                <td rowspan="{{ $total_row }}" style="border: 1px solid black; vertical-align: top; text-align: left">{{ $items['kemasan'] }}</td>
+                <td rowspan="{{ $total_row }}" style="border: 1px solid black; vertical-align: top; text-align: center">{{ $items['jum_sampel'] }}</td>
+                @endif
+
+                @if ($key == 1)
+                <td rowspan="{{ $total_row - 1 }}" style="border: 1px solid black; vertical-align: top; text-align: left">{{ $items['nolab'] }}</td>
+                @else
+                @if ($key == 0)
+                <td>{{ $items['nolab'] }}</td>
+                @endif
+                @endif
+
+                <td style="border: 1px solid black; vertical-align: center; text-align: left">{{ $items['Parameter_Analisis'] }}</td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: center">{{ $items['mark'] }}</td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: left">{{ $items['Metode_Analisis'] }}</td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: center">{{ $items['satuan'] }}</td>
+
+                @if ($items['cols'] != 0)
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['Personel'] }}</td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['alat'] }}</td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['bahan'] }}</td>
+                @endif
+
+                @if ($items['jum_data'] != 0)
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['jum_data'] }}</td>
+                @endif
+
+                @if ($items['jum_harga'] != 0)
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">@money($items['jum_harga'], 'IDR','True')</td>
+                @endif
+
+                @if ($items['jum_sub_total'] != 0)
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">@money($items['jum_sub_total'], 'IDR','True')</td>
+                @endif
+
+                @if ($items['cols'] != 0)
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['Konfirmasi'] }}</td>
+                @if ($items['kondisi_sampel'] === 'Normal')
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['kondisi_sampel'] }}</td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}"></td>
+                @else
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}"></td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['kondisi_sampel'] }}</td>
+                @endif
+                @endif
+
+                @if ($key == 0)
+                <td rowspan="{{ $total_row }}" style="border: 1px solid black; vertical-align: top; text-align: center">{{ $items['estimasi'] }}</td>
+                @endif
+            </tr>
+            @endforeach
+
+            @foreach ($result_total as $data)
+            <tr>
+                @foreach ($data as $index => $item)
+                @if ($index == 0)
+                <td>{{ $item }}</td>
+                @else
+                @if ($index == 5)
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" colspan="4">{{ $item }}</td>
+                @else
+                <td style="border: 1px solid black; vertical-align: center; text-align: center">{{ $item }}</td>
+                @endif
+                @endif
+                @endforeach
             </tr>
             @endforeach
 
 
-            <tr>
-                <td></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
-                    Total Per Parameter</td>
-
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                    {{$sub_total}}
-                </td>
-                {{-- <td
-                    style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td> --}}
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-            </tr>
-
-            <tr>
-                <td></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
-                    PPn 11%</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                    {{$ppn}}
-                </td>
-
-
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
-                    Diskon {{$disclabel}}%</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                    {{$discount}}
-                </td>
-
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-            </tr>
-
-            <tr>
-                <td></td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td colspan="4"
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
-                    Total</td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td
-                    style="font-weight: bold;border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                    {{$final_total}}
-                </td>
-
-                {{-- <td
-                    style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td> --}}
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-                <td style="border-left: 1px solid black;border-right:1px solid black;border-bottom:1px solid black;">
-                </td>
-            </tr>
 
 
             <tr>
@@ -408,8 +282,7 @@
                 <td colspan="2" style="border: 1px solid black;">Dibuat Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
                 <td colspan="3" style="border: 1px solid black;">Disetujui Oleh,</td>
-                <td colspan="10"
-                    style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
+                <td colspan="10" style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
                     Catatan Khusus : </td>
             </tr>
 
@@ -417,13 +290,11 @@
                 <td></td>
                 <td colspan="2" rowspan="4" style="border-left:1px solid black;text-align:center">
 
-                    @if ($approval == 'Draft' || $approval == 'Waiting Approved')
+                    @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
                     CREATED<br>
                     {{$memo_created}}
                     @else
-                    @php
-                    echo strtoupper($approval)
-                    @endphp <br>
+                    APPROVED <br>
                     {{$verifikasi_admin_timestamp}}
                     @endif
 
@@ -447,7 +318,6 @@
                     {{$catatan}}
                 </td>
             </tr>
-
             <tr>
                 <td></td>
                 <!-- <td colspan="10" style="border-right: 1px solid black;">aa</td> -->
@@ -462,9 +332,9 @@
             </tr>
             <tr>
                 <td></td>
-                <td colspan="2" style="border-left:1px solid black;"> {{$petugas_penerima_sampel}}</td>
+                <td colspan="2" style="border-left:1px solid black;"> {{$petugas_penerima_sampel ?? '-'}}</td>
                 <td colspan="3" style="border-left:1px solid black;"> Budi Umbara</td>
-                <td colspan="3" style="border-left:1px solid black;"> {{$nama_pengirim}}</td>
+                <td colspan="3" style="border-left:1px solid black;"> {{$nama_pengirim ?? '-'}}</td>
                 <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->
             </tr>
             <tr>
@@ -478,8 +348,7 @@
     </table>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
 
 </body>

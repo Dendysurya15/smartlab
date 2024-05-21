@@ -19,6 +19,7 @@ use Cknow\Money\Money;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Support\Carbon;
 use Spatie\Permission\Models\Role;
+use App\Models\ExcelManagement;
 
 class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
 {
@@ -38,270 +39,230 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
     public function view(): View
     {
+        $idsArray = explode('$', $this->id);
+        $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
+        $petugas = ExcelManagement::where('status', 1)->get();
+        $petugas = $petugas->groupBy(['jabatan']);
+        $petugas = json_decode($petugas, true);
+        // dd($petugas);
+        // dd($queries);
+        $result = [];
+        $result_total = [];
+        $inc = 1;
+        function transformArray($list_row)
+        {
+            $result = [];
+            $total = 0;
 
-        // $test =  Money::USD(500);
-
-        // dd($test);
-
-        $tracksample = TrackSampel::findOrFail($this->id);
-        $nama_petugas_penerima_sampel = User::find($tracksample->status_changed_by_id)->name;
-        // dd($nama_petugas_penerima_sampel);
-        $jenis_sample = JenisSampel::with('parameterAnalisis')->where('id', $tracksample->jenis_sampel)->first();
-
-        $parameter_analisis_excel = $jenis_sample->parameter_analisis;
-
-        $timestampVerifikasiAdmin = '';
-        $timestampVerifikasiHeadOfLab = '';
-        $isVerifiedByHead = False;
-        if ($tracksample->status_timestamp != null) {
-            $string = rtrim($tracksample->status_timestamp, ', ');
-
-            $dateTimeArray = explode(' , ', $string);
-            $timestampVerifikasiAdmin = $dateTimeArray[0];
-
-            $alurApproved = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name')->toArray();
-
-            if ($tracksample->status_approved_by_role == end($alurApproved)) {
-                $timestampVerifikasiHeadOfLab = end($dateTimeArray);
-                $isVerifiedByHead = True;
-            }
-        }
-
-
-        foreach ($jenis_sample->parameterAnalisis as $key => $value) {
-
-            $getunsur[] = [
-                'nama_unsur' => $value['nama_unsur'],
-                'metode_analisis' => $value['metode_analisis'],
-                'satuan' => $value['satuan'],
-            ];
-        }
-
-
-        $array_param_analisis_excel = explode(',', $parameter_analisis_excel);
-
-        $array_param_analisis_excel = array_map('trim', $array_param_analisis_excel);
-
-        $row_metode = $jenis_sample->parameterAnalisis->pluck('metode_analisis');
-        $row_satuan = $jenis_sample->parameterAnalisis->pluck('satuan');
-
-        $tgl_penerimaan = tanggal_indo($tracksample->tanggal_terima, false, false, true);
-        $tgl_estimasi = tanggal_indo($tracksample->estimasi, false, false, true);
-
-        $jenis_kupa = $jenis_sample->nama;
-        $no_kupa = $tracksample->nomor_kupa;
-        $catatan = $tracksample->catatan;
-        $approval = $tracksample->approveby_admin ? 'Approved' : $tracksample->status;
-
-        $memo_created = $tracksample->tanggal_memo;
-        $nama_pengirim = $tracksample->nama_pengirim;
-        $this->status = $tracksample->status;
-        $year = Carbon::parse($tracksample->tanggal_terima)->year;
-        $kode_sampel = $tracksample->jenisSampel->kode;
-        $year = substr($year, 2);
-        $nolab = explode('$', $tracksample->nomor_lab);
-
-
-        // Format the left lab number
-        $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
-
-        // Check if the right lab number exists
-        if (isset($nolab[1])) {
-            // Format the right lab number
-            $labkanan = $year . $kode_sampel . '.' . formatLabNumber($nolab[1]);
-        } else {
-            $labkanan = '';
-        }
-
-
-        // dd($labkanan);
-
-
-        $arr_per_column = [];
-        $arr_per_column[0]['col_no_surat'] = $tracksample->nomor_surat;
-        $arr_per_column[0]['col_kemasan'] = $tracksample->kemasan_sampel;
-        $arr_per_column[0]['col_jum_sampel'] = $tracksample->jumlah_sampel;
-        $arr_per_column[0]['col_no_lab'] = $labkiri;
-        $arr_per_column[0]['col_param'] = $array_param_analisis_excel[0];
-        $arr_per_column[0]['col_mark'] = '';
-        $arr_per_column[0]['col_metode'] = $row_metode[0];
-        $arr_per_column[0]['col_satuan'] = $row_satuan[0];
-        $arr_per_column[0]['col_personel'] = '';
-        $arr_per_column[0]['col_alat'] = '';
-        $arr_per_column[0]['col_bahan'] = '';
-        $arr_per_column[0]['col_jum_sampel_2'] = '';
-        $arr_per_column[0]['col_harga'] = '';
-        $arr_per_column[0]['col_sub_total'] = '';
-        $arr_per_column[0]['col_ppn'] = '';
-        $arr_per_column[0]['col_total'] = '';
-        $arr_per_column[0]['col_langsung'] = '';
-        $arr_per_column[0]['col_normal'] = $tracksample->kondisi_sampel == 'Normal' ? 1 : 0;
-        $arr_per_column[0]['col_abnormal'] = $tracksample->kondisi_sampel == 'Abnormal' ? 1 : 0;
-        $arr_per_column[0]['col_tanggal'] = $tgl_estimasi;
-
-        $sub = 0;
-        $final_total = 0;
-
-        if (!is_null($tracksample->parameter_analisisid) && $tracksample->parameter_analisisid !== 0 && $tracksample->parameter_analisisid != '0') {
-
-            $getTrack = TrackParameter::with('ParameterAnalisis')->where('id_tracksampel', $tracksample->parameter_analisisid)->get();
-            $inputan_parameter = [];
-            $inc = 0;
-            // dd($getTrack);
-
-            foreach ($getTrack as $key => $value) {
-                $inputan_parameter[$inc]['nama'] = $value->ParameterAnalisis->nama_parameter;
-                $inputan_parameter[$inc]['alias'] = $value->ParameterAnalisis->nama_unsur;
-                $inputan_parameter[$inc]['satuan'] = $value->ParameterAnalisis->satuan;
-                $inputan_parameter[$inc]['metode'] = $value->ParameterAnalisis->metode_analisis;
-                $inputan_parameter[$inc]['personel'] = $tracksample->personel;
-                $inputan_parameter[$inc]['alat'] = $tracksample->alat;
-                $inputan_parameter[$inc]['bahan'] = $tracksample->bahan;
-                $inputan_parameter[$inc]['harga_per_satuan'] = $value->ParameterAnalisis->harga;
-                $inputan_parameter[$inc]['jumlah'] = $value->jumlah;
-                $inputan_parameter[$inc]['total_per_parameter'] = $value->totalakhir;
-                $inputan_parameter[$inc]['discount'] = $tracksample->discount;
-                $inputan_parameter[$inc]['col_verif'] = $tracksample->konfirmasi;
-                $inputan_parameter[$inc]['flagcol'] = 'True';
-
-
-                $sub += $value->totalakhir;
-                $discount = $tracksample->discount;
-                $test = $sub + hitungPPN($sub);
-                $ppn = Money::IDR($test, true);
-                $getdisc = round($test * $discount / 100, 2);
-
-                $sub_total_parameter = Money::IDR($test * (1 - ($discount / 100)), true);
-
-                $inc++;
+            foreach ($list_row as $valuxe) {
+                $result[$total] = $valuxe;
+                $total += $valuxe;
             }
 
+            return $result;
+        }
+        foreach ($queries as $key => $value) {
+            // dd($value);
+            $tanggal_terima = Carbon::parse($value->tanggal_terima);
+            $trackparam = $value->trackParameters;
 
+            // $data = [];
+            foreach ($trackparam as $trackParameter) {
 
-            $row_count = count($inputan_parameter);
-
-
-            // dd($inputan_parameter);
-            $newInputanParameters = [];
-
-            foreach ($inputan_parameter as $key => $value) {
-                $nama = $value['nama'];
-
-                // Check if the nama contains a comma
-                if (strpos($nama, ',') !== false) {
-                    // Split the nama by comma
-                    $namaArray = explode(',', $nama);
-
-                    // dd($namaArray);
-                    // Iterate through the split nama and create new arrays
-                    foreach ($namaArray as $index => $namaItem) {
-                        // dd($namaItem);
-                        $lastKey = key(array_slice($namaArray, -1, 1, true));
-                        // dd($namaItem);
-                        // nama_unsur
-                        // metode_analisis
-                        $mthod = ' ';
-                        $satuan = ' ';
-                        foreach ($getunsur as $key => $valuex) {
-                            if ($valuex['nama_unsur'] === trim($namaItem)) {
-                                $mthod = $valuex['metode_analisis'];
-                                $satuan = $valuex['satuan'];
-                            }
-                        }
-                        array_unshift($newInputanParameters, [
-                            "nama" => trim($namaItem),
-                            "alias" => ($index === $lastKey ?  $value["alias"] : ''),
-                            "col_verif" => ($index === $lastKey ?  $value["col_verif"] : ''),
-                            "satuan" => $satuan,
-                            "metode" => $mthod,
-                            "personel" => ($index === $lastKey ? $value["personel"] : ''),
-                            "alat" => ($index === $lastKey ? $value["alat"] : ''),
-                            "bahan" => ($index === $lastKey ? $value["bahan"] : ''),
-                            "harga_per_satuan" => ($index === $lastKey ? $value["harga_per_satuan"] : '-'),
-                            "jumlah" => ($index === $lastKey ?  $value["jumlah"] : ''),
-                            "total_per_parameter" => ($index === $lastKey ? $value["total_per_parameter"] : '-')
-                        ]);
+                if ($trackParameter->ParameterAnalisis) {
+                    if ($trackParameter->ParameterAnalisis->paket_id != null) {
+                        $data = explode('$', $trackParameter->ParameterAnalisis->paket_id);
+                        $nama_params[] = [
+                            'unsur' => ParameterAnalisis::whereIn('id', $data)->pluck('nama_unsur')->toArray(),
+                            'metode_analisis' => ParameterAnalisis::whereIn('id', $data)->pluck('metode_analisis')->toArray(),
+                            'harga' => $trackParameter->ParameterAnalisis->harga,
+                            'jenis' => 'Paket',
+                            'row' => count($data),
+                            'jumlah_sampel' => $trackParameter->jumlah,
+                            'satuan' => ParameterAnalisis::whereIn('id', $data)->pluck('satuan')->toArray(),
+                            'sub_total' => $trackParameter->ParameterAnalisis->harga * $trackParameter->jumlah,
+                        ];
+                    } else {
+                        $nama_params[] = [
+                            'unsur' => $trackParameter->ParameterAnalisis->nama_unsur,
+                            'metode_analisis' => $trackParameter->ParameterAnalisis->metode_analisis,
+                            'harga' => $trackParameter->ParameterAnalisis->harga,
+                            'jenis' => 'Paket',
+                            'row' => 1,
+                            'jumlah_sampel' => $trackParameter->jumlah,
+                            'satuan' => $trackParameter->ParameterAnalisis->satuan,
+                            'sub_total' => $trackParameter->ParameterAnalisis->harga * $trackParameter->jumlah,
+                        ];
                     }
-                } else {
-                    // If no comma, simply add the original array
-                    $newInputanParameters[] = $value;
                 }
             }
 
-            // dd($newInputanParameters, $inputan_parameter);
+            // dd($nama_params);
+            $total_row = 0;
+            $jum_sampel = 0;
+            $harga_total_per_sampel = 0;
+            $list_unsur = [];
+            $list_analisis = [];
+            $list_satuan = [];
+            $list_row = [];
+            $list_jumlah_sampel = [];
+            $list_harga = [];
+            $sub_total = [];
 
-            // dd($newInputanParameters, $getunsur);
-            $row_count = count($newInputanParameters);
-            $countnamaarr = count($namaArray ?? []);
-            $this->semuaRowParameter = $row_count;
+            // dd($nama_params);
+            foreach ($nama_params as $param) {
+                $total_row += $param['row'];
+                $jum_sampel += $param['jumlah_sampel'];
+                $harga_total_per_sampel += $param['sub_total'];
 
-            for ($i = 0; $i < $row_count; $i++) {
+
+
+
+                $list_jumlah_sampel[] = $param['jumlah_sampel'];
+                $list_harga[] = $param['harga'];
+                $sub_total[] = $param['sub_total'];
+                $list_row[] = $param['row'];
+
+
+
+                if (is_array($param['unsur'])) {
+                    $list_unsur = array_merge($list_unsur, $param['unsur']);
+                    $list_analisis = array_merge($list_analisis, $param['metode_analisis']);
+                    $list_satuan = array_merge($list_satuan, $param['satuan']);
+                } else {
+                    $list_unsur[] = $param['unsur'];
+                    $list_analisis[] = $param['metode_analisis'];
+                    $list_satuan[] = $param['satuan'];
+                }
+            }
+            $harga_total_dengan_ppn = Money::IDR(hitungPPN($harga_total_per_sampel), true);
+            $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($harga_total_per_sampel, true));
+
+            $discountDecimal = $value->discount != 0 ? $value->discount / 100 : 0;
+            $discount = $totalppn_harga->multiply($discountDecimal);
+            $total_akhir = $totalppn_harga->subtract($discount);
+
+            $nolab = explode('$', $value->nomor_lab);
+            $year = Carbon::parse($value->tanggal_terima)->year;
+            $kode_sampel = $value->jenisSampel->kode;
+
+
+            $colspandata = transformArray($list_row);
+            $keys = array_keys($colspandata);
+            $jum_samps = [];
+            $jum_harga = [];
+            $jum_sub_total = [];
+
+            foreach ($keys as $keym1 => $valuem1) {
+                if (isset($list_jumlah_sampel[$keym1])) {
+                    $jum_samps[$valuem1] = $list_jumlah_sampel[$keym1];
+                }
+                if (isset($list_harga[$keym1])) {
+                    $jum_harga[$valuem1] = $list_harga[$keym1];
+                }
+
+                if (isset($sub_total[$keym1])) {
+                    $jum_sub_total[$valuem1] = $sub_total[$keym1];
+                }
+            }
+
+            // dd($jum_sub_total);
+            // Format the left lab number
+            $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
+
+            // Check if the right lab number exists
+            if (isset($nolab[1])) {
+                // Format the right lab number
+                $labkanan = $year . $kode_sampel . '.' . formatLabNumber($nolab[1]);
+            } else {
+                $labkanan = '';
+            }
+            // dd($total_row);
+
+            // untuk row data 
+            for ($i = 0; $i < $total_row; $i++) {
+
+                $result[$i]['no_surat'] = ($i == 0) ? $value->nomor_surat : '';
+                $result[$i]['kemasan'] = ($i == 0) ? $value->kemasan_sampel : '';
+                $result[$i]['colspan'] = ($i == 0) ? $total_row : 0;
+                $result[$i]['jum_sampel'] = ($i == 0) ? $jum_sampel : '';
 
                 if ($i == 0) {
-
-                    if (array_key_exists($i, $newInputanParameters) && $i === $i) {
-                        $arr_per_column[$i]['col_mark'] = 1;
-                        $arr_per_column[$i]['col_param'] = $newInputanParameters[$i]['nama'];
-                        $arr_per_column[$i]['col_harga'] = ($newInputanParameters[$i]['harga_per_satuan'] === '-') ? '-' : Money::IDR($newInputanParameters[$i]['harga_per_satuan'], true);
-                        $arr_per_column[$i]['col_satuan'] = $newInputanParameters[$i]['satuan'];
-                        $arr_per_column[$i]['col_metode'] = $newInputanParameters[$i]['metode'];
-                        $arr_per_column[$i]['col_personel'] = $newInputanParameters[$i]['personel'];
-                        $arr_per_column[$i]['col_alat'] = $newInputanParameters[$i]['alat'];
-                        $arr_per_column[$i]['col_bahan'] = $newInputanParameters[$i]['bahan'];
-                        $arr_per_column[$i]['col_jum_sampel_2'] = $newInputanParameters[$i]['jumlah'];
-                        $arr_per_column[$i]['col_sub_total'] = ($newInputanParameters[$i]['total_per_parameter'] === '-') ? '-' : Money::IDR($newInputanParameters[$i]['total_per_parameter'], true);
-                        $arr_per_column[$i]['col_verif'] = $newInputanParameters[$i]['col_verif'];
-                        $arr_per_column[$i]['col_total'] = '';
-                    }
+                    $result[$i]['nolab'] = $labkiri;
+                } elseif ($i == 1) {
+                    $result[$i]['nolab'] = $labkanan;
                 } else {
-                    if (array_key_exists($i, $newInputanParameters) && $i === $i) {
-                        $arr_per_column[$i]['col_mark'] = 1;
-                        $arr_per_column[$i]['col_param'] = $newInputanParameters[$i]['nama'];
-                        $arr_per_column[$i]['col_harga'] = ($newInputanParameters[$i]['harga_per_satuan'] === '-') ? '-' : Money::IDR($newInputanParameters[$i]['harga_per_satuan'], true);
-                        $arr_per_column[$i]['col_satuan'] = $newInputanParameters[$i]['satuan'];
-                        $arr_per_column[$i]['col_metode'] = $newInputanParameters[$i]['metode'];
-                        $arr_per_column[$i]['col_personel'] = $newInputanParameters[$i]['personel'];
-                        $arr_per_column[$i]['col_alat'] = $newInputanParameters[$i]['alat'];
-                        $arr_per_column[$i]['col_bahan'] = $newInputanParameters[$i]['bahan'];
-                        $arr_per_column[$i]['col_jum_sampel_2'] = $newInputanParameters[$i]['jumlah'];
-                        $arr_per_column[$i]['col_sub_total'] = ($newInputanParameters[$i]['total_per_parameter'] === '-') ? '-' : Money::IDR($newInputanParameters[$i]['total_per_parameter'], true);
-                        $arr_per_column[$i]['col_verif'] = '';
-                        $arr_per_column[$i]['col_total'] = '';
-                    }
-                    $arr_per_column[$i]['col_no_surat'] = '';
-                    $arr_per_column[$i]['col_kemasan'] = '';
-                    $arr_per_column[$i]['col_jum_sampel'] = '';
-                    $arr_per_column[$i]['col_no_lab'] = ($i == 1) ? $labkanan : '';
-                    $arr_per_column[$i]['col_langsung'] = '';
-                    $arr_per_column[$i]['col_normal'] = '';
-                    $arr_per_column[$i]['col_abnormal'] = '';
-                    $arr_per_column[$i]['col_tanggal'] = '';
+                    $result[$i]['nolab'] = '';
                 }
+                $result[$i]['Parameter_Analisis'] = $list_unsur[$i];
+                $result[$i]['mark'] = '✓';
+                $result[$i]['Metode_Analisis'] = $list_analisis[$i];
+                $result[$i]['satuan'] = $list_satuan[$i];
+                $result[$i]['Personel'] = ($value->personel == 1) ?   '✓' : '';
+                $result[$i]['alat'] = ($value->alat == 1) ?   '✓' : '';
+                $result[$i]['bahan'] = ($value->bahan == 1) ?   '✓' : '';
+                if (isset($colspandata[$i])) {  // Check if $i is a key in $colspandata
+                    $result[$i]['cols'] = $colspandata[$i];
+                } else {
+                    $result[$i]['cols'] = 0;
+                }
+
+                $result[$i]['jum_data'] = $jum_samps[$i] ?? 0;
+                $result[$i]['jum_harga'] =  $jum_harga[$i] ?? 0;
+                $result[$i]['jum_sub_total'] = $jum_sub_total[$i] ?? 0;
+                $result[$i]['Konfirmasi'] = ($value->konfirmasi == 1) ?   '✓' : '';
+                $result[$i]['kondisi_sampel'] = $value->kondisi_sampel;
+                $result[$i]['estimasi'] = ($i == 0) ? Carbon::parse($value->estimasi)->format('Y-m-d') : '';
             }
+
+
+            // untuk row totalan dan diskon 
+
+            $titles = ["Total Per Parameter", "PPn 11%", "Diskon", "Total"];
+            $values_title = [Money::IDR($harga_total_per_sampel, true), $harga_total_dengan_ppn, $discount, $total_akhir];
+
+            for ($i = 0; $i < 4; $i++) {
+                // Initialize the array with empty strings
+                $result_total[$i] = array_fill(0, 16, '');
+
+                // Set the specific value at index 5
+                $result_total[$i][5] = $titles[$i];
+                $result_total[$i][11] = $values_title[$i];
+            }
+            // dd($result);
+            $catatan = $value->catatan;
+            $nama_pengirim = $value->nama_pengirim;
+            $status = $value->status;
+            $memo_created = $value->tanggal_memo;
+            $verif = explode(',', $value->status_timestamp);
+
+            $verifikasi_admin_timestamp = $verif[0];
+            $verifikasi_head_timestamp = $verif[1] ?? '-';
+
+            $approveby_head = $value->approveby_head;
+            $petugas_penerima_sampel = User::where('id', $value->approveby_head)->pluck('name')->first();
+            $jenis_kupa = $value->jenisSampel->nama;
+            $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
+            $no_kupa = $value->nomor_kupa;
         }
 
-        // dd($arr_per_column);
-        $this->countnamaarr = $countnamaarr ?? 0;
+        // dd($status);
 
         return view('excelView.exportexcel', [
-            'petugas_penerima_sampel' => $nama_petugas_penerima_sampel,
-            'sub_total' => Money::IDR($sub, true),
-            'ppn' => $ppn,
-            'final_total' => $sub_total_parameter,
-            'nama_pengirim' => $nama_pengirim,
-            'no_kupa' => $no_kupa,
-            'jenis_kupa' => $jenis_kupa,
-            'disclabel' => $discount,
-            'discount' => Money::IDR($getdisc, true),
-            'tanggal_penerimaan' => $tgl_penerimaan,
-            'kupa' => $arr_per_column,
+            'data' => $result,
+            'total_row' => $total_row,
+            'result_total' => $result_total,
             'catatan' => $catatan,
-            'approval' => $approval,
-            'memo_created' => Carbon::parse($memo_created)->format('Y-m-d H:i'),
-            'verifikasi_admin_timestamp' => $timestampVerifikasiAdmin,
-            'verifikasi_head_timestamp' => $timestampVerifikasiHeadOfLab,
-            'verified_by_head' => $tracksample->status_approved_by_role,
-            'isVerifiedByHead' => $isVerifiedByHead,
+            'nama_pengirim' => $nama_pengirim,
+            'petugas_penerima_sampel' => $petugas_penerima_sampel,
+            'approval' => $status,
+            'memo_created' => $memo_created,
+            'verifikasi_admin_timestamp' => $verifikasi_admin_timestamp,
+            'isVerifiedByHead' => $approveby_head,
+            'verifikasi_head_timestamp' => $verifikasi_head_timestamp,
+            'jenis_kupa' => $jenis_kupa,
+            'tanggal_penerimaan' => $tanggal_penerimaan,
+            'no_kupa' => $no_kupa,
         ]);
     }
 
@@ -331,22 +292,22 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     $event->sheet->getStyle("P14:P$endRow")->getAlignment()
                         ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
                         ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
-                    $event->sheet->mergeCells("J14:J$endRow");
-                    $event->sheet->getStyle("J14:J$endRow")->getAlignment()
-                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-                    $event->sheet->mergeCells("K14:K$endRow");
-                    $event->sheet->getStyle("K14:K$endRow")->getAlignment()
-                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-                    $event->sheet->mergeCells("L14:L$endRow");
-                    $event->sheet->getStyle("L14:L$endRow")->getAlignment()
-                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-                    $event->sheet->mergeCells("M14:M$endRow");
-                    $event->sheet->getStyle("M14:M$endRow")->getAlignment()
-                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                    // $event->sheet->mergeCells("J14:J$endRow");
+                    // $event->sheet->getStyle("J14:J$endRow")->getAlignment()
+                    //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                    //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                    // $event->sheet->mergeCells("K14:K$endRow");
+                    // $event->sheet->getStyle("K14:K$endRow")->getAlignment()
+                    //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                    //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                    // $event->sheet->mergeCells("L14:L$endRow");
+                    // $event->sheet->getStyle("L14:L$endRow")->getAlignment()
+                    //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                    //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                    // $event->sheet->mergeCells("M14:M$endRow");
+                    // $event->sheet->getStyle("M14:M$endRow")->getAlignment()
+                    //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                    //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
                 }
 
                 $columnsToStyle = ['B12', 'C12', 'D12', 'E12', 'B5', 'B6', 'D1', 'D2', 'D3', 'D4', 'F12',  'H12', 'I12', 'J13', 'K13', 'L13', 'M13', 'N13', 'O13', 'P13', 'Q13', 'R13', 'S12', 'T13', 'U12'];
@@ -370,23 +331,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $event->sheet->getStyle('M13')->getAlignment()->setWrapText(true);
                 $event->sheet->getStyle('Q13')->getAlignment()->setWrapText(true);
                 $tinggiDefaultKolom = 13 +  7 + $this->semuaRowParameter;
-                $kolumcatatan = "J$tinggiDefaultKolom";
-                $kolumcatatan1 = "B$tinggiDefaultKolom";
-                $kolumcatatan2 = "D$tinggiDefaultKolom";
-                // dd($kolumcatatan);
-
-                $event->sheet->getStyle($kolumcatatan)->getAlignment()
-                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT)
-                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP)
-                    ->setWrapText(true);
-                $event->sheet->getStyle($kolumcatatan1)->getAlignment()
-                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                    ->setWrapText(true);
-                $event->sheet->getStyle($kolumcatatan2)->getAlignment()
-                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                    ->setWrapText(true);
-
-                // $event->sheet->mergeCells("J25:J30");
             },
 
 
