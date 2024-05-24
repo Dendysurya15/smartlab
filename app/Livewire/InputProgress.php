@@ -635,12 +635,13 @@ class InputProgress extends Component implements HasForms
                         FileUpload::make('foto_sampel')
                             ->label('Uplod Foto Sampel (Maks 5 Foto)')
                             ->image()
-                            ->imageEditor()
-                            ->imageEditorEmptyFillColor('#000000')
+                            ->optimize('jpg')
+                            ->resize(50)
+                            // ->imageEditor()
+                            // ->imageEditorEmptyFillColor('#000000')
                             ->multiple()
                             ->maxFiles(5)
-                            ->fetchFileInformation(false)
-                            ->maxSize(3000)
+                            // ->fetchFileInformation(false)
                             ->uploadingMessage('Upoad Foto Sampel...')
                             ->acceptedFileTypes(['image/png', 'image/jpg', 'image/jpeg']),
 

@@ -185,7 +185,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $result[$i]['no_surat'] = ($i == 0) ? $value->nomor_surat : '';
                 $result[$i]['kemasan'] = ($i == 0) ? $value->kemasan_sampel : '';
                 $result[$i]['colspan'] = ($i == 0) ? $total_row : 0;
-                $result[$i]['jum_sampel'] = ($i == 0) ? $jum_sampel : '';
+                $result[$i]['jum_sampel'] = ($i == 0) ? $value->jumlah_sampel : '';
 
                 if ($i == 0) {
                     $result[$i]['nolab'] = $labkiri;
@@ -246,7 +246,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $no_kupa = $value->nomor_kupa;
         }
 
-        // dd($status);
+        // dd($result);
 
         return view('excelView.exportexcel', [
             'data' => $result,
