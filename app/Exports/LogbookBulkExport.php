@@ -134,10 +134,10 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $inc2 = 1;
             $startingValue = $Nomorlab[0];
             $data = count($namakode_sampel);
-            // dd($namakode_sampel, $sampel_data);
+
             foreach ($namakode_sampel as $keyx => $valuex) {
                 foreach ($sampel_data as $keyx2 => $valuex2) {
-                    if ($valuex === $keyx2) {
+                    if ($valuex == $keyx2) { // Change === to ==
                         $nolabdata = $startingValue + $inc - 1;
                         $nolabdata = formatLabNumber($nolabdata);
                         $result[$valuex]['id'] = $inc2++;
@@ -154,15 +154,24 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                 }
             }
 
+            // dd($namakode_sampel, $sampel_data);
+            $petugas_prep = $value->petugas_preparasi;
             // dd($result, $namakode_sampel, $sampel_data);
         }
         // dd($newArray, $result);
 
         $PenerimaSampel = $petugas['Petugas Penerima Sampel'][0]['nama'];
-        $Preparasi = $petugas['Petugas Preparasi'][0]['nama'];
+        if (!is_null($petugas_prep)) {
+            // dd($petugas_prep);
+            $Preparasi = $petugas_prep;
+        } else {
+
+            $Preparasi = $petugas['Petugas Preparasi'][0]['nama'];
+        }
+
         $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
         $Penyelia = $petugas['Penyelia'][0]['nama'];
-        // dd($PenerimaSampel);
+        // dd($result);
         return view('excelView.logbookbulk', [
             'data' => $result,
             'namaparams' =>  array_unique($newArray),

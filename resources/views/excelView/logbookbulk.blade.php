@@ -45,7 +45,7 @@
             </tr>
             <tr>
                 <td></td>
-                <td colspan="17" style="text-align:center;border: 1px solid black;">Identitas Sampel {{$jenis_sampel}}</td>
+                <td colspan="17" style="text-align:center;border: 1px solid black;">Identitas Sampel {{$jenis_sampel ?? '-'}}</td>
                 <td style="border-left:1px solid black;"></td>
             </tr>
             <tr>

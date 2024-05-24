@@ -54,6 +54,7 @@ class TrackSampel extends Model
         'status_timestamp',
         'status',
         'catatan',
+        'petugas_preparasi'
     ];
     public function jenisSampel()
     {

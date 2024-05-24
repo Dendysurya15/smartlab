@@ -39,6 +39,9 @@ use Filament\Support\RawJs;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Filament\Forms\Components\KeyValue;
 use Illuminate\Support\Facades\Log;
+use Filament\Forms\Components\Placeholder;
+use Illuminate\Support\HtmlString;
+
 
 class InputProgress extends Component implements HasForms
 {
@@ -438,7 +441,17 @@ class InputProgress extends Component implements HasForms
                     ->live()
                     ->default(session()->get('Peralatan'))
                     ->columns(3),
-
+                TextInput::make('petugas_preperasi')
+                    ->label('Petugas Preperasi')
+                    ->minLength(2)
+                    ->afterStateUpdated(function ($state) {
+                        // dd($state);
+                        session()->put('petugas_preperasi', $state);
+                    })
+                    ->live()
+                    ->default(session()->get('petugas_preperasi'))
+                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->maxLength(255),
 
 
                 Section::make()
@@ -637,11 +650,8 @@ class InputProgress extends Component implements HasForms
                             ->image()
                             ->optimize('jpg')
                             ->resize(50)
-                            // ->imageEditor()
-                            // ->imageEditorEmptyFillColor('#000000')
                             ->multiple()
                             ->maxFiles(5)
-                            // ->fetchFileInformation(false)
                             ->uploadingMessage('Upoad Foto Sampel...')
                             ->acceptedFileTypes(['image/png', 'image/jpg', 'image/jpeg']),
 
@@ -784,6 +794,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->skala_prioritas = $form['SkalaPrioritas'];
                 $trackSampel->discount = $form['Diskon'];
                 $trackSampel->catatan = $form['catatan'];
+                $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
                     $filename = '';
@@ -923,6 +934,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->skala_prioritas = $form['SkalaPrioritas'];
                 $trackSampel->discount = $form['Diskon'];
                 $trackSampel->catatan = $form['catatan'];
+                $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->status = 'Draft';
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
