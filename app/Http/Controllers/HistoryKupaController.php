@@ -18,6 +18,8 @@ use Cknow\Money\Money;
 use App\Models\User;
 use App\Models\ExcelManagement;
 use App\Models\ParameterAnalisis;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class HistoryKupaController extends Controller
 {
@@ -584,9 +586,9 @@ class HistoryKupaController extends Controller
                 $result[$i]['mark'] = '✓';
                 $result[$i]['Metode_Analisis'] = $list_analisis[$i];
                 $result[$i]['satuan'] = $list_satuan[$i];
-                $result[$i]['Personel'] = ($value->personel == 1) ?   '✓' : '';
-                $result[$i]['alat'] = ($value->alat == 1) ?   '✓' : '';
-                $result[$i]['bahan'] = ($value->bahan == 1) ?   '✓' : '';
+                $result[$i]['Personel'] = ($value->personel == 1) ?   '✔' : '';
+                $result[$i]['alat'] = ($value->alat == 1) ?   '✔' : '';
+                $result[$i]['bahan'] = ($value->bahan == 1) ?   '✔' : '';
                 if (isset($colspandata[$i])) {  // Check if $i is a key in $colspandata
                     $result[$i]['cols'] = $colspandata[$i];
                 } else {
@@ -596,7 +598,7 @@ class HistoryKupaController extends Controller
                 $result[$i]['jum_data'] = $jum_samps[$i] ?? 0;
                 $result[$i]['jum_harga'] =  $jum_harga[$i] ?? 0;
                 $result[$i]['jum_sub_total'] = $jum_sub_total[$i] ?? 0;
-                $result[$i]['Konfirmasi'] = ($value->konfirmasi == 1) ?   '✓' : '';
+                $result[$i]['Konfirmasi'] = ($value->konfirmasi == 1) ?   '✔' : '';
                 $result[$i]['kondisi_sampel'] = $value->kondisi_sampel;
                 $result[$i]['estimasi'] = ($i == 0) ? Carbon::parse($value->estimasi)->format('Y-m-d') : '';
             }
@@ -632,8 +634,6 @@ class HistoryKupaController extends Controller
             $no_kupa = $value->nomor_kupa;
         }
 
-        // dd($result);
-
         $data = [
             'data' => $result,
             'total_row' => $total_row,
@@ -649,21 +649,24 @@ class HistoryKupaController extends Controller
             'jenis_kupa' => $jenis_kupa,
             'tanggal_penerimaan' => $tanggal_penerimaan,
             'no_kupa' => $no_kupa,
+            'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
         ];
 
-        // dd($filename);
-        $pdf = Pdf::setPaper('letter', 'landscape');
-        $pdf->setOptions([
-            'dpi' => 100,
-            'defaultFont' => 'Nunito, sans-serif', 'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true, 'isJavascriptEnabled' => true
-        ]);
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', true); // Enable loading of remote resources
+        $dompdf = new Dompdf($options);
 
-        // $pdf->setOptions(['dpi' => 150, 'isHtml5ParserEnabled' => true, 'defaultFont' => 'sans-serif']);
-        $pdf->loadView('pdfview.export_kupa', $data);
-        $pdf->set_paper('A2', 'landscape');
+        $view = view('pdfview.export_kupa', $data)->render();
+        $dompdf->loadHtml($view);
 
-        // return $pdf->stream($filename);
-        return $pdf->download($filename . '.pdf');
+        // Set paper size and orientation
+        $dompdf->setPaper('A2', 'landscape');
+
+        // Render the PDF
+        $dompdf->render();
+
+        // Output the generated PDF to the browser
+        $dompdf->stream($filename, ["Attachment" => true]);
     }
 }
