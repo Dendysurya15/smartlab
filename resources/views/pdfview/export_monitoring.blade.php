@@ -11,15 +11,39 @@
 </head>
 
 <body>
+    <style>
+        .textcenter {
+            text-align: center;
+            vertical-align: center
+        }
 
+        .border {
+            border: 1px solid black;
+        }
 
+        .border-text {
+            border: 1px solid black;
+            text-align: center;
+            vertical-align: middle
+        }
+
+        .page_break {
+            page-break-before: always;
+        }
+    </style>
+    @foreach ($data as $item)
+    @php
+    $kodasampel = explode('$', $item['kode_sampel']);
+    @endphp
     <table style="border: 1px solid black;">
-
         <thead>
-
             <tr>
                 <td></td>
-                <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
+                <td rowspan="4" colspan="2" style="border-left:1px solid black;">
+                    <div>
+                        <img src="{{ asset('images/Logo_CBI_2.png') }}" style="height:60px;margin-left:50px">
+                    </div>
+                </td>
                 <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
                     PT . CITRA BORNEO INDAH</td>
             </tr>
@@ -68,19 +92,20 @@
                     1 dari 1
                 </th>
             </tr>
+
             <tr>
                 <th></th>
                 <th colspan="2" style="border-left:1px solid black;border-top:1px solid black ;">
                     Tanggal Penerimaan
                 </th>
                 <th colspan="2" style="border-top:1px solid black;">
-                    : {{ $tanggalterima }}
+                    : {{ $item['tanggalterima'] }}
                 </th>
 
                 <th colspan="12" style="border-top: 1px solid black;"></th>
                 <th style="border-top: 1px solid black;">Jenis Sampel</th>
                 <th style="border-top: 1px solid black;border-right: 1px solid black;">
-                    : {{ $jenis_sample}}
+                    : {{ $item['jenis_sample'] }}
                 </th>
             </tr>
             <tr>
@@ -89,13 +114,13 @@
                     No. Kaji Ulang
                 </th>
                 <th colspan="2" style="border-bottom: 1px solid black;">
-                    : {{ $nomor_kupa }}
+                    : {{ $item['nomor_kupa'] }}
                 </th>
 
                 <th colspan="12" style="border-bottom: 1px solid black;"></th>
                 <th style="border-bottom: 1px solid black;">Nama Pelanggan</th>
                 <th style="border-bottom: 1px solid black;border-right:1px solid black">
-                    : {{ $nama_pengirim }}
+                    : {{ $item['nama_pengirim'] }}
                 </th>
             </tr>
 
@@ -166,10 +191,7 @@
 
         </thead>
         <tbody>
-            @foreach ($data as $item)
-            @php
-            $kodasampel = explode('$', $item['kode_sampel']);
-            @endphp
+
             <tr>
                 <td style="border: 1px solid black">{{ $item['col'] }}</td>
                 <td style="border: 1px solid black; vertical-align: top;">{{ $item['id'] }}</td>
@@ -298,15 +320,14 @@
                 <td style="border: 1px solid black"></td>
                 <td style="border: 1px solid black"></td>
             </tr>
-            @endforeach
+
 
 
         </tbody>
 
     </table>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    </script>
+    <div class="page_break"></div>
+    @endforeach
 
 </body>
 

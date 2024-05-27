@@ -44,6 +44,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('history_sampel', HistoryKupaController::class);
     Route::get('get-progress-options', [HistoryKupaController::class, 'getProgressOptions']);
     Route::get('exportvr/{id}', [HistoryKupaController::class, 'exportvr'])->name('exportvr');
+    Route::get('exporpdfform/{id}/{filename}', [HistoryKupaController::class, 'export_form_pdf'])->name('exporpdfform');
+    Route::get('exporpdfkupa/{id}/{filename}', [HistoryKupaController::class, 'export_kupa_pdf'])->name('exporpdfkupa');
     Route::get('exportexcel', function () {
         return view('excelView.exportotexcel');
     });
