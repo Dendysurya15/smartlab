@@ -669,4 +669,175 @@ class HistoryKupaController extends Controller
         // Output the generated PDF to the browser
         $dompdf->stream($filename, ["Attachment" => true]);
     }
+
+    public function export_pr_pdf($id, $filename)
+    {
+
+        $idsArray = explode('$', $id);
+        $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
+        $petugas = ExcelManagement::where('status', 1)->get();
+        $petugas = $petugas->groupBy(['jabatan']);
+        $petugas = json_decode($petugas, true);
+        // dd($petugas);
+        // dd($queries);
+        $result = [];
+        $inc = 1;
+        foreach ($queries as $key => $value) {
+            // dd($value);
+            $tanggal_terima = Carbon::parse($value->tanggal_terima);
+            $trackparam = $value->trackParameters;
+            $namakode_sampel = explode('$', $value->kode_sampel);
+            $namakode_sampel = array_map('trim', $namakode_sampel);
+
+            // dd($namakode_sampel);
+            $nama_parameter = [];
+            $hargatotal = 0;
+            $jumlah_per_parametertotal = 0;
+            $hargaasli = [];
+            $harga_total_per_sampel = [];
+            $jumlah_per_parameter = [];
+            $namakode_sampelparams = [];
+            foreach ($trackparam as $trackParameter) {
+
+                if ($trackParameter->ParameterAnalisis) {
+                    $nama_params = $trackParameter->ParameterAnalisis->nama_parameter;
+                    $namaunsur = $trackParameter->ParameterAnalisis->nama_unsur;
+
+                    if (strpos($nama_params, ',') !== false) {
+                        $nama_parameter[] = $nama_params;
+                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                    } else if ($namaunsur === '-' || $namaunsur === '' || $namaunsur === null) {
+                        $nama_parameter[] = $nama_params;
+                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                    } else {
+                        $nama_parameter[] = $namaunsur;
+                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
+                    }
+
+
+                    $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
+                    $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
+                    $jumlah_per_parameter[] = $trackParameter->jumlah;
+                }
+                $hargatotal += $trackParameter->totalakhir;
+                $jumlah_per_parametertotal += $trackParameter->jumlah;
+            }
+            $newArray = [];
+            foreach ($nama_parameter as $item) {
+                if (strpos($item, ',') !== false) {
+                    $explodedItems = array_map('trim', explode(',', $item));
+                    $newArray = array_merge($newArray, $explodedItems);
+                } else {
+                    $newArray[] = $item;
+                }
+            }
+            // dd($newArray, $nama_parameter);
+
+            $sampel_data = [];
+            $inc = 0;
+            foreach ($namakode_sampelparams as $attribute => $items) {
+                foreach ($items as $item) {
+                    if (!isset($sampel_data[$item])) {
+                        $sampel_data[$item] = [];
+                    }
+
+                    $explodedAttributes = strpos($attribute, ',') !== false ? explode(',', $attribute) : [$attribute];
+
+                    // Merge the exploded attributes only if they are not already present in the array
+                    foreach ($explodedAttributes as $attr) {
+                        $trimmedAttr = trim($attr); // Trim the attribute to remove any leading or trailing spaces
+                        if (!in_array($trimmedAttr, $sampel_data[$item])) {
+                            $sampel_data[$item][] = $trimmedAttr;
+                        }
+                    }
+                }
+            }
+
+            // dd($sampel_data, $namakode_sampelparams);
+            $total_namaparams = 13 - count($newArray);
+            $timestamp = strtotime($value->tanggal_terima);
+            $year = date('Y', $timestamp);
+            $lab =  substr($year, 2) . $value->jenisSampel->kode . '.';
+            $Nomorlab = explode('$', $value->nomor_lab);
+            $Nomorlab = array_filter($Nomorlab, function ($value) {
+                return $value !== "-";
+            });
+            $countlab = count($Nomorlab);
+            $timestamp2 = strtotime($value->estimasi);
+            $tanggal_terima = date('Y-m-d', $timestamp);
+            $tanggal_penyelesaian = date('Y-m-d', $timestamp2);
+            $inc = 0;
+            $inc2 = 1;
+            $startingValue = $Nomorlab[0];
+            // dd($startingValue);
+            $data = count($namakode_sampel);
+
+            $petugas_prep[$key] = $value->petugas_preparasi;
+            $PenerimaSampel = $petugas['Petugas Penerima Sampel'][0]['nama'];
+            if (!is_null($petugas_prep)) {
+                // dd($petugas_prep);
+                $Preparasi = $petugas_prep;
+            } else {
+
+                $Preparasi = $petugas['Petugas Preparasi'][0]['nama'];
+            }
+
+            $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
+            $Penyelia = $petugas['Penyelia'][0]['nama'];
+            foreach ($namakode_sampel as $keyx => $valuex) {
+                foreach ($sampel_data as $keyx2 => $valuex2) {
+                    if ($valuex == $keyx2) { // Change === to ==
+                        $nolabdata = $startingValue + $inc;
+                        $nolabdata = formatLabNumber($nolabdata);
+                        $result[$key]['data'][$valuex]['id'] = $inc2++;
+                        $result[$key]['data'][$valuex]['id_data'] = $inc++;
+                        $result[$key]['data'][$valuex]['nomor_lab'] = $lab .  $nolabdata;
+                        $result[$key]['data'][$valuex]['jumlah_sampel'] = $value->jumlah_sampel;
+                        $result[$key]['data'][$valuex]['tanggal_terima'] = $tanggal_terima;
+                        $result[$key]['data'][$valuex]['kondisi_sampel'] = $value->kondisi_sampel;
+                        $result[$key]['data'][$valuex]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
+
+
+                        $result[$key]['data'][$valuex]['parameter_sampel'] = $valuex2;
+                        $result[$key]['namaparams'] = array_unique($newArray);
+                        $result[$key]['jenis_sampel'] = $value->jenisSampel->nama;
+                        $result[$key]['jumlah_sampel'] = $value->jumlah_sampel;
+                        $result[$key]['tanggal_terima'] = $tanggal_terima;
+                        $result[$key]['kondisi_sampel'] = $value->kondisi_sampel;
+                        $result[$key]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
+                        $result[$key]['no_order'] = $value->nomor_kupa;
+                        $result[$key]['total_namaparams'] = $total_namaparams;
+                        $result[$key]['PenerimaSampel'] = $PenerimaSampel;
+                        $result[$key]['Preparasi'] = $Preparasi[0];
+                        $result[$key]['Staff'] = $Staff;
+                        $result[$key]['Penyelia'] = $Penyelia;
+                        $result[$key]['Penyelia'] = $Penyelia;
+                    }
+                }
+            }
+        }
+        $data = [
+            'data' => $result,
+        ];
+        // dd($data);
+
+        // dd($data);
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', true); // Enable loading of remote resources
+        $dompdf = new Dompdf($options);
+
+        $view = view('pdfview.pr', $data)->render();
+        $dompdf->loadHtml($view);
+
+        // Set paper size and orientation
+        $dompdf->setPaper('A2', 'landscape');
+
+        // Render the PDF
+        $dompdf->render();
+
+        // Output the generated PDF to the browser
+        $dompdf->stream($filename, ["Attachment" => true]);
+        // return $dompdf->stream($filename, ["Attachment" => false]); // Set Attachment to false for preview
+    }
 }

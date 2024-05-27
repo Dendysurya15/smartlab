@@ -46,6 +46,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('exportvr/{id}', [HistoryKupaController::class, 'exportvr'])->name('exportvr');
     Route::get('exporpdfform/{id}/{filename}', [HistoryKupaController::class, 'export_form_pdf'])->name('exporpdfform');
     Route::get('exporpdfkupa/{id}/{filename}', [HistoryKupaController::class, 'export_kupa_pdf'])->name('exporpdfkupa');
+    Route::get('exporpdfpr/{id}/{filename}', [HistoryKupaController::class, 'export_pr_pdf'])->name('exporpdfpr');
     Route::get('exportexcel', function () {
         return view('excelView.exportotexcel');
     });
