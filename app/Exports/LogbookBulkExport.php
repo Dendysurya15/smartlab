@@ -133,12 +133,13 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $inc = 0;
             $inc2 = 1;
             $startingValue = $Nomorlab[0];
+            // dd($startingValue);
             $data = count($namakode_sampel);
 
             foreach ($namakode_sampel as $keyx => $valuex) {
                 foreach ($sampel_data as $keyx2 => $valuex2) {
                     if ($valuex == $keyx2) { // Change === to ==
-                        $nolabdata = $startingValue + $inc - 1;
+                        $nolabdata = $startingValue + $inc;
                         $nolabdata = formatLabNumber($nolabdata);
                         $result[$valuex]['id'] = $inc2++;
                         $result[$valuex]['id_data'] = $inc++;
@@ -171,7 +172,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
 
         $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
         $Penyelia = $petugas['Penyelia'][0]['nama'];
-        // dd($result);
+        // dd($result[300]);
         return view('excelView.logbookbulk', [
             'data' => $result,
             'namaparams' =>  array_unique($newArray),

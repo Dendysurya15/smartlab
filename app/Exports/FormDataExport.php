@@ -143,7 +143,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $total_akhir = $totalppn_harga->subtract($discount);
 
             $nolab = explode('$', $value->nomor_lab);
-            $year = Carbon::parse($value->tanggal_terima)->year;
+            $year = Carbon::parse($value->tanggal_terima)->format('y');
             $kode_sampel = $value->jenisSampel->kode;
 
 
