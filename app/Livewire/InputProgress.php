@@ -321,6 +321,11 @@ class InputProgress extends Component implements HasForms
                     ->minLength(2)
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
+                TextInput::make('penyelia')
+                    ->label('Penyelia')
+                    ->minLength(2)
+                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->maxLength(255),
 
 
                 Section::make()
@@ -587,6 +592,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->discount = $form['Diskon'];
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
+                $trackSampel->penyelia = $form['penyelia'];
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
                     $filename = '';
@@ -727,6 +733,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->discount = $form['Diskon'];
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
+                $trackSampel->penyelia = $form['penyelia'];
                 $trackSampel->status = 'Draft';
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {

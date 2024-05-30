@@ -773,6 +773,7 @@ class HistoryKupaController extends Controller
             $data = count($namakode_sampel);
 
             $petugas_prep[$key] = $value->petugas_preparasi;
+            $penyelia_prep[$key] = $value->penyelia;
             $PenerimaSampel = $petugas['Petugas Penerima Sampel'][0]['nama'];
             if (!is_null($petugas_prep)) {
                 // dd($petugas_prep);
@@ -783,7 +784,7 @@ class HistoryKupaController extends Controller
             }
 
             $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
-            $Penyelia = $petugas['Penyelia'][0]['nama'];
+            $Penyelia = (!is_null($penyelia_prep) ? $penyelia_prep : $petugas['Penyelia'][0]['nama']);
             foreach ($namakode_sampel as $keyx => $valuex) {
                 foreach ($sampel_data as $keyx2 => $valuex2) {
                     if ($valuex == $keyx2) { // Change === to ==
@@ -810,8 +811,7 @@ class HistoryKupaController extends Controller
                         $result[$key]['PenerimaSampel'] = $PenerimaSampel;
                         $result[$key]['Preparasi'] = $Preparasi[0];
                         $result[$key]['Staff'] = $Staff;
-                        $result[$key]['Penyelia'] = $Penyelia;
-                        $result[$key]['Penyelia'] = $Penyelia;
+                        $result[$key]['Penyelia'] = $Penyelia[0];
                     }
                 }
             }
@@ -837,7 +837,7 @@ class HistoryKupaController extends Controller
         $dompdf->render();
 
         // Output the generated PDF to the browser
-        $dompdf->stream($filename, ["Attachment" => true]);
-        // return $dompdf->stream($filename, ["Attachment" => false]); // Set Attachment to false for preview
+        // $dompdf->stream($filename, ["Attachment" => true]);
+        return $dompdf->stream($filename, ["Attachment" => false]);
     }
 }

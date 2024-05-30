@@ -157,6 +157,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
 
             // dd($namakode_sampel, $sampel_data);
             $petugas_prep = $value->petugas_preparasi;
+            $penyelia_prep = $value->penyelia;
             // dd($result, $namakode_sampel, $sampel_data);
         }
         // dd($newArray, $result);
@@ -171,7 +172,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
         }
 
         $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
-        $Penyelia = $petugas['Penyelia'][0]['nama'];
+        $Penyelia = (!is_null($penyelia_prep) ? $penyelia_prep : $petugas['Penyelia'][0]['nama']);
         // dd($result[300]);
         return view('excelView.logbookbulk', [
             'data' => $result,

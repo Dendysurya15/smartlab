@@ -209,38 +209,36 @@
                 <td></td>
 
 
-                <td style="text-align: center;border:1px solid black" colspan="3" rowspan="5">{{$listitems['PenerimaSampel']}}</td>
+                <td style="vertical-align:bottom; text-align: center;border:1px solid black" colspan="3" rowspan="6">{{$listitems['PenerimaSampel']}}</td>
 
 
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">{{$listitems['Penyelia']}}</td>
+                <td style="vertical-align:bottom; text-align: center;border:1px solid black" colspan="2" rowspan="6">{{$listitems['Penyelia']}}</td>
 
 
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">{{$listitems['Preparasi']}}</td>
+                <td style="vertical-align:bottom; text-align: center;border:1px solid black" colspan="2" rowspan="6">{{$listitems['Preparasi']}}</td>
 
 
-                <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">{{$listitems['Staff']}}</td>
+                <td style="vertical-align:bottom; text-align: center;border:1px solid black" colspan="2" rowspan="6">{{$listitems['Staff']}}</td>
 
 
-                <td colspan="4" rowspan="6" style="vertical-align: top;text-align:left;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
-            </tr>
-
-            <tr>
-                <td></td>
-
-
+                <td colspan="4" rowspan="7" style="vertical-align: top;text-align:left;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
             </tr>
             <tr>
-                <td></td>
-
+                <td>&NonBreakingSpace;</td>
             </tr>
             <tr>
-                <td></td>
-
+                <td>&NonBreakingSpace;</td>
             </tr>
             <tr>
-                <td></td>
-
+                <td>&NonBreakingSpace;</td>
             </tr>
+            <tr>
+                <td>&NonBreakingSpace;</td>
+            </tr>
+            <tr>
+                <td>&NonBreakingSpace;</td>
+            </tr>
+
             <tr>
                 <td></td>
 

@@ -357,7 +357,12 @@ class Editprogress extends Component implements HasForms
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->default($this->opt->petugas_preparasi)
                     ->maxLength(255),
-
+                TextInput::make('penyelia')
+                    ->label('Penyelia')
+                    ->minLength(2)
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->default($this->opt->penyelia)
+                    ->maxLength(255),
 
                 TextInput::make('Emaiilto')
                     ->label('Email To')
@@ -720,6 +725,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->discount = $form['Diskon'];
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
+                $trackSampel->penyelia = $form['penyelia'];
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
                     $filename = '';
@@ -866,6 +872,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->discount = $form['Diskon'];
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
+                $trackSampel->penyelia = $form['penyelia'];
                 $trackSampel->status = 'Waiting Admin Approval';
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
