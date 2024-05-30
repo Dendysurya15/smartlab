@@ -212,6 +212,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $result[$i]['jum_sub_total'] = $jum_sub_total[$i] ?? 0;
                 $result[$i]['Konfirmasi'] = ($value->konfirmasi == 1) ?   '✓' : '';
                 $result[$i]['kondisi_sampel'] = $value->kondisi_sampel;
+
                 $result[$i]['estimasi'] = ($i == 0) ? Carbon::parse($value->estimasi)->format('Y-m-d') : '';
             }
 
@@ -240,13 +241,14 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $verifikasi_head_timestamp = $verif[1] ?? '-';
 
             $approveby_head = $value->approveby_head;
-            $petugas_penerima_sampel = User::where('id', $value->approveby_head)->pluck('name')->first();
+            $petugas_penerima_sampel = User::where('id', $value->status_changed_by_id)->pluck('name')->first();
             $jenis_kupa = $value->jenisSampel->nama;
             $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
             $no_kupa = $value->nomor_kupa;
+            $departemen = $value->departemen;
         }
 
-        // dd($result);
+        // dd($petugas_penerima_sampel);
 
         return view('excelView.exportexcel', [
             'data' => $result,
@@ -263,6 +265,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             'jenis_kupa' => $jenis_kupa,
             'tanggal_penerimaan' => $tanggal_penerimaan,
             'no_kupa' => $no_kupa,
+            'departemen' => $departemen,
         ]);
     }
 

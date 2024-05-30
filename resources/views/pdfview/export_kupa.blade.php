@@ -93,10 +93,10 @@
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                <th colspan="2" style="border-top: 1px solid black;border-left: none;">
                     Tanggal Penerimaan
                 </th>
-                <th colspan="2" style="border-top:1px solid black;">
+                <th colspan="2">
                     : {{$tanggal_penerimaan ?? 0}}
                 </th>
 
@@ -106,16 +106,30 @@
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                <th colspan="2">
                     No. Kaji Ulang
                 </th>
-                <th style="border-bottom: 1px solid black;">
+                <th>
                     : {{$no_kupa ?? 0}}
                 </th>
 
                 <th colspan="11" style="border-bottom: 1px solid blacck;"></th>
-                <th colspan="3" style="border-bottom: 1px solid black;">Nama Pelanggan</th>
-                <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$nama_pengirim ?? 0}}</th>
+                <th colspan="3">Nama Pelanggan</th>
+                <th style="border-right:1px solid black">: {{$nama_pengirim ?? 0}}</th>
+
+            </tr>
+            <tr>
+                <th></th>
+                <th colspan="2">
+
+                </th>
+                <th>
+
+                </th>
+
+                <th colspan="11" style="border-bottom: 1px solid blacck;"></th>
+                <th colspan="3" style="border-bottom: 1px solid black;">Departemen</th>
+                <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$departemen ?? 0}}</th>
             </tr>
             <tr>
                 <th></th>
@@ -246,7 +260,7 @@
                 @if ($items['cols'] != 0)
                 <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['Konfirmasi'] }}</td>
                 @if ($items['kondisi_sampel'] === 'Normal')
-                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['kondisi_sampel'] }}</td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">✔</td>
                 <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}"></td>
                 @else
                 <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}"></td>
@@ -286,13 +300,13 @@
 
             <tr>
                 <td></td>
-                <td colspan="2" rowspan="4" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;text-align:center">
+                <td colspan="2" rowspan="4" style="text-align:center">
 
                     @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
-                    CREATED<br>
+                    CREATED
                     {{$memo_created}}
                     @else
-                    APPROVED <br>
+                    APPROVED
                     {{$verifikasi_admin_timestamp}}
                     @endif
 
@@ -330,7 +344,7 @@
             </tr>
             <tr>
                 <td></td>
-                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;"> {{$petugas_penerima_sampel ?? '-'}}</td>
+                <td colspan="2" style="border: none;"> {{$petugas_penerima_sampel ?? '-'}}</td>
                 <td colspan="3" style="border-left:1px solid black;"> Budi Umbara</td>
                 <td colspan="3" style="border-left:1px solid black;"> {{$nama_pengirim ?? '-'}}</td>
                 <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->

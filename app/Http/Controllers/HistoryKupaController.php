@@ -628,10 +628,11 @@ class HistoryKupaController extends Controller
             $verifikasi_head_timestamp = $verif[1] ?? '-';
 
             $approveby_head = $value->approveby_head;
-            $petugas_penerima_sampel = User::where('id', $value->approveby_head)->pluck('name')->first();
+            $petugas_penerima_sampel = User::where('id', $value->status_changed_by_id)->pluck('name')->first();
             $jenis_kupa = $value->jenisSampel->nama;
             $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
             $no_kupa = $value->nomor_kupa;
+            $departemen = $value->departemen;
         }
 
         $data = [
@@ -649,6 +650,7 @@ class HistoryKupaController extends Controller
             'jenis_kupa' => $jenis_kupa,
             'tanggal_penerimaan' => $tanggal_penerimaan,
             'no_kupa' => $no_kupa,
+            'departemen' => $departemen,
             'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
         ];
 
@@ -666,8 +668,8 @@ class HistoryKupaController extends Controller
         // Render the PDF
         $dompdf->render();
 
-        // Output the generated PDF to the browser
-        $dompdf->stream($filename, ["Attachment" => true]);
+        // return $dompdf->stream($filename, ["Attachment" => false]);
+        $dompdf->stream($filename, ["Attachment" => false]);
     }
 
     public function export_pr_pdf($id, $filename)
@@ -836,8 +838,8 @@ class HistoryKupaController extends Controller
         // Render the PDF
         $dompdf->render();
 
-        // Output the generated PDF to the browser
-        // $dompdf->stream($filename, ["Attachment" => true]);
-        return $dompdf->stream($filename, ["Attachment" => false]);
+
+        $dompdf->stream($filename, ["Attachment" => true]);
+        // return $dompdf->stream($filename, ["Attachment" => false]);
     }
 }

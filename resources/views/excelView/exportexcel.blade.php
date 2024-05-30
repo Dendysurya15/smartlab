@@ -108,6 +108,19 @@
                 <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$nama_pengirim ?? 0}}</th>
             </tr>
             <tr>
+                <th></th>
+                <th colspan="2" style="border-left: 1px solid black;border-bottom: 1px solid black;">
+
+                </th>
+                <th style="border-bottom: 1px solid black;">
+
+                </th>
+
+                <th colspan="11" style="border-bottom: 1px solid blacck;"></th>
+                <th colspan="3" style="border-bottom: 1px solid black;">Departemen</th>
+                <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$departemen ?? 0}}</th>
+            </tr>
+            <tr>
                 <td colspan="20"></td> <!-- Replace "20" with the total number of columns in your table -->
             </tr>
 
@@ -240,7 +253,7 @@
                 @if ($items['cols'] != 0)
                 <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['Konfirmasi'] }}</td>
                 @if ($items['kondisi_sampel'] === 'Normal')
-                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['kondisi_sampel'] }}</td>
+                <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">✔</td>
                 <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}"></td>
                 @else
                 <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}"></td>
@@ -291,10 +304,10 @@
                 <td colspan="2" rowspan="4" style="border-left:1px solid black;text-align:center">
 
                     @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
-                    CREATED<br>
+                    CREATED <br style="border: none;">
                     {{$memo_created}}
                     @else
-                    APPROVED <br>
+                    APPROVED <br style="border: none;">
                     {{$verifikasi_admin_timestamp}}
                     @endif
 

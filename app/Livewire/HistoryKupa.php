@@ -666,7 +666,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ])->button()
                         ->color('info')
                         ->icon('heroicon-m-ellipsis-horizontal')
-                        ->label('Logbook Export'),
+                        ->label('Identitas Export'),
                     ActionGroup::make([
                         Action::make('export_vr')
                             ->label('PDF')
