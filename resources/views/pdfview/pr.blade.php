@@ -53,11 +53,11 @@
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border: 1px solid black;">Formulir</td>
+                <td colspan="16" style="border: 1px solid black;text-align:center">Formulir</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
+                <td colspan="16" style="border: 1px solid black;text-align:center">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
                     {{$listitems['jenis_kupa'] ?? 0}}
                 </td>
             </tr>

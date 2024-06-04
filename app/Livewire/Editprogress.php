@@ -363,6 +363,18 @@ class Editprogress extends Component implements HasForms
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->default($this->opt->penyelia)
                     ->maxLength(255),
+                TextInput::make('no_document')
+                    ->label('No Document')
+                    ->minLength(2)
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->default($this->opt->no_doc)
+                    ->maxLength(255),
+                TextInput::make('nama_formulir')
+                    ->label('Nama Formulir')
+                    ->minLength(2)
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->default($this->opt->formulir)
+                    ->maxLength(255),
 
                 TextInput::make('Emaiilto')
                     ->label('Email To')
@@ -726,6 +738,8 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
+                $trackSampel->no_doc = $form['no_document'];
+                $trackSampel->formulir = $form['nama_formulir'];
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
                     $filename = '';
@@ -793,9 +807,9 @@ class Editprogress extends Component implements HasForms
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
-                // Mail::to($emailAddresses)
-                //     ->cc($emailcc)
-                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                Mail::to($emailAddresses)
+                    ->cc($emailcc)
+                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
 
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"
@@ -873,6 +887,8 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
+                $trackSampel->no_doc = $form['no_document'];
+                $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Waiting Admin Approval';
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
@@ -954,9 +970,9 @@ class Editprogress extends Component implements HasForms
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
 
-                // Mail::to($emailAddresses)
-                //     ->cc($emailcc)
-                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                Mail::to($emailAddresses)
+                    ->cc($emailcc)
+                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
 
                 $dataarr = "$greeting\n"
                     . "Yth. Pelanggan Setia Lab CBI,\n"

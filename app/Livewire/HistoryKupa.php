@@ -553,7 +553,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             ->size('xs'),
                     ])->button()
                         ->color('info')
-                        ->icon('heroicon-m-ellipsis-horizontal')
+                        ->icon('heroicon-o-document-arrow-down')
                         ->label('Kupa Export'),
                     ActionGroup::make([
                         Action::make('export_form_monitoring_kupa_pdf')
@@ -607,7 +607,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             ->size('xs'),
                     ])->button()
                         ->color('info')
-                        ->icon('heroicon-m-ellipsis-horizontal')
+                        ->icon('heroicon-o-document-arrow-down')
                         ->label('Form Monitoring Export'),
                     ActionGroup::make([
                         Action::make('export_logbook_pdf')
@@ -665,7 +665,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             ->size('xs'),
                     ])->button()
                         ->color('info')
-                        ->icon('heroicon-m-ellipsis-horizontal')
+                        ->icon('heroicon-o-document-arrow-down')
                         ->label('Identitas Export'),
                     ActionGroup::make([
                         Action::make('export_vr')
@@ -715,7 +715,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             ->size('xs'),
                     ])->button()
                         ->color('info')
-                        ->icon('heroicon-m-ellipsis-horizontal')
+                        ->icon('heroicon-o-document-arrow-down')
                         ->label('PR Export'),
 
                     Action::make('edit')

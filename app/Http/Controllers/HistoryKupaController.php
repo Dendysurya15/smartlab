@@ -633,6 +633,8 @@ class HistoryKupaController extends Controller
             $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
             $no_kupa = $value->nomor_kupa;
             $departemen = $value->departemen;
+            $formulir = $value->formulir;
+            $doc = $value->no_doc;
         }
 
         $data = [
@@ -651,6 +653,8 @@ class HistoryKupaController extends Controller
             'tanggal_penerimaan' => $tanggal_penerimaan,
             'no_kupa' => $no_kupa,
             'departemen' => $departemen,
+            'formulir' => $formulir,
+            'doc' => $doc,
             'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
         ];
 
@@ -833,7 +837,7 @@ class HistoryKupaController extends Controller
         $dompdf->loadHtml($view);
 
         // Set paper size and orientation
-        $dompdf->setPaper('A2', 'landscape');
+        $dompdf->setPaper('A2', 'potrait');
 
         // Render the PDF
         $dompdf->render();

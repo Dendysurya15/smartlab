@@ -53,12 +53,18 @@
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border: 1px solid black;">Formulir</td>
+                <td colspan="16" style="border: 1px solid black;text-align:center">Formulir</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
+                <td colspan="16" style="border: 1px solid black;text-align:center">
+                    @if($formulir != null)
+                    {{$formulir}}
+                    @else
+                    Kaji Ulang Permintaa, Tender dan Kontrak Sampel
                     {{$jenis_kupa ?? 0}}
+                    @endif
+
                 </td>
             </tr>
             <tr>
@@ -79,7 +85,12 @@
             <tr>
                 <th></th>
                 <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                    @if($doc != null)
+                    {{$doc}}
+                    @else
                     FR.7.1-12
+                    @endif
+
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
                     02
@@ -93,43 +104,48 @@
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-top: 1px solid black;border-left: none;">
+                <th colspan="2">
                     Tanggal Penerimaan
                 </th>
-                <th colspan="2">
+                <th colspan="5" style="text-align:left;">
                     : {{$tanggal_penerimaan ?? 0}}
                 </th>
+                <th colspan="6" style="text-align:center;">
 
-                <th colspan="10" style="border-top: 1px solid black;"></th>
-                <th colspan="3" style="border-top: 1px solid black;">Jenis Sampel</th>
-                <th style="border-top: 1px solid black;border-right: 1px solid black;">: {{$jenis_kupa ?? 0}}</th>
+                </th>
+                <th colspan="5" style="text-align:right;">
+                    Jenis Sampel: {{$jenis_kupa ?? 0}}
+                </th>
             </tr>
             <tr>
                 <th></th>
                 <th colspan="2">
                     No. Kaji Ulang
                 </th>
-                <th>
+                <th colspan="5" style="text-align:left;">
                     : {{$no_kupa ?? 0}}
                 </th>
+                <th colspan="6" style="text-align:center;">
 
-                <th colspan="11" style="border-bottom: 1px solid blacck;"></th>
-                <th colspan="3">Nama Pelanggan</th>
-                <th style="border-right:1px solid black">: {{$nama_pengirim ?? 0}}</th>
-
+                </th>
+                <th colspan="5" style="text-align:right;">
+                    Nama Pelanggan: {{$nama_pengirim ?? 0}}
+                </th>
             </tr>
             <tr>
                 <th></th>
                 <th colspan="2">
 
                 </th>
-                <th>
+                <th colspan="5" style="text-align:left;">
 
                 </th>
+                <th colspan="6" style="text-align:center;">
 
-                <th colspan="11" style="border-bottom: 1px solid blacck;"></th>
-                <th colspan="3" style="border-bottom: 1px solid black;">Departemen</th>
-                <th style="border-bottom: 1px solid black;border-right:1px solid black">: {{$departemen ?? 0}}</th>
+                </th>
+                <th colspan="5" style="text-align:right;">
+                    Departemen: {{$departemen ?? 0}}
+                </th>
             </tr>
             <tr>
                 <th></th>
@@ -357,8 +373,8 @@
                 <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->
             </tr>
         </tbody>
-    </table>
 
+    </table>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
