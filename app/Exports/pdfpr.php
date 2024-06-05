@@ -133,28 +133,30 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                     $new_sampel[$incc++] = implode(',', $valuex);
                 }
 
-                // dd($kode_sampel, $new_sampel);
-                for ($i = 0; $i < $jumlahsample; $i++) {
-
-                    $result[$key][$key1][$i]['jenis_sample'] = $jenissample;
-                    $result[$key][$key1][$i]['jumlah_sampel'] = ($i == 0) ? $jumlahsample : 'null';
-                    $result[$key][$key1][$i]['kode_sampel'] = $kode_sampel[$i];
-                    $result[$key][$key1][$i]['nomor_lab'] = $nomor_lab[0] + $i;
-                    $result[$key][$key1][$i]['nama_pengirim'] = $value2['nama_pengirim'];
-                    $result[$key][$key1][$i]['asal_sampel'] = $value2['asal_sampel'];
-                    $result[$key][$key1][$i]['departemen'] = $value2['departemen'];
-                    $result[$key][$key1][$i]['nomor_surat'] = $value2['nomor_surat'];
-                    $result[$key][$key1][$i]['nomor_kupa'] = $value2['nomor_kupa'];
-                    $result[$key][$key1][$i]['tanggal_terima'] = $carbonDate->format('Y-m-d');
-                    $result[$key][$key1][$i]['tanggal_memo'] = $value2['tanggal_memo'];
-                    $result[$key][$key1][$i]['Jumlah_Parameter'] = count($newnamaparameter);
-                    $result[$key][$key1][$i]['Parameter_Analisa'] = $new_sampel[$i];
-                    $result[$key][$key1][$i]['tujuan'] = $value2['tujuan'];
-                    $result[$key][$key1][$i]['estimasi'] = $carbonDate2->format('Y-m-d');
-                    $result[$key][$key1][$i]['Tanggal_Selesai_Analisa'] = '-';
-                    $result[$key][$key1][$i]['Tanggal_Rilis_Sertifikat'] = '-';
-                    $result[$key][$key1][$i]['No_sertifikat'] = '-';
-                    $result[$key][$key1][$i]['total'] = ($i == 0) ? $total_akhir : 'null';
+                foreach ($sampel_data as $keysx => $valuems) {
+                    foreach ($kode_sampel as $index => $kode) {
+                        if ((string)$keysx === $kode) {
+                            $result[$key][$key1][$keysx]['jenis_sample'] = $jenissample;
+                            $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
+                            $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
+                            $result[$key][$key1][$keysx]['nomor_lab'] = $nomor_lab[0] + $index;
+                            $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
+                            $result[$key][$key1][$keysx]['asal_sampel'] = $value2['asal_sampel'];
+                            $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
+                            $result[$key][$key1][$keysx]['nomor_surat'] = $value2['nomor_surat'];
+                            $result[$key][$key1][$keysx]['nomor_kupa'] = $value2['nomor_kupa'];
+                            $result[$key][$key1][$keysx]['tanggal_terima'] = $carbonDate->format('Y-m-d');
+                            $result[$key][$key1][$keysx]['tanggal_memo'] = $value2['tanggal_memo'];
+                            $result[$key][$key1][$keysx]['Jumlah_Parameter'] = count($valuems);
+                            $result[$key][$key1][$keysx]['Parameter_Analisa'] = implode(',', $valuems);
+                            $result[$key][$key1][$keysx]['tujuan'] = $value2['tujuan'];
+                            $result[$key][$key1][$keysx]['estimasi'] = $carbonDate2->format('Y-m-d');
+                            $result[$key][$key1][$keysx]['Tanggal_Selesai_Analisa'] = '-';
+                            $result[$key][$key1][$keysx]['Tanggal_Rilis_Sertifikat'] = '-';
+                            $result[$key][$key1][$keysx]['No_sertifikat'] = '-';
+                            $result[$key][$key1][$keysx]['total'] = ($index == 0) ? $total_akhir : 'null';
+                        }
+                    }
                 }
             }
             $result[$key]['jenis'] = $jenissample;
