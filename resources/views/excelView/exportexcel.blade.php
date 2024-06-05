@@ -41,8 +41,13 @@
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border: 1px solid black;">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
+                <td colspan="16" style="border: 1px solid black;">
+                    @if($formulir != null)
+                    {{$formulir}}
+                    @else
+                    Kaji Ulang Permintaa, Tender dan Kontrak Sampel
                     {{$jenis_kupa ?? 0}}
+                    @endif
                 </td>
             </tr>
             <tr>
@@ -63,7 +68,11 @@
             <tr>
                 <th></th>
                 <th colspan="2" style="border: 1px solid black;">
+                    @if($doc != null)
+                    {{$doc}}
+                    @else
                     FR.7.1-12
+                    @endif
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
                     02

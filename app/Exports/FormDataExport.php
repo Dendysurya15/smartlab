@@ -246,6 +246,8 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
             $no_kupa = $value->nomor_kupa;
             $departemen = $value->departemen;
+            $formulir = $value->formulir;
+            $doc = $value->no_doc;
         }
 
         // dd($petugas_penerima_sampel);
@@ -266,6 +268,8 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             'tanggal_penerimaan' => $tanggal_penerimaan,
             'no_kupa' => $no_kupa,
             'departemen' => $departemen,
+            'formulir' => $formulir,
+            'doc' => $doc,
         ]);
     }
 

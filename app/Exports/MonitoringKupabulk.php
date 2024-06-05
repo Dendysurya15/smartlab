@@ -100,12 +100,16 @@ class MonitoringKupabulk implements FromView, ShouldAutoSize, WithEvents, WithDr
                 'diskon' => $discount,
                 'total' => $total_akhir,
                 'text_disc' => $value->discount,
+                'formulir' => $value->formulir,
+                'nodoc' => $value->no_doc,
             ];
         }
         $jenis_samples_string = implode(',', array_column($result, 'jenis_sample'));
         $tanggalterima = implode(',', array_column($result, 'tanggalterima'));
         $nomor_kupa = implode(',', array_column($result, 'nomor_kupa'));
         $nama_pengirim = implode(',', array_column($result, 'nama_pengirim'));
+        $formulir = implode(',', array_column($result, 'formulir'));
+        $nodoc = implode(',', array_column($result, 'nodoc'));
 
         // dd($jenis_samples_string);
 
@@ -116,6 +120,8 @@ class MonitoringKupabulk implements FromView, ShouldAutoSize, WithEvents, WithDr
             'jenis_sample' => $jenis_samples_string,
             'nomor_kupa' => $nomor_kupa,
             'nama_pengirim' => $nama_pengirim,
+            'formulir' => $formulir,
+            'nodoc' => $nodoc,
         ]);
     }
 

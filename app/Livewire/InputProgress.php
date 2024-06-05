@@ -41,7 +41,7 @@ use Filament\Forms\Components\KeyValue;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
-
+use PhpOffice\PhpSpreadsheet\Worksheet\AutoFit;
 
 class InputProgress extends Component implements HasForms
 {
@@ -326,6 +326,16 @@ class InputProgress extends Component implements HasForms
                     ->minLength(2)
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
+                TextInput::make('no_document')
+                    ->label('No Document')
+                    ->minLength(2)
+                    // ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->maxLength(255),
+                TextInput::make('nama_formulir')
+                    ->label('Nama Formulir')
+                    ->minLength(2)
+                    // ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->maxLength(255),
 
 
                 Section::make()
@@ -436,33 +446,34 @@ class InputProgress extends Component implements HasForms
                                             ->afterStateHydrated(function (Get $get, Set $set) {
                                                 self::updateTotals($get, $set);
                                             }),
-                                        CheckboxList::make('nama_lab')
-                                            ->label('Nama Kode Sampel')
-                                            ->columns(2)
-                                            ->bulkToggleable()
-                                            ->options(function (Get $get) {
-                                                return $get('../../setoption_costumparams') ?: session()->get('setoption_costumparams') ?: [];
-                                            })
-                                            // ->disabled(function ($get) {
-                                            //     return is_null($get('parametersdata'));
-                                            // })
-                                            ->disabled(function ($get) {
+                                        Section::make('Nama Kode Sampel')
+                                            ->description('Klik untuk membuka list nama kode sampel')
+                                            ->schema([
+                                                CheckboxList::make('nama_lab')
+                                                    ->bulkToggleable()
+                                                    ->columns(10)
+                                                    ->options(function (Get $get) {
+                                                        return $get('../../setoption_costumparams') ?: session()->get('setoption_costumparams') ?: [];
+                                                    })
+                                                    ->disabled(function ($get) {
 
-                                                $data = $get('../../setoption_costumparams');
-                                                $data2 = session()->get('setoption_costumparams');
-                                                // dd($data, $data2);
-                                                if ($data != null || $data2 != null) {
-                                                    // dd('false');
-                                                    return false;
-                                                } elseif ($data == null && $data2 == null) {
-                                                    // dd('true');
-                                                    return true;
-                                                } else {
-                                                    // dd('true');
-                                                    return true;
-                                                }
-                                            })
-                                            ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
+                                                        $data = $get('../../setoption_costumparams');
+                                                        $data2 = session()->get('setoption_costumparams');
+                                                        // dd($data, $data2);
+                                                        if ($data != null || $data2 != null) {
+                                                            // dd('false');
+                                                            return false;
+                                                        } elseif ($data == null && $data2 == null) {
+                                                            // dd('true');
+                                                            return true;
+                                                        } else {
+                                                            // dd('true');
+                                                            return true;
+                                                        }
+                                                    })
+                                                    ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
+                                            ])
+                                            ->collapsed(),
                                     ])
 
                             ])
@@ -593,6 +604,8 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
+                $trackSampel->no_doc = $form['no_document'];
+                $trackSampel->formulir = $form['nama_formulir'];
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
                     $filename = '';
@@ -734,6 +747,8 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
+                $trackSampel->no_doc = $form['no_document'];
+                $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Draft';
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {

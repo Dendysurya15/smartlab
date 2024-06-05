@@ -13,11 +13,11 @@
     </div>
     <script>
         // Function to handle beforeunload event
-        function handleBeforeUnload(e) {
-            const confirmationMessage = 'Anda yakin ingin meninggalkan halaman ini? Data yang anda input akan hilang.';
-            e.returnValue = confirmationMessage;
-            return confirmationMessage;
-        }
-        window.addEventListener('beforeunload', handleBeforeUnload);
+        // function handleBeforeUnload(e) {
+        //     const confirmationMessage = 'Anda yakin ingin meninggalkan halaman ini? Data yang anda input akan hilang.';
+        //     e.returnValue = confirmationMessage;
+        //     return confirmationMessage;
+        // }
+        // window.addEventListener('beforeunload', handleBeforeUnload);
     </script>
 </x-app-layout>

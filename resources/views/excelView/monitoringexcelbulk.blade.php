@@ -34,8 +34,12 @@
             </tr>
             <tr>
                 <td></td>
-                <td colspan="16" style="border: 1px solid black;">MONITORING PENERIMAAN SAMPEL
-
+                <td colspan="16" style="border: 1px solid black;">
+                    @if($formulir != null)
+                    {{$formulir}}
+                    @else
+                    MONITORING PENERIMAAN SAMPEL
+                    @endif
                 </td>
             </tr>
             <tr>
@@ -56,7 +60,11 @@
             <tr>
                 <th></th>
                 <th colspan="2" style="border: 1px solid black;">
+                    @if($nodoc != null)
+                    {{$nodoc}}
+                    @else
                     FR.7.1-12
+                    @endif
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
                     02

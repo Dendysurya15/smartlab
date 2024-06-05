@@ -499,40 +499,45 @@ class Editprogress extends Component implements HasForms
                                             ->disabled(function ($get) {
                                                 return is_null($get('status'));
                                             }),
-                                        CheckboxList::make('nama_lab')
-                                            ->label('Nama Kode Sampel')
-                                            ->columns(10)
-                                            // ->gridDirection('row')
-                                            ->bulkToggleable()
-                                            ->options(function (Get $get) {
-                                                $data = $get('../../setoption_costumparams');
-                                                // dd($data);
-                                                if ($data != null || $data != []) {
-                                                    return $get('../../setoption_costumparams');
-                                                } else {
-                                                    $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($this->opt->kode_sampel));
-                                                    $array = explode('$', $NamaKodeSampeljamak);
-                                                    $result = array_combine($array, $array);
+                                        Section::make('Nama Kode Sampel')
+                                            ->description('Klik untuk membuka list nama kode sampel')
+                                            ->schema([
+                                                CheckboxList::make('nama_lab')
+                                                    ->label('Nama Kode Sampel')
+                                                    ->columns(10)
+                                                    // ->gridDirection('row')
+                                                    ->bulkToggleable()
+                                                    ->options(function (Get $get) {
+                                                        $data = $get('../../setoption_costumparams');
+                                                        // dd($data);
+                                                        if ($data != null || $data != []) {
+                                                            return $get('../../setoption_costumparams');
+                                                        } else {
+                                                            $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($this->opt->kode_sampel));
+                                                            $array = explode('$', $NamaKodeSampeljamak);
+                                                            $result = array_combine($array, $array);
 
-                                                    return $result;
-                                                }
-                                            })
+                                                            return $result;
+                                                        }
+                                                    })
 
-                                            ->disabled(function ($get) {
-                                                return is_null($get('status'));
-                                            })
-                                            ->required(function () {
-                                                $data = $this->opt->status;
+                                                    ->disabled(function ($get) {
+                                                        return is_null($get('status'));
+                                                    })
+                                                    ->required(function () {
+                                                        $data = $this->opt->status;
 
-                                                // dd($data);
-                                                if ($data === 'Approved' || $data === 'Draft') {
-                                                    $data = true;
-                                                } else {
-                                                    $data = false;
-                                                }
+                                                        // dd($data);
+                                                        if ($data === 'Approved' || $data === 'Draft') {
+                                                            $data = true;
+                                                        } else {
+                                                            $data = false;
+                                                        }
 
-                                                return $data;
-                                            })
+                                                        return $data;
+                                                    })
+                                            ])
+                                            ->collapsed(),
                                     ])
                             ])
                             ->default(function () {
