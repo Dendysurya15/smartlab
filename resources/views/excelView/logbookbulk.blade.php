@@ -45,7 +45,15 @@
             </tr>
             <tr>
                 <td></td>
-                <td colspan="17" style="text-align:center;border: 1px solid black;">Identitas Sampel {{$jenis_sampel ?? '-'}}</td>
+                <td colspan="17" style="text-align:center;border: 1px solid black;">
+                    @if($formulir != null)
+                    {{$formulir}}
+                    @else
+                    Identitas Sampel {{$jenis_sampel ?? '-'}}
+                    @endif
+
+
+                </td>
                 <td style="border-left:1px solid black;"></td>
             </tr>
             <tr>
@@ -66,6 +74,11 @@
             <tr>
                 <th></th>
                 <th colspan="3" style="border: 1px solid black;">
+                    @if($doc != null)
+                    {{$doc}}
+                    @else
+                    FR.7.1-12
+                    @endif
                     FR.7.1-12
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">

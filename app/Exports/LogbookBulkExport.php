@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\TrackSampel;
 use App\Models\ExcelManagement;
+use App\Models\ParameterAnalisis;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
@@ -66,18 +67,18 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                 if ($trackParameter->ParameterAnalisis) {
                     $nama_params = $trackParameter->ParameterAnalisis->nama_parameter;
                     $namaunsur = $trackParameter->ParameterAnalisis->nama_unsur;
+                    $statuspaket = $trackParameter->ParameterAnalisis->paket_id;
 
-                    if (strpos($nama_params, ',') !== false) {
+                    if ($statuspaket != null) {
+                        $paket = explode('$', $statuspaket);
+                        $params = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
                         $nama_parameter[] = $nama_params;
-                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
-                    } else if ($namaunsur === '-' || $namaunsur === '' || $namaunsur === null) {
-                        $nama_parameter[] = $nama_params;
-                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                        // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
+                        $namakode_sampelparams[implode(',', $params)] =  explode('$', $trackParameter->namakode_sampel);
                     } else {
                         $nama_parameter[] = $namaunsur;
                         $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
                     }
-
 
                     $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
                     $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
@@ -158,6 +159,8 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             // dd($namakode_sampel, $sampel_data);
             $petugas_prep = $value->petugas_preparasi;
             $penyelia_prep = $value->penyelia;
+            $doc = $value->no_doc;
+            $formulir = $value->formulir;
             // dd($result, $namakode_sampel, $sampel_data);
         }
         // dd($newArray, $result);
@@ -182,6 +185,8 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             'Preparasi' => $Preparasi,
             'Staff' => $Staff,
             'Penyelia' => $Penyelia,
+            'doc' => $doc,
+            'formulir' => $formulir,
         ]);
     }
 

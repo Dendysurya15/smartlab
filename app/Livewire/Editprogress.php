@@ -282,7 +282,6 @@ class Editprogress extends Component implements HasForms
                         ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
-
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
                             return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
                         })
@@ -290,12 +289,13 @@ class Editprogress extends Component implements HasForms
                             if (!is_numeric($state)) {
                                 $data = '';
                             } else {
-                                $data = (int)$state + $get('JumlahSampel');
+                                $data = (int)$state + $get('JumlahSampel') - 1;
                             }
-                            $set('lab_kanan', $data) - 1;
+                            $set('lab_kanan', $data);
                         })
                         ->live()
                         ->maxLength(255),
+
                     TextInput::make('lab_kanan')
                         ->label('Nomor Lab Kanan')
                         ->minLength(1)
@@ -304,7 +304,6 @@ class Editprogress extends Component implements HasForms
                         ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
-
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
                             return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
                         })

@@ -710,17 +710,28 @@ class HistoryKupaController extends Controller
                 if ($trackParameter->ParameterAnalisis) {
                     $nama_params = $trackParameter->ParameterAnalisis->nama_parameter;
                     $namaunsur = $trackParameter->ParameterAnalisis->nama_unsur;
+                    $statuspaket = $trackParameter->ParameterAnalisis->paket_id;
 
-                    if (strpos($nama_params, ',') !== false) {
+                    if ($statuspaket != null) {
+                        $paket = explode('$', $statuspaket);
+                        $params = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
                         $nama_parameter[] = $nama_params;
-                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
-                    } else if ($namaunsur === '-' || $namaunsur === '' || $namaunsur === null) {
-                        $nama_parameter[] = $nama_params;
-                        $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                        // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
+                        $namakode_sampelparams[implode(',', $params)] =  explode('$', $trackParameter->namakode_sampel);
                     } else {
                         $nama_parameter[] = $namaunsur;
                         $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
                     }
+                    // if (strpos($nama_params, ',') !== false) {
+                    //     $nama_parameter[] = $nama_params;
+                    //     $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                    // } else if ($namaunsur === '-' || $namaunsur === '' || $namaunsur === null) {
+                    //     $nama_parameter[] = $nama_params;
+                    //     $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+                    // } else {
+                    //     $nama_parameter[] = $namaunsur;
+                    //     $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
+                    // }
 
 
                     $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
@@ -739,7 +750,7 @@ class HistoryKupaController extends Controller
                     $newArray[] = $item;
                 }
             }
-            // dd($newArray, $nama_parameter);
+            // dd($nama_parameter, $namakode_sampelparams);
 
             $sampel_data = [];
             $inc = 0;
@@ -770,7 +781,6 @@ class HistoryKupaController extends Controller
             $Nomorlab = array_filter($Nomorlab, function ($value) {
                 return $value !== "-";
             });
-            $countlab = count($Nomorlab);
             $timestamp2 = strtotime($value->estimasi);
             $tanggal_terima = date('Y-m-d', $timestamp);
             $tanggal_penyelesaian = date('Y-m-d', $timestamp2);
@@ -820,6 +830,8 @@ class HistoryKupaController extends Controller
                         $result[$key]['Preparasi'] = $Preparasi[0];
                         $result[$key]['Staff'] = $Staff;
                         $result[$key]['Penyelia'] = $Penyelia[0];
+                        $result[$key]['doc'] = $value->no_doc;
+                        $result[$key]['formulir'] = $value->formulir;
                     }
                 }
             }

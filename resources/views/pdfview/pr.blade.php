@@ -57,8 +57,15 @@
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border: 1px solid black;text-align:center">Kaji Ulang Permintaa, Tender dan Kontrak Sampel
+                <td colspan="16" style="border: 1px solid black;text-align:center">
+                    @if($listitems['formulir'] != null)
+                    {{$listitems['formulir']}}
+                    @else
+                    Kaji Ulang Permintaa, Tender dan Kontrak Sampel
                     {{$listitems['jenis_kupa'] ?? 0}}
+                    @endif
+
+
                 </td>
             </tr>
             <tr>
@@ -79,7 +86,12 @@
             <tr>
                 <th></th>
                 <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                    @if($listitems['doc'] != null)
+                    {{$listitems['doc']}}
+                    @else
                     FR.7.1-12
+                    @endif
+
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
                     02

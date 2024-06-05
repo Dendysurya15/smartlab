@@ -261,14 +261,12 @@ class InputProgress extends Component implements HasForms
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
                         ->afterStateUpdated(function (Get $get, Set $set, $state) {
-
-
                             if (!is_numeric($state)) {
-                                $data = 0;
+                                $data = '';
                             } else {
-                                $data = (int)$state + $get('JumlahSampel');
+                                $data = (int)$state + $get('JumlahSampel') - 1;
                             }
-                            $set('lab_kanan', $data - 1);
+                            $set('lab_kanan', $data);
                         })
                         ->numeric()
                         ->live()
