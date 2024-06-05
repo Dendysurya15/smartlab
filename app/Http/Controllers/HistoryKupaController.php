@@ -402,6 +402,8 @@ class HistoryKupaController extends Controller
                 'diskon' => $discount,
                 'total' => $total_akhir,
                 'text_disc' => $value->discount,
+                'formulir' => $value->formulir,
+                'nodoc' => $value->no_doc,
             ];
         }
         $data = [
@@ -838,12 +840,13 @@ class HistoryKupaController extends Controller
 
         // Set paper size and orientation
         $dompdf->setPaper('A2', 'potrait');
+        // $dompdf->setPaper('A2', 'landscape');
 
         // Render the PDF
         $dompdf->render();
 
 
-        $dompdf->stream($filename, ["Attachment" => true]);
-        // return $dompdf->stream($filename, ["Attachment" => false]);
+        // $dompdf->stream($filename, ["Attachment" => true]);
+        return $dompdf->stream($filename, ["Attachment" => false]);
     }
 }

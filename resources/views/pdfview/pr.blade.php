@@ -93,43 +93,49 @@
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                <th colspan="4">
                     No Order
                 </th>
-                <th colspan="2" style="border-top:1px solid black;">
-                    {{$listitems['no_order']}}
+                <th colspan="3" style="text-align:left;">
+                    : {{$listitems['no_order']}}
                 </th>
+                <th colspan="3" style="text-align:center;">
 
-                <th colspan="10" style="border-top: 1px solid black;"></th>
-                <th colspan="3" style="border-top: 1px solid black;">Tanggal Penyelesaian</th>
-                <th style="border-top: 1px solid black;border-right: 1px solid black;">: {{$listitems['tanggal_penyelesaian'] ?? 0}}</th>
+                </th>
+                <th colspan="8" style="text-align:right;">
+                    Tanggal Penyelesaian: {{$listitems['tanggal_penyelesaian'] ?? 0}}
+                </th>
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
-                    Tanggal Terima :
+                <th colspan="4">
+                    Tanggal Terima
                 </th>
-                <th>
-                    {{$listitems['tanggal_terima']}}
+                <th colspan="3" style="text-align:left;">
+                    : {{$listitems['tanggal_terima']}}
                 </th>
+                <th colspan="3" style="text-align:center;">
 
-                <th colspan="11" style="border-bottom: 1px solid blacck;"></th>
-                <th colspan="3">Kondisi fisik sampel</th>
-                <th>: {{$listitems['kondisi_sampel'] ?? 0}}</th>
+                </th>
+                <th colspan="8" style="text-align:right;">
+                    Kondisi fisik sampel: {{$listitems['kondisi_sampel'] ?? 0}}
+                </th>
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-right:1px solid black;text-align:left">
-                    Jumlah Sampel :
+                <th colspan="4">
+                    Jumlah Sampel
                 </th>
-                <th style="border-bottom: 1px solid black;text-align:left">
-                    {{$listitems['jumlah_sampel']}}
+                <th colspan="3" style="text-align:left;">
+                    : {{$listitems['jumlah_sampel']}}
                 </th>
-                <th colspan="15" style="border-bottom: 1px solid black;">
+                <th colspan="3" style="text-align:center;">
+
+                </th>
+                <th colspan="8" style="text-align:right;">
 
                 </th>
             </tr>
-
             <tr>
                 <th></th>
                 <th rowspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;text-align:center;">
