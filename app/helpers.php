@@ -280,3 +280,16 @@ if (!function_exists('formatLabNumber')) {
         }
     }
 }
+if (!function_exists('incrementVersion')) {
+    function incrementVersion($string)
+    {
+        // Extract the numeric part using a regular expression
+        preg_match('/(\d+\.\d+)-(\d+)\.(\d+)/', $string, $matches);
+
+        // Increment the last number
+        $matches[3] += 1;
+
+        // Rebuild the string with the incremented number
+        return "FR-{$matches[1]}-{$matches[2]}.{$matches[3]}";
+    }
+}

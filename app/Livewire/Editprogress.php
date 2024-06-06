@@ -366,13 +366,41 @@ class Editprogress extends Component implements HasForms
                     ->label('No Document')
                     ->minLength(2)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                    ->default($this->opt->no_doc)
+                    ->default(function () {
+                        $data = $this->opt->no_doc;
+
+                        if ($data != null) {
+                            return $data;
+                        } else {
+                            $getlates_doc = TrackSampel::with('trackParameters')
+                                ->where('no_doc', '!=', null)
+                                ->orderBy('id', 'desc')
+                                ->first();
+
+                            // Extract the 'no_doc' field from the latest document
+                            $laststring = $getlates_doc ? $getlates_doc->no_doc : null;
+
+                            // Increment the version or set to default if no document is found
+                            return incrementVersion($laststring);
+                        }
+                    })
                     ->maxLength(255),
                 TextInput::make('nama_formulir')
                     ->label('Nama Formulir')
                     ->minLength(2)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                    ->default($this->opt->formulir)
+                    ->default(function () {
+                        $data = $this->opt->formulir;
+
+                        if ($data != null) {
+                            return $data;
+                        } else {
+                            $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
+                            // dd($jenisSampel);
+                            // Increment the version or set to default if no document is found
+                            return 'Kaji Ulang Permintaan,Tender dan Kontrak Sampel' . ' ' . $jenisSampel->nama;
+                        }
+                    })
                     ->maxLength(255),
 
                 TextInput::make('Emaiilto')

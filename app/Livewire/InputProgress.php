@@ -70,12 +70,30 @@ class InputProgress extends Component implements HasForms
                     ->options(JenisSampel::query()->pluck('nama', 'id'))
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         // Retrieve the progress column value from the JenisSampel model based on the updated state
+
+                        // Attempt to find the JenisSampel by its ID
                         $jenisSampel = JenisSampel::find($state);
-                        // dd($state);
+
+                        // Use the ternary operator to set the 'preflab' value
+
                         $params = ParameterAnalisis::where('id_jenis_sampel', $state)->pluck('nama_parameter', 'id')->toArray();
                         $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $state)->orderBy('id', 'desc')->first();
+                        $getlates_doc = TrackSampel::with('trackParameters')
+                            ->where('no_doc', '!=', null)
+                            ->orderBy('id', 'desc')
+                            ->first();
+
+                        // Extract the 'no_doc' field from the latest document
+                        $laststring = $getlates_doc ? $getlates_doc->no_doc : null;
+
+                        // Increment the version or set to default if no document is found
+                        $newString = $laststring ? incrementVersion($laststring) : 'FR-7.1-1.1';
+                        $formulring_strong = 'Kaji Ulang Permintaan,Tender dan Kontrak Sampel';
+                        // Assign the new string to 'no_document'
+                        $set('no_document', $newString);
+                        $set('preflab', $jenisSampel ? $jenisSampel->kode : '1'); // Replace 'default_value' with the appropriate default value
                         $set('parametersAnal', $params);
-                        $set('preflab', $jenisSampel->kode);
+                        $set('nama_formulir', 'Kaji Ulang Permintaan,Tender dan Kontrak Sampel' . ' ' . $jenisSampel->nama);
                         $set('NomorKupa', isset($getlates_id->nomor_kupa) ? $getlates_id->nomor_kupa + 1 : 1);
                         $set('JumlahSampel', '');
                         $set('lab_kiri', '');
