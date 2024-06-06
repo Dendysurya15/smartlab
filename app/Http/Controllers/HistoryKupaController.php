@@ -661,6 +661,7 @@ class HistoryKupaController extends Controller
             'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
         ];
 
+        // dd($data);
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
         $options->set('isRemoteEnabled', true); // Enable loading of remote resources
