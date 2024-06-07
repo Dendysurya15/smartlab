@@ -246,20 +246,19 @@ class TableParameter extends Component  implements HasTable, HasForms
                     })
             ])
             ->columns([
-                TextColumn::make('nama_parameter')
+                TextInputColumn::make('nama_parameter')
                     ->label('Nama Parameter')
                     ->searchable()
-                    ->wrap()
+                    ->rules(['required', 'max:255'])
                     ->sortable(),
-                TextColumn::make('nama_unsur')
+                TextInputColumn::make('nama_unsur')
                     ->label('Nama Unsur')
                     ->searchable()
-                    ->wrap()
+                    ->rules(['required', 'max:255'])
                     ->sortable(),
                 TextInputColumn::make('bahan_produk')
                     ->label('Bahan Produk')
                     ->searchable()
-                    ->sortable()
                     ->sortable(),
                 TextInputColumn::make('metode_analisis')
                     ->label('Metode Analisis')

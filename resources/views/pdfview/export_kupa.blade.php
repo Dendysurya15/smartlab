@@ -113,8 +113,11 @@
                 <th colspan="6" style="text-align:center;">
 
                 </th>
-                <th colspan="5" style="text-align:right;">
-                    Jenis Sampel: {{$jenis_kupa ?? 0}}
+                <th colspan="2" style="text-align:left;">
+                    Jenis Sampel
+                </th>
+                <th colspan="3" style="text-align:left;">
+                    : {{$jenis_kupa ?? 0}}
                 </th>
             </tr>
             <tr>
@@ -128,8 +131,11 @@
                 <th colspan="6" style="text-align:center;">
 
                 </th>
-                <th colspan="5" style="text-align:right;">
-                    Nama Pelanggan: {{$nama_pengirim ?? 0}}
+                <th colspan="2" style="text-align:left;">
+                    Nama Pelanggan
+                </th>
+                <th colspan="3" style="text-align:left;">
+                    : {{$nama_pengirim ?? 0}}
                 </th>
             </tr>
             <tr>
@@ -143,8 +149,11 @@
                 <th colspan="6" style="text-align:center;">
 
                 </th>
-                <th colspan="5" style="text-align:right;">
-                    Departemen: {{$departemen ?? 0}}
+                <th colspan="2" style="text-align:left;">
+                    Departemen
+                </th>
+                <th colspan="3" style="text-align:left;">
+                    : {{$departemen ?? 0}}
                 </th>
             </tr>
             <tr>
