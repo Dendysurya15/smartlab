@@ -29,8 +29,9 @@
             vertical-align: middle
         }
 
-        .page_break {
-            page-break-before: always;
+        table {
+            page-break-inside: avoid !important;
+            page-break-before: auto !important;
         }
     </style>
     @foreach ($data as $index => $listitems)
@@ -38,26 +39,26 @@
         <thead>
             <tr>
                 <td></td>
-                <td rowspan="4" colspan="2">
+                <td rowspan="4" colspan="3">
                     <div>
                         <img src="{{ asset('images/Logo_CBI_2.png') }}" style="height:60px;margin-left:50px">
                     </div>
                 </td>
-                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px;text-align:center">
+                <td colspan="22" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px;text-align:center">
                     PT . CITRA BORNEO INDAH</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold;text-align:center">
+                <td colspan="22" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold;text-align:center">
                     RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border: 1px solid black;text-align:center">Formulir</td>
+                <td colspan="22" style="border: 1px solid black;text-align:center">Formulir</td>
             </tr>
             <tr>
                 <th></th>
-                <td colspan="16" style="border: 1px solid black;text-align:center">
+                <td colspan="22" style="border: 1px solid black;text-align:center">
                     @if($listitems['formulir'] != null)
                     {{$listitems['formulir']}}
                     @else
@@ -70,22 +71,22 @@
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                <th colspan="3" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
                     No.Dokumen
                 </th>
-                <th colspan="5" style="border: 1px solid black;text-align:center;">
+                <th colspan="3" style="border: 1px solid black;text-align:center;">
                     Revisi
                 </th>
-                <th colspan="6" style="border: 1px solid black;text-align:center;">
+                <th colspan="9" style="border: 1px solid black;text-align:center;">
                     Berlaku Efektif
                 </th>
-                <th colspan="5" style="border: 1px solid black;text-align:center;">
+                <th colspan="10" style="border: 1px solid black;text-align:center;">
                     Halaman
                 </th>
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                <th colspan="3" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
                     @if($listitems['doc'] != null)
                     {{$listitems['doc']}}
                     @else
@@ -93,58 +94,58 @@
                     @endif
 
                 </th>
-                <th colspan="5" style="border: 1px solid black;text-align:center;">
+                <th colspan="3" style="border: 1px solid black;text-align:center;">
                     02
                 </th>
-                <th colspan="6" style="border: 1px solid black;text-align:center;">
+                <th colspan="9" style="border: 1px solid black;text-align:center;">
                     1-jul-21
                 </th>
-                <th colspan="5" style="border: 1px solid black;text-align:center;">
+                <th colspan="10" style="border: 1px solid black;text-align:center;">
                     1 dari 1
                 </th>
             </tr>
             <tr>
                 <th></th>
-                <th colspan="4">
+                <th colspan="3">
                     No Order
                 </th>
                 <th colspan="3" style="text-align:left;">
                     : {{$listitems['no_order']}}
                 </th>
-                <th colspan="3" style="text-align:center;">
+                <th colspan="9" style="text-align:center;">
 
                 </th>
-                <th colspan="8" style="text-align:right;">
+                <th colspan="10" style="text-align:right;">
                     Tanggal Penyelesaian: {{$listitems['tanggal_penyelesaian'] ?? 0}}
                 </th>
             </tr>
             <tr>
                 <th></th>
-                <th colspan="4">
+                <th colspan="3">
                     Tanggal Terima
                 </th>
                 <th colspan="3" style="text-align:left;">
                     : {{$listitems['tanggal_terima']}}
                 </th>
-                <th colspan="3" style="text-align:center;">
+                <th colspan="9" style="text-align:center;">
 
                 </th>
-                <th colspan="8" style="text-align:right;">
+                <th colspan="10" style="text-align:right;">
                     Kondisi fisik sampel: {{$listitems['kondisi_sampel'] ?? 0}}
                 </th>
             </tr>
             <tr>
                 <th></th>
-                <th colspan="4">
+                <th colspan="3">
                     Jumlah Sampel
                 </th>
                 <th colspan="3" style="text-align:left;">
                     : {{$listitems['jumlah_sampel']}}
                 </th>
-                <th colspan="3" style="text-align:center;">
+                <th colspan="9" style="text-align:center;">
 
                 </th>
-                <th colspan="8" style="text-align:right;">
+                <th colspan="10" style="text-align:right;">
 
                 </th>
             </tr>
@@ -156,7 +157,7 @@
                 <th rowspan="2" style="border: 1px solid black;text-align:center;">
                     NO.Lab
                 </th>
-                <th colspan="13" style="border: 1px solid black;text-align:center;">
+                <th colspan="20" style="border: 1px solid black;text-align:center;">
                     Parameter Analisis
                 </th>
                 <th rowspan="2" style="border: 1px solid black;text-align:center;">
@@ -268,8 +269,6 @@
             </tr>
         </tbody>
     </table>
-
-    <div class="page_break"></div>
     @endforeach
 
 </body>

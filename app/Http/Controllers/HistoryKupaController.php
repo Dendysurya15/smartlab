@@ -775,7 +775,7 @@ class HistoryKupaController extends Controller
             }
 
             // dd($sampel_data, $namakode_sampelparams);
-            $total_namaparams = 13 - count($newArray);
+            $total_namaparams = 20 - count($newArray);
             $timestamp = strtotime($value->tanggal_terima);
             $year = date('Y', $timestamp);
             $lab =  substr($year, 2) . $value->jenisSampel->kode . '.';

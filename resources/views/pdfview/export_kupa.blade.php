@@ -9,30 +9,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 
+
 </head>
 
 <body>
 
     <style>
-        .textcenter {
-            text-align: center;
-            vertical-align: center
-        }
-
-        .border {
-            border: 1px solid black;
-        }
-
-        .border-text {
-            border: 1px solid black;
-            text-align: center;
-            vertical-align: middle
-        }
-
-        .page_break {
-            page-break-before: always;
+        table {
+            page-break-inside: avoid !important;
+            page-break-before: auto !important;
         }
     </style>
+
+
     <table style="border: 1px solid black;">
         <thead>
 
@@ -314,79 +303,80 @@
                 @endforeach
             </tr>
             @endforeach
-            <tr>
-                <td></td>
-                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">Dibuat Oleh,</td>
-                <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
-                <td colspan="3" style="border: 1px solid black;">Disetujui Oleh,</td>
-                <td colspan="10" style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
-                    Catatan Khusus : </td>
-            </tr>
 
-            <tr>
-                <td></td>
-                <td colspan="2" rowspan="4" style="text-align:center">
-
-                    @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
-                    CREATED
-                    {{$memo_created}}
-                    @else
-                    APPROVED
-                    {{$verifikasi_admin_timestamp}}
-                    @endif
-
-                </td>
-                <td colspan="3" rowspan="4" style="border-left:1px solid black;text-align:center">
-                    @if ($isVerifiedByHead == True)
-                    @php
-                    echo strtoupper($approval)
-                    @endphp <br>
-
-
-                    {{$verifikasi_head_timestamp}}
-
-                    @endif
-
-                </td>
-                <td colspan="3" rowspan="4" style="border-left:1px solid black;">
-
-                </td>
-                <td colspan="10" rowspan="6" style="border: 1px solid black;">
-                    {{$catatan}}
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <!-- <td colspan="10" style="border-right: 1px solid black;">aa</td> -->
-            </tr>
-            <tr>
-                <td></td>
-                <!-- <td colspan="10" style="border-right: 1px solid black;">cc</td> -->
-            </tr>
-            <tr>
-                <td></td>
-                <!-- <td colspan="10" style="border-right: 1px solid black;">dd</td> -->
-            </tr>
-            <tr>
-                <td></td>
-                <td colspan="2" style="border: none;"> {{$petugas_penerima_sampel ?? '-'}}</td>
-                <td colspan="3" style="border-left:1px solid black;"> Budi Umbara</td>
-                <td colspan="3" style="border-left:1px solid black;"> {{$nama_pengirim ?? '-'}}</td>
-                <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->
-            </tr>
-            <tr>
-                <td></td>
-                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">Petugas Penerima Sampel</td>
-                <td colspan="3" style="border: 1px solid black;">Manager Laboratorium</td>
-                <td colspan="3" style="border: 1px solid black;">Pelanggan</td>
-                <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->
-            </tr>
         </tbody>
 
     </table>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    </script>
+    <table style="margin-top: 25px;">
+        <tr>
+            <td></td>
+            <td colspan="2" style="border: 1px solid black;">Dibuat Oleh,</td>
+            <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
+            <td colspan="3" style="border: 1px solid black;">Disetujui Oleh,</td>
+            <td colspan="20" style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
+                Catatan Khusus : </td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td colspan="2" rowspan="4" style="text-align:center;border-bottom: none;border-left:1px solid black;border-right:1px solid black;">
+
+                @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
+                CREATED
+                {{$memo_created}}
+                @else
+                APPROVED
+                {{$verifikasi_admin_timestamp}}
+                @endif
+
+            </td>
+            <td colspan="3" rowspan="4" style="text-align:center">
+                @if ($isVerifiedByHead == True)
+                @php
+                echo strtoupper($approval)
+                @endphp <br>
+
+
+                {{$verifikasi_head_timestamp}}
+
+                @endif
+
+            </td>
+            <td colspan="3" rowspan="4" style="border-left:1px solid black;">
+
+            </td>
+            <td colspan="20" rowspan="6" style="border: 1px solid black;">
+                {{$catatan}}
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <!-- <td colspan="10" style="border-right: 1px solid black;">aa</td> -->
+        </tr>
+        <tr>
+            <td></td>
+            <!-- <td colspan="10" style="border-right: 1px solid black;">cc</td> -->
+        </tr>
+        <tr>
+            <td></td>
+            <!-- <td colspan="10" style="border-right: 1px solid black;">dd</td> -->
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="2" style="border-top: none;border-left:1px solid black"> {{$petugas_penerima_sampel ?? '-'}}</td>
+            <td colspan="3" style="border-left:1px solid black;"> Budi Umbara</td>
+            <td colspan="3" style="border-left:1px solid black;"> {{$nama_pengirim ?? '-'}}</td>
+            <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="2" style="border: 1px solid black">Petugas Penerima Sampel</td>
+            <td colspan="3" style="border: 1px solid black;">Manager Laboratorium</td>
+            <td colspan="3" style="border: 1px solid black;">Pelanggan</td>
+            <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->
+        </tr>
+    </table>
 
 </body>
 

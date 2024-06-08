@@ -11,6 +11,7 @@
 </head>
 
 <body>
+
     <style>
         .textcenter {
             text-align: center;
@@ -27,8 +28,9 @@
             vertical-align: middle
         }
 
-        .page_break {
-            page-break-before: always;
+        table {
+            page-break-inside: avoid !important;
+            page-break-before: auto !important;
         }
     </style>
     @foreach ($data as $item)
@@ -336,7 +338,6 @@
         </tbody>
 
     </table>
-    <div class="page_break"></div>
     @endforeach
 
 
