@@ -219,6 +219,25 @@ class Editprogress extends Component implements HasForms
                     ->label('Nama Kode Sampel')
                     ->minLength(2)
                     ->default($this->opt->kode_sampel)
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                        $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
+                        $array = explode('$', $NamaKodeSampeljamak);
+                        $result = array_combine($array, $array);
+                        $jumlahsample = $get('JumlahSampel');
+                        $jumlah_kodesampel = count($result);
+                        // dd($jumlah_kodesampel == (int)$jumlahsample);
+                        if ((int)$jumlahsample !== $jumlah_kodesampel) {
+                            Notification::make()
+                                ->title('Jumlah Kode sampel tidak sama dengan jumlah sampel haraf dicek terlebih dahulu')
+                                ->iconColor('warning')
+                                ->color('warning')
+                                ->success()
+                                ->send();
+                            $set('setoption_costumparams', []);
+                        } else {
+                            $set('setoption_costumparams', $result);
+                        }
+                    })
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255),

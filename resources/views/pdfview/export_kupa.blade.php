@@ -307,76 +307,69 @@
         </tbody>
 
     </table>
+    <table style="width:100%;padding-top:5%;">
+        <thead>
+            <tr>
+                <th style="border: 1px solid black; width:15%;">Dibuat Oleh</th>
+                <th style="border: 1px solid black; width:15%;">Diketahui Oleh</th>
+                <th style="border: 1px solid black; width:15%;">Disetujui Oleh</th>
+                <th style="border: 1px solid black; width:40%;">Catatan Khusus</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
+                <td rowspan="6" style="text-align: left; vertical-align:top; border:1px solid black;">{{$catatan}}</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">
 
-    <table style="margin-top: 25px;">
-        <tr>
-            <td></td>
-            <td colspan="2" style="border: 1px solid black;">Dibuat Oleh,</td>
-            <td colspan="3" style="border: 1px solid black;">Diketahui Oleh,</td>
-            <td colspan="3" style="border: 1px solid black;">Disetujui Oleh,</td>
-            <td colspan="20" style="border-top: 1px solid black;border-right:1px solid black; text-decoration: underline;">
-                Catatan Khusus : </td>
-        </tr>
+                    @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
+                    CREATED
+                    {{$memo_created}}
+                    @else
+                    APPROVED
+                    {{$verifikasi_admin_timestamp}}
+                    @endif
 
-        <tr>
-            <td></td>
-            <td colspan="2" rowspan="4" style="text-align:center;border-bottom: none;border-left:1px solid black;border-right:1px solid black;">
-
-                @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
-                CREATED
-                {{$memo_created}}
-                @else
-                APPROVED
-                {{$verifikasi_admin_timestamp}}
-                @endif
-
-            </td>
-            <td colspan="3" rowspan="4" style="text-align:center">
-                @if ($isVerifiedByHead == True)
-                @php
-                echo strtoupper($approval)
-                @endphp <br>
+                </td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;"> @if ($isVerifiedByHead == True)
+                    @php
+                    echo strtoupper($approval)
+                    @endphp <br>
 
 
-                {{$verifikasi_head_timestamp}}
+                    {{$verifikasi_head_timestamp}}
 
-                @endif
-
-            </td>
-            <td colspan="3" rowspan="4" style="border-left:1px solid black;">
-
-            </td>
-            <td colspan="20" rowspan="6" style="border: 1px solid black;">
-                {{$catatan}}
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <!-- <td colspan="10" style="border-right: 1px solid black;">aa</td> -->
-        </tr>
-        <tr>
-            <td></td>
-            <!-- <td colspan="10" style="border-right: 1px solid black;">cc</td> -->
-        </tr>
-        <tr>
-            <td></td>
-            <!-- <td colspan="10" style="border-right: 1px solid black;">dd</td> -->
-        </tr>
-        <tr>
-            <td></td>
-            <td colspan="2" style="border-top: none;border-left:1px solid black"> {{$petugas_penerima_sampel ?? '-'}}</td>
-            <td colspan="3" style="border-left:1px solid black;"> Budi Umbara</td>
-            <td colspan="3" style="border-left:1px solid black;"> {{$nama_pengirim ?? '-'}}</td>
-            <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->
-        </tr>
-        <tr>
-            <td></td>
-            <td colspan="2" style="border: 1px solid black">Petugas Penerima Sampel</td>
-            <td colspan="3" style="border: 1px solid black;">Manager Laboratorium</td>
-            <td colspan="3" style="border: 1px solid black;">Pelanggan</td>
-            <!-- <td colspan="10" style="border-bottom: 1px solid black;border-right: 1px solid black;">gg</td> -->
-        </tr>
+                    @endif
+                </td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; border:1px solid black; border-bottom:none;">{{$petugas_penerima_sampel}}</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none;">Budi Umbara</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none;">{{$nama_pengirim}}</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; border:1px solid black;">Petugas Penerima Sampel</td>
+                <td style="text-align: center; border:1px solid black;">Manager Laboratorium</td>
+                <td style="text-align: center; border:1px solid black;">Pelanggan</td>
+            </tr>
+        </tbody>
     </table>
+
 
 </body>
 

@@ -46,13 +46,7 @@
             <tr>
                 <td></td>
                 <td colspan="17" style="text-align:center;border: 1px solid black;">
-                    @if($formulir != null)
-                    {{$formulir}}
-                    @else
                     Identitas Sampel {{$jenis_sampel ?? '-'}}
-                    @endif
-
-
                 </td>
                 <td style="border-left:1px solid black;"></td>
             </tr>

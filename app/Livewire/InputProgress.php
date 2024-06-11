@@ -222,6 +222,30 @@ class InputProgress extends Component implements HasForms
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255)
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                        $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
+                        $array = explode('$', $NamaKodeSampeljamak);
+                        $result = array_combine($array, $array);
+                        $jumlahsample = $get('JumlahSampel');
+                        $jumlah_kodesampel = count($array);
+                        if ((int)$jumlahsample !== $jumlah_kodesampel) {
+                            Notification::make()
+                                ->title('Jumlah Kode sampel tidak sama dengan jumlah sampel harap dicek terlebih dahulu')
+                                ->iconColor('danger')
+                                ->color('warning')
+                                ->success()
+                                ->send();
+                            $set('setoption_costumparams', []);
+                        } else {
+                            Notification::make()
+                                ->title('Jumlah Kode sampel  dengan jumlah sampel sudah sesuai')
+                                ->iconColor('success')
+                                ->color('success')
+                                ->success()
+                                ->send();
+                            $set('setoption_costumparams', $result);
+                        }
+                    })
                     ->live(),
                 Textarea::make('NamaKodeSampeljamak')
                     ->label('Nama Kode Sampel')
@@ -235,8 +259,6 @@ class InputProgress extends Component implements HasForms
                         $result = array_combine($array, $array);
                         $jumlahsample = $get('JumlahSampel');
                         $jumlah_kodesampel = count($array);
-                        // dd($NamaKodeSampeljamak, $jumlah_kodesampel, $jumlahsample, $result);
-                        // dd($jumlah_kodesampel == (int)$jumlahsample);
                         if ((int)$jumlahsample !== $jumlah_kodesampel) {
                             Notification::make()
                                 ->title('Jumlah Kode sampel tidak sama dengan jumlah sampel harap dicek terlebih dahulu')

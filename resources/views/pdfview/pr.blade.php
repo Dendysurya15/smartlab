@@ -59,14 +59,7 @@
             <tr>
                 <th></th>
                 <td colspan="22" style="border: 1px solid black;text-align:center">
-                    @if($listitems['formulir'] != null)
-                    {{$listitems['formulir']}}
-                    @else
-                    Kaji Ulang Permintaa, Tender dan Kontrak Sampel
-                    {{$listitems['jenis_kupa'] ?? 0}}
-                    @endif
-
-
+                    Identitas Sampel {{$listitems['jenis_sampel'] ?? 0}}
                 </td>
             </tr>
             <tr>
@@ -74,13 +67,13 @@
                 <th colspan="3" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
                     No.Dokumen
                 </th>
-                <th colspan="3" style="border: 1px solid black;text-align:center;">
+                <th colspan="8" style="border: 1px solid black;text-align:center;">
                     Revisi
                 </th>
-                <th colspan="9" style="border: 1px solid black;text-align:center;">
+                <th colspan="10" style="border: 1px solid black;text-align:center;">
                     Berlaku Efektif
                 </th>
-                <th colspan="10" style="border: 1px solid black;text-align:center;">
+                <th colspan="4" style="border: 1px solid black;text-align:center;">
                     Halaman
                 </th>
             </tr>
@@ -94,13 +87,13 @@
                     @endif
 
                 </th>
-                <th colspan="3" style="border: 1px solid black;text-align:center;">
+                <th colspan="8" style="border: 1px solid black;text-align:center;">
                     02
                 </th>
-                <th colspan="9" style="border: 1px solid black;text-align:center;">
+                <th colspan="10" style="border: 1px solid black;text-align:center;">
                     1-jul-21
                 </th>
-                <th colspan="10" style="border: 1px solid black;text-align:center;">
+                <th colspan="4" style="border: 1px solid black;text-align:center;">
                     1 dari 1
                 </th>
             </tr>
@@ -109,14 +102,17 @@
                 <th colspan="3">
                     No Order
                 </th>
-                <th colspan="3" style="text-align:left;">
+                <th colspan="8" style="text-align:left;">
                     : {{$listitems['no_order']}}
                 </th>
-                <th colspan="9" style="text-align:center;">
+                <th colspan="10" style="text-align:center;">
 
                 </th>
-                <th colspan="10" style="text-align:right;">
-                    Tanggal Penyelesaian: {{$listitems['tanggal_penyelesaian'] ?? 0}}
+                <th colspan="2" style="text-align:left;">
+                    Tanggal Penyelesaian
+                </th>
+                <th colspan="2" style="text-align:left;">
+                    :{{$listitems['tanggal_penyelesaian'] ?? 0}}
                 </th>
             </tr>
             <tr>
@@ -124,14 +120,17 @@
                 <th colspan="3">
                     Tanggal Terima
                 </th>
-                <th colspan="3" style="text-align:left;">
+                <th colspan="8" style="text-align:left;">
                     : {{$listitems['tanggal_terima']}}
                 </th>
-                <th colspan="9" style="text-align:center;">
+                <th colspan="10" style="text-align:center;">
 
                 </th>
-                <th colspan="10" style="text-align:right;">
-                    Kondisi fisik sampel: {{$listitems['kondisi_sampel'] ?? 0}}
+                <th colspan="2" style="text-align:left;">
+                    Kondisi fisik sampel
+                </th>
+                <th colspan="2" style="text-align:left;">
+                    : {{$listitems['kondisi_sampel'] ?? 0}}
                 </th>
             </tr>
             <tr>
@@ -212,61 +211,64 @@
         </tbody>
 
     </table>
-    <table style="width: 70%;padding-top:50px">
+    <table style="border: 1px solid black;width:100%;padding-top:5%">
         <thead>
             <tr>
-                <th></th>
-                <th style="border: 1px solid black;" colspan="3">Diserah terimakan oleh</th>
-                <th style="border: 1px solid black;" colspan="2">Diperiksa oleh</th>
-                <th style="border: 1px solid black;" colspan="2">Diterima Oleh</th>
-                <th style="border: 1px solid black;" colspan="2">Diverifikasi Oleh</th>
-                <th style="border: 1px solid black;" colspan="4">Catatan Khusus</th>
+                <th style="border: 1px solid black; width:15%;" style="border: 1px solid black; width:15%;" style="border: 1px solid black; width:15%;">Diserah terimakan oleh</th>
+                <th style="border: 1px solid black; width:15%;" style="border: 1px solid black; width:15%;" style="border: 1px solid black; width:15%;">Diperiksa oleh</th>
+                <th style="border: 1px solid black; width:15%;" style="border: 1px solid black; width:15%;" style="border: 1px solid black; width:15%;">Diterima Oleh</th>
+                <th style="border: 1px solid black; width:15%;" style="border: 1px solid black; width:15%;" style="border: 1px solid black; width:15%;">Diverifikasi Oleh</th>
+                <th style="border: 1px solid black; width:40%;" colspan="8">Catatan Khusus</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td></td>
-
-
-                <td style="vertical-align:bottom; text-align: center;border:1px solid black" colspan="3" rowspan="6">{{$listitems['PenerimaSampel']}}</td>
-
-
-                <td style="vertical-align:bottom; text-align: center;border:1px solid black" colspan="2" rowspan="6">{{$listitems['Penyelia']}}</td>
-
-
-                <td style="vertical-align:bottom; text-align: center;border:1px solid black" colspan="2" rowspan="6">{{$listitems['Preparasi']}}</td>
-
-
-                <td style="vertical-align:bottom; text-align: center;border:1px solid black" colspan="2" rowspan="6">{{$listitems['Staff']}}</td>
-
-
-                <td colspan="4" rowspan="7" style="vertical-align: top;text-align:left;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
+                <td colspan="8" rowspan="5" style="text-align: left;vertical-align:top;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
             </tr>
             <tr>
-                <td>&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+
             </tr>
             <tr>
-                <td>&NonBreakingSpace;</td>
-            </tr>
-            <tr>
-                <td>&NonBreakingSpace;</td>
-            </tr>
-            <tr>
-                <td>&NonBreakingSpace;</td>
-            </tr>
-            <tr>
-                <td>&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+
             </tr>
 
             <tr>
-                <td></td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none">{{$listitems['PenerimaSampel']}}</td>
 
-                <td style="text-align: center;border:1px solid black" colspan="3">Petugas Penerima Sampel</td>
-                <td style="text-align: center;border:1px solid black" colspan="2">Penyelia</td>
-                <td style="text-align: center;border:1px solid black" colspan="2">Petugas Preparasi</td>
-                <td style="text-align: center;border:1px solid black" colspan="2">Staff Kimia dan Lingkungan</td>
+
+                <td style="text-align: center;border:1px solid black;border-bottom:none">{{$listitems['Penyelia']}}</td>
+
+
+                <td style="text-align: center;border:1px solid black;border-bottom:none">{{$listitems['Preparasi']}}</td>
+
+
+                <td style="text-align: center;border:1px solid black;border-bottom:none">{{$listitems['Staff']}}</td>
+
+
 
             </tr>
+
+            <tr>
+                <td style="text-align: center;border:1px solid black">Petugas Penerima Sampel</td>
+                <td style="text-align: center;border:1px solid black">Penyelia</td>
+                <td style="text-align: center;border:1px solid black">Petugas Preparasi</td>
+                <td style="text-align: center;border:1px solid black">Staff Kimia dan Lingkungan</td>
+
+            </tr>
+
+
         </tbody>
     </table>
     @endforeach

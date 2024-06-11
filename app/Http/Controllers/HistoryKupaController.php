@@ -817,8 +817,6 @@ class HistoryKupaController extends Controller
                         $result[$key]['data'][$valuex]['tanggal_terima'] = $tanggal_terima;
                         $result[$key]['data'][$valuex]['kondisi_sampel'] = $value->kondisi_sampel;
                         $result[$key]['data'][$valuex]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
-
-
                         $result[$key]['data'][$valuex]['parameter_sampel'] = $valuex2;
                         $result[$key]['namaparams'] = array_unique($newArray);
                         $result[$key]['jenis_sampel'] = $value->jenisSampel->nama;
