@@ -324,17 +324,18 @@
                 <td rowspan="6" style="text-align: left; vertical-align:top; border:1px solid black;">{{$catatan}}</td>
             </tr>
             <tr>
-                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">
+                <td style="text-align: center; border: 1px solid black; border-bottom: none; border-top: none;">
 
                     @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
-                    CREATED
-                    {{$memo_created}}
+                    <span style="color: blue;font-size: 30px;">CREATED</span><br>
+                    <span style="font-size: 15px;">{{$memo_created}}</span>
                     @else
-                    APPROVED
-                    {{$verifikasi_admin_timestamp}}
+                    <span style="color: blue;font-size: 30px;">APPROVED</span><br>
+                    <span style="font-size: 15px;">{{$verifikasi_admin_timestamp}}</span>
                     @endif
 
                 </td>
+
                 <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;"> @if ($isVerifiedByHead == True)
                     @php
                     echo strtoupper($approval)

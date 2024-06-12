@@ -831,6 +831,8 @@ class HistoryKupaController extends Controller
                         $result[$key]['Staff'] = $Staff;
                         $result[$key]['Penyelia'] = $Penyelia[0];
                         $result[$key]['doc'] = $value->no_doc;
+                        $result[$key]['status'] = $value->approveby_admin;
+                        $result[$key]['status_timestamp'] = $value->status_timestamp;
                         $result[$key]['no_doc_indentitas'] = $value->no_doc_indentitas;
                         $result[$key]['formulir'] = $value->formulir;
                     }

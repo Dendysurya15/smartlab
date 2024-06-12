@@ -230,7 +230,12 @@
                 <td colspan="8" rowspan="5" style="text-align: left;vertical-align:top;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
             </tr>
             <tr>
-                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
+                <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">
+                    @if ($listitems['status'] == 1)
+                    <span style="color: blue;font-size: 20px;">APPROVED</span><br>
+                    <span style="font-size: 15px;">{{$listitems['status_timestamp']}}</span>
+                    @endif
+                </td>
                 <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
                 <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
                 <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">&NonBreakingSpace;</td>
