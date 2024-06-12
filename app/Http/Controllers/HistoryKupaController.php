@@ -676,7 +676,7 @@ class HistoryKupaController extends Controller
         // Render the PDF
         $dompdf->render();
 
-        // return $dompdf->stream($filename, ["Attachment" => false]);
+
         $dompdf->stream($filename, ["Attachment" => false]);
     }
 
@@ -867,6 +867,42 @@ class HistoryKupaController extends Controller
     {
         $idsArray = explode('$', $id);
         $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
-        // dd($queries);
+
+        $result = [];
+        foreach ($queries as $key => $value) {
+            $nolab = explode('$', $value->nomor_lab);
+            $year = Carbon::parse($value->tanggal_terima)->format('y');
+            $kode_sampel = $value->jenisSampel->kode;
+
+            $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
+
+            if (isset($nolab[1])) {
+                $labkanan = $year . $kode_sampel . '.' . formatLabNumber($nolab[1]);
+            } else {
+                $labkanan = '';
+            }
+
+            $filenames_array = explode('%', $value->foto_sampel);
+
+            $result[$key] = [
+                'no_lab' => $labkiri . ' - ' . $labkanan,
+                'foto' => $filenames_array,
+                'jenis_sampel' => $value->jenisSampel->nama,
+            ];
+        }
+        // dd($result);
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        $view = view('pdfview.dokumentasi', ['data' => $result])->render();
+        $dompdf->loadHtml($view);
+
+        $dompdf->setPaper('A2', 'portrait');
+
+        $dompdf->render();
+
+        $dompdf->stream($filename, ["Attachment" => false]);
     }
 }
