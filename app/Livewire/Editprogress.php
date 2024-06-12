@@ -382,7 +382,7 @@ class Editprogress extends Component implements HasForms
                     ->default($this->opt->penyelia)
                     ->maxLength(255),
                 TextInput::make('no_document')
-                    ->label('No Document')
+                    ->label('No Dokumen Kupa')
                     ->minLength(2)
                     ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->default(function () {
@@ -403,6 +403,29 @@ class Editprogress extends Component implements HasForms
                             return incrementVersion($laststring);
                         }
                     })
+                    ->maxLength(255),
+                TextInput::make('no_document_indentitas')
+                    ->label('No Dokumen Identitas')
+                    ->minLength(2)
+                    ->default(function () {
+                        $data = $this->opt->no_doc_indentitas;
+
+                        if ($data != null) {
+                            return $data;
+                        } else {
+                            $getlates_doc = TrackSampel::with('trackParameters')
+                                ->where('no_doc_indentitas', '!=', null)
+                                ->orderBy('id', 'desc')
+                                ->first();
+
+                            // Extract the 'no_doc' field from the latest document
+                            $laststring = $getlates_doc ? $getlates_doc->no_doc_indentitas : null;
+
+                            // Increment the version or set to default if no document is found
+                            return incrementVersion_identitas($laststring);
+                        }
+                    })
+                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 TextInput::make('nama_formulir')
                     ->label('Nama Formulir')
@@ -790,6 +813,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
                 $trackSampel->no_doc = $form['no_document'];
+                $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
@@ -939,6 +963,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
                 $trackSampel->no_doc = $form['no_document'];
+                $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Waiting Admin Approval';
                 // dd($trackSampel->toArray()); 

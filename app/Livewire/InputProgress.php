@@ -83,14 +83,21 @@ class InputProgress extends Component implements HasForms
                             ->orderBy('id', 'desc')
                             ->first();
 
+                        $getlates_doc_identitas = TrackSampel::with('trackParameters')
+                            ->where('no_doc_indentitas', '!=', null)
+                            ->orderBy('id', 'desc')
+                            ->first();
+
                         // Extract the 'no_doc' field from the latest document
                         $laststring = $getlates_doc ? $getlates_doc->no_doc : null;
-
+                        $laststring_identitas = $getlates_doc_identitas ? $getlates_doc_identitas->no_doc_indentitas : null;
+                        // dd($laststring_identitas);
                         // Increment the version or set to default if no document is found
                         $newString = $laststring ? incrementVersion($laststring) : 'FR-7.1-1.1';
-                        $formulring_strong = 'Kaji Ulang Permintaan,Tender dan Kontrak Sampel';
+                        $newString_identitas = $laststring_identitas ? incrementVersion_identitas($laststring_identitas) : 'FR-7.4-1.2-1';
                         // Assign the new string to 'no_document'
                         $set('no_document', $newString);
+                        $set('no_document_indentitas', $newString_identitas);
                         $set('preflab', $jenisSampel ? $jenisSampel->kode : '1'); // Replace 'default_value' with the appropriate default value
                         $set('parametersAnal', $params);
                         $set('nama_formulir', 'Kaji Ulang Permintaan,Tender dan Kontrak Sampel' . ' ' . $jenisSampel->nama);
@@ -365,14 +372,16 @@ class InputProgress extends Component implements HasForms
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 TextInput::make('no_document')
-                    ->label('No Document')
+                    ->label('No Dokumen Kupa')
                     ->minLength(2)
-                    // ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->maxLength(255),
+                TextInput::make('no_document_indentitas')
+                    ->label('No Dokumen Identitas')
+                    ->minLength(2)
                     ->maxLength(255),
                 TextInput::make('nama_formulir')
                     ->label('Nama Formulir')
                     ->minLength(2)
-                    // ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
 
 
@@ -643,6 +652,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
                 $trackSampel->no_doc = $form['no_document'];
+                $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
@@ -786,6 +796,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
                 $trackSampel->no_doc = $form['no_document'];
+                $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Draft';
                 // dd($trackSampel->toArray()); 

@@ -57,6 +57,7 @@ class TrackSampel extends Model
         'petugas_preparasi',
         'penyelia',
         'no_doc',
+        'no_doc_indentitas',
         'formulir',
     ];
     public function jenisSampel()

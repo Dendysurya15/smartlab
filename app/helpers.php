@@ -293,3 +293,17 @@ if (!function_exists('incrementVersion')) {
         return "FR-{$matches[1]}-{$matches[2]}.{$matches[3]}";
     }
 }
+
+if (!function_exists('incrementVersion_identitas')) {
+    function incrementVersion_identitas($string)
+    {
+        // Extract the numeric parts using a regular expression
+        preg_match('/FR-(\d+\.\d+)-(\d+\.\d+)-(\d+)/', $string, $matches);
+
+        // Increment the last number
+        $matches[3] += 1;
+
+        // Rebuild the string with the incremented number
+        return "FR-{$matches[1]}-{$matches[2]}-{$matches[3]}";
+    }
+}
