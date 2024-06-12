@@ -80,10 +80,10 @@
             <tr>
                 <th></th>
                 <th colspan="3" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
-                    @if($listitems['doc'] != null)
-                    {{$listitems['doc']}}
+                    @if($listitems['no_doc_indentitas'] != null)
+                    {{$listitems['no_doc_indentitas']}}
                     @else
-                    FR.7.1-12
+                    FR-7.4-1.2-1
                     @endif
 
                 </th>

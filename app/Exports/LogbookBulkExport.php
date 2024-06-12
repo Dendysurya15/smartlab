@@ -161,6 +161,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $penyelia_prep = $value->penyelia;
             $doc = $value->no_doc;
             $formulir = $value->formulir;
+            $no_doc_indentitas = $value->no_doc_indentitas;
             // dd($result, $namakode_sampel, $sampel_data);
         }
         // dd($newArray, $result);
@@ -186,6 +187,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             'Staff' => $Staff,
             'Penyelia' => $Penyelia,
             'doc' => $doc,
+            'no_doc_indentitas' => $no_doc_indentitas,
             'formulir' => $formulir,
         ]);
     }

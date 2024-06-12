@@ -397,7 +397,7 @@ class Editprogress extends Component implements HasForms
                                 ->first();
 
                             // Extract the 'no_doc' field from the latest document
-                            $laststring = $getlates_doc ? $getlates_doc->no_doc : null;
+                            $laststring = $getlates_doc ? $getlates_doc->no_doc : 'FR-7.1-1.1';
 
                             // Increment the version or set to default if no document is found
                             return incrementVersion($laststring);
@@ -419,7 +419,7 @@ class Editprogress extends Component implements HasForms
                                 ->first();
 
                             // Extract the 'no_doc' field from the latest document
-                            $laststring = $getlates_doc ? $getlates_doc->no_doc_indentitas : null;
+                            $laststring = $getlates_doc ? $getlates_doc->no_doc_indentitas : 'FR-7.4-1.2-1';
 
                             // Increment the version or set to default if no document is found
                             return incrementVersion_identitas($laststring);

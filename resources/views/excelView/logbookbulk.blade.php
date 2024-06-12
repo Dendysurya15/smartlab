@@ -68,12 +68,11 @@
             <tr>
                 <th></th>
                 <th colspan="3" style="border: 1px solid black;">
-                    @if($doc != null)
-                    {{$doc}}
+                    @if($no_doc_indentitas != null)
+                    {{$no_doc_indentitas}}
                     @else
-                    FR.7.1-12
+                    FR-7.4-1.2-1
                     @endif
-                    FR.7.1-12
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
                     02

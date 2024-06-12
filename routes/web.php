@@ -50,7 +50,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('exportexcel', function () {
         return view('excelView.exportotexcel');
     });
-
+    Route::get('exportdocumentasi/{id}/{filename}', [HistoryKupaController::class, 'export_dokumentasi'])->name('exportdokumntasi');
     Route::fallback(function () {
         return view('pages/utility/404');
     });

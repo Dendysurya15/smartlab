@@ -831,6 +831,7 @@ class HistoryKupaController extends Controller
                         $result[$key]['Staff'] = $Staff;
                         $result[$key]['Penyelia'] = $Penyelia[0];
                         $result[$key]['doc'] = $value->no_doc;
+                        $result[$key]['no_doc_indentitas'] = $value->no_doc_indentitas;
                         $result[$key]['formulir'] = $value->formulir;
                     }
                 }
@@ -860,5 +861,12 @@ class HistoryKupaController extends Controller
 
         // $dompdf->stream($filename, ["Attachment" => true]);
         return $dompdf->stream($filename, ["Attachment" => false]);
+    }
+
+    public function export_dokumentasi($id, $filename)
+    {
+        $idsArray = explode('$', $id);
+        $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
+        // dd($queries);
     }
 }
