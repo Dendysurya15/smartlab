@@ -25,9 +25,9 @@ Route::redirect('/', 'login');
 Route::get('tracking_sampel', [TrackSampelController::class, 'index']);
 Route::get('tracking_sampels/{id}', [TrackSampelController::class, 'searchbyid']);
 Route::post('search_sampel_progress', [TrackSampelController::class, 'search'])->name('search_sampel_progress');
-// Route::get('/linkstorage', function () {
-//     Artisan::call('storage:link');
-// });
+Route::get('/linkstorage', function () {
+    Artisan::call('storage:link');
+});
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])
