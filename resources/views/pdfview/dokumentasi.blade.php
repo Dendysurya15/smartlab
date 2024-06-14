@@ -14,6 +14,7 @@
             max-width: 1080px;
             margin: 20px auto;
             font-family: Arial, sans-serif;
+            page-break-after: always;
         }
 
         .card-header {
@@ -22,47 +23,45 @@
             font-size: 1.25em;
             font-weight: bold;
             text-align: center;
-            /* Add margin-bottom to create space */
             margin-bottom: 10px;
         }
 
         .card-body {
             padding: 16px;
             display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-            /* Align content at the top */
+            flex-direction: column;
+            align-items: center;
         }
 
         .card-body img {
-            width: 45%;
+            width: auto;
             height: auto;
             display: block;
             margin-bottom: 10px;
             border-radius: 8px;
-            margin: 10px;
+        }
+
+        .page-break {
+            page-break-before: always;
         }
     </style>
 </head>
 
 <body>
     @foreach($data as $item)
-
+    @foreach($item['foto'] as $foto)
     <div class="card">
         <div class="card-header">Dokumentasi Sampel {{$item['jenis_sampel']}} No Lab : {{$item['no_lab']}}</div>
         <div class="card-body">
-            @foreach($item['foto'] as $foto)
             @if($foto)
-            <img src="{{ asset('storage/' . $foto) }}" alt="Image 1">
+            <img src="{{ asset('storage/' . $foto) }}" alt="Image">
             @else
             <p>Foto Tidak Tersedia</p>
             @endif
-            @endforeach
         </div>
     </div>
-    <div style="page-break-after: always;"></div>
     @endforeach
-
+    @endforeach
 </body>
 
 </html>

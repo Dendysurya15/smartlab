@@ -776,6 +776,31 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->color('warning')
                         ->visible(auth()->user()->can('export_form_monitoring_kupa'))
                         ->size('xs'),
+                    Action::make('export_persurat')
+                        ->label('Export Persurat')
+                        ->url(function (TrackSampel $record) {
+                            $jenis_sample_final = $record->jenisSampel->nama;
+                            $carbonDate = Carbon::parse($record->tanggal_memo);
+                            $dates_final = $carbonDate->format('F');
+                            $year_final = $carbonDate->format('Y');
+
+                            $filename = 'Persurat ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final;
+                            return route('exportpersurat', ['id' => $record->id, 'filename' => $filename]);
+                        })
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->disabled(function (TrackSampel $record) {
+                            if ($record->status === 'Draft') {
+                                $func = true;
+                            } else {
+                                $func = false;
+                            }
+
+                            return $func;
+                        })
+                        ->openUrlInNewTab()
+                        ->color('warning')
+                        ->visible(auth()->user()->can('export_form_monitoring_kupa'))
+                        ->size('xs'),
                     Action::make('edit')
                         ->label('Edit Kupa')
                         ->url(fn (TrackSampel $record): string => route('history_sampel.edit', $record->id))
