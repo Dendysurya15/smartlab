@@ -334,7 +334,8 @@ class InputProgress extends Component implements HasForms
                 TextInput::make('NomorSurat')
                     ->label('Nomor Surat')
                     ->minLength(2)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    // ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required()
                     ->maxLength(255),
                 TextInput::make('Tujuan')
                     ->label('Tujuan')
@@ -610,7 +611,7 @@ class InputProgress extends Component implements HasForms
         $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
 
 
-
+        // dd($form);
         if ($form['drafting'] !== true) {
             // dd('bukan Draft');
 
@@ -687,17 +688,24 @@ class InputProgress extends Component implements HasForms
                 // $nohp = formatPhoneNumber($form['nomerhpuser']);
                 // dd($form['nomerhpuser']);
                 if ($form['nomerhpuser'] !== []) {
+                    $dataToInsert2 = [];
                     foreach ($form['nomerhpuser'] as $data) {
-                        $dataToInsert2[] = [
-                            'no_surat' => $form['NomorSurat'],
-                            'kodesample' => $randomCode,
-                            'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                            'progres' => $getprogress,
-                            'type' => 'input',
-                        ];
+                        $nomor_hp = numberformat_excel($data['NomorHp']);
+
+                        if ($nomor_hp !== 'Error') {
+                            $dataToInsert2[] = [
+                                'no_surat' => $form['NomorSurat'],
+                                'kodesample' => $randomCode,
+                                'penerima' =>  str_replace('+', '', $data['NomorHp']),
+                                'progres' => $getprogress,
+                                'type' => 'input',
+                            ];
+                        }
                     }
                     // dd($dataToInsert);
-                    SendMsg::insert($dataToInsert2);
+                    if (!empty($dataToInsert)) {
+                        SendMsg::insert($dataToInsert2);
+                    }
                 }
 
                 $now = Carbon::now();
@@ -714,18 +722,11 @@ class InputProgress extends Component implements HasForms
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
-                if ($emailAddresses !== null) {
-                    Mail::to($emailAddresses)
-                        ->cc($emailcc)
-                        ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
-                }
-                $dataarr = "$greeting\n"
-                    . "Yth. Pelanggan Setia Lab CBI,\n"
-                    . "Sampel anda telah kami terima dengan no surat *{$form['NomorSurat']}*.\n"
-                    . "Progress saat ini: *$getprogress*\n"
-                    . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
-                    . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
-
+                // if ($emailAddresses !== null) {
+                //     Mail::to($emailAddresses)
+                //         ->cc($emailcc)
+                //         ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
+                // }
 
                 $trackSampel->save();
                 DB::commit();
@@ -812,20 +813,27 @@ class InputProgress extends Component implements HasForms
 
                 if ($form['nomerhpuser'] !== []) {
 
-                    // dd($form['nomerhpuser']);
+                    $dataToInsert = [];
                     foreach ($form['nomerhpuser'] as $data) {
+                        $nomor_hp = numberformat_excel($data['NomorHp']);
 
-                        $dataToInsert[] = [
-                            'no_surat' => $form['NomorSurat'] ?? '-',
-                            'kodesample' => $randomCode,
-                            'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                            'progres' => $getprogress,
-                            'type' => 'input',
-                        ];
+                        if ($nomor_hp !== 'Error') {
+                            $dataToInsert[] = [
+                                'no_surat' => $form['NomorSurat'],
+                                'kodesample' => $randomCode,
+                                'penerima' => str_replace('+', '', $data['NomorHp']),
+                                'progres' => $getprogress,
+                                'type' => 'input',
+                            ];
+                        }
                     }
 
+                    // Uncomment to debug and check $dataToInsert before insertion
                     // dd($dataToInsert);
-                    SendMsg::insert($dataToInsert);
+
+                    if (!empty($dataToInsert)) {
+                        SendMsg::insert($dataToInsert);
+                    }
                 }
 
                 if ($form['repeater'] !== []) {

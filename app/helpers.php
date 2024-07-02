@@ -307,3 +307,29 @@ if (!function_exists('incrementVersion_identitas')) {
         return "FR-{$matches[1]}-{$matches[2]}-{$matches[3]}";
     }
 }
+
+if (!function_exists('numberformat_excel')) {
+    function numberformat_excel($number)
+    {
+        // Remove any non-numeric characters from the input number
+        $number = preg_replace('/\D/', '', $number);
+
+        // Check if the number starts with '08'
+        if (substr($number, 0, 2) === '08') {
+            $number = '628' . substr($number, 2);
+        }
+
+        // Validate if the number starts with '628'
+        if (substr($number, 0, 3) !== '628') {
+            return "Error";
+        }
+
+        // Validate the length of the number
+        $length = strlen($number);
+        if ($length < 10 || $length > 15) {
+            return "Error";
+        }
+
+        return $number;
+    }
+}
