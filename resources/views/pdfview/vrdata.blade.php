@@ -82,6 +82,7 @@
 
                         <th rowspan="2" class="border-text">No Surat</th>
                         <th rowspan="2" class="border-text">Parameter Analisa</th>
+                        <th rowspan="2" class="border-text">Tujuan</th>
                         <th rowspan="2" class="border-text">Kode Sampel</th>
                         <th rowspan="2" class="border-text">Estimasi KUPA</th>
                         <th rowspan="2" class="border-text">Tanggal Selesai Analisa</th>
@@ -125,6 +126,7 @@
                         <td class="border-text">{{$item2['departemen']}}</td>
                         <td class="border-text">{{$item2['nomor_surat']}}</td>
                         <td class="border-text">{{$item2['Parameter_Analisa']}}</td>
+                        <td class="border-text">{{$item2['tujuan']}}</td>
                         <td class="border-text">{{$item2['kode_sampel']}}</td>
                         <td class="border-text">{{$item2['estimasi']}}</td>
                         <td class="border-text">{{$item2['Tanggal_Selesai_Analisa']}}</td>
@@ -150,6 +152,7 @@
 
         </div>
     </div>
+    <div style="page-break-after: always;"></div>
     @endforeach
 
 
