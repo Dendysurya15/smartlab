@@ -120,7 +120,7 @@ class InputProgress extends Component implements HasForms
                         }
                     })
                     ->required()
-                    ->live(),
+                    ->live(debounce: 500),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
                     ->disabled(function ($get) {
@@ -139,7 +139,7 @@ class InputProgress extends Component implements HasForms
                         'Internal' => 'Internal',
                         'Eksternal' => 'Eksternal',
                     ])
-                    ->live(),
+                    ->live(debounce: 500),
                 DateTimePicker::make('TanggalMemo')
                     ->label('Tanggal Memo')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
@@ -212,7 +212,7 @@ class InputProgress extends Component implements HasForms
                         }
                     })
                     ->maxValue(1000)
-                    ->live(),
+                    ->live(debounce: 500),
                 TextInput::make('NamaPengirim')
                     ->label('Nama Pengirim')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
@@ -253,13 +253,13 @@ class InputProgress extends Component implements HasForms
                             $set('setoption_costumparams', $result);
                         }
                     })
-                    ->live(),
+                    ->live(debounce: 500),
                 Textarea::make('NamaKodeSampeljamak')
                     ->label('Nama Kode Sampel')
                     ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
                     ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
                     ->autosize()
-                    ->live()
+                    ->live(debounce: 500)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
                         $array = explode('$', $NamaKodeSampeljamak);
@@ -316,7 +316,7 @@ class InputProgress extends Component implements HasForms
                             $set('lab_kanan', $data);
                         })
                         ->numeric()
-                        ->live()
+                        ->live(debounce: 500)
                         ->maxLength(255),
                     TextInput::make('lab_kanan')
                         ->label('Nomor Lab Kanan')
@@ -460,7 +460,7 @@ class InputProgress extends Component implements HasForms
                                             })
                                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                             ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
-                                            ->live(),
+                                            ->live(debounce: 500),
                                         TextInput::make('total_sample')
                                             ->afterStateUpdated(function (Get $get, Set $set) {
                                                 self::updateTotals($get, $set);

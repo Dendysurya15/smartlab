@@ -99,7 +99,7 @@ class RoleManagement extends Component implements HasTable, HasForms
                         ->form([
                             Select::make('Roles')
                                 ->options($roles)
-                                ->live(),
+                                ->live(debounce: 500),
                             CheckboxList::make('Permission')
                                 ->options(fn () => Permission::pluck('name', 'name')->toArray() ?: [])
                                 ->columns(2)

@@ -200,7 +200,7 @@ class Editprogress extends Component implements HasForms
                         $set('lab_kanan', '');
                         $set('NamaKodeSampeljamak', '');
                     })
-                    ->live(),
+                    ->live(debounce: 500),
                 TextInput::make('NamaPengirim')
                     ->label('Nama Pengirim')
                     ->required()
@@ -252,7 +252,7 @@ class Editprogress extends Component implements HasForms
                         $data_with_newlines = str_replace("$", "\n", $data);
                         return $data_with_newlines;
                     })
-                    ->live()
+                    ->live(debounce: 500)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
                         $array = explode('$', $NamaKodeSampeljamak);
@@ -312,7 +312,7 @@ class Editprogress extends Component implements HasForms
                             }
                             $set('lab_kanan', $data);
                         })
-                        ->live()
+                        ->live(debounce: 500)
                         ->maxLength(255),
 
                     TextInput::make('lab_kanan')
@@ -538,7 +538,7 @@ class Editprogress extends Component implements HasForms
 
                                                 return $data;
                                             })
-                                            ->live(),
+                                            ->live(debounce: 500),
                                         TextInput::make('total_sample')
                                             ->afterStateUpdated(function (Get $get, Set $set) {
                                                 self::updateTotals($get, $set);

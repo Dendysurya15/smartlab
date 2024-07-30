@@ -74,7 +74,7 @@ class TableParameter extends Component  implements HasTable, HasForms
                                         $set('hargaparams_paketan', 0);
                                     })
                                     ->required()
-                                    ->live(),
+                                    ->live(debounce: 500),
                                 CheckboxList::make('namaparameter_paketan')
                                     ->options(function (Get $get) {
 
@@ -102,7 +102,7 @@ class TableParameter extends Component  implements HasTable, HasForms
                                         $set('nama_unsur', $namaunsur);
                                     })
                                     ->required()
-                                    ->live(),
+                                    ->live(debounce: 500),
                                 TextInput::make('hargaparams_paketan')
                                     ->required()
                                     ->label('Harga Parameter')
