@@ -3,23 +3,31 @@
         {{ $this->form }}
     </form>
 
-    {!! NoCaptcha::renderJs() !!}
-    <div id="recaptcha" class="g-recaptcha" data-sitekey="{{ env('NOCAPTCHA_SITEKEY') }}" data-callback="onSubmit">
-    </div>
-
-    <script>
-        function onSubmit(token) {
-            @this.captchaToken = token;
-        }
-
-        // Listen for the custom event to reload CAPTCHA
+    <script type="text/javascript">
         document.addEventListener('livewire:init', () => {
-            Livewire.on('reload-captcha', (event) => {
+            Livewire.on('reload-captcha', () => {
                 location.reload(); // Call location.reload() to reload the page
             });
         });
+
+        function callbackThen(response) {
+            response.json().then(function(data) {
+                if (data.success && data.score > 0.5) {
+                    console.log('valid recaptcha');
+                    @this.captchaToken = 'valid recaptcha';
+                } else {
+                    alert('recaptcha error');
+                }
+            });
+        }
+
+        function callbackCatch(error) {
+            console.error('Error:', error);
+        }
+
+        // Function to be called after the CAPTCHA is completed
+        function onSubmit(token) {
+            @this.captchaToken = token; // Update Livewire component with token
+        }
     </script>
-
-
-
 </div>
