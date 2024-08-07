@@ -8,7 +8,10 @@ use App\Http\Controllers\InputProgressController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TrackSampelController;
 use App\Http\Controllers\ExcelmanagementController;
-
+use App\Http\Controllers\Kuesionerroot;
+use App\Http\Middleware\TrackCaptchaFailures;
+use App\Livewire\Kuesionerdata;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +31,10 @@ Route::post('search_sampel_progress', [TrackSampelController::class, 'search'])-
 Route::get('/linkstorage', function () {
     Artisan::call('storage:link');
 });
+Route::get('kuesioner', Kuesionerdata::class);
+// Route::get('kuesioner', [Kuesionerroot::class, 'index'])->middleware([TrackCaptchaFailures::class]);
+Route::get('kuesioner', [Kuesionerroot::class, 'index']);
+Route::get('flush', [TrackSampelController::class, 'unblockIp']);
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])
