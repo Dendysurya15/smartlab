@@ -11,6 +11,7 @@ use App\Http\Controllers\ExcelmanagementController;
 use App\Http\Controllers\Kuesionerroot;
 use App\Http\Middleware\TrackCaptchaFailures;
 use App\Livewire\Kuesionerdata;
+use App\Livewire\Managementkuesioner;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -71,4 +72,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/excelsettings', [ExcelmanagementController::class, 'index'])->name('excelsettings');
 
     Route::post('delete-data/{id}', [SystemController::class, 'delete_parameter_and_metode'])->name('delete-data');
+    Route::get('/Managementkuesioner', Managementkuesioner::class)->name('Managementkuesioner');
 });

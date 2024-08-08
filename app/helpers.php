@@ -1,6 +1,16 @@
 <?php
 
+use App\Models\Kuesionerjawaban;
+use App\Models\Kuesionerpertanyaan;
+use App\Models\Layoutkue;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Radio;
 use Spatie\Permission\Models\Role;
+use Filament\Forms\Components\TextInput;
+use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Wizard\Step;
 
 if (!function_exists('tanggal_indo')) {
     function tanggal_indo($tanggal, $cetak_hari = false, $cetak_bulan = false, $cetak_tanggal = false)
@@ -331,5 +341,91 @@ if (!function_exists('numberformat_excel')) {
         }
 
         return $number;
+    }
+}
+if (!function_exists('Generatetemplate')) {
+    function Generatetemplate($data)
+    {
+        $options = [];
+
+        if ($data != 0 && $data != null) {
+
+            // dd($data);
+            $query = Kuesionerjawaban::find($data);
+            $jawaban = json_decode($query->jawaban);
+
+
+            foreach ($jawaban as $key => $values) {
+                $options[$values->value] = $values->nama_detail;
+            }
+            // dd($options, $jawaban);
+
+
+        }
+        return  Radio::make('Default_template')
+            ->label('Default template')
+            ->disabled()
+            ->options($options);
+    }
+}
+
+
+
+
+if (!function_exists('layoutkuesioner')) {
+    function layoutkuesioner()
+    {
+        $data = Layoutkue::all();
+
+        $layout = [];
+
+        foreach ($data as $key => $value) {
+            // Split the question IDs
+            $pertanyaan_ids = explode(',', $value['list_pertanyaan']);
+
+            // Fetch the questions associated with these IDs
+            $pertanyaan = Kuesionerpertanyaan::whereIn('id', $pertanyaan_ids)
+                ->with('Tipe', 'template_jawaban')
+                ->get();
+
+            // Initialize schema array for this step
+            $new_data = []; // Reset $new_data for each layout entry
+
+            foreach ($pertanyaan as $item) {
+                // Determine the type of question
+                $type = $item->Tipe->nama;
+                $label = $item->label;
+
+                if ($type === 'text') {
+                    $new_data[] = TextInput::make($item->id)
+                        ->label($label)
+                        ->required();
+                } elseif ($type === 'radio') {
+                    $options = [];
+
+                    // If there is a template_jawaban, use it, otherwise use jawaban
+                    $answers = json_decode($item->template_jawaban->jawaban ?? $item->jawaban);
+
+                    foreach ($answers as $answer) {
+                        $options[$answer->value] = $answer->nama_detail;
+                    }
+
+                    $new_data[] = Radio::make($item->id)
+                        ->label($label)
+                        ->options($options)
+                        ->required();
+                }
+                // Add more cases for other types if necessary
+            }
+
+            // Add the step to the layout
+            $layout[] = Step::make($key)
+                ->label($value['label'])
+                ->schema($new_data)
+                ->columns(2); // Adjust column size as needed
+        }
+
+        // Example usage in a Filament form
+        return $layout;
     }
 }

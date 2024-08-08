@@ -145,6 +145,11 @@
                                         <span class="text-sm font-medium  duration-200">Edit Header Excel</span>
                                     </a>
                                 </li>
+                                <li class="mb-1 last:mb-0">
+                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if(Route::is('Managementkuesioner')){{ '!text-emerald-500' }}@endif" href="{{route('Managementkuesioner')}}">
+                                        <span class="text-sm font-medium  duration-200">Management Kuesioner</span>
+                                    </a>
+                                </li>
                                 @endcan
                             </ul>
                         </div>

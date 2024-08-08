@@ -1,11 +1,14 @@
 <div>
     <form wire:submit.prevent="create" class="flex flex-col items-end" id="testing">
         {{ $this->form }}
+        <button type="submit">
+            Submit
+        </button>
     </form>
-
+    <x-filament-actions::modals />
     <script type="text/javascript">
         document.addEventListener('livewire:init', () => {
-            Livewire.on('reload-captcha', () => {
+            Livewire.on('reload', () => {
                 location.reload(); // Call location.reload() to reload the page
             });
         });
