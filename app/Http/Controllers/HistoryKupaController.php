@@ -17,7 +17,10 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Cknow\Money\Money;
 use App\Models\User;
 use App\Models\ExcelManagement;
+use App\Models\Kuesionerpertanyaan;
+use App\Models\Layoutkue;
 use App\Models\ParameterAnalisis;
+use App\Models\Resultkuesioner;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -326,8 +329,10 @@ class HistoryKupaController extends Controller
         $pdf = Pdf::setPaper('letter', 'portrait');
         $pdf->setOptions([
             'dpi' => 100,
-            'defaultFont' => 'Nunito, sans-serif', 'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true, 'isJavascriptEnabled' => true
+            'defaultFont' => 'Nunito, sans-serif',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'isJavascriptEnabled' => true
         ]);
 
         // $pdf->setOptions(['dpi' => 150, 'isHtml5ParserEnabled' => true, 'defaultFont' => 'sans-serif']);
@@ -415,8 +420,10 @@ class HistoryKupaController extends Controller
         $pdf = Pdf::setPaper('letter', 'landscape');
         $pdf->setOptions([
             'dpi' => 100,
-            'defaultFont' => 'Nunito, sans-serif', 'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true, 'isJavascriptEnabled' => true
+            'defaultFont' => 'Nunito, sans-serif',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'isJavascriptEnabled' => true
         ]);
 
         // $pdf->setOptions(['dpi' => 150, 'isHtml5ParserEnabled' => true, 'defaultFont' => 'sans-serif']);
@@ -1385,5 +1392,74 @@ class HistoryKupaController extends Controller
         }
 
         return $result;
+    }
+
+    public function exportpdf_kuesiner($id, $filename)
+    {
+        $testid = '1$2';
+        $idsArray = explode('$', $id);
+        $queries = Resultkuesioner::whereIn('id', $idsArray)->get();
+        $queries = json_decode($queries, true);
+        // dd($queries);
+        $final_result = [];
+        foreach ($queries as $key => $values) {
+            // dd($value);
+            $data = json_decode($values['result'], true);
+            $layouts = Layoutkue::all()->toArray();
+
+            $layout_root = [];
+
+            foreach ($layouts as $layout) {
+                $pertanyaanIds = explode(',', $layout['list_pertanyaan']);
+                $answers = [];
+                foreach ($pertanyaanIds as $id) {
+                    if (isset($data[$id])) {
+                        $answers[] = $data[$id];
+                    }
+                }
+                $layout_root[] = [
+                    "id" => $layout['id'],
+                    "label" => $layout['label'],
+                    "list_pertanyaan" => $answers,
+                ];
+            }
+            // dd($layout, $data, $layout_root);
+            // $result_data = [];
+            // dd($data);
+            foreach ($layout_root as $keys => $value) {
+                foreach ($value['list_pertanyaan'] as $keys1 => $value1) {
+                    // dd($value1);
+                    $source = Kuesionerpertanyaan::where('id', (int)$value1['key'])->with('Tipe', 'template_jawaban')->first();
+                    $source_pertanyaan = $source->label;
+                    $source_tipe = $source->Tipe->nama;
+                    $answer_data = $value1['value'];
+                    $options = [];
+                    $answers = json_decode($source->template_jawaban->jawaban ?? $source->jawaban);
+
+                    foreach ($answers as $answer) {
+                        $options[$answer->value] = $answer->nama_detail;
+                    }
+
+                    // Append each item to the corresponding `tipe` group
+                    $result_data[$value['label']][$source_tipe][] = [
+                        'id_pertanyaan' => $source->id,
+                        'pertanyaan' => $source_pertanyaan,
+                        'tipe' => $source_tipe,
+                        'jawaban' => $answer_data,
+                        'option' => $options,
+                        'layout' => $value['label'],
+                    ];
+                }
+            }
+            // dd($result_data);
+            // Dump the grouped data
+            // dd($result_data);
+
+            $final_result[$key] = $result_data;
+            // dd($result_data);;
+        }
+        $pdf = PDF::loadView('pdfview.kuesioner', ['data' => $final_result]);
+        $pdf->set_paper('A3', 'potrait');
+        return $pdf->download($filename . '.pdf');
     }
 }

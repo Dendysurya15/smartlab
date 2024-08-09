@@ -435,19 +435,58 @@ if (!function_exists('layoutkuesioner')) {
 if (!function_exists('Generateresult')) {
     function Generateresult($id)
     {
-        // dd($data);
         $query = Resultkuesioner::where('id', $id)->first();
         $data = json_decode($query->result, true);
 
-        // dd($query, $data);
-        $result = [];
+        $result_data = [];
         foreach ($data as $keys => $value) {
-            // dd($value['key']);
-            $tipe = Kuesionertipe::where('id', (int)$value['key'])->first();
-            $answer = $value['value'];
-            // dd($tipe, $answer);
-            $result[] = $value;
+            $source = Kuesionerpertanyaan::where('id', (int)$value['key'])->with('Tipe', 'template_jawaban')->first();
+            $source_pertanyaan = $source->label;
+            $source_tipe = $source->Tipe->nama;
+            $answer_data = $value['value'];
+            $options = [];
+
+            $answers = json_decode($source->template_jawaban->jawaban ?? $source->jawaban);
+
+            foreach ($answers as $answer) {
+                $options[$answer->value] = $answer->nama_detail;
+            }
+            $result_data[] = [
+                'id_pertanyaan' => $source->id,
+                'pertanyaan' => $source_pertanyaan,
+                'tipe' => $source_tipe,
+                'jawaban' => $answer_data,
+                'option' => $options
+            ];
         }
-        return $result;
+
+        $new_data_text = [];
+        $new_data_radio = [];
+
+        foreach ($result_data as $key => $item) {
+            if ($item['tipe'] === 'text') {
+                $new_data_text[] = TextInput::make($key)
+                    ->label($item['pertanyaan'])
+                    ->default($item['jawaban']);
+            } elseif ($item['tipe'] === 'radio') {
+                $new_data_radio[] = Radio::make($key)
+                    ->label($item['pertanyaan'])
+                    ->default($item['jawaban'])
+                    ->options($item['option']);
+            }
+        }
+
+        $fieldset_text = Fieldset::make('Text Inputs')
+            ->schema($new_data_text)
+            ->columns(1);
+
+        $fieldset_radio = Fieldset::make('Radio Inputs')
+            ->schema($new_data_radio)
+            ->columns(3);
+
+        return [
+            $fieldset_text,
+            $fieldset_radio
+        ];
     }
 }
