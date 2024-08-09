@@ -2,7 +2,9 @@
 
 use App\Models\Kuesionerjawaban;
 use App\Models\Kuesionerpertanyaan;
+use App\Models\Kuesionertipe;
 use App\Models\Layoutkue;
+use App\Models\Resultkuesioner;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Radio;
 use Spatie\Permission\Models\Role;
@@ -422,10 +424,30 @@ if (!function_exists('layoutkuesioner')) {
             $layout[] = Step::make($key)
                 ->label($value['label'])
                 ->schema($new_data)
-                ->columns(2); // Adjust column size as needed
+                ->columns(2);
         }
 
         // Example usage in a Filament form
         return $layout;
+    }
+}
+
+if (!function_exists('Generateresult')) {
+    function Generateresult($id)
+    {
+        // dd($data);
+        $query = Resultkuesioner::where('id', $id)->first();
+        $data = json_decode($query->result, true);
+
+        // dd($query, $data);
+        $result = [];
+        foreach ($data as $keys => $value) {
+            // dd($value['key']);
+            $tipe = Kuesionertipe::where('id', (int)$value['key'])->first();
+            $answer = $value['value'];
+            // dd($tipe, $answer);
+            $result[] = $value;
+        }
+        return $result;
     }
 }

@@ -541,7 +541,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
             ])
             ->actions([
-
                 ActionGroup::make([
                     ActionGroup::make([
                         Action::make('export_kupa_pdf')
