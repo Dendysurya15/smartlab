@@ -100,7 +100,7 @@
 
         // Function to be called after the CAPTCHA is completed
         function onSubmit(token) {
-            @this.captchaToken = token; // Update Livewire component with token
+            @this.captchaToken = token;
         }
     </script>
 

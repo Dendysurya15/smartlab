@@ -102,6 +102,8 @@
     @php
     $data_diri = $valuex['Data diri']['text'];
     $pelayanan = $valuex['Pelayanan']['radio'];
+    $signature = $valuex['signature'];
+    $datetime = $valuex['datetime'];
     $laporan = $valuex['Laporan']['radio'] ?? $valuex['Laporan hasil uji (Report of Analysis)']['radio'] ;
     $kritiksaran = $valuex['Kritik dan saran']['text'][0]['jawaban'];
     @endphp
@@ -281,11 +283,21 @@
             <table style="width: 100%;margin-top: 20px;">
                 <tr>
                     <td style="width: 70%;"></td>
-                    <td style="height: 100px;border:1px solid black;text-align:left;vertical-align:top;border-left:none;border-right:none">Hormat Kami</td>
+                    <td style="text-align:left;vertical-align:top;border-left:none;border-right:none">Hormat Kami,</td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td style="text-align:center">(<span style="">{{$nama_pelanggan}}</span>)</td>
+                    <td style="width: 70%;"></td>
+                    <td style="border: 1px solid black;text-align:left;vertical-align:top;border-left:none;border-right:none;border-bottom:none">
+                        <img src="{{ asset('storage/' . $signature) }}" alt="Image">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 70%;"></td>
+                    <td style="text-align:center;border-bottom:1px solid black"><span style="font-size: 10px;">{{$datetime}}</span></td>
+                </tr>
+                <tr>
+                    <td style="width: 70%;"></td>
+                    <td style="text-align:center">(<span>{{$nama_pelanggan}}</span>)</td>
                 </tr>
             </table>
             <h1 style="font-size: 10px; margin-top: 20px;">

@@ -1421,11 +1421,12 @@ class HistoryKupaController extends Controller
                     "id" => $layout['id'],
                     "label" => $layout['label'],
                     "list_pertanyaan" => $answers,
+
                 ];
             }
             // dd($layout, $data, $layout_root);
             // $result_data = [];
-            // dd($data);
+            // dd($layout_root);
             foreach ($layout_root as $keys => $value) {
                 foreach ($value['list_pertanyaan'] as $keys1 => $value1) {
                     // dd($value1);
@@ -1456,6 +1457,8 @@ class HistoryKupaController extends Controller
             // dd($result_data);
 
             $final_result[$key] = $result_data;
+            $final_result[$key]['signature'] = $values['signature'];
+            $final_result[$key]['datetime'] = Carbon::parse($values['datetime'])->format('d-m-Y');
             // dd($result_data);;
         }
         // dd($final_result);
