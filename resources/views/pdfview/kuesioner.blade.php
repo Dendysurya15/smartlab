@@ -102,7 +102,7 @@
     @php
     $data_diri = $valuex['Data diri']['text'];
     $pelayanan = $valuex['Pelayanan']['radio'];
-    $laporan = $valuex['Laporan']['radio'];
+    $laporan = $valuex['Laporan']['radio'] ?? $valuex['Laporan hasil uji (Report of Analysis)']['radio'] ;
     $kritiksaran = $valuex['Kritik dan saran']['text'][0]['jawaban'];
     @endphp
     <div class="container">
@@ -184,7 +184,7 @@
             </tr>
 
             <tr>
-                <td class="border" rowspan="8">1</td>
+                <td class="border" rowspan="6">1</td>
                 <td class="border2" colspan="5" style="font-weight:bold">Laporan Hasil Uji (Report of Analysis)</td>
 
             </tr>
@@ -222,7 +222,7 @@
             </tr>
             @endforeach
             <tr>
-                <td class="border" rowspan="6">2</td>
+                <td class="border" rowspan="8">2</td>
                 <td class="border2" colspan="5" style="font-weight:bold;">Pelayanan</td>
 
             </tr>
