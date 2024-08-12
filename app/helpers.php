@@ -393,15 +393,15 @@ if (!function_exists('layoutkuesioner')) {
             // Initialize schema array for this step
             $new_data = []; // Reset $new_data for each layout entry
 
-            foreach ($pertanyaan as $item) {
+            foreach ($pertanyaan as $index => $item) {
                 // Determine the type of question
                 $type = $item->Tipe->nama;
                 $label = $item->label;
 
                 if ($type === 'text') {
                     $new_data[] = TextInput::make($item->id)
-                        ->label($label)
-                        ->required();
+                        ->label($label);
+                    // ->required();
                 } elseif ($type === 'radio') {
                     $options = [];
 
@@ -414,12 +414,19 @@ if (!function_exists('layoutkuesioner')) {
 
                     $new_data[] = Radio::make($item->id)
                         ->label($label)
-                        ->options($options)
-                        ->required();
+                        ->options($options);
+                    // ->required();
+
+                    // If this is the last item in the pertanyaan collection, add a TextInput
+
                 }
+
                 // Add more cases for other types if necessary
             }
-
+            if ($key == 3 || $key === '3') {
+                $new_data[] = TextInput::make('additional_text_input')
+                    ->label('Additional Input');
+            }
             // Add the step to the layout
             $layout[] = Step::make($key)
                 ->label($value['label'])
