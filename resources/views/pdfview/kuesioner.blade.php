@@ -13,7 +13,8 @@
         }
 
         .logo {
-            width: 100px;
+            width: 250px;
+            height: auto;
         }
 
         .company-info {
@@ -37,15 +38,16 @@
         }
 
 
-        .info-table,
-        .rating-table {
+        .info-table {
             width: 100%;
-            margin-top: 10%;
+            /* margin-top: 10%; */
             border-collapse: collapse;
         }
 
-        .info-table td {
-            padding: 5px;
+        .rating-table {
+            width: 100%;
+            /* margin-top: 10%; */
+            border-collapse: collapse;
         }
 
         .rating-table th,
@@ -74,18 +76,42 @@
             margin-top: 20px;
             text-align: center;
         }
+
+        .border {
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        .border2 {
+            border: 1px solid black;
+            text-align: left;
+        }
+
+        .underline {
+            display: block;
+            width: 100%;
+            border-bottom: 1px solid black;
+            margin-top: 5px;
+        }
     </style>
 </head>
 
 <body>
-    @foreach ($data as $key => $value)
+    @foreach ($data as $keyx => $valuex)
+
+    @php
+    $data_diri = $valuex['Data diri']['text'];
+    $pelayanan = $valuex['Pelayanan']['radio'];
+    $laporan = $valuex['Laporan']['radio'];
+    $kritiksaran = $valuex['Kritik dan saran']['text'][0]['jawaban'];
+    @endphp
     <div class="container">
         <!-- Header -->
         <header class="header">
             <table style="width: 100%;border-bottom: 1px solid black">
                 <tr>
                     <td style="width: 30%;">
-                        <img src="{{asset('images/CBI-logo.png')}}" alt="Company Logo" class="logo">
+                        <img src="{{asset('images/Logo_CBI_2.png')}}" alt="Company Logo" class="logo">
                     </td>
                     <td style="width: auto;">
                         <div class="company-info">
@@ -108,37 +134,145 @@
             <br>
             <p>Partisipasi Bapak/Ibu sangat berharga bagi kami untuk selalu mengedepankan kepuasan pelanggan. Atas kesetian dalam mengisi questionnaire di bawah ini.</p>
             <p>Kami sampaikan terima kasih sebelumnya.</p>
-        </section>
-
-        <table class="info-table">
-            <tr>
-                <td style="text-align: center;border:1px solid black">NO</td>
-                <td colspan="2" style="text-align: center;border:1px solid black">Aspek Penilian</td>
-                <td style="text-align: center;border:1px solid black">Tindakan Kepuasan Terhadap Layanan Kami</td>
-            </tr>
+            <br>
             @php
-            $no = 1;
+            $nama_pelanggan = $data_diri[0]['jawaban'] ?? '-';
             @endphp
-            @foreach ($value as $key1 => $value1)
+            @foreach ($data_diri as $key => $value)
+
+            <table style="width: 100%; margin: 0;">
+                <tr>
+                    <td style="width:20%; margin: 0;">
+                        <p>{{$value['pertanyaan']}} </p>
+                    </td>
+                    <td style="text-align: right;width:5%">
+                        :
+                    </td>
+                    <td>
+                        <p>
+                            {{$value['jawaban']}}
+                        </p>
+                    </td>
+                    <td>
+
+                    </td>
+                </tr>
+            </table>
+
+            @endforeach
+        </section>
+        <section style="padding-top: 10%;">
+            <p>Beri tanda (√) dalam pengisian tabel di bawah ini:</p>
+        </section>
+        <table style="width: 100%;" class="info-table">
             <tr>
-                <td style="border:1px solid black">{{$no++}}</td>
-                <td style="text-align: center;border:1px solid black">{{$key1}}</td>
-                @foreach ($value1 as $key2 => $value2)
-                <td style="border:1px solid black">
-                    @foreach ($value2 as $key3 => $value3)
-                    - {{$value3['pertanyaan']}}<br>
-                    @endforeach
-                </td>
-                <td style="border:1px solid black;">
-                    @foreach ($value2 as $key3 => $value3)
-                    - <span style="margin-top:25px;">{{$value3['jawaban']}}</span> <br>
-                    @endforeach
-                </td>
-                @endforeach
+                <td class=" border" style="width: 5%;" rowspan="3">NO</td>
+                <td class="border" style="width:60%;" rowspan="3">Aspek Penilian</td>
+                <td class="border" style="width: auto;" colspan="4">Tindakan Kepuasan Terhadap Layanan Kami</td>
+            </tr>
+            <tr>
+                <td class="border">Tidak Puas</td>
+                <td class="border">Kurang Puas</td>
+                <td class="border">Puas</td>
+                <td class="border">Sangat Puas</td>
+            </tr>
+            <tr>
+                <td class="border">1</td>
+                <td class="border">2</td>
+                <td class="border">3</td>
+                <td class="border">4</td>
+            </tr>
+
+            <tr>
+                <td class="border" rowspan="8">1</td>
+                <td class="border2" colspan="5" style="font-weight:bold">Laporan Hasil Uji (Report of Analysis)</td>
+
+            </tr>
+            @foreach ($laporan as $key => $value)
+            <tr>
+                <td class="border2">{{$value['pertanyaan']}}</td>
+
+                @if($value['jawaban'] ==='1')
+                <td class="border">√</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                @elseif($value['jawaban'] ==='2')
+                <td class="border">-</td>
+                <td class="border">√</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                @elseif($value['jawaban'] ==='3')
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">√</td>
+                <td class="border">-</td>
+                @elseif($value['jawaban'] ==='4')
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">√</td>
+                @else
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                @endif
+
+            </tr>
+            @endforeach
+            <tr>
+                <td class="border" rowspan="6">2</td>
+                <td class="border2" colspan="5" style="font-weight:bold;">Pelayanan</td>
+
+            </tr>
+            @foreach ($pelayanan as $key => $value)
+            <tr>
+                <td class="border2">{{$value['pertanyaan']}}</td>
+
+                @if($value['jawaban'] ==='1')
+                <td class="border">√</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                @elseif($value['jawaban'] ==='2')
+                <td class="border">-</td>
+                <td class="border">√</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                @elseif($value['jawaban'] ==='3')
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">√</td>
+                <td class="border">-</td>
+                @elseif($value['jawaban'] ==='4')
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">√</td>
+                @else
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                <td class="border">-</td>
+                @endif
+
             </tr>
             @endforeach
 
         </table>
+
+        <section style="padding-top: 10px;">
+            <p>Kritik dan Saran: {{$kritiksaran}} <span class="underline"></span></p>
+            <p><span class="underline"></span></p>
+            <p><span class="underline"></span></p>
+            <p><span class="underline"></span></p>
+            <p><span class="underline"></span></p>
+            <p><span class="underline"></span></p>
+            <p><span class="underline"></span></p>
+
+        </section>
+
 
         <!-- ttd  -->
 
@@ -151,7 +285,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td>(<span style="text-decoration: underline;text-align:end">Nama Pelanggan</span>)</td>
+                    <td style="text-align:center">(<span style="">{{$nama_pelanggan}}</span>)</td>
                 </tr>
             </table>
             <h1 style="font-size: 10px; margin-top: 20px;">

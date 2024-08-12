@@ -1,4 +1,5 @@
 <div>
+
     <div style="background-color: #f0f0f0; padding: 20px; display: flex; align-items: center; justify-content: space-between;">
         <div>
             <h5 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Kuesioner Penilaian Layanan</h5>
@@ -47,15 +48,38 @@
             </g>
         </svg>
     </div>
-    <form wire:submit.prevent="create" class="flex flex-col items-end" id="testing">
+
+    <form wire:submit.prevent="create" class="flex flex-col items-end" id="formContainer">
         {{ $this->form }}
+        <div class="flex justify-center mt-4">
+            <x-filament::modal id="transactionModal">
+                <x-slot name="header">
+                    Anda Yakin akan Mensubmit Data?
+                </x-slot>
+
+                <div class="flex justify-center mt-4">
+                    <div class="inline-flex rounded-md shadow-sm margin-2" role="group">
+                        <button type="button" wire:click="accpetsubmit" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Submit</button>
+                        <button type="button" wire:click="decline" class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Tidak</button>
+                    </div>
+                </div>
+            </x-filament::modal>
+        </div>
     </form>
 
     <x-filament-actions::modals />
+
     <script type="text/javascript">
         document.addEventListener('livewire:init', () => {
             Livewire.on('reload', () => {
                 location.reload(); // Call location.reload() to reload the page
+            });
+
+            Livewire.on('thankyou', () => {
+                // window.location.href = '/thanks';
+                setTimeout(() => {
+                    window.location.href = '/thanks';
+                }, 1200);
             });
         });
 
@@ -79,4 +103,5 @@
             @this.captchaToken = token; // Update Livewire component with token
         }
     </script>
+
 </div>

@@ -36,6 +36,9 @@ Route::get('kuesioner', Kuesionerdata::class);
 // Route::get('kuesioner', [Kuesionerroot::class, 'index'])->middleware([TrackCaptchaFailures::class]);
 Route::get('kuesioner', [Kuesionerroot::class, 'index']);
 Route::get('flush', [TrackSampelController::class, 'unblockIp']);
+Route::get('thanks', function () {
+    return view('pages.utility.thanks');
+});
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])

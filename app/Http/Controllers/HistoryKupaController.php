@@ -938,7 +938,7 @@ class HistoryKupaController extends Controller
         // dd($result);
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
-        $options->set('isRemoteEnabled', true); // Enable loading of remote resources
+        $options->set('isRemoteEnabled', true); //
         $dompdf = new Dompdf($options);
 
         $view = view('pdfview.export_persurat', $result)->render();
@@ -1458,8 +1458,27 @@ class HistoryKupaController extends Controller
             $final_result[$key] = $result_data;
             // dd($result_data);;
         }
-        $pdf = PDF::loadView('pdfview.kuesioner', ['data' => $final_result]);
-        $pdf->set_paper('A3', 'potrait');
-        return $pdf->download($filename . '.pdf');
+        // dd($final_result);
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', true); //
+        $dompdf = new Dompdf($options);
+
+        $view = view('pdfview.kuesioner',  ['data' => $final_result])->render();
+        $dompdf->loadHtml($view);
+
+        // Set paper size and orientation
+        $dompdf->setPaper('A2', 'potrait');
+
+        // Render the PDF
+        $dompdf->render();
+
+
+        $dompdf->stream($filename, ["Attachment" => false]);
+
+        // $pdf = PDF::loadView('pdfview.kuesioner', ['data' => $final_result]);
+        // $pdf->set('isRemoteEnabled', true);
+        // $pdf->set_paper('A3', 'potrait');
+        // return $pdf->stream($filename . '.pdf');
     }
 }
