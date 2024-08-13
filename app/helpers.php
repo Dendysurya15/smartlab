@@ -401,8 +401,8 @@ if (!function_exists('layoutkuesioner')) {
 
                 if ($type === 'text') {
                     $new_data[] = TextInput::make($item->id)
-                        ->label($label)
-                        ->required();
+                        ->label($label);
+                    // ->required();
                 } elseif ($type === 'radio') {
                     $options = [];
 
@@ -415,8 +415,8 @@ if (!function_exists('layoutkuesioner')) {
 
                     $new_data[] = Radio::make($item->id)
                         ->label($label)
-                        ->options($options)
-                        ->required();
+                        ->options($options);
+                    // ->required();
 
                     // If this is the last item in the pertanyaan collection, add a TextInput
 
