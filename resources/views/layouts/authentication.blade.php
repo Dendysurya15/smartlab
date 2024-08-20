@@ -38,17 +38,96 @@
         </a>
 
         <!-- Login Button -->
-        <button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700">
-            Login
-        </button>
+        <label for="my_modal_7" class="btn btn-success text-white">Log in</label>
     </nav>
+    <!-- Open the modal using ID.showModal() method -->
+    <input type="checkbox" id="my_modal_7" class="modal-toggle" />
+    <div class="modal" role="dialog">
+        <div class="modal-box">
 
+            <!-- Modal Header -->
+            <h1 class="text-3xl text-slate-800 dark:text-slate-700 font-bold mb-6">{{ __('Selamat Datang!') }}</h1>
+            <h1 class="italic mb-4">
+                Silahkan masukkan username dan password untuk masuk ke sistem web
+                <span class="text-emerald-600 font-medium">Smart Lab</span>!
+            </h1>
+
+            <!-- Display Session Status -->
+            @if (session('status'))
+            <div class="mb-4 font-medium text-sm text-green-600">
+                {{ session('status') }}
+            </div>
+            @endif
+
+            <!-- Login Form -->
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+                <div class="space-y-4">
+                    <!-- Email Field -->
+                    <div>
+                        <label for="email-unique" class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300">Email</label>
+                        <div class="relative mt-2 rounded-md shadow-sm">
+                            <input
+                                type="text"
+                                name="email"
+                                id="email-unique"
+                                class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-2 ring-inset ring-emerald-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-700 sm:text-sm sm:leading-6"
+                                placeholder="Masukkan Email"
+                                autocomplete="email"
+                                required>
+                        </div>
+                    </div>
+                    <!-- Password Field -->
+                    <div>
+                        <label for="password-unique" class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300">Password</label>
+                        <div class="relative mt-2 rounded-md shadow-sm">
+                            <input
+                                type="password"
+                                name="password"
+                                id="password-unique"
+                                class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-2 ring-inset ring-emerald-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-700 sm:text-sm sm:leading-6"
+                                placeholder="Masukkan Password"
+                                required
+                                autocomplete="current-password">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex items-center justify-between mt-6">
+                    <button type="submit" class="btn btn-outline btn-accent"> {{ __('Masuk') }}</button>
+                </div>
+            </form>
+
+        </div>
+        <label class="modal-backdrop" for="my_modal_7">Close</label>
+    </div>
 
     <main class="bg-white dark:bg-slate-900 h-full mt-16 flex">
         <!-- Content -->
         <div class="w-full md:w-1/2 flex items-center justify-center">
             <div class="max-w-sm mx-auto w-full px-4 py-8">
-                {{ $slot }}
+                <div class="w-full max-w-sm mx-auto px-4 py-8">
+                    <h1 class="text-3xl text-slate-800 dark:text-slate-100 font-bold mb-6">{{ __('Track Progress
+                            Sampel')
+                            }}</h1>
+                    <h1 class="italic mb-4">Masukkan kode unik sistem untuk melacak progress sampel anda !
+                    </h1>
+
+                    {{ $slot }}
+                    <div class="mt-5" id="result" style="display: none">
+                        <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                            <ul id="progress-list" class="space-y-4 text-left text-gray-500 dark:text-gray-400">
+
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 mb-2 text-sm text-slate-600 font-medium italic" id="result_empty" style="display: none">Tidak menemukan sampel dengan kode <span id="kode_track_failed" class="text-red-600"></span>
+
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -119,15 +198,7 @@
 
     @filamentScripts
     @livewireScripts
-    <script>
-        function openModal() {
-            document.getElementById('login-modal').classList.remove('hidden');
-        }
 
-        function closeModal() {
-            document.getElementById('login-modal').classList.add('hidden');
-        }
-    </script>
 
 </body>
 
