@@ -23,15 +23,17 @@ class Trackingprogres extends Component
         // dd($this->progressid);
         $kode_input = $this->progressid;
 
-        $query = TrackSampel::where('kode_track', $kode_input)->first();
+        // dd($kode_input);
 
+        $query = TrackSampel::where('kode_track', $kode_input)->first();
+        // dd($query);
         if ($query) {
 
             $queryProgressPengerjaan = ProgressPengerjaan::pluck('nama', 'id')->toArray();
             $progress_id = $query->progress;
             $last_updates = explode('$', $query->last_update);
 
-
+            // dd($last_updates);
             // Assuming $progres is your array of progress stages
             $result = array_filter($queryProgressPengerjaan, function ($key) use ($progress_id) {
                 return $key <= $progress_id;

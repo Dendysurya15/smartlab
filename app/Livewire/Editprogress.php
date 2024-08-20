@@ -58,6 +58,7 @@ class Editprogress extends Component implements HasForms
     public $foto_sampel;
     public $kode_sampel;
     public $Konfirmasi;
+    public $status_progres;
     public ?array $data = [];
 
     public function mount(): void
@@ -91,6 +92,8 @@ class Editprogress extends Component implements HasForms
         $img = $this->opt->foto_sampel;
         $img = explode('%', $img);
         $this->foto_sampel = $img;
+        $this->status_progres = json_decode($this->opt->last_update, true);
+        // dd($this->status_progres);
         $this->form->fill();
     }
     public function form(Form $form): Form
@@ -138,7 +141,7 @@ class Editprogress extends Component implements HasForms
                     ->label('Status Pengerjaan')
                     ->required()
                     ->default($this->opt->progress)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options(function () {
                         $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
                         // dd($jenisSampel);
@@ -159,7 +162,7 @@ class Editprogress extends Component implements HasForms
                     ->label('Asal Sampel')
                     ->required()
                     ->default($this->opt->asal_sampel)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options([
                         'Internal' => 'Internal',
                         'Eksternal' => 'Eksternal',
@@ -168,24 +171,24 @@ class Editprogress extends Component implements HasForms
                     ->label('Tanggal Memo')
                     ->required()
                     ->default($this->opt->tanggal_memo)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->seconds(true),
                 DatePicker::make('TanggalTerima')
                     ->label('Tanggal Terima')
                     ->required()
                     ->default($this->opt->tanggal_terima)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->format('Y-m-d H:m:s'),
                 DatePicker::make('EstimasiKupa')
                     ->label('Estimasi Kupa')
                     ->required()
                     ->default($this->opt->estimasi)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->format('Y-m-d H:m:s'),
                 TextInput::make('NomorKupa')
                     ->numeric()
                     ->default($this->opt->nomor_kupa)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->label('Nomor Kupa'),
                 TextInput::make('JumlahSampel')
                     ->label('Jumlah Sampel')
@@ -193,7 +196,7 @@ class Editprogress extends Component implements HasForms
                     ->minValue(1)
                     ->default($this->opt->jumlah_sampel)
                     ->required()
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxValue(1000)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $set('lab_kiri', '');
@@ -206,14 +209,14 @@ class Editprogress extends Component implements HasForms
                     ->required()
                     ->default($this->opt->nama_pengirim)
                     ->minLength(2)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 TextInput::make('NamaDep')
                     ->label('Nama Departemen')
                     ->minLength(2)
                     ->required()
                     ->default($this->opt->departemen)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 Textarea::make('NamaKodeSampel')
                     ->label('Nama Kode Sampel')
@@ -238,8 +241,8 @@ class Editprogress extends Component implements HasForms
                             $set('setoption_costumparams', $result);
                         }
                     })
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
-                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->hidden(fn(Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255),
 
                 Textarea::make('NamaKodeSampeljamak')
@@ -272,22 +275,22 @@ class Editprogress extends Component implements HasForms
                             $set('setoption_costumparams', $result);
                         }
                     })
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
-                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
+                    ->hidden(fn(Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
 
                 TextInput::make('KemasanSampel')
                     ->label('Kemasan Sampel')
                     ->minLength(2)
                     ->default($this->opt->kemasan_sampel)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->required()
                     ->maxLength(255),
                 Select::make('KondisiSampel')
                     ->label('Kondisi Sampel')
                     ->required()
                     ->default($this->opt->kondisi_sampel)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options([
                         'Normal' => 'Normal',
                         'Abnormal' => 'Abnormal',
@@ -298,7 +301,7 @@ class Editprogress extends Component implements HasForms
                         ->minLength(1)
                         ->required()
                         ->default($this->labkiri)
-                        ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                        ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
@@ -320,14 +323,14 @@ class Editprogress extends Component implements HasForms
                         ->minLength(1)
                         ->required()
                         ->default($this->labkanan)
-                        ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                        ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
                             return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
                         })
                         ->maxLength(255)
-                        ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
+                        ->hidden(fn(Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
                 ])->from('md'),
 
                 TextInput::make('NomorSurat')
@@ -335,20 +338,20 @@ class Editprogress extends Component implements HasForms
                     ->minLength(2)
                     ->required()
                     ->default($this->opt->nomor_surat)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 TextInput::make('Tujuan')
                     ->label('Tujuan')
                     ->minLength(2)
                     ->required()
                     ->default($this->opt->tujuan)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 Select::make('SkalaPrioritas')
                     ->label('Skala Prioritas Sampel')
                     ->required()
                     ->default($this->opt->skala_prioritas)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options([
                         'Normal' => 'Normal',
                         'Tinggi' => 'Tinggi',
@@ -356,7 +359,7 @@ class Editprogress extends Component implements HasForms
 
                 CheckboxList::make('Peralatan')
                     ->label('Peralatan')
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->options([
                         'Personel' => 'Personel',
                         'Alat' => 'Alat',
@@ -372,19 +375,19 @@ class Editprogress extends Component implements HasForms
                 TextInput::make('petugas_preperasi')
                     ->label('Petugas Preperasi')
                     ->minLength(2)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->default($this->opt->petugas_preparasi)
                     ->maxLength(255),
                 TextInput::make('penyelia')
                     ->label('Penyelia')
                     ->minLength(2)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->default($this->opt->penyelia)
                     ->maxLength(255),
                 TextInput::make('no_document')
                     ->label('No Dokumen Kupa')
                     ->minLength(2)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->default(function () {
                         $data = $this->opt->no_doc;
 
@@ -425,12 +428,12 @@ class Editprogress extends Component implements HasForms
                             return incrementVersion_identitas($laststring);
                         }
                     })
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
                 TextInput::make('nama_formulir')
                     ->label('Nama Formulir')
                     ->minLength(2)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->default(function () {
                         $data = $this->opt->formulir;
 
@@ -447,14 +450,14 @@ class Editprogress extends Component implements HasForms
 
                 TextInput::make('Emaiilto')
                     ->label('Email To')
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
                     ->default($this->opt->emailTo)
                     ->required()
                     ->maxLength(255),
                 TextInput::make('Emaiilcc')
                     ->label('Email Cc')
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
                     ->default($this->opt->emailCc)
                     ->maxLength(255),
@@ -462,7 +465,7 @@ class Editprogress extends Component implements HasForms
                     ->numeric()
                     ->default($this->opt->discount)
                     ->minLength(0)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(2)
                     ->prefix('%'),
 
@@ -471,7 +474,7 @@ class Editprogress extends Component implements HasForms
                     ->default($this->Konfirmasi)
                     ->label('Konfirmasi(Langsung / Telepon / Email)')
                     ->onColor('success')
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->offColor('danger'),
                 Section::make()
                     ->schema([
@@ -484,7 +487,7 @@ class Editprogress extends Component implements HasForms
 
                                     ->onlyCountries(['tr', 'us', 'gb', 'id']),
                             ])
-                            ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                            ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                             ->default(function () {
                                 $newData = [];
                                 $nomerhp = explode(',', $this->opt->no_hp);
@@ -545,7 +548,7 @@ class Editprogress extends Component implements HasForms
                                             })
                                             ->numeric()
                                             ->minValue(1)
-                                            ->required(fn ($get): bool => !is_null($get('status')) ? true : false)
+                                            ->required(fn($get): bool => !is_null($get('status')) ? true : false)
                                             ->maxValue(1000)
                                             ->disabled(function ($get) {
                                                 return is_null($get('status'));
@@ -663,7 +666,7 @@ class Editprogress extends Component implements HasForms
                 Textarea::make('catatan')
                     ->rows(10)
                     ->default($this->opt->catatan)
-                    ->disabled(fn (Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->columnSpanFull(),
 
                 Section::make('Upload')
@@ -745,9 +748,33 @@ class Editprogress extends Component implements HasForms
     {
         // dd($this->form->getState());
         $form = $this->form->getState();
-        $current = Carbon::now();
         $randomCode = generateRandomCode();
-        $current = $current->format('Y-m-d H:i:s');
+        $date = Carbon::now();
+        $date = $date->format('Y-m-d H:i:s');
+        $progress = $this->status_progres;
+        // dd($progress);
+        $current = [
+            'jenis_sampel' => $this->opt->jenis_sampel,
+            'progress' => $form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan'],
+            'updated_at' => $date
+        ];
+
+        // Check if the progress already exists in the $progress array
+        $exists = false;
+        foreach ($progress as $item) {
+            if ($item['jenis_sampel'] == $current['jenis_sampel'] && $item['progress'] == $current['progress']) {
+                $exists = true;
+                break;
+            }
+        }
+
+        // Add the $current array to $progress only if it doesn't already exist
+        if (!$exists) {
+            $progress[] = $current;
+        }
+
+        // dd($progress, $current, $progress);
+        $current = json_encode($progress);
         $userId = 1;
         if (auth()->check()) {
             $user = auth()->user();
@@ -795,9 +822,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->estimasi = $form['EstimasiKupa'];
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
-                if ($form['status_pengerjaan'] !== $this->opt->progress) {
-                    $trackSampel->last_update = $lastUpdate;
-                }
+                $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
                 $combinedNomorHp = implode(',', $nomorHpArray);
@@ -882,16 +907,11 @@ class Editprogress extends Component implements HasForms
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
-                Mail::to($emailAddresses)
-                    ->cc($emailcc)
-                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                // Mail::to($emailAddresses)
+                //     ->cc($emailcc)
+                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
 
-                $dataarr = "$greeting\n"
-                    . "Yth. Pelanggan Setia Lab CBI,\n"
-                    . "Sampel anda telah kami update dengan no surat *{$form['NomorSurat']}*.\n"
-                    . "Progress saat ini: *$getprogress*\n"
-                    . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
-                    . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
+
                 $trackSampel->save();
 
                 DB::commit();
@@ -905,6 +925,8 @@ class Editprogress extends Component implements HasForms
                     ->color('success')
                     ->success()
                     ->send();
+
+                $this->dispatch('refresh-form');
             } catch (\Exception $e) {
                 DB::rollBack();
 
@@ -966,6 +988,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Waiting Admin Approval';
+                $trackSampel->last_update = $current;
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
                     $filename = '';
@@ -1046,16 +1069,10 @@ class Editprogress extends Component implements HasForms
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
 
-                Mail::to($emailAddresses)
-                    ->cc($emailcc)
-                    ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                // Mail::to($emailAddresses)
+                //     ->cc($emailcc)
+                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
 
-                $dataarr = "$greeting\n"
-                    . "Yth. Pelanggan Setia Lab CBI,\n"
-                    . "Sampel anda telah kami terima dengan no surat *{$form['NomorSurat']}*.\n"
-                    . "Progress saat ini: *$getprogress*\n"
-                    . "Progress anda dapat dilihat di website https://smartlab.srs-ssms.com/tracking_sampel dengan kode tracking sample : *$randomCode*\n"
-                    . "Terima kasih telah mempercayakan sampel anda untuk dianalisa di Lab kami.";
                 $trackSampel->save();
 
                 DB::commit();

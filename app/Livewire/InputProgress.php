@@ -127,14 +127,14 @@ class InputProgress extends Component implements HasForms
                         return is_null($get('Jenis_Sampel'));
                     })
 
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->options(function (Get $get) {
                         // dd($state);
                         return $get('progressOpt');
                     }),
                 Select::make('Asalampel')
                     ->label('Asal Sampel')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->options([
                         'Internal' => 'Internal',
                         'Eksternal' => 'Eksternal',
@@ -142,7 +142,7 @@ class InputProgress extends Component implements HasForms
                     ->live(debounce: 500),
                 DateTimePicker::make('TanggalMemo')
                     ->label('Tanggal Memo')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->default(function (Get $get, Set $set) {
                         $date = now();
 
@@ -152,7 +152,7 @@ class InputProgress extends Component implements HasForms
                     ->seconds(true),
                 DatePicker::make('TanggalTerima')
                     ->label('Tanggal Terima')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->default(function (Get $get, Set $set) {
                         // $date = '23-04-1997';
                         $date = $get('tanggalnowmemo');
@@ -172,18 +172,18 @@ class InputProgress extends Component implements HasForms
                     ->format('Y-m-d H:m:s'),
                 DatePicker::make('EstimasiKupa')
                     ->label('Estimasi Kupa')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->format('Y-m-d H:m:s'),
                 TextInput::make('NomorKupa')
                     ->numeric()
                     ->minValue(1)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->label('Nomor Kupa'),
                 TextInput::make('JumlahSampel')
                     ->label('Jumlah Sampel')
                     ->numeric()
                     ->minValue(1)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $get('Jenis_Sampel'))->orderBy('id', 'desc')->first();
 
@@ -215,19 +215,19 @@ class InputProgress extends Component implements HasForms
                     ->live(debounce: 500),
                 TextInput::make('NamaPengirim')
                     ->label('Nama Pengirim')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->minLength(2)
                     ->maxLength(255),
                 TextInput::make('NamaDep')
                     ->label('Nama Departemen')
                     ->minLength(2)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 TextInput::make('NamaKodeSampel')
                     ->label('Nama Kode Sampel')
                     ->minLength(2)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
-                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->hidden(fn(Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? false : true)
                     ->maxLength(255)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
@@ -256,7 +256,7 @@ class InputProgress extends Component implements HasForms
                     ->live(debounce: 500),
                 Textarea::make('NamaKodeSampeljamak')
                     ->label('Nama Kode Sampel')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
                     ->autosize()
                     ->live(debounce: 500)
@@ -284,16 +284,16 @@ class InputProgress extends Component implements HasForms
                             $set('setoption_costumparams', $result);
                         }
                     })
-                    ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
+                    ->hidden(fn(Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
 
                 TextInput::make('KemasanSampel')
                     ->label('Kemasan Sampel')
                     ->minLength(2)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 Select::make('KondisiSampel')
                     ->label('Kondisi Sampel')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->options([
                         'Normal' => 'Normal',
                         'Abnormal' => 'Abnormal',
@@ -302,7 +302,7 @@ class InputProgress extends Component implements HasForms
                     TextInput::make('lab_kiri')
                         ->label('Nomor Lab')
                         ->minLength(1)
-                        ->required(fn (Get $get): bool => $get('drafting') !== true)
+                        ->required(fn(Get $get): bool => $get('drafting') !== true)
                         ->prefix(function (Get $get, Set $set) {
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
@@ -321,14 +321,14 @@ class InputProgress extends Component implements HasForms
                     TextInput::make('lab_kanan')
                         ->label('Nomor Lab Kanan')
                         ->minLength(1)
-                        ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                        ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                         ->prefix(function (Get $get) {
                             // dd($get('preflab'));
                             $lastTwoDigitsOfYear = Carbon::now()->format('y');
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
                         ->maxLength(255)
-                        ->hidden(fn (Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
+                        ->hidden(fn(Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
                 ])->from('md'),
 
                 TextInput::make('NomorSurat')
@@ -340,11 +340,11 @@ class InputProgress extends Component implements HasForms
                 TextInput::make('Tujuan')
                     ->label('Tujuan')
                     ->minLength(2)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 Select::make('SkalaPrioritas')
                     ->label('Skala Prioritas Sampel')
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->options([
                         'Normal' => 'Normal',
                         'Tinggi' => 'Tinggi',
@@ -365,12 +365,12 @@ class InputProgress extends Component implements HasForms
                 TextInput::make('petugas_preperasi')
                     ->label('Petugas Preperasi')
                     ->minLength(2)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 TextInput::make('penyelia')
                     ->label('Penyelia')
                     ->minLength(2)
-                    ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->maxLength(255),
                 TextInput::make('no_document')
                     ->label('No Dokumen Kupa')
@@ -391,7 +391,7 @@ class InputProgress extends Component implements HasForms
                         TextInput::make('Emaiilto')
                             ->label('Email To')
                             ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
-                            ->required(fn (Get $get): bool => $get('drafting') !== True ? True : false)
+                            ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                             ->maxLength(255),
                         TextInput::make('Emaiilcc')
                             ->label('Email Cc')
@@ -434,7 +434,7 @@ class InputProgress extends Component implements HasForms
                                 Grid::make(5)
                                     ->schema([
                                         Select::make('status')
-                                            ->options(fn ($get) => $get('../../parametersAnal') ?: session()->get('parametersAnal') ?: [])
+                                            ->options(fn($get) => $get('../../parametersAnal') ?: session()->get('parametersAnal') ?: [])
                                             // ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
                                             ->afterStateUpdated(function ($set, $state) {
                                                 $params = ParameterAnalisis::find($state);
@@ -459,7 +459,7 @@ class InputProgress extends Component implements HasForms
                                                 }
                                             })
                                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                            ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
+                                            ->required(fn(Get $get): bool => $get('../../drafting') !== True ? True : false)
                                             ->live(debounce: 500),
                                         TextInput::make('total_sample')
                                             ->afterStateUpdated(function (Get $get, Set $set) {
@@ -472,8 +472,8 @@ class InputProgress extends Component implements HasForms
                                             ->disabled(function ($get) {
                                                 return is_null($get('parametersdata'));
                                             })
-                                            ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
-                                            ->live(true),
+                                            ->required(fn(Get $get): bool => $get('../../drafting') !== True ? True : false)
+                                            ->live(debounce: 500),
                                         TextInput::make('parametersdata')
                                             ->readOnly()
                                             ->disabled(function ($get) {
@@ -519,14 +519,14 @@ class InputProgress extends Component implements HasForms
                                                             return true;
                                                         }
                                                     })
-                                                    ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
+                                                    ->required(fn(Get $get): bool => $get('../../drafting') !== True ? True : false)
                                             ])
                                             ->collapsed(),
                                     ])
 
                             ])
                             ->deletable(true)
-                            ->required(fn (Get $get): bool => $get('../../drafting') !== True ? True : false)
+                            ->required(fn(Get $get): bool => $get('../../drafting') !== True ? True : false)
                             ->columnSpanFull()
                     ])->columns(4),
                 Textarea::make('catatan')
@@ -585,9 +585,21 @@ class InputProgress extends Component implements HasForms
 
 
         $form = $this->form->getState();
-        $current = Carbon::now();
+
         $randomCode = generateRandomCode();
-        $current = $current->format('Y-m-d H:i:s');
+
+
+        // dd($form);
+        $date = Carbon::now();
+        $date = $date->format('Y-m-d H:i:s');
+        $current[] = [
+            'jenis_sampel' => $form['Jenis_Sampel'],
+            'progress' => $form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan'],
+            'updated_at' => $date
+        ];
+        // dd($current);
+        $current = json_encode($current);
+
         $userId = 1;
         if (auth()->check()) {
             $user = auth()->user();
