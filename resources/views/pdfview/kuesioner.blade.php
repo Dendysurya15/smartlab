@@ -283,7 +283,7 @@
             <table style="width: 100%;margin-top: 20px;">
                 <tr>
                     <td style="width: 70%;"></td>
-                    <td style="text-align:left;vertical-align:top;border-left:none;border-right:none">Hormat Kami,</td>
+                    <td style="text-align:left;vertical-align:top;border-left:none;border-right:none">Hormat Kami,{{$datetime}}</td>
                 </tr>
                 <tr>
                     <td style="width: 70%;"></td>
@@ -293,7 +293,7 @@
                 </tr>
                 <tr>
                     <td style="width: 70%;"></td>
-                    <td style="text-align:center;border-bottom:1px solid black"><span style="font-size: 10px;">{{$datetime}}</span></td>
+                    <td style="text-align:center;border-bottom:1px solid black"><span style="font-size: 10px;"></span></td>
                 </tr>
                 <tr>
                     <td style="width: 70%;"></td>
