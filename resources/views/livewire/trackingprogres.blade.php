@@ -20,23 +20,57 @@
             </button>
         </div>
     </form>
-    <div id="progress-list">
+    <div id="progress-list" class="max-h-[400px] overflow-y-auto p-4 border border-gray-200 rounded-lg bg-white">
         @if ($resultData !== null && $resultData !== 'kosong')
-        <div class="max-w-sm p-6 mt-3 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-            @foreach ($resultData as $key => $value)
-            <div class="mb-2">
-                <h5 class="text-1xl font-bold tracking-tight text-gray-900 dark:text-white">{{$value['text']}} ✅</h5>
-                <p class="font-normal text-sm text-gray-700 dark:text-gray-400">{{$value['date']}} ❕</p>
-            </div>
-            @endforeach
+        @foreach ($resultData as $key => $value)
+        <div class="mb-2">
+            <h1 class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
+                {{$value['text']}}
+                @if ($value['status'] === 'checked')
+                ✅
+                @else
+                <span class="text-gray-400 text-sm">Skipped</span>
+                @endif
+            </h1>
+            <p class="font-normal text-sm text-gray-700 dark:text-gray-400">
+                @if ($value['status'] === 'checked')
+                {{ $value['time'] ?? ' -❕' }}
+                @else
+                -
+                @endif
+            </p>
         </div>
+        @endforeach
         @elseif ($resultData === 'kosong')
         <div class="mt-4">
-            <h5 class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">Kode Sampel Tidak Valid ❌</h5>
-            <p class="font-normal text-sm text-gray-700 dark:text-gray-400">Harap periksa dan cek kembali kode yang Anda masukkan.</p>
+            <h5 class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                Kode Sampel Tidak Valid ❌
+            </h5>
+            <p class="font-normal text-sm text-gray-700 dark:text-gray-400">
+                Harap periksa dan cek kembali kode yang Anda masukkan.
+            </p>
         </div>
-
         @endif
-
     </div>
+    {!! htmlScriptTagJsApi([
+    'callback_then' => 'callbackThen',
+    'callback_catch' => 'callbackCatch',
+    ]) !!}
+    <script>
+        function callbackThen(response) {
+            response.json().then(function(data) {
+                if (data.success && data.score > 0.5) {
+                    // console.log('valid recaptcha');
+                    @this.captchaToken = data.score;
+                } else {
+                    @this.captchaToken = data.score;
+                }
+            });
+        }
+
+        function callbackCatch(error) {
+            console.error('Error:', error);
+        }
+    </script>
+
 </div>
