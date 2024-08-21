@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Events\Smartlabsnotification;
 use App\Mail\EmailPelanggan;
 use App\Models\JenisSampel;
 use App\Models\Progress;
@@ -890,15 +891,19 @@ class Editprogress extends Component implements HasForms
                 if ($form['nomerhpuser'] !== []) {
                     foreach ($form['nomerhpuser'] as $data) {
                         $dataToInsert2[] = [
-                            'no_surat' => $form['NomorSurat'],
+                            'no_surat' => $this->opt->nomor_surat,
+                            'nama_departemen' => $this->opt->departemen,
+                            'jenis_sampel' => $jenis_sampel_final,
+                            'jumlah_sampel' => $this->opt->jumlah_sampel,
+                            'progresss' => $progress->nama,
                             'kodesample' => $this->opt->kode_track,
                             'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                            'progres' => $getprogress,
                             'type' => 'update',
                         ];
                     }
                     // dd($dataToInsert);
-                    SendMsg::insert($dataToInsert2);
+                    // SendMsg::insert($dataToInsert2);
+                    event(new Smartlabsnotification($dataToInsert2));
                 }
 
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
@@ -1028,28 +1033,22 @@ class Editprogress extends Component implements HasForms
 
                 $getprogress = Progress::pluck('nama')->first();
 
-
-                // $nohp = formatPhoneNumber($form['NomorHp']);
-
-                // SendMsg::insert([
-                //     'no_surat' => $form['NomorSurat'],
-                //     'kodesample' => $randomCode,
-                //     'penerima' => $nohp,
-                //     'progres' => $getprogress,
-                //     'type' => 'input',
-                // ]);
                 if ($form['nomerhpuser'] !== []) {
                     foreach ($form['nomerhpuser'] as $data) {
                         $dataToInsert2[] = [
                             'no_surat' => $form['NomorSurat'],
+                            'nama_departemen' => $form['NamaDep'],
+                            'jenis_sampel' => $jenis_sampel_final,
+                            'jumlah_sampel' => $form['JumlahSampel'],
+                            'progresss' => $progress->nama,
                             'kodesample' => $this->opt->kode_track,
                             'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                            'progres' => $getprogress,
                             'type' => 'input',
                         ];
                     }
                     // dd($dataToInsert);
-                    SendMsg::insert($dataToInsert2);
+                    // SendMsg::insert($dataToInsert2);
+                    event(new Smartlabsnotification($dataToInsert2));
                 }
 
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;

@@ -60,6 +60,12 @@
     </div>
     @filamentScripts
     @livewireScripts
+    <script type="module">
+        channel.bind('Smartlabsnotification', function(data) {
+            console.log(data);
+
+        });
+    </script>
 </body>
 
 </html>

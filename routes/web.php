@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\Smartlabsnotification;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
@@ -44,9 +45,16 @@ Route::get('kuesioner', Kuesionerdata::class);
 // Route::get('kuesioner', [Kuesionerroot::class, 'index'])->middleware([TrackCaptchaFailures::class]);
 Route::get('kuesioner', [Kuesionerroot::class, 'index']);
 Route::get('flush', [TrackSampelController::class, 'unblockIp']);
-Route::get('thanks', function () {
-    return view('pages.utility.thanks');
-});
+// Route::get('testingsock', function () {
+//     $dataToInsert2[] = [
+//         'no_surat' => 'test',
+//         'kodesample' =>  'test',
+//         'penerima' =>   'test',
+//         'progres' => 'test',
+//         'type' => 'input',
+//     ];
+//     event(new Smartlabsnotification($dataToInsert2));
+// });
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])

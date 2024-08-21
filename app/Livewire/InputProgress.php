@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Events\Smartlabsnotification;
 use App\Mail\EmailPelanggan;
 use App\Models\JenisSampel;
 use App\Models\Progress;
@@ -697,6 +698,9 @@ class InputProgress extends Component implements HasForms
 
 
 
+                $jenis_sampel_final = JenisSampel::where('id', (int) $form['Jenis_Sampel'])->pluck('nama')->first();
+                $progress_state =  $form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan'];
+                $progress = Progress::find($progress_state);
 
                 // $nohp = formatPhoneNumber($form['nomerhpuser']);
                 // dd($form['nomerhpuser']);
@@ -708,23 +712,26 @@ class InputProgress extends Component implements HasForms
                         if ($nomor_hp !== 'Error') {
                             $dataToInsert2[] = [
                                 'no_surat' => $form['NomorSurat'],
+                                'nama_departemen' => $form['NamaDep'],
+                                'jenis_sampel' => $jenis_sampel_final,
+                                'jumlah_sampel' => $form['JumlahSampel'],
+                                'progresss' => $progress->nama,
                                 'kodesample' => $randomCode,
                                 'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                                'progres' => $getprogress,
                                 'type' => 'input',
                             ];
                         }
                     }
                     // dd($dataToInsert);
                     if (!empty($dataToInsert)) {
-                        SendMsg::insert($dataToInsert2);
+                        // dd($dataToInsert2);
+                        event(new Smartlabsnotification($dataToInsert2));
+                        // SendMsg::insert($dataToInsert2);
                     }
                 }
+
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
-                $jenis_sampel_final = JenisSampel::where('id', (int) $form['Jenis_Sampel'])->pluck('nama')->first();
-                $progress_state =  $form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan'];
-                $progress = Progress::find($progress_state);
 
                 // dd($progress, $progress_state);
                 if ($emailAddresses !== null) {

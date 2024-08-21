@@ -23,6 +23,7 @@ use App\Models\ParameterAnalisis;
 use App\Models\Resultkuesioner;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use NumberToWords\NumberToWords;
 
 class HistoryKupaController extends Controller
 {
@@ -310,6 +311,7 @@ class HistoryKupaController extends Controller
                             $result[$key][$key1][$keysx]['Tanggal_Rilis_Sertifikat'] = '-';
                             $result[$key][$key1][$keysx]['No_sertifikat'] = '-';
                             $result[$key][$key1][$keysx]['total'] = ($index == 0) ? $total_akhir : 'null';
+                            $result[$key][$key1][$keysx]['total_string'] = ($index == 0) ? NumberToWords::transformNumber('id', $hargatotal) : 'null';
                         }
                     }
                 }
