@@ -2,6 +2,8 @@
 
 namespace App\Mail;
 
+use App\Models\JenisSampel;
+use App\Models\Progress;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,22 +16,24 @@ class EmailPelanggan extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $tgl;
     public $nomor_surat;
-    public $nomorlab;
-    public $randomCode;
-    public $nomorserif;
+    public $departement;
+    public $jenis_sampel;
+    public $jumlah_sampel;
+    public $progress;
+    public $kode_tracking_sampel;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($tgl, $nomor_surat, $nomorlab, $randomCode, $nomorserif)
+    public function __construct($nomor_surat, $departement, $jenis_sampel, $jumlah_sampel, $progress, $kode_tracking_sampel)
     {
-        $this->tgl = $tgl;
         $this->nomor_surat = $nomor_surat;
-        $this->nomorlab = $nomorlab;
-        $this->randomCode = $randomCode;
-        $this->nomorserif = $nomorserif;
+        $this->departement = $departement;
+        $this->jenis_sampel = $jenis_sampel;
+        $this->jumlah_sampel = $jumlah_sampel;
+        $this->progress = $progress;
+        $this->kode_tracking_sampel = $kode_tracking_sampel;
     }
 
     /**
@@ -40,19 +44,15 @@ class EmailPelanggan extends Mailable
     public function build()
     {
 
-        $datenow = Carbon::now();
-
-        // Format the date as "dd-mm-yy"
-        $formattedDate = $datenow->format('d-m-y');
-
 
         return $this->view('layouts.email', [
-            'tanggal' => $this->tgl,
-            'nomorsurat' => $this->nomor_surat,
-            'nomorlab' => $this->nomorlab,
-            'track' => $this->randomCode,
-            'nomorserif' => $this->nomorserif,
-            'tanggalkirim' => $formattedDate,
+            'nomor_surat' => $this->nomor_surat,
+            'departement' => $this->departement,
+            'jenis_sampel' => $this->jenis_sampel,
+            'jumlah_sampel' => $this->jumlah_sampel,
+            'progress' => $this->progress,
+            'kode_tracking_sampel' => $this->kode_tracking_sampel,
+            'tanggal_surat' => Carbon::now()->format('d-m-Y'),
         ])
             ->subject('Hasil Analisa Surat:' . ' ' . $this->nomor_surat);
     }

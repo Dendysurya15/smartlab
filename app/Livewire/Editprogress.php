@@ -153,7 +153,7 @@ class Editprogress extends Component implements HasForms
 
                         foreach ($progressArray as $key => $value) {
                             $option =  Progress::find($value);
-                            $getdata[$value] = $option->nama;
+                            $getdata[$option->id] = $option->nama;
                         }
                         // dd($getdata);
                         return $getdata;
@@ -277,6 +277,7 @@ class Editprogress extends Component implements HasForms
                     })
                     ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->hidden(fn(Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false),
 
                 TextInput::make('KemasanSampel')
@@ -511,6 +512,7 @@ class Editprogress extends Component implements HasForms
                     ->schema([
                         Repeater::make('repeater')
                             ->label('Parameter')
+                            ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                             ->schema([
                                 Grid::make(5)
                                     ->schema([
@@ -755,9 +757,10 @@ class Editprogress extends Component implements HasForms
         // dd($progress);
         $current = [
             'jenis_sampel' => $this->opt->jenis_sampel,
-            'progress' => $form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan'],
+            'progress' => ($form['status_pengerjaan'] ?? "0") == "0" ? "4" : ($form['status_pengerjaan'] ?? null),
             'updated_at' => $date
         ];
+
 
         // Check if the progress already exists in the $progress array
         $exists = false;
@@ -775,13 +778,18 @@ class Editprogress extends Component implements HasForms
 
         // dd($progress, $current, $progress);
         $current = json_encode($progress);
+        $jenis_sampel_final = JenisSampel::where('id', (int) $this->opt->jenis_sampel)->pluck('nama')->first();
+        $progress_state = isset($form['status_pengerjaan']) ? ($form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan']) : null;
+
+        $progress = Progress::find($progress_state);
+
         $userId = 1;
         if (auth()->check()) {
             $user = auth()->user();
             $userId = $user->id;
         }
 
-        $kodesampeldata = $form['NamaKodeSampeljamak'] ?? $form['NamaKodeSampel'];
+        $kodesampeldata = $form['NamaKodeSampeljamak'] ?? $form['NamaKodeSampel'] ?? null;
 
         // dd($kodesampeldata);
         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($kodesampeldata));
@@ -893,23 +901,14 @@ class Editprogress extends Component implements HasForms
                     SendMsg::insert($dataToInsert2);
                 }
 
-                $now = Carbon::now();
-
-                if ($now->hour >= 5 && $now->hour < 12) {
-                    $greeting = "Selamat Pagi";
-                } elseif ($now->hour >= 12 && $now->hour < 18) {
-                    $greeting = "Selamat Siang";
-                } else {
-                    $greeting = "Selamat Malam";
-                }
-                $nomorserif = '-';
-
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
-                // Mail::to($emailAddresses)
-                //     ->cc($emailcc)
-                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+
+                Mail::to($emailAddresses)
+                    ->cc($emailcc)
+                    // ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                    ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track));
 
 
                 $trackSampel->save();
@@ -1052,26 +1051,14 @@ class Editprogress extends Component implements HasForms
                     SendMsg::insert($dataToInsert2);
                 }
 
-                $now = Carbon::now();
-
-                // Determine the greeting based on the time of day
-                if ($now->hour >= 5 && $now->hour < 12) {
-                    $greeting = "Selamat Pagi";
-                } elseif ($now->hour >= 12 && $now->hour < 18) {
-                    $greeting = "Selamat Siang";
-                } else {
-                    $greeting = "Selamat Malam";
-                }
-                $nomorserif = '-';
-
-
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
 
-                // Mail::to($emailAddresses)
-                //     ->cc($emailcc)
-                //     ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                Mail::to($emailAddresses)
+                    ->cc($emailcc)
+                    // ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                    ->send(new EmailPelanggan($this->opt->nomor_surat, $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $this->opt->kode_track));
 
                 $trackSampel->save();
 

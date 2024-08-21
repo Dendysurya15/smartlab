@@ -112,7 +112,7 @@ class InputProgress extends Component implements HasForms
 
                             foreach ($progressArray as $key => $value) {
                                 $option =  Progress::find($value);
-                                $getdata[] = $option->nama;
+                                $getdata[$option->id] = $option->nama;
                             }
 
                             // dd($getdata);
@@ -253,13 +253,13 @@ class InputProgress extends Component implements HasForms
                             $set('setoption_costumparams', $result);
                         }
                     })
-                    ->live(debounce: 500),
+                    ->live(debounce: 1500),
                 Textarea::make('NamaKodeSampeljamak')
                     ->label('Nama Kode Sampel')
                     ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->placeholder('Harap Pastikan hanya paste satu baris saja dari excel.')
                     ->autosize()
-                    ->live(debounce: 500)
+                    ->live(debounce: 1500)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($state));
                         $array = explode('$', $NamaKodeSampeljamak);
@@ -719,26 +719,18 @@ class InputProgress extends Component implements HasForms
                         SendMsg::insert($dataToInsert2);
                     }
                 }
-
-                $now = Carbon::now();
-
-                // Determine the greeting based on the time of day
-                if ($now->hour >= 5 && $now->hour < 12) {
-                    $greeting = "Selamat Pagi";
-                } elseif ($now->hour >= 12 && $now->hour < 18) {
-                    $greeting = "Selamat Siang";
-                } else {
-                    $greeting = "Selamat Malam";
-                }
-                $nomorserif = '-';
                 $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
+                $jenis_sampel_final = JenisSampel::where('id', (int) $form['Jenis_Sampel'])->pluck('nama')->first();
+                $progress_state =  $form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan'];
+                $progress = Progress::find($progress_state);
 
-                // if ($emailAddresses !== null) {
-                //     Mail::to($emailAddresses)
-                //         ->cc($emailcc)
-                //         ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab, $randomCode, $nomorserif));
-                // }
+                // dd($progress, $progress_state);
+                if ($emailAddresses !== null) {
+                    Mail::to($emailAddresses)
+                        ->cc($emailcc)
+                        ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode));
+                }
 
                 $trackSampel->save();
                 DB::commit();
