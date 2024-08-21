@@ -81,7 +81,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->copyable()
                     ->badge()
                     ->color('gray')
-                    ->copyMessage(fn (string $state): string => "Copied {$state} to clipboard")
+                    ->copyMessage(fn(string $state): string => "Copied {$state} to clipboard")
                     ->copyMessageDuration(1500)
                     ->size('xs'),
                 TextColumn::make('progressSampel.nama')
@@ -102,8 +102,14 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->searchable()
                     ->sortable()
                     ->size('xs'),
+                TextColumn::make('nomor_surat')
+                    ->toggleable(isToggledHiddenByDefault: false)
+
+                    ->searchable()
+                    ->sortable()
+                    ->size('xs'),
                 TextColumn::make('departemen')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: false)
 
                     ->searchable()
                     ->sortable()
@@ -217,6 +223,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->label('Status'),
             ])
             ->filters([
+                SelectFilter::make('jenisSampel')
+                    ->label('Jenis sampel')
+                    ->relationship('jenisSampel', 'nama')
+                    // ->multiple()
+                    ->preload(),
                 SelectFilter::make('skala_prioritas')
                     ->options([
                         'normal' => 'Normal',
@@ -570,7 +581,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             ->size('xs'),
                         Action::make('export_kupa')
                             ->label('Kupa')
-                            ->url(fn (TrackSampel $record): string => route('export.excel', $record->id))
+                            ->url(fn(TrackSampel $record): string => route('export.excel', $record->id))
                             ->icon('heroicon-o-document-arrow-down')
                             ->color('success')
                             ->disabled(function (TrackSampel $record) {
@@ -703,7 +714,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ActionGroup::make([
                         Action::make('export_vr')
                             ->label('PDF')
-                            ->url(fn (TrackSampel $record): string => route('exportvr', $record->id))
+                            ->url(fn(TrackSampel $record): string => route('exportvr', $record->id))
                             ->icon('heroicon-o-document-arrow-down')
                             ->disabled(function (TrackSampel $record) {
                                 if ($record->status === 'Draft') {
@@ -802,7 +813,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->size('xs'),
                     Action::make('edit')
                         ->label('Edit Kupa')
-                        ->url(fn (TrackSampel $record): string => route('history_sampel.edit', $record->id))
+                        ->url(fn(TrackSampel $record): string => route('history_sampel.edit', $record->id))
                         ->icon('heroicon-o-pencil')->color('warning')
                         ->openUrlInNewTab()
                         ->visible(auth()->user()->can('edit_kupa'))
@@ -823,11 +834,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->visible(auth()->user()->can('hapus_kupa'))
                         ->modalHeading('Delete Kupa')
                         ->modalSubheading(
-                            fn (TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat dipulihkan kembali."
+                            fn(TrackSampel $record) => "Anda yakin ingin menghapus data ini dengan kode track: {$record->kode_track}? Ketika dihapus tidak dapat dipulihkan kembali."
                         )
                         ->modalButton('Yes'),
                     EditAction::make('Verifikasi_Status')
-                        ->label(fn (TrackSampel $record): string => checkApprovedLabelKupa($record))
+                        ->label(fn(TrackSampel $record): string => checkApprovedLabelKupa($record))
                         ->disabled(function (TrackSampel $record) {
                             $user = Auth::user();
                             $roles = $user->getRoleNames();
@@ -850,9 +861,9 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                             return $func;
                         })
-                        ->icon(fn (TrackSampel $record): string => checkIconApproved($record))
-                        ->color(fn (TrackSampel $record): string => checkColorApproved($record))
-                        ->modalHeading(fn (TrackSampel $record) => "Verifikasi Kupa " . $record->kode_track)
+                        ->icon(fn(TrackSampel $record): string => checkIconApproved($record))
+                        ->color(fn(TrackSampel $record): string => checkColorApproved($record))
+                        ->modalHeading(fn(TrackSampel $record) => "Verifikasi Kupa " . $record->kode_track)
                         ->modalSubmitActionLabel('Submit')
                         ->form([
                             Select::make('status')

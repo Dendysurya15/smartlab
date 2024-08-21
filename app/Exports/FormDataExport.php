@@ -241,7 +241,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $verifikasi_head_timestamp = $verif[1] ?? '-';
 
             $approveby_head = $value->approveby_head;
-            $petugas_penerima_sampel = User::where('id', $value->status_changed_by_id)->pluck('name')->first();
+            $petugas_penerima_sampel = User::where('id', $value->created_by)->pluck('name')->first();
             $jenis_kupa = $value->jenisSampel->nama;
             $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
             $no_kupa = $value->nomor_kupa;

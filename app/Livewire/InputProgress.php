@@ -645,7 +645,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->nomor_lab = $NomorLab;
                 $trackSampel->estimasi = $form['EstimasiKupa'];
                 $trackSampel->tujuan = $form['Tujuan'];
-                $trackSampel->progress = 4;
+                $trackSampel->progress = $form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan'];
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
@@ -667,6 +667,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->no_doc = $form['no_document'];
                 $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
+                $trackSampel->created_by = auth()->user()->id;
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
                     $filename = '';
@@ -781,7 +782,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->nomor_lab = $NomorLab;
                 $trackSampel->estimasi = $form['EstimasiKupa'];
                 $trackSampel->tujuan = $form['Tujuan'];
-                $trackSampel->progress = 4;
+                $trackSampel->progress = $form['status_pengerjaan'] == "0" ? "4" : $form['status_pengerjaan'];
                 $trackSampel->last_update = $current;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
                 $combinedNomorHp = implode(',', $nomorHpArray);
@@ -804,6 +805,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Draft';
+                $trackSampel->created_by = auth()->user()->id;
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
                     $filename = '';

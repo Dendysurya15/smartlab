@@ -988,6 +988,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Waiting Admin Approval';
                 $trackSampel->last_update = $current;
+
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
                     $filename = '';

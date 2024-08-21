@@ -89,6 +89,7 @@
                         <th colspan="3" class="border-text">Keterangan</th>
                         <th rowspan="2" class="border-text">Jumlah Parameter</th>
                         <th rowspan="2" class="border-text">Jumlah Sampel</th>
+                        <th rowspan="2" class="border-text">Catatan</th>
                     </tr>
 
                     <tr>
@@ -139,7 +140,9 @@
                         @if ($item2['jumlah_sampel'] !== 'null')
                         <td class="border-text" rowspan="{{$rowspan}}">{{$item2['jumlah_sampel']}}</td>
                         @endif
-
+                        @if ($item2['catatan'] !== 'null')
+                        <td class="border-text" rowspan="{{$rowspan}}">{{$item2['catatan']}}</td>
+                        @endif
                     </tr>
 
                     @endforeach

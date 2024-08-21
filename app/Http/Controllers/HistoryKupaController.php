@@ -205,6 +205,7 @@ class HistoryKupaController extends Controller
                 foreach ($value1 as $key2 => $value2) {
                     $jenissample = $value2->jenisSampel->nama;
                     $jumlahsample = $value2['jumlah_sampel'];
+                    $catatan = $value2['catatan'];
                     $kdsmpel = $value2['kode_sampel'];
                     $nolab = $value2['nomor_lab'];
                     $trackparam = $value2->trackParameters;
@@ -291,6 +292,7 @@ class HistoryKupaController extends Controller
                         if ((string)$keysx === $kode) {
                             $result[$key][$key1][$keysx]['jenis_sample'] = $jenissample;
                             $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
+                            $result[$key][$key1][$keysx]['catatan'] = ($index == 0) ? $catatan : 'null';
                             $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
                             $result[$key][$key1][$keysx]['nomor_lab'] = $nomor_lab[0] + $index;
                             $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
@@ -325,6 +327,7 @@ class HistoryKupaController extends Controller
         $data = [
             'data' => $result,
         ];
+        // dd($data);
         $filename = 'PDF Kupa,' . $jenissamplefix . '.pdf';
         $pdf = Pdf::setPaper('letter', 'portrait');
         $pdf->setOptions([
@@ -638,7 +641,7 @@ class HistoryKupaController extends Controller
             $verifikasi_head_timestamp = $verif[1] ?? '-';
 
             $approveby_head = $value->approveby_head;
-            $petugas_penerima_sampel = User::where('id', $value->status_changed_by_id)->pluck('name')->first();
+            $petugas_penerima_sampel = User::where('id', $value->created_by)->pluck('name')->first();
             $jenis_kupa = $value->jenisSampel->nama;
             $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
             $no_kupa = $value->nomor_kupa;

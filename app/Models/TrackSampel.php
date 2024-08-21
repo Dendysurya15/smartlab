@@ -11,55 +11,11 @@ class TrackSampel extends Model
 
     protected $table = 'track_sampel';
     public $timestamps = false;
-
+    protected $guarded = ['id'];
     protected $casts = [
         'foto_sampel' => 'array',
     ];
 
-    protected $fillable = [
-        'tanggal_memo',
-        'tanggal_terima',
-        'status_changed_by_id',
-        'status_approved_by_role',
-        'jenis_sampel',
-        'asal_sampel',
-        'nomor_kupa',
-        'nama_pengirim',
-        'departemen',
-        'kode_sampel',
-        'jumlah_sampel',
-        'kondisi_sampel',
-        'kemasan_sampel',
-        'nomor_surat',
-        'nomor_lab',
-        'estimasi',
-        'tanggal_pengantaran',
-        'tujuan',
-        'parameter_analisis',
-        'progress',
-        'last_update',
-        'admin',
-        'no_hp',
-        'emailTo',
-        'kode_track',
-        'emailCc',
-        'foto_sampel',
-        'personel',
-        'konfirmasi',
-        'alat',
-        'bahan',
-        'discount',
-        'kode',
-        'skala_prioritas',
-        'status_timestamp',
-        'status',
-        'catatan',
-        'petugas_preparasi',
-        'penyelia',
-        'no_doc',
-        'no_doc_indentitas',
-        'formulir',
-    ];
     public function jenisSampel()
     {
         return $this->belongsTo(JenisSampel::class, 'jenis_sampel', 'id');
