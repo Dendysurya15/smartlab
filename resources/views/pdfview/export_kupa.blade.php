@@ -327,11 +327,11 @@
                 <td style="text-align: center; border: 1px solid black; border-bottom: none; border-top: none;">
 
                     @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
-                    <span style="color: blue;font-size: 30px;">CREATED</span><br>
-                    <span style="font-size: 15px;">{{$memo_created}}</span>
+                    <span>CREATED</span><br>
+                    <span>{{$memo_created}}</span>
                     @else
-                    <span style="color: blue;font-size: 30px;">APPROVED</span><br>
-                    <span style="font-size: 15px;">{{$verifikasi_admin_timestamp}}</span>
+                    <span>APPROVED</span><br>
+                    <span>{{$verifikasi_admin_timestamp}}</span>
                     @endif
 
                 </td>
