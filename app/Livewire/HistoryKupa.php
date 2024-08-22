@@ -29,11 +29,15 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Exports\MonitoringKupabulk;
 use App\Exports\LogbookBulkExport;
 use App\Exports\pdfpr;
+use App\Models\Invoice;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Grouping\Group;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -208,13 +212,27 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->toggleable(isToggledHiddenByDefault: true)
 
                     ->size('xs'),
-                // ->afterStateUpdated(function ($record, $state) {
-                //     // Runs after the state is saved to the database.
-                // })
-                // ->modalHeading('Delete Kupa')
-                // ->modalSubheading(fn (TrackSampel $record) => "Anda yakin ingin menghapus parameter ini? Ketika dihapus tidak dapat di pulihkan kembali.")
-                // ->modalButton('Yes')
-
+                TextColumn::make('invoice')
+                    ->label('Detail Invoice')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Uptodate' => 'success',
+                        'Update' => 'danger',
+                        default => 'warning',
+                    })
+                    ->state(function (TrackSampel $record) {
+                        if ($record->asal_sampel == 'Eksternal') {
+                            if ($record->invoice_id == 0) {
+                                return  'Update';
+                            } else {
+                                return  'Uptodate';
+                            }
+                        } else {
+                            return 'Default';
+                        }
+                    })
+                    ->size('xs'),
             ])->striped()
             ->groups([
                 Group::make('jenisSampel.nama')
@@ -930,6 +948,126 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                     ->success()
                                     ->title('Verifikasi Berhasil')
                                     ->body("Kupa " . $record->kode_track . " telah di-" . $statusdata)
+                                    ->send();
+                            } catch (\Throwable $th) {
+                                DB::rollBack();
+
+                                Notification::make()
+                                    ->title('Error ' . $th->getMessage())
+                                    ->danger()
+                                    ->color('danger')
+                                    ->send();
+                            }
+                            return $record;
+                        }),
+                    EditAction::make('edit_invoice')
+                        ->label(fn(TrackSampel $record): string => $record->invoice_status == '0' ? 'Edit Invoice' : 'Invoice Uptodate')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->disabled(fn(TrackSampel $record): string => $record->invoice_status == '1')
+                        ->hidden(fn(TrackSampel $record): string => $record->asal_sampel == 'Internal')
+                        ->modalHeading(fn(TrackSampel $record) => "Edit Invoice " . $record->kode_track)
+                        ->modalSubmitActionLabel('Submit')
+                        ->form([
+                            Fieldset::make('Detail')
+                                ->label('Pastikan mengisi detail pelanggan dengan benar')
+                                ->schema([
+                                    Select::make('list')
+                                        ->label('List Detail Pelanggan')
+                                        ->columnSpanFull()
+                                        ->searchable()
+                                        ->live(debounce: 500)
+                                        ->required()
+                                        ->afterStateUpdated(function ($state, Set $set) {
+                                            // dd($state);
+                                            if ($state !== '0') {
+                                                $invoice = Invoice::find($state);
+                                                // dd($invoice, $state);
+                                                $set('nama_pelanggan', $invoice->nama);
+                                                $set('alamat_pelanggan', $invoice->address);
+                                                $set('npwp', $invoice->npwp_id);
+                                            } else {
+                                                $set('nama_pelanggan', '');
+                                                $set('alamat_pelanggan', '');
+                                                $set('npwp', '');
+                                            }
+                                        })
+                                        ->options(function () {
+                                            $data = Invoice::query()->pluck('nama', 'id')->toArray();
+                                            $default = [0 => 'Tidak Ada'];
+                                            return $default + $data;
+                                        }),
+                                    TextInput::make('nama_pelanggan')
+                                        ->label('Nama Pelanggan')
+                                        ->readOnly(fn(Get $get) => $get('list') !== '0' ? true : false)
+                                        ->maxLength(100)
+                                        ->placeholder('Silahkan pilih detail pelanggan mengisi manual')
+                                        ->required(),
+                                    TextInput::make('alamat_pelanggan')
+                                        ->label('Alamat Pelanggan')
+                                        ->maxLength(200)
+                                        ->placeholder('Silahkan pilih detail pelanggan mengisi manual')
+                                        ->readOnly(fn(Get $get) => $get('list') !== '0' ? true : false)
+                                        ->required(),
+                                    TextInput::make('npwp')
+                                        ->label('NPWP')
+                                        ->placeholder('Silahkan pilih detail pelanggan mengisi manual')
+                                        ->readOnly(fn(Get $get) => $get('list') !== '0' ? true : false)
+                                        ->maxLength(200)
+                                        ->required(),
+                                ])
+                                ->columns(3),
+                            Fieldset::make('invoice')
+                                ->label('Detail Invoice')
+                                ->schema([
+                                    DatePicker::make('tanggal_invoice')
+                                        ->label('Tanggal Invoice')
+                                        ->required(),
+                                    TextInput::make('no_kontrak')
+                                        ->label('No. Kontrak')
+                                        ->maxLength(200),
+                                    DatePicker::make('tanggal_kontrak')
+                                        ->label('Tanggal Kontrak'),
+                                    TextInput::make('pembayaran')
+                                        ->label('Pembayaran')
+                                        ->maxLength(200)
+                                        ->required(),
+                                    TextInput::make('statuss')
+                                        ->label('Status Pajak / Kurs')
+                                        ->maxLength(200)
+                                        ->required(),
+                                ])
+                                ->columns(3)
+                        ])
+                        ->successNotification(null)
+                        ->using(function (TrackSampel $record, array $data): TrackSampel {
+
+                            // dd($data);
+                            // dd($statusdata);
+                            try {
+                                DB::beginTransaction();
+                                $invoice = new Invoice();
+                                $invoice->nama = $data['nama_pelanggan'];
+                                $invoice->address = $data['alamat_pelanggan'];
+                                $invoice->npwp_id = $data['npwp'];
+                                $invoice->created_by = auth()->user()->id;
+                                $invoice->save();
+                                $id_data = $invoice->id;
+
+                                $record->invoice_id = $id_data;
+                                $record->no_kontrak = $data['no_kontrak'];
+                                $record->tanggal_kontrak = $data['tanggal_kontrak'];
+                                $record->tanggal_invoice = $data['tanggal_invoice'];
+                                $record->pembayaran = $data['pembayaran'];
+                                $record->status_pajak = $data['statuss'];
+                                $record->invoice_status = 1;
+                                $record->save();
+
+                                DB::commit();
+                                Notification::make()
+                                    ->success()
+                                    ->title('Verifikasi Berhasil')
+                                    ->body('Invoice berhasil di verifikasi')
                                     ->send();
                             } catch (\Throwable $th) {
                                 DB::rollBack();

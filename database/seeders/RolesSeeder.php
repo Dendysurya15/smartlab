@@ -15,18 +15,8 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        // Using updateOrCreate method to ensure roles are unique
+        // Existing roles and permissions
         $role_superuser = Role::updateOrCreate(['name' => 'superuser']);
-        // $role_admin = Role::updateOrCreate(['name' => 'admin']);
-        // $role_user = Role::updateOrCreate(['name' => 'user']);
-
-        // Define permissions (if needed)
-        // Permission
-        // $permission1 = Permission::updateOrCreate(['name' => 'view_rolemanagement']);
-        // $permission2 = Permission::updateOrCreate(['name' => 'edit_data']);
-        // $permission3 = Permission::updateOrCreate(['name' => 'view_dashboard']);
-        // $permission4 = Permission::updateOrCreate(['name' => 'download']);
-
         Permission::updateOrCreate(['name' => 'view_dashboard_smartlab']);
         Permission::updateOrCreate(['name' => 'view_history_kupa']);
         Permission::updateOrCreate(['name' => 'input_kupa']);
@@ -39,26 +29,61 @@ class RolesSeeder extends Seeder
         Permission::updateOrCreate(['name' => 'create_new_user']);
         Permission::updateOrCreate(['name' => 'update_status_pengerjaan_kupa']);
 
-        Role::updateOrCreate(['name' => 'Staff'], ['alur_approved' => 2])->givePermissionTo(['create_new_user', 'view_role_management', 'view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'update_status_pengerjaan_kupa', 'export_kupa', 'edit_kupa', 'hapus_kupa', 'input_kupa', 'export_form_monitoring_kupa']);
-        Role::updateOrCreate(['name' => 'Admin'], ['alur_approved' => 1])->givePermissionTo(['create_new_user', 'view_role_management', 'view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'update_status_pengerjaan_kupa', 'export_kupa', 'edit_kupa', 'hapus_kupa', 'input_kupa', 'export_form_monitoring_kupa']);
-        Role::updateOrCreate(['name' => 'Head Of Lab SRS'], ['alur_approved' => 4])->givePermissionTo(['view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'export_kupa']);
-        Role::updateOrCreate(['name' => 'Asmen Lab Analitik'], ['alur_approved' => 3])->givePermissionTo(['view_history_kupa', 'view_dashboard_smartlab', 'view_halaman_parameter_analisis', 'export_kupa']);
+        Role::updateOrCreate(['name' => 'Staff'], ['alur_approved' => 2])->givePermissionTo([
+            'create_new_user',
+            'view_role_management',
+            'view_history_kupa',
+            'view_dashboard_smartlab',
+            'view_halaman_parameter_analisis',
+            'update_status_pengerjaan_kupa',
+            'export_kupa',
+            'edit_kupa',
+            'hapus_kupa',
+            'input_kupa',
+            'export_form_monitoring_kupa'
+        ]);
+        Role::updateOrCreate(['name' => 'Admin'], ['alur_approved' => 1])->givePermissionTo([
+            'create_new_user',
+            'view_role_management',
+            'view_history_kupa',
+            'view_dashboard_smartlab',
+            'view_halaman_parameter_analisis',
+            'update_status_pengerjaan_kupa',
+            'export_kupa',
+            'edit_kupa',
+            'hapus_kupa',
+            'input_kupa',
+            'export_form_monitoring_kupa'
+        ]);
+        Role::updateOrCreate(['name' => 'Head Of Lab SRS'], ['alur_approved' => 4])->givePermissionTo([
+            'view_history_kupa',
+            'view_dashboard_smartlab',
+            'view_halaman_parameter_analisis',
+            'export_kupa'
+        ]);
+        Role::updateOrCreate(['name' => 'Asmen Lab Analitik'], ['alur_approved' => 3])->givePermissionTo([
+            'view_history_kupa',
+            'view_dashboard_smartlab',
+            'view_halaman_parameter_analisis',
+            'export_kupa'
+        ]);
+
+        // New permissions
+        Permission::updateOrCreate(['name' => 'check_invoice']);
+        Permission::updateOrCreate(['name' => 'update_invoice']);
+        Permission::updateOrCreate(['name' => 'send_invoice']);
+        Permission::updateOrCreate(['name' => 'delete_invoice']);
+
+        // New role with new permissions
+        $role_markom = Role::updateOrCreate(['name' => 'markom'])->givePermissionTo([
+            'check_invoice',
+            'update_invoice',
+            'send_invoice',
+            'delete_invoice'
+        ]);
 
         // Assign all permissions to the superuser role
         $allPermissions = Permission::pluck('id')->toArray();
         $role_superuser->syncPermissions($allPermissions);
-
-        // // Assign specific permissions to the admin role
-        // $role_admin->givePermissionTo([$permission1, $permission2]);
-
-        // // User
-        // // Assign roles to users (assuming you have already defined users)
-        // // $superuser = User::find(2); // Assuming user with ID 2 is the superuser
-        // $user = User::find(1); // Assuming user with ID 1 is the admin
-        // $superuser = User::find(2); // Assuming user with ID 1 is the admin
-
-        // $user->assignRole('admin');
-        // $superuser->assignRole('superuser');
-        // $user->assignRole('user');
     }
 }

@@ -29,7 +29,7 @@
                 @if ($value['status'] === 'checked')
                 ✅
                 @else
-                <span class="text-gray-400 text-sm">Skipped</span>
+                <span class="text-gray-400 text-sm">On Progress</span>
                 @endif
             </h1>
             <p class="font-normal text-sm text-gray-700 dark:text-gray-400">

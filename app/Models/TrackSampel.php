@@ -35,4 +35,8 @@ class TrackSampel extends Model
     {
         return $this->hasMany(TrackParameter::class, 'id_tracksampel', 'parameter_analisisid');
     }
+    public function Invoice()
+    {
+        return $this->belongsTo(Invoice::class, 'invoice_id', 'id');
+    }
 }

@@ -886,34 +886,34 @@ class Editprogress extends Component implements HasForms
                 }
 
 
-                $getprogress = Progress::pluck('nama')->first();
-
-                if ($form['nomerhpuser'] !== []) {
-                    foreach ($form['nomerhpuser'] as $data) {
-                        $dataToInsert2[] = [
-                            'no_surat' => $this->opt->nomor_surat,
-                            'nama_departemen' => $this->opt->departemen,
-                            'jenis_sampel' => $jenis_sampel_final,
-                            'jumlah_sampel' => $this->opt->jumlah_sampel,
-                            'progresss' => $progress->nama,
-                            'kodesample' => $this->opt->kode_track,
-                            'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                            'type' => 'update',
-                        ];
+                if ($form['Asalampel'] !== 'Eksternal') {
+                    if ($form['nomerhpuser'] !== []) {
+                        foreach ($form['nomerhpuser'] as $data) {
+                            $dataToInsert2[] = [
+                                'no_surat' => $this->opt->nomor_surat,
+                                'nama_departemen' => $this->opt->departemen,
+                                'jenis_sampel' => $jenis_sampel_final,
+                                'jumlah_sampel' => $this->opt->jumlah_sampel,
+                                'progresss' => $progress->nama,
+                                'kodesample' => $this->opt->kode_track,
+                                'penerima' =>  str_replace('+', '', $data['NomorHp']),
+                                'type' => 'update',
+                            ];
+                        }
+                        // dd($dataToInsert);
+                        // SendMsg::insert($dataToInsert2);
+                        event(new Smartlabsnotification($dataToInsert2));
                     }
-                    // dd($dataToInsert);
-                    // SendMsg::insert($dataToInsert2);
-                    event(new Smartlabsnotification($dataToInsert2));
+
+                    $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
+                    $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
+
+
+                    Mail::to($emailAddresses)
+                        ->cc($emailcc)
+                        // ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                        ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track));
                 }
-
-                $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
-                $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
-
-
-                Mail::to($emailAddresses)
-                    ->cc($emailcc)
-                    // ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
-                    ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track));
 
 
                 $trackSampel->save();
@@ -1032,33 +1032,34 @@ class Editprogress extends Component implements HasForms
 
 
                 $getprogress = Progress::pluck('nama')->first();
-
-                if ($form['nomerhpuser'] !== []) {
-                    foreach ($form['nomerhpuser'] as $data) {
-                        $dataToInsert2[] = [
-                            'no_surat' => $form['NomorSurat'],
-                            'nama_departemen' => $form['NamaDep'],
-                            'jenis_sampel' => $jenis_sampel_final,
-                            'jumlah_sampel' => $form['JumlahSampel'],
-                            'progresss' => $progress->nama,
-                            'kodesample' => $this->opt->kode_track,
-                            'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                            'type' => 'input',
-                        ];
+                if ($form['Asalampel'] !== 'Eksternal') {
+                    if ($form['nomerhpuser'] !== []) {
+                        foreach ($form['nomerhpuser'] as $data) {
+                            $dataToInsert2[] = [
+                                'no_surat' => $form['NomorSurat'],
+                                'nama_departemen' => $form['NamaDep'],
+                                'jenis_sampel' => $jenis_sampel_final,
+                                'jumlah_sampel' => $form['JumlahSampel'],
+                                'progresss' => $progress->nama,
+                                'kodesample' => $this->opt->kode_track,
+                                'penerima' =>  str_replace('+', '', $data['NomorHp']),
+                                'type' => 'input',
+                            ];
+                        }
+                        // dd($dataToInsert);
+                        // SendMsg::insert($dataToInsert2);
+                        event(new Smartlabsnotification($dataToInsert2));
                     }
-                    // dd($dataToInsert);
-                    // SendMsg::insert($dataToInsert2);
-                    event(new Smartlabsnotification($dataToInsert2));
+
+                    $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
+                    $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
+
+
+                    Mail::to($emailAddresses)
+                        ->cc($emailcc)
+                        // ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
+                        ->send(new EmailPelanggan($this->opt->nomor_surat, $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $this->opt->kode_track));
                 }
-
-                $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
-                $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
-
-
-                Mail::to($emailAddresses)
-                    ->cc($emailcc)
-                    // ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
-                    ->send(new EmailPelanggan($this->opt->nomor_surat, $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $this->opt->kode_track));
 
                 $trackSampel->save();
 

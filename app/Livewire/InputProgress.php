@@ -704,40 +704,42 @@ class InputProgress extends Component implements HasForms
 
                 // $nohp = formatPhoneNumber($form['nomerhpuser']);
                 // dd($form['nomerhpuser']);
-                if ($form['nomerhpuser'] !== []) {
-                    $dataToInsert2 = [];
-                    foreach ($form['nomerhpuser'] as $data) {
-                        $nomor_hp = numberformat_excel($data['NomorHp']);
+                if ($form['Asalampel'] !== 'Eksternal') {
+                    if ($form['nomerhpuser'] !== []) {
+                        $dataToInsert2 = [];
+                        foreach ($form['nomerhpuser'] as $data) {
+                            $nomor_hp = numberformat_excel($data['NomorHp']);
 
-                        if ($nomor_hp !== 'Error') {
-                            $dataToInsert2[] = [
-                                'no_surat' => $form['NomorSurat'],
-                                'nama_departemen' => $form['NamaDep'],
-                                'jenis_sampel' => $jenis_sampel_final,
-                                'jumlah_sampel' => $form['JumlahSampel'],
-                                'progresss' => $progress->nama,
-                                'kodesample' => $randomCode,
-                                'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                                'type' => 'input',
-                            ];
+                            if ($nomor_hp !== 'Error') {
+                                $dataToInsert2[] = [
+                                    'no_surat' => $form['NomorSurat'],
+                                    'nama_departemen' => $form['NamaDep'],
+                                    'jenis_sampel' => $jenis_sampel_final,
+                                    'jumlah_sampel' => $form['JumlahSampel'],
+                                    'progresss' => $progress->nama,
+                                    'kodesample' => $randomCode,
+                                    'penerima' =>  str_replace('+', '', $data['NomorHp']),
+                                    'type' => 'input',
+                                ];
+                            }
+                        }
+                        // dd($dataToInsert);
+                        if (!empty($dataToInsert)) {
+                            // dd($dataToInsert2);
+                            event(new Smartlabsnotification($dataToInsert2));
+                            // SendMsg::insert($dataToInsert2);
                         }
                     }
-                    // dd($dataToInsert);
-                    if (!empty($dataToInsert)) {
-                        // dd($dataToInsert2);
-                        event(new Smartlabsnotification($dataToInsert2));
-                        // SendMsg::insert($dataToInsert2);
+
+                    $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
+                    $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
+
+                    // dd($progress, $progress_state);
+                    if ($emailAddresses !== null) {
+                        Mail::to($emailAddresses)
+                            ->cc($emailcc)
+                            ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode));
                     }
-                }
-
-                $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
-                $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
-
-                // dd($progress, $progress_state);
-                if ($emailAddresses !== null) {
-                    Mail::to($emailAddresses)
-                        ->cc($emailcc)
-                        ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode));
                 }
 
                 $trackSampel->save();
