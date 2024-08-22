@@ -32,6 +32,7 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
 
         $id = explode('$', $this->id);
 
+        // dd($id);
         $queries = TrackSampel::whereIn('id', $id)
             ->with('trackParameters')
             ->with('progressSampel')
@@ -53,8 +54,8 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                     $kdsmpel = $value2['kode_sampel'];
                     $nolab = $value2['nomor_lab'];
                     $trackparam = $value2->trackParameters;
-                    $carbonDate = Carbon::parse($value2['tanggal_terima']);
-                    $carbonDate2 = Carbon::parse($value2['estimasi']);
+                    $carbonDate = Carbon::parse($value2['tanggal_terima'])->locale('id')->translatedFormat('d F Y');
+                    $carbonDate2 = Carbon::parse($value2['estimasi'])->locale('id')->translatedFormat('d F Y');
                     $nama_parameter = [];
                     $hargatotal = 0;
                     $jumlah_per_parametertotal = 0;
@@ -145,12 +146,12 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                             $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
                             $result[$key][$key1][$keysx]['nomor_surat'] = $value2['nomor_surat'];
                             $result[$key][$key1][$keysx]['nomor_kupa'] = $value2['nomor_kupa'];
-                            $result[$key][$key1][$keysx]['tanggal_terima'] = $carbonDate->format('Y-m-d');
+                            $result[$key][$key1][$keysx]['tanggal_terima'] = $carbonDate;
                             $result[$key][$key1][$keysx]['tanggal_memo'] = $value2['tanggal_memo'];
                             $result[$key][$key1][$keysx]['Jumlah_Parameter'] = count($valuems);
                             $result[$key][$key1][$keysx]['Parameter_Analisa'] = implode(',', $valuems);
                             $result[$key][$key1][$keysx]['tujuan'] = $value2['tujuan'];
-                            $result[$key][$key1][$keysx]['estimasi'] = $carbonDate2->format('Y-m-d');
+                            $result[$key][$key1][$keysx]['estimasi'] = $carbonDate2;
                             $result[$key][$key1][$keysx]['Tanggal_Selesai_Analisa'] = '-';
                             $result[$key][$key1][$keysx]['Tanggal_Rilis_Sertifikat'] = '-';
                             $result[$key][$key1][$keysx]['No_sertifikat'] = '-';

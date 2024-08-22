@@ -210,8 +210,8 @@ class HistoryKupaController extends Controller
                     $kdsmpel = $value2['kode_sampel'];
                     $nolab = $value2['nomor_lab'];
                     $trackparam = $value2->trackParameters;
-                    $carbonDate = Carbon::parse($value2['tanggal_terima']);
-                    $carbonDate2 = Carbon::parse($value2['estimasi']);
+                    $carbonDate = Carbon::parse($value2['tanggal_terima'])->locale('id')->translatedFormat('d F Y');
+                    $carbonDate2 = Carbon::parse($value2['estimasi'])->locale('id')->translatedFormat('d F Y');
                     $nama_parameter = [];
                     $hargatotal = 0;
                     $jumlah_per_parametertotal = 0;
@@ -301,12 +301,12 @@ class HistoryKupaController extends Controller
                             $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
                             $result[$key][$key1][$keysx]['nomor_surat'] = $value2['nomor_surat'];
                             $result[$key][$key1][$keysx]['nomor_kupa'] = $value2['nomor_kupa'];
-                            $result[$key][$key1][$keysx]['tanggal_terima'] = $carbonDate->format('Y-m-d');
+                            $result[$key][$key1][$keysx]['tanggal_terima'] = $carbonDate;
                             $result[$key][$key1][$keysx]['tanggal_memo'] = $value2['tanggal_memo'];
                             $result[$key][$key1][$keysx]['Jumlah_Parameter'] = count($valuems);
                             $result[$key][$key1][$keysx]['Parameter_Analisa'] = implode(',', $valuems);
                             $result[$key][$key1][$keysx]['tujuan'] = $value2['tujuan'];
-                            $result[$key][$key1][$keysx]['estimasi'] = $carbonDate2->format('Y-m-d');
+                            $result[$key][$key1][$keysx]['estimasi'] = $carbonDate2;
                             $result[$key][$key1][$keysx]['Tanggal_Selesai_Analisa'] = '-';
                             $result[$key][$key1][$keysx]['Tanggal_Rilis_Sertifikat'] = '-';
                             $result[$key][$key1][$keysx]['No_sertifikat'] = '-';
@@ -615,7 +615,7 @@ class HistoryKupaController extends Controller
                 $result[$i]['jum_sub_total'] = $jum_sub_total[$i] ?? 0;
                 $result[$i]['Konfirmasi'] = ($value->konfirmasi == 1) ?   '✔' : '';
                 $result[$i]['kondisi_sampel'] = $value->kondisi_sampel;
-                $result[$i]['estimasi'] = ($i == 0) ? Carbon::parse($value->estimasi)->format('Y-m-d') : '';
+                $result[$i]['estimasi'] = ($i == 0) ? Carbon::parse($value->estimasi)->locale('id')->translatedFormat('d F Y') : '';
             }
 
 
@@ -645,7 +645,7 @@ class HistoryKupaController extends Controller
             $approveby_head = $value->approveby_head;
             $petugas_penerima_sampel = User::where('id', $value->created_by)->pluck('name')->first();
             $jenis_kupa = $value->jenisSampel->nama;
-            $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
+            $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('d F Y');
             $no_kupa = $value->nomor_kupa;
             $departemen = $value->departemen;
             $formulir = $value->formulir;

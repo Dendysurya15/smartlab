@@ -213,7 +213,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                 $result[$i]['Konfirmasi'] = ($value->konfirmasi == 1) ?   '✓' : '';
                 $result[$i]['kondisi_sampel'] = $value->kondisi_sampel;
 
-                $result[$i]['estimasi'] = ($i == 0) ? Carbon::parse($value->estimasi)->format('Y-m-d') : '';
+                $result[$i]['estimasi'] = ($i == 0) ? Carbon::parse($value->estimasi)->locale('id')->translatedFormat('d F Y') : '';
             }
 
 
@@ -243,7 +243,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             $approveby_head = $value->approveby_head;
             $petugas_penerima_sampel = User::where('id', $value->created_by)->pluck('name')->first();
             $jenis_kupa = $value->jenisSampel->nama;
-            $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->format('Y-m-d');
+            $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('d F Y');
             $no_kupa = $value->nomor_kupa;
             $departemen = $value->departemen;
             $formulir = $value->formulir;
