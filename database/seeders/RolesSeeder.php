@@ -28,6 +28,7 @@ class RolesSeeder extends Seeder
         Permission::updateOrCreate(['name' => 'view_halaman_parameter_analisis']);
         Permission::updateOrCreate(['name' => 'create_new_user']);
         Permission::updateOrCreate(['name' => 'update_status_pengerjaan_kupa']);
+        Permission::updateOrCreate(['name' => 'verify_kupa']);
 
         Role::updateOrCreate(['name' => 'Staff'], ['alur_approved' => 2])->givePermissionTo([
             'create_new_user',
@@ -40,6 +41,7 @@ class RolesSeeder extends Seeder
             'edit_kupa',
             'hapus_kupa',
             'input_kupa',
+            'verify_kupa',
             'export_form_monitoring_kupa'
         ]);
         Role::updateOrCreate(['name' => 'Admin'], ['alur_approved' => 1])->givePermissionTo([
@@ -53,12 +55,14 @@ class RolesSeeder extends Seeder
             'edit_kupa',
             'hapus_kupa',
             'input_kupa',
+            'verify_kupa',
             'export_form_monitoring_kupa'
         ]);
         Role::updateOrCreate(['name' => 'Head Of Lab SRS'], ['alur_approved' => 4])->givePermissionTo([
             'view_history_kupa',
             'view_dashboard_smartlab',
             'view_halaman_parameter_analisis',
+            'verify_kupa',
             'export_kupa'
         ]);
         Role::updateOrCreate(['name' => 'Asmen Lab Analitik'], ['alur_approved' => 3])->givePermissionTo([
@@ -75,10 +79,11 @@ class RolesSeeder extends Seeder
         Permission::updateOrCreate(['name' => 'delete_invoice']);
 
         // New role with new permissions
-        $role_markom = Role::updateOrCreate(['name' => 'markom'])->givePermissionTo([
+        $role_markom = Role::updateOrCreate(['name' => 'marcom'])->givePermissionTo([
             'check_invoice',
             'update_invoice',
             'send_invoice',
+            'export_form_monitoring_kupa',
             'delete_invoice'
         ]);
 

@@ -292,6 +292,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->requiresConfirmation()
                     ->label('Hapus Kupa')
                     ->icon('heroicon-m-trash')
+                    ->visible(auth()->user()->can('hapus_kupa'))
                     ->color('danger')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records) {
@@ -857,6 +858,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->modalButton('Yes'),
                     EditAction::make('Verifikasi_Status')
                         ->label(fn(TrackSampel $record): string => checkApprovedLabelKupa($record))
+                        ->visible(auth()->user()->can('verify_kupa'))
                         ->disabled(function (TrackSampel $record) {
                             $user = Auth::user();
                             $roles = $user->getRoleNames();
@@ -965,7 +967,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
                         ->disabled(fn(TrackSampel $record): string => $record->invoice_status == '1')
-                        ->hidden(fn(TrackSampel $record): string => $record->asal_sampel == 'Internal')
+                        // ->hidden(fn(TrackSampel $record): string => $record->asal_sampel == 'Internal')
+                        ->visible(auth()->user()->can('update_invoice'))
                         ->modalHeading(fn(TrackSampel $record) => "Edit Invoice " . $record->kode_track)
                         ->modalSubmitActionLabel('Submit')
                         ->form([
