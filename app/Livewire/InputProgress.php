@@ -68,7 +68,7 @@ class InputProgress extends Component implements HasForms
             ->schema([
                 Select::make('Jenis_Sampel')
                     ->label('Jenis Komoditas')
-                    ->options(JenisSampel::query()->pluck('nama', 'id'))
+                    ->options(JenisSampel::query()->where('soft_delete_id', '!=', 1)->pluck('nama', 'id'))
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         // Retrieve the progress column value from the JenisSampel model based on the updated state
                         // dd($state);
