@@ -10,6 +10,7 @@ use App\Models\ParameterAnalisis;
 use App\Models\TrackSampel;
 use App\Models\SendMsg;
 use App\Models\TrackParameter;
+use App\Models\User;
 use Livewire\Component;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -43,6 +44,7 @@ use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
 use PhpOffice\PhpSpreadsheet\Worksheet\AutoFit;
+use Spatie\Permission\Models\Role;
 
 class InputProgress extends Component implements HasForms
 {
@@ -140,6 +142,33 @@ class InputProgress extends Component implements HasForms
                 Select::make('Asalampel')
                     ->label('Asal Sampel')
                     ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->default(function () {
+                        $user = User::find(auth()->user()->id);
+
+                        // Get all role names as a collection
+                        $roles = $user->getRoleNames();
+
+                        // dd($roles);
+                        if ($roles->contains('marcom')) {
+                            return 'Eksternal';
+                        } else {
+                            return 'Internal';
+                        }
+                    })
+                    // ->disabled(auth()->user()->role == 'marcom')
+                    ->disabled(function () {
+                        $user = User::find(auth()->user()->id);
+
+                        // Get all role names as a collection
+                        $roles = $user->getRoleNames();
+
+                        // dd($roles);
+                        if ($roles->contains('marcom')) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    })
                     ->options([
                         'Internal' => 'Internal',
                         'Eksternal' => 'Eksternal',
@@ -563,6 +592,19 @@ class InputProgress extends Component implements HasForms
                             ])
                             ->label('Simpan sebagai Draft')
                             ->default(false)
+                            ->disabled(function () {
+                                $user = User::find(auth()->user()->id);
+
+                                // Get all role names as a collection
+                                $roles = $user->getRoleNames();
+
+                                // dd($roles);
+                                if ($roles->contains('marcom')) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            })
                             ->onIcon('heroicon-o-document-magnifying-glass')
                             ->offIcon('heroicon-o-clock')
                     ])

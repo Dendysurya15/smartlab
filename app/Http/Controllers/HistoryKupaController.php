@@ -822,7 +822,10 @@ class HistoryKupaController extends Controller
 
                 $PenerimaSampel = $petugas['Petugas Penerima Sampel'][0]['nama'];
             }
+            $timestamps = array_filter(array_map('trim', explode(',', $value->status_timestamp)));
 
+            // Get the last timestamp
+            $lastTimestamp = end($timestamps);
             $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
             $Penyelia = (!is_null($penyelia_prep) ? $penyelia_prep : $petugas['Penyelia'][0]['nama']);
             foreach ($namakode_sampel as $keyx => $valuex) {
@@ -852,7 +855,7 @@ class HistoryKupaController extends Controller
                         $result[$key]['Penyelia'] = $Penyelia[0];
                         $result[$key]['doc'] = $value->no_doc;
                         $result[$key]['status'] = $value->approveby_admin;
-                        $result[$key]['status_timestamp'] = $value->status_timestamp;
+                        $result[$key]['status_timestamp'] = $lastTimestamp;
                         $result[$key]['no_doc_indentitas'] = $value->no_doc_indentitas;
                         $result[$key]['formulir'] = $value->formulir;
                     }

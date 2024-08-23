@@ -330,21 +330,18 @@
                     <span>CREATED</span><br>
                     <span>{{$memo_created}}</span>
                     @else
-                    <span>APPROVED</span><br>
+                    <span style="color: blue;font-size: 20px;">APPROVED</span><br>
                     <span>{{$verifikasi_admin_timestamp}}</span>
                     @endif
 
                 </td>
 
-                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;"> @if ($isVerifiedByHead == True)
-                    @php
-                    echo strtoupper($approval)
-                    @endphp <br>
-
-
-                    {{$verifikasi_head_timestamp}}
-
+                <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">
+                    @if ($isVerifiedByHead == True)
+                    <span style="color: blue;font-size: 20px;">APPROVED</span><br>
+                    <span>{{$verifikasi_head_timestamp}}</span>
                     @endif
+
                 </td>
                 <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
             </tr>

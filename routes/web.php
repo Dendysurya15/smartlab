@@ -45,16 +45,12 @@ Route::get('kuesioner', Kuesionerdata::class);
 // Route::get('kuesioner', [Kuesionerroot::class, 'index'])->middleware([TrackCaptchaFailures::class]);
 Route::get('kuesioner', [Kuesionerroot::class, 'index']);
 Route::get('flush', [TrackSampelController::class, 'unblockIp']);
-// Route::get('testingsock', function () {
-//     $dataToInsert2[] = [
-//         'no_surat' => 'test',
-//         'kodesample' =>  'test',
-//         'penerima' =>   'test',
-//         'progres' => 'test',
-//         'type' => 'input',
-//     ];
-//     event(new Smartlabsnotification($dataToInsert2));
-// });
+Route::get('/seedroles', function () {
+    Artisan::call('db:seed', [
+        '--class' => 'RolesSeeder',
+    ]);
+    return "Roles seeded successfully!";
+});
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])
