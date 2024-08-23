@@ -54,7 +54,7 @@ class EmailPelanggan extends Mailable
         // Check if id is not null
         if ($this->id !== null) {
             // Make a GET request to the API with query parameters
-            $response = $client->get('http://127.0.0.1:8000/api/invoices_smartlabs', [
+            $response = $client->get('https://management.srs-ssms.com/api/invoices_smartlabs', [
                 'query' => [
                     'email' => 'j',
                     'password' => 'j',

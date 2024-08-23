@@ -10,6 +10,8 @@ class JenisSampel extends Model
     use HasFactory;
 
     protected $table = 'jenis_sampel';
+    public $timestamps = false;
+    protected $guarded = ['id'];
 
     public function parameterAnalisis()
     {

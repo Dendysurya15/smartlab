@@ -67,11 +67,11 @@ class InputProgress extends Component implements HasForms
         return $form
             ->schema([
                 Select::make('Jenis_Sampel')
-                    ->label('Jenis Sampel')
-                    ->options(JenisSampel::query()->pluck('nama', 'id'))
+                    ->label('Jenis Komoditas')
+                    ->options(JenisSampel::query()->where('soft_delete_id', '!=', 1)->pluck('nama', 'id'))
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         // Retrieve the progress column value from the JenisSampel model based on the updated state
-
+                        // dd($state);
                         // Attempt to find the JenisSampel by its ID
                         $jenisSampel = JenisSampel::find($state);
 
@@ -122,6 +122,10 @@ class InputProgress extends Component implements HasForms
                     })
                     ->required()
                     ->live(debounce: 500),
+                TextInput::make('jenis_pupuk')
+                    ->hidden(fn(Get $get): bool => $get('Jenis_Sampel') !== '11' ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
+                    ->label('Jenis Pupuk'),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
                     ->disabled(function ($get) {
@@ -586,6 +590,7 @@ class InputProgress extends Component implements HasForms
 
 
         $form = $this->form->getState();
+        // dd($form);
 
         $randomCode = generateRandomCode();
 
@@ -669,6 +674,8 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->created_by = auth()->user()->id;
+                $trackSampel->jenis_pupuk = isset($form['jenis_pupuk']) ? $form['jenis_pupuk'] : null;
+
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
                     $filename = '';
@@ -816,6 +823,8 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Draft';
                 $trackSampel->created_by = auth()->user()->id;
+                $trackSampel->jenis_pupuk = isset($form['jenis_pupuk']) ? $form['jenis_pupuk'] : null;
+
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
                     $filename = '';

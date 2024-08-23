@@ -136,8 +136,13 @@ class Editprogress extends Component implements HasForms
                 Select::make('Jenis_Sampel')
                     ->label('Jenis Sampel')
                     ->default($this->opt->jenis_sampel)
-                    ->options(JenisSampel::query()->pluck('nama', 'id'))
+                    ->options(JenisSampel::query()->where('soft_delete_id', '!=', 1)->pluck('nama', 'id'))
                     ->disabled(),
+                TextInput::make('jenis_pupuk')
+                    ->default($this->opt->jenis_pupuk)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->hidden($this->opt->jenis_sampel !== 11 ? true : false)
+                    ->label('Jenis Pupuk'),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
                     ->required()
@@ -849,6 +854,8 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->no_doc = $form['no_document'];
                 $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
+                $trackSampel->jenis_pupuk = isset($form['jenis_pupuk']) ? $form['jenis_pupuk'] : null;
+
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
                     $filename = '';
@@ -993,6 +1000,8 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->status = 'Waiting Admin Approval';
                 $trackSampel->last_update = $current;
+                $trackSampel->jenis_pupuk = isset($form['jenis_pupuk']) ? $form['jenis_pupuk'] : null;
+
 
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
