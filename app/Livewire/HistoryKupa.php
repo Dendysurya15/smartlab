@@ -41,6 +41,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Illuminate\Support\Facades\Mail;
+use GuzzleHttp\Client;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -980,7 +981,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $record->asal_sampel == 'Internal' ? true : ($record->invoice_status == '0' ? false : true)
                         )
                         // ->hidden(fn(TrackSampel $record): string => $record->asal_sampel == 'Internal')
-                        ->visible(auth()->user()->can('update_invoice'))
+                        ->visible(fn($record) => auth()->user()->can('send_invoice') && $record->asal_sampel === 'Eksternal')
                         ->modalHeading(fn(TrackSampel $record) => "Edit Invoice " . $record->kode_track)
                         ->modalSubmitActionLabel('Submit')
                         ->form([
@@ -1136,23 +1137,13 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                     ->cc($emailcc)
                                     ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id));
                             }
-
+                            $records->invoice_status = 2;
+                            $records->save();
                             return Notification::make()
                                 ->success()
                                 ->title('Invoice Berhasil Dikirim')
                                 ->body('Invoice berhasil dikirim ke pelanggan')
                                 ->send();
-
-                            // dd($nomor_hp);
-                            // $jenis_sample_final = $records->jenisSampel->nama;
-                            // $carbonDate = Carbon::parse($records->tanggal_memo);
-                            // $dates_final = $carbonDate->format('F');
-                            // $year = $carbonDate->format('Y');
-
-
-                            // // Concatenate strings and variables using the concatenation operator (.)
-                            // $filename = 'PR Kupa ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year . '.xlsx';
-                            // return Excel::download(new pdfpr($records->id), $filename);
                         })
                         ->icon('heroicon-o-document-chart-bar')
                         ->disabled(function (TrackSampel $record) {
@@ -1169,8 +1160,52 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         })
                         ->openUrlInNewTab()
                         ->color('success')
-                        ->visible(auth()->user()->can('send_invoice'))
+                        ->visible(fn($record) => auth()->user()->can('send_invoice') && $record->asal_sampel === 'Eksternal')
                         ->size('xs'),
+                    Action::make('download_invoice')
+                        ->label('Download Invoice')
+                        ->action(function (TrackSampel $record) {
+                            $client = new Client();
+                            // dd($record);
+                            if ($record->id !== null) {
+                                // Make a GET request to the API with query parameters
+                                $response = $client->get('http://127.0.0.1:8000/api/invoices_smartlabs', [
+                                    'query' => [
+                                        'email' => 'j',
+                                        'password' => 'j',
+                                        'id_data' => $record->id,
+                                    ],
+                                ]);
+
+                                $responseData = json_decode($response->getBody()->getContents(), true);
+
+                                if (isset($responseData['pdf'])) {
+                                    // Decode the base64 PDF
+                                    $pdfContent = base64_decode($responseData['pdf']);
+                                    $pdfFilename = 'invoice_' .
+                                        str_replace(['/', '\\'], '_', $record->jenisSampel->nama) . '_' .
+                                        str_replace(['/', '\\'], '_', $record->nomor_surat) . '.pdf';
+
+                                    // Return the PDF as a download
+                                    return response()->streamDownload(function () use ($pdfContent) {
+                                        echo $pdfContent;
+                                    }, $pdfFilename, [
+                                        'Content-Type' => 'application/pdf',
+                                        'Content-Disposition' => 'attachment; filename="' . $pdfFilename . '"',
+                                    ]);
+                                }
+                            }
+
+                            return Notification::make()
+                                ->success()
+                                ->title('Success')
+                                ->body('Invoice berhasil diunduh')
+                                ->send();
+                        })
+                        ->icon('heroicon-o-document-chart-bar')
+                        ->color('success')
+                        ->visible(fn($record) => auth()->user()->can('send_invoice') && $record->asal_sampel === 'Eksternal')
+                        ->size('xs')
                 ])->tooltip('Actions'),
             ]);
     }
