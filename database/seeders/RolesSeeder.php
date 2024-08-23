@@ -86,6 +86,7 @@ class RolesSeeder extends Seeder
             'export_form_monitoring_kupa',
             'delete_invoice',
             'input_kupa',
+            'view_history_kupa'
         ]);
 
         // Assign all permissions to the superuser role

@@ -35,7 +35,7 @@
     <nav class="fixed top-0 left-1/2 transform -translate-x-1/2 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-lg rounded-full w-10/12 max-w-5xl px-6 py-2 flex justify-between items-center z-50 mt-4">
         <!-- Logo -->
         <a href="{{ route('dashboard') }}" class="flex items-center">
-            <img src="{{ asset('images/LOGO-SRS.png') }}" width="100" height="100" alt="Smartlab Logo">
+            <img src="{{ asset('images/LOGO SRS REV WARNA.png') }}" width="100" height="100" alt="Smartlab Logo">
         </a>
 
         <!-- Login Button -->
