@@ -636,8 +636,11 @@ class InputProgress extends Component implements HasForms
 
         $randomCode = generateRandomCode();
 
+        $user = User::find(auth()->user()->id);
 
-        // dd($form);
+        // Get all role names as a collection
+        $roles = $user->getRoleNames();
+
         $date = Carbon::now();
         $date = $date->format('Y-m-d H:i:s');
         $current[] = [
@@ -672,16 +675,14 @@ class InputProgress extends Component implements HasForms
 
 
         // dd($form);
-        if ($form['drafting'] !== true) {
-            // dd('bukan Draft');
-
+        if (isset($form['drafting']) && $form['drafting'] !== true || $roles->contains('marcom')) {
             try {
                 DB::beginTransaction();
                 $trackSampel = new TrackSampel();
                 $trackSampel->jenis_sampel = $form['Jenis_Sampel'];
                 $trackSampel->tanggal_memo = $form['TanggalMemo'];
                 $trackSampel->tanggal_terima = $form['TanggalTerima'];
-                $trackSampel->asal_sampel = $form['Asalampel'];
+                $trackSampel->asal_sampel = $form['Asalampel'] ?? 'Eksternal';
                 $trackSampel->nomor_kupa = $form['NomorKupa'];
                 $trackSampel->nama_pengirim = $form['NamaPengirim'];
                 $trackSampel->departemen = $form['NamaDep'];
@@ -753,7 +754,7 @@ class InputProgress extends Component implements HasForms
 
                 // $nohp = formatPhoneNumber($form['nomerhpuser']);
                 // dd($form['nomerhpuser']);
-                if ($form['Asalampel'] !== 'Eksternal') {
+                if (isset($form['Asalampel']) && $form['Asalampel'] !== 'Eksternal') {
                     if ($form['nomerhpuser'] !== []) {
                         $dataToInsert2 = [];
                         foreach ($form['nomerhpuser'] as $data) {
