@@ -136,7 +136,7 @@ class Editprogress extends Component implements HasForms
                 Select::make('Jenis_Sampel')
                     ->label('Jenis Sampel')
                     ->default($this->opt->jenis_sampel)
-                    ->options(JenisSampel::query()->where('soft_delete_id', '!=', 1)->pluck('nama', 'id'))
+                    ->options(JenisSampel::query()->pluck('nama', 'id'))
                     ->disabled(),
                 TextInput::make('jenis_pupuk')
                     ->default($this->opt->jenis_pupuk)
