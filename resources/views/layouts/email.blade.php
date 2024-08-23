@@ -41,7 +41,7 @@
 <body>
     <table>
         <tr>
-            <td colspan="3">Selamat Sore</td>
+            <td colspan="3">Selamat Pagi</td>
         </tr>
         <tr>
             <td colspan="3">Yth. Pelanggan Setia Lab CBI,</td>

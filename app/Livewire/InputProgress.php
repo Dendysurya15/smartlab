@@ -614,7 +614,7 @@ class InputProgress extends Component implements HasForms
         $checkpersonel = in_array($Personel, $form['Peralatan']);
         $checkbahan = in_array($bahan, $form['Peralatan']);
 
-        $kodesampeldata = $form['NamaKodeSampeljamak'] ?? $form['NamaKodeSampel'];
+        $kodesampeldata = $form['NamaKodeSampeljamak'] ?? $form['NamaKodeSampel'] ?? null;
 
         // dd($kodesampeldata);
         $NamaKodeSampeljamak = preg_replace('/\n/', '$', trim($kodesampeldata));
@@ -720,6 +720,7 @@ class InputProgress extends Component implements HasForms
                                     'kodesample' => $randomCode,
                                     'penerima' =>  str_replace('+', '', $data['NomorHp']),
                                     'type' => 'input',
+                                    'asal' => $form['Asalampel'],
                                 ];
                             }
                         }
@@ -738,7 +739,7 @@ class InputProgress extends Component implements HasForms
                     if ($emailAddresses !== null) {
                         Mail::to($emailAddresses)
                             ->cc($emailcc)
-                            ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode));
+                            ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode, null));
                     }
                 }
 

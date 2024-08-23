@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Events\Smartlabsnotification;
 use App\Models\TrackSampel;
 use App\Models\User;
 use Carbon\Carbon;
@@ -29,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Exports\MonitoringKupabulk;
 use App\Exports\LogbookBulkExport;
 use App\Exports\pdfpr;
+use App\Mail\EmailPelanggan;
 use App\Models\Invoice;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +40,7 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Illuminate\Support\Facades\Mail;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -217,16 +220,22 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
-                        'Uptodate' => 'success',
-                        'Update' => 'danger',
-                        default => 'warning',
+                        'Update' => 'warning',
+                        'Invoice Send Pending' => 'warning',
+                        'Invoice Send' => 'success',
+                        'Default' => 'grey',
+                        default => 'danger',
                     })
                     ->state(function (TrackSampel $record) {
                         if ($record->asal_sampel == 'Eksternal') {
-                            if ($record->invoice_id == 0) {
+                            if ($record->invoice_status == 0) {
                                 return  'Update';
+                            } else if ($record->invoice_status == 1) {
+                                return  'Invoice Send Pending';
+                            } else if ($record->invoice_status == 2) {
+                                return  'Invoice Send';
                             } else {
-                                return  'Uptodate';
+                                return 'Invalid Status';
                             }
                         } else {
                             return 'Default';
@@ -966,7 +975,10 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->label(fn(TrackSampel $record): string => $record->invoice_status == '0' ? 'Edit Invoice' : 'Invoice Uptodate')
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
-                        ->disabled(fn(TrackSampel $record): string => $record->invoice_status == '1')
+                        ->disabled(
+                            fn(TrackSampel $record) =>
+                            $record->asal_sampel == 'Internal' ? true : ($record->invoice_status == '0' ? false : true)
+                        )
                         // ->hidden(fn(TrackSampel $record): string => $record->asal_sampel == 'Internal')
                         ->visible(auth()->user()->can('update_invoice'))
                         ->modalHeading(fn(TrackSampel $record) => "Edit Invoice " . $record->kode_track)
@@ -1082,7 +1094,83 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                     ->send();
                             }
                             return $record;
+                        }),
+                    Action::make('send_invoice')
+                        ->label(fn(TrackSampel $record): string => $record->invoice_status !== '2' ? 'Send Invoice' : 'Invoice Sended')
+                        ->action(function (TrackSampel $records) {
+                            // dd($records);
+                            $nomor_hp = $records->no_hp;
+                            $nomor_hp = explode(',', $nomor_hp);
+                            $dataToInsert2 = [];
+                            foreach ($nomor_hp as $data) {
+                                $nomor_hp = numberformat_excel($data);
+
+                                if ($nomor_hp !== 'Error') {
+                                    $dataToInsert2[] = [
+                                        'no_surat' => $records->nomor_surat,
+                                        'nama_departemen' => $records->departemen,
+                                        'jenis_sampel' => $records->jenisSampel->nama,
+                                        'jumlah_sampel' => $records->jumlah_sampel,
+                                        'progresss' => $records->progressSampel->nama,
+                                        'kodesample' => $records->kode_track,
+                                        'penerima' =>  str_replace('+', '', $data),
+                                        'type' => 'input',
+                                        'asal' => $records->asal_sampel,
+                                        'id_invoice' => $records->id,
+                                    ];
+                                }
+                            }
+                            $emailAddresses = !empty($records->emailTo) ? explode(',', $records->emailTo) : null;
+                            $emailcc = !empty($records->emailCc) ? explode(',', $records->emailCc) : null;
+                            // dd($emailAddresses, $emailcc);
+                            // dd($dataToInsert2);
+                            if (!empty($dataToInsert2)) {
+                                // dd($dataToInsert2);
+                                event(new Smartlabsnotification($dataToInsert2));
+                                // SendMsg::insert($dataToInsert2);
+                            }
+
+                            // dd($progress, $progress_state);
+                            if ($emailAddresses !== null) {
+                                Mail::to($emailAddresses)
+                                    ->cc($emailcc)
+                                    ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id));
+                            }
+
+                            return Notification::make()
+                                ->success()
+                                ->title('Invoice Berhasil Dikirim')
+                                ->body('Invoice berhasil dikirim ke pelanggan')
+                                ->send();
+
+                            // dd($nomor_hp);
+                            // $jenis_sample_final = $records->jenisSampel->nama;
+                            // $carbonDate = Carbon::parse($records->tanggal_memo);
+                            // $dates_final = $carbonDate->format('F');
+                            // $year = $carbonDate->format('Y');
+
+
+                            // // Concatenate strings and variables using the concatenation operator (.)
+                            // $filename = 'PR Kupa ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year . '.xlsx';
+                            // return Excel::download(new pdfpr($records->id), $filename);
                         })
+                        ->icon('heroicon-o-document-chart-bar')
+                        ->disabled(function (TrackSampel $record) {
+                            if ($record->asal_sampel === 'Eksternal') {
+
+                                if ($record->invoice_status == 1) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            } else {
+                                return true;
+                            }
+                        })
+                        ->openUrlInNewTab()
+                        ->color('success')
+                        ->visible(auth()->user()->can('send_invoice'))
+                        ->size('xs'),
                 ])->tooltip('Actions'),
             ]);
     }

@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\JenisSampel;
 use App\Models\Progress;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -22,11 +23,12 @@ class EmailPelanggan extends Mailable
     public $jumlah_sampel;
     public $progress;
     public $kode_tracking_sampel;
+    public $id;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($nomor_surat, $departement, $jenis_sampel, $jumlah_sampel, $progress, $kode_tracking_sampel)
+    public function __construct($nomor_surat, $departement, $jenis_sampel, $jumlah_sampel, $progress, $kode_tracking_sampel, $id)
     {
         $this->nomor_surat = $nomor_surat;
         $this->departement = $departement;
@@ -34,6 +36,7 @@ class EmailPelanggan extends Mailable
         $this->jumlah_sampel = $jumlah_sampel;
         $this->progress = $progress;
         $this->kode_tracking_sampel = $kode_tracking_sampel;
+        $this->id = $id;
     }
 
     /**
@@ -43,9 +46,33 @@ class EmailPelanggan extends Mailable
      */
     public function build()
     {
+        $client = new Client();
 
+        $pdfContent = null;
+        $pdfFilename = null;
 
-        return $this->view('layouts.email', [
+        // Check if id is not null
+        if ($this->id !== null) {
+            // Make a GET request to the API with query parameters
+            $response = $client->get('http://127.0.0.1:8000/api/invoices_smartlabs', [
+                'query' => [
+                    'email' => 'j',
+                    'password' => 'j',
+                    'id_data' => $this->id,
+                ],
+            ]);
+
+            $responseData = json_decode($response->getBody()->getContents(), true);
+
+            if (isset($responseData['pdf'])) {
+                // Decode the base64 PDF
+                $pdfContent = base64_decode($responseData['pdf']);
+                $pdfFilename = $responseData['filename'];
+            }
+        }
+
+        // Build the email
+        $email = $this->view('layouts.email', [
             'nomor_surat' => $this->nomor_surat,
             'departement' => $this->departement,
             'jenis_sampel' => $this->jenis_sampel,
@@ -55,5 +82,14 @@ class EmailPelanggan extends Mailable
             'tanggal_surat' => Carbon::now()->format('d-m-Y'),
         ])
             ->subject('Hasil Analisa Surat:' . ' ' . $this->nomor_surat);
+
+        // Attach the PDF only if it was generated
+        if ($pdfContent !== null) {
+            $email->attachData($pdfContent, $pdfFilename, [
+                'mime' => 'application/pdf',
+            ]);
+        }
+
+        return $email;
     }
 }
