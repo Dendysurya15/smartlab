@@ -20,7 +20,7 @@
             </button>
         </div>
     </form>
-    <div id="progress-list" class="max-h-[400px] overflow-y-auto p-4 border border-gray-200 rounded-lg bg-white">
+    <div id="progress-list" class="max-h-[400px] overflow-y-auto p-4 border border-gray-200 rounded-lg bg-white mt-4">
         @if ($resultData !== null && $resultData !== 'kosong')
         @foreach ($resultData as $key => $value)
         <div class="mb-2">

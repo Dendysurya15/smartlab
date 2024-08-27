@@ -116,17 +116,8 @@
                     </h1>
 
                     {{ $slot }}
-                    <div class="mt-5" id="result" style="display: none">
-                        <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <ul id="progress-list" class="space-y-4 text-left text-gray-500 dark:text-gray-400">
 
-                            </ul>
-                        </div>
-                    </div>
 
-                    <div class="mt-5 mb-2 text-sm text-slate-600 font-medium italic" id="result_empty" style="display: none">Tidak menemukan sampel dengan kode <span id="kode_track_failed" class="text-red-600"></span>
-
-                    </div>
                 </div>
 
             </div>
@@ -139,7 +130,7 @@
         </div>
     </main>
     <!-- Modal -->
-    <div id="login-modal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 hidden">
+    <div id="login-modal" class="fixed inset-0  items-center justify-center bg-gray-900 bg-opacity-50 z-50 hidden">
         <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg max-w-md w-full">
             <!-- Modal Header -->
             <h1 class="text-3xl text-slate-800 dark:text-slate-700 font-bold mb-6">{{ __('Selamat Datang!') }}</h1>
