@@ -669,6 +669,8 @@ class HistoryKupaController extends Controller
             'no_kupa' => $no_kupa,
             'departemen' => $departemen,
             'formulir' => $formulir,
+            'labkiri' => $labkiri,
+            'labkanan' => $labkanan,
             'doc' => $doc,
             'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
         ];

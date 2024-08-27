@@ -240,13 +240,13 @@
                 <td rowspan="{{ $total_row }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: center">{{ $items['jum_sampel'] }}</td>
                 @endif
 
-                @if ($key == 1)
-                <td rowspan="{{ $total_row - 1 }}" style="border: 1px solid black; vertical-align: top; text-align: left">{{ $items['nolab'] }}</td>
-                @else
                 @if ($key == 0)
-                <td>{{ $items['nolab'] }}</td>
+                <td rowspan="{{ $total_row  }}" style="border: 1px solid black; vertical-align: center; text-align: left;">
+                    <span style="width: 100%;">{{ $labkiri }}</span><br>
+                    <span style="width: 100%;display:block;border-top: 1px solid black;">{{ $labkanan }}</span>
+                </td>
                 @endif
-                @endif
+
 
                 <td style="border: 1px solid black; vertical-align: center; text-align: left">{{ $items['Parameter_Analisis'] }}</td>
                 <td style="border: 1px solid black; vertical-align: center; text-align: center">{{ $items['mark'] }}</td>

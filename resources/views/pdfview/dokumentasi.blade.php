@@ -34,7 +34,10 @@
         }
 
         .card-body img {
-            width: auto;
+            max-width: 100%;
+            /* Ensure the image does not exceed the card width */
+            max-height: 100vh;
+            /* Ensure the image does not exceed the viewport height */
             height: auto;
             display: block;
             margin-bottom: 10px;

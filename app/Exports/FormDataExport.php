@@ -251,7 +251,12 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         }
 
         // dd($petugas_penerima_sampel);
-
+        // dd($total_row);
+        if ($total_row == 1) {
+            $test = 2;
+        } else {
+            $test = $total_row;
+        }
         return view('excelView.exportexcel', [
             'data' => $result,
             'total_row' => $total_row,
@@ -270,6 +275,8 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
             'departemen' => $departemen,
             'formulir' => $formulir,
             'doc' => $doc,
+            'labkiri' => $labkiri,
+            'labkanan' => $labkanan,
         ]);
     }
 
@@ -299,22 +306,6 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
                     $event->sheet->getStyle("P14:P$endRow")->getAlignment()
                         ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
                         ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
-                    // $event->sheet->mergeCells("J14:J$endRow");
-                    // $event->sheet->getStyle("J14:J$endRow")->getAlignment()
-                    //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                    //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-                    // $event->sheet->mergeCells("K14:K$endRow");
-                    // $event->sheet->getStyle("K14:K$endRow")->getAlignment()
-                    //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                    //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-                    // $event->sheet->mergeCells("L14:L$endRow");
-                    // $event->sheet->getStyle("L14:L$endRow")->getAlignment()
-                    //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                    //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-                    // $event->sheet->mergeCells("M14:M$endRow");
-                    // $event->sheet->getStyle("M14:M$endRow")->getAlignment()
-                    //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                    //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
                 }
 
                 $columnsToStyle = ['B12', 'C12', 'D12', 'E12', 'B5', 'B6', 'D1', 'D2', 'D3', 'D4', 'F12',  'H12', 'I12', 'J13', 'K13', 'L13', 'M13', 'N13', 'O13', 'P13', 'Q13', 'R13', 'S12', 'T13', 'U12'];

@@ -228,6 +228,14 @@
                 <td rowspan="{{ $total_row }}" style="border: 1px solid black; vertical-align: top; text-align: center">{{ $items['jum_sampel'] }}</td>
                 @endif
 
+                @if ($total_row == 1)
+                @if ($key == 0)
+                <td>
+                    {{ $labkiri }}<br>
+                    {{ $labkanan }}
+                </td>
+                @endif
+                @else
                 @if ($key == 1)
                 <td rowspan="{{ $total_row - 1 }}" style="border: 1px solid black; vertical-align: top; text-align: left">{{ $items['nolab'] }}</td>
                 @else
@@ -235,6 +243,9 @@
                 <td>{{ $items['nolab'] }}</td>
                 @endif
                 @endif
+                @endif
+
+
 
                 <td style="border: 1px solid black; vertical-align: center; text-align: left">{{ $items['Parameter_Analisis'] }}</td>
                 <td style="border: 1px solid black; vertical-align: center; text-align: center">{{ $items['mark'] }}</td>
