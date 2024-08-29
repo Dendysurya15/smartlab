@@ -11,7 +11,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <!-- <script>
         // Function to handle beforeunload event
         function handleBeforeUnload(e) {
             const confirmationMessage = 'Anda yakin ingin meninggalkan halaman ini? Data yang anda input akan hilang.';
@@ -19,5 +19,5 @@
             return confirmationMessage;
         }
         window.addEventListener('beforeunload', handleBeforeUnload);
-    </script>
+    </script> -->
 </x-app-layout>

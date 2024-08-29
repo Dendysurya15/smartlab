@@ -21,6 +21,7 @@
         }
     </style>
 
+    @foreach ($data as $keysx => $valuex)
 
     <table style="border: 1px solid black;">
         <thead>
@@ -47,11 +48,11 @@
             <tr>
                 <th></th>
                 <td colspan="16" style="border: 1px solid black;text-align:center">
-                    @if($formulir != null)
-                    {{$formulir}}
+                    @if($valuex['formulir'] != null)
+                    {{$valuex['formulir']}}
                     @else
                     Kaji Ulang Permintaa, Tender dan Kontrak Sampel
-                    {{$jenis_kupa ?? 0}}
+                    {{$valuex['jenis_kupa'] ?? 0}}
                     @endif
 
                 </td>
@@ -74,8 +75,8 @@
             <tr>
                 <th></th>
                 <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
-                    @if($doc != null)
-                    {{$doc}}
+                    @if($valuex['doc'] != null)
+                    {{$valuex['doc']}}
                     @else
                     FR.7.1-12
                     @endif
@@ -97,7 +98,7 @@
                     Tanggal Penerimaan
                 </th>
                 <th colspan="5" style="text-align:left;">
-                    : {{$tanggal_penerimaan ?? 0}}
+                    : {{$valuex['tanggal_penerimaan'] ?? 0}}
                 </th>
                 <th colspan="6" style="text-align:center;">
 
@@ -106,7 +107,7 @@
                     Jenis Sampel
                 </th>
                 <th colspan="3" style="text-align:left;">
-                    : {{$jenis_kupa ?? 0}}
+                    : {{$valuex['jenis_kupa'] ?? 0}}
                 </th>
             </tr>
             <tr>
@@ -115,7 +116,7 @@
                     No. Kaji Ulang
                 </th>
                 <th colspan="5" style="text-align:left;">
-                    : {{$no_kupa ?? 0}}
+                    : {{$valuex['no_kupa'] ?? 0}}
                 </th>
                 <th colspan="6" style="text-align:center;">
 
@@ -124,7 +125,7 @@
                     Nama Pelanggan
                 </th>
                 <th colspan="3" style="text-align:left;">
-                    : {{$nama_pengirim ?? 0}}
+                    : {{$valuex['nama_pengirim'] ?? 0}}
                 </th>
             </tr>
             <tr>
@@ -142,7 +143,7 @@
                     Departemen
                 </th>
                 <th colspan="3" style="text-align:left;">
-                    : {{$departemen ?? 0}}
+                    : {{$valuex['departemen'] ?? 0}}
                 </th>
             </tr>
             <tr>
@@ -230,20 +231,19 @@
 
         </thead>
         <tbody>
-
-            @foreach ($data as $key => $items)
+            @foreach ($valuex['data'] as $key => $items)
             <tr>
                 <td></td>
                 @if ($key == 0)
-                <td rowspan="{{ $total_row }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: left">{{ $items['no_surat'] }}</td>
-                <td rowspan="{{ $total_row }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: left">{{ $items['kemasan'] }}</td>
-                <td rowspan="{{ $total_row }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: center">{{ $items['jum_sampel'] }}</td>
+                <td rowspan="{{ $valuex['total_row'] }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: left">{{ $items['no_surat'] }}</td>
+                <td rowspan="{{ $valuex['total_row'] }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: left">{{ $items['kemasan'] }}</td>
+                <td rowspan="{{ $valuex['total_row'] }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: center">{{ $items['jum_sampel'] }}</td>
                 @endif
 
                 @if ($key == 0)
-                <td rowspan="{{ $total_row  }}" style="border: 1px solid black; vertical-align: center; text-align: left;">
-                    <span style="width: 100%;">{{ $labkiri }}</span><br>
-                    <span style="width: 100%;display:block;border-top: 1px solid black;">{{ $labkanan }}</span>
+                <td rowspan="{{ $valuex['total_row']  }}" style="border: 1px solid black; vertical-align: center; text-align: left;">
+                    <span style="width: 100%;">{{ $valuex['labkiri'] }}</span><br>
+                    <span style="width: 100%;display:block;border-top: 1px solid black;">{{ $valuex['labkanan'] }}</span>
                 </td>
                 @endif
 
@@ -283,14 +283,14 @@
                 @endif
 
                 @if ($key == 0)
-                <td rowspan="{{ $total_row }}" style="border: 1px solid black; vertical-align: top; text-align: center">{{ $items['estimasi'] }}</td>
+                <td rowspan="{{ $valuex['total_row'] }}" style="border: 1px solid black; vertical-align: top; text-align: center">{{ $items['estimasi'] }} </td>
                 @endif
             </tr>
             @endforeach
 
-            @foreach ($result_total as $data)
+            @foreach ($valuex['result_total'] as $datas)
             <tr>
-                @foreach ($data as $index => $item)
+                @foreach ($datas as $index => $item)
                 @if ($index == 0)
                 <td>{{ $item }}</td>
                 @else
@@ -321,25 +321,25 @@
                 <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
                 <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
                 <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
-                <td rowspan="6" style="text-align: left; vertical-align:top; border:1px solid black;">{{$catatan}}</td>
+                <td rowspan="6" style="text-align: left; vertical-align:top; border:1px solid black;">{{$valuex['catatan']}}</td>
             </tr>
             <tr>
                 <td style="text-align: center; border: 1px solid black; border-bottom: none; border-top: none;">
 
-                    @if ($approval == 'Draft' || $approval == 'Waiting Admin Approval')
+                    @if ($valuex['approval'] == 'Draft' || $valuex['approval'] == 'Waiting Admin Approval')
                     <span>CREATED</span><br>
-                    <span>{{$memo_created}}</span>
+                    <span>{{$valuex['memo_created']}}</span>
                     @else
                     <span style="color: blue;font-size: 20px;">APPROVED</span><br>
-                    <span>{{$verifikasi_admin_timestamp}}</span>
+                    <span>{{$valuex['verifikasi_admin_timestamp']}}</span>
                     @endif
 
                 </td>
 
                 <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">
-                    @if ($isVerifiedByHead == True)
+                    @if ($valuex['isVerifiedByHead'] == True)
                     <span style="color: blue;font-size: 20px;">APPROVED</span><br>
-                    <span>{{$verifikasi_head_timestamp}}</span>
+                    <span>{{$valuex['verifikasi_head_timestamp']}}</span>
                     @endif
 
                 </td>
@@ -356,9 +356,9 @@
                 <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
             </tr>
             <tr>
-                <td style="text-align: center; border:1px solid black; border-bottom:none;">{{$petugas_penerima_sampel}}</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none;">{{$valuex['petugas_penerima_sampel']}}</td>
                 <td style="text-align: center; border:1px solid black; border-bottom:none;">Budi Umbara</td>
-                <td style="text-align: center; border:1px solid black; border-bottom:none;">{{$nama_pengirim}}</td>
+                <td style="text-align: center; border:1px solid black; border-bottom:none;">{{$valuex['nama_pengirim']}}</td>
             </tr>
             <tr>
                 <td style="text-align: center; border:1px solid black;">Petugas Penerima Sampel</td>
@@ -367,7 +367,8 @@
             </tr>
         </tbody>
     </table>
-
+    @endforeach
+    <div style="page-break-after: auto;"></div>
 
 </body>
 

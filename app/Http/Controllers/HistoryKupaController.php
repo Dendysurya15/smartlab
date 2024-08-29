@@ -205,6 +205,7 @@ class HistoryKupaController extends Controller
                 $nama_parameter = [];
                 foreach ($value1 as $key2 => $value2) {
                     $jenissample = $value2->jenisSampel->nama;
+                    $jenissample_komuditas = $value2->jenis_pupuk;
                     $jumlahsample = $value2['jumlah_sampel'];
                     $catatan = $value2['catatan'];
                     $kdsmpel = $value2['kode_sampel'];
@@ -292,6 +293,7 @@ class HistoryKupaController extends Controller
                     foreach ($kode_sampel as $index => $kode) {
                         if ((string)$keysx === $kode) {
                             $result[$key][$key1][$keysx]['jenis_sample'] = $jenissample;
+                            $result[$key][$key1][$keysx]['jenis_sample_komoditas'] = $jenissample_komuditas;
                             $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
                             $result[$key][$key1][$keysx]['catatan'] = ($index == 0) ? $catatan : 'null';
                             $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
@@ -442,6 +444,8 @@ class HistoryKupaController extends Controller
     public function export_kupa_pdf($id, $filename)
     {
 
+
+        $idsc = '71$69';
         $idsArray = explode('$', $id);
         $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
         $petugas = ExcelManagement::where('status', 1)->get();
@@ -464,25 +468,35 @@ class HistoryKupaController extends Controller
 
             return $result;
         }
+        function combineKeysAndValues($keys, $values)
+        {
+            $result = [];
+
+            foreach ($keys as $index => $key) {
+                $result[$key] = $values[$index];
+            }
+
+            return $result;
+        }
+
+        $data = [];
         foreach ($queries as $key => $value) {
-            // dd($value);
             $tanggal_terima = Carbon::parse($value->tanggal_terima);
             $trackparam = $value->trackParameters;
 
-            // $data = [];
+            $nama_params = [];
             foreach ($trackparam as $trackParameter) {
-
                 if ($trackParameter->ParameterAnalisis) {
                     if ($trackParameter->ParameterAnalisis->paket_id != null) {
-                        $data = explode('$', $trackParameter->ParameterAnalisis->paket_id);
+                        $data_paket = explode('$', $trackParameter->ParameterAnalisis->paket_id);
                         $nama_params[] = [
-                            'unsur' => ParameterAnalisis::whereIn('id', $data)->pluck('nama_unsur')->toArray(),
-                            'metode_analisis' => ParameterAnalisis::whereIn('id', $data)->pluck('metode_analisis')->toArray(),
+                            'unsur' => ParameterAnalisis::whereIn('id', $data_paket)->pluck('nama_unsur')->toArray(),
+                            'metode_analisis' => ParameterAnalisis::whereIn('id', $data_paket)->pluck('metode_analisis')->toArray(),
                             'harga' => $trackParameter->ParameterAnalisis->harga,
                             'jenis' => 'Paket',
-                            'row' => count($data),
+                            'row' => count($data_paket),
                             'jumlah_sampel' => $trackParameter->jumlah,
-                            'satuan' => ParameterAnalisis::whereIn('id', $data)->pluck('satuan')->toArray(),
+                            'satuan' => ParameterAnalisis::whereIn('id', $data_paket)->pluck('satuan')->toArray(),
                             'sub_total' => $trackParameter->ParameterAnalisis->harga * $trackParameter->jumlah,
                         ];
                     } else {
@@ -500,7 +514,6 @@ class HistoryKupaController extends Controller
                 }
             }
 
-            // dd($nama_params);
             $total_row = 0;
             $jum_sampel = 0;
             $harga_total_per_sampel = 0;
@@ -512,21 +525,15 @@ class HistoryKupaController extends Controller
             $list_harga = [];
             $sub_total = [];
 
-            // dd($nama_params);
             foreach ($nama_params as $param) {
                 $total_row += $param['row'];
                 $jum_sampel += $param['jumlah_sampel'];
                 $harga_total_per_sampel += $param['sub_total'];
 
-
-
-
                 $list_jumlah_sampel[] = $param['jumlah_sampel'];
                 $list_harga[] = $param['harga'];
                 $sub_total[] = $param['sub_total'];
                 $list_row[] = $param['row'];
-
-
 
                 if (is_array($param['unsur'])) {
                     $list_unsur = array_merge($list_unsur, $param['unsur']);
@@ -549,77 +556,43 @@ class HistoryKupaController extends Controller
             $year = Carbon::parse($value->tanggal_terima)->format('y');
             $kode_sampel = $value->jenisSampel->kode;
 
+            $nolab = explode('$', $value->nomor_lab);
+            $year = Carbon::parse($value->tanggal_terima)->format('y');
+            $kode_sampel = $value->jenisSampel->kode;
+
+            $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
+            $labkanan = isset($nolab[1]) ? $year . $kode_sampel . '.' . formatLabNumber($nolab[1]) : '';
 
             $colspandata = transformArray($list_row);
-            $keys = array_keys($colspandata);
-            $jum_samps = [];
-            $jum_harga = [];
-            $jum_sub_total = [];
+            $keys_default = array_keys($colspandata);
 
-            foreach ($keys as $keym1 => $valuem1) {
-                if (isset($list_jumlah_sampel[$keym1])) {
-                    $jum_samps[$valuem1] = $list_jumlah_sampel[$keym1];
-                }
-                if (isset($list_harga[$keym1])) {
-                    $jum_harga[$valuem1] = $list_harga[$keym1];
-                }
-
-                if (isset($sub_total[$keym1])) {
-                    $jum_sub_total[$valuem1] = $sub_total[$keym1];
-                }
-            }
-
-            // dd($jum_sub_total);
-            // Format the left lab number
-            $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
-
-            // Check if the right lab number exists
-            if (isset($nolab[1])) {
-                // Format the right lab number
-                $labkanan = $year . $kode_sampel . '.' . formatLabNumber($nolab[1]);
-            } else {
-                $labkanan = '';
-            }
-            // dd($total_row);
-
-            // untuk row data 
+            $list_jumlah_sampel = combineKeysAndValues($keys_default, $list_jumlah_sampel);
+            $list_harga = combineKeysAndValues($keys_default, $list_harga);
+            $sub_total = combineKeysAndValues($keys_default, $sub_total);
             for ($i = 0; $i < $total_row; $i++) {
 
-                $result[$i]['no_surat'] = ($i == 0) ? $value->nomor_surat : '';
-                $result[$i]['kemasan'] = ($i == 0) ? $value->kemasan_sampel : '';
-                $result[$i]['colspan'] = ($i == 0) ? $total_row : 0;
-                $result[$i]['jum_sampel'] = ($i == 0) ? $value->jumlah_sampel : '';
-
-                if ($i == 0) {
-                    $result[$i]['nolab'] = $labkiri;
-                } elseif ($i == 1) {
-                    $result[$i]['nolab'] = $labkanan;
-                } else {
-                    $result[$i]['nolab'] = '';
-                }
-                $result[$i]['Parameter_Analisis'] = $list_unsur[$i];
-                $result[$i]['mark'] = '✓';
-                $result[$i]['Metode_Analisis'] = $list_analisis[$i];
-                $result[$i]['satuan'] = $list_satuan[$i];
-                $result[$i]['Personel'] = ($value->personel == 1) ?   '✔' : '';
-                $result[$i]['alat'] = ($value->alat == 1) ?   '✔' : '';
-                $result[$i]['bahan'] = ($value->bahan == 1) ?   '✔' : '';
-                if (isset($colspandata[$i])) {  // Check if $i is a key in $colspandata
-                    $result[$i]['cols'] = $colspandata[$i];
-                } else {
-                    $result[$i]['cols'] = 0;
-                }
-
-                $result[$i]['jum_data'] = $jum_samps[$i] ?? 0;
-                $result[$i]['jum_harga'] =  $jum_harga[$i] ?? 0;
-                $result[$i]['jum_sub_total'] = $jum_sub_total[$i] ?? 0;
-                $result[$i]['Konfirmasi'] = ($value->konfirmasi == 1) ?   '✔' : '';
-                $result[$i]['kondisi_sampel'] = $value->kondisi_sampel;
-                $result[$i]['estimasi'] = ($i == 0) ? Carbon::parse($value->estimasi)->locale('id')->translatedFormat('d F Y') : '';
+                $result[$key][$i] = [
+                    'no_surat' => ($i == 0) ? $value->nomor_surat : '',
+                    'kemasan' => ($i == 0) ? $value->kemasan_sampel : '',
+                    'colspan' => ($i == 0) ? $total_row : 0,
+                    'jum_sampel' => ($i == 0) ? $value->jumlah_sampel : '',
+                    'nolab' => ($i == 0) ? $labkiri : (($i == 1) ? $labkanan : ''),
+                    'Parameter_Analisis' => $list_unsur[$i] ?? '',
+                    'mark' => '✓',
+                    'Metode_Analisis' => $list_analisis[$i] ?? '',
+                    'satuan' => $list_satuan[$i] ?? '',
+                    'Personel' => ($value->personel == 1) ? '✔' : '',
+                    'alat' => ($value->alat == 1) ? '✔' : '',
+                    'bahan' => ($value->bahan == 1) ? '✔' : '',
+                    'cols' => isset($colspandata[$i]) ? $colspandata[$i] : 0,
+                    'jum_data' => isset($list_jumlah_sampel[$i]) ? $list_jumlah_sampel[$i] : 0,
+                    'jum_harga' => isset($list_harga[$i]) ? $list_harga[$i] : 0,
+                    'jum_sub_total' => isset($sub_total[$i]) ? $sub_total[$i] : 0,
+                    'Konfirmasi' => ($value->konfirmasi == 1) ? '✔' : '',
+                    'kondisi_sampel' => $value->kondisi_sampel,
+                    'estimasi' => ($i == 0) ? Carbon::parse($value->estimasi)->locale('id')->translatedFormat('d F Y') : '',
+                ];
             }
-
-
-            // untuk row totalan dan diskon 
 
             $titles = ["Total Per Parameter", "PPn 11%", "Diskon", "Total"];
             $values_title = [Money::IDR($harga_total_per_sampel, true), $harga_total_dengan_ppn, $discount, $total_akhir];
@@ -632,7 +605,6 @@ class HistoryKupaController extends Controller
                 $result_total[$i][5] = $titles[$i];
                 $result_total[$i][11] = $values_title[$i];
             }
-            // dd($result);
             $catatan = $value->catatan;
             $nama_pengirim = $value->nama_pengirim;
             $status = $value->status;
@@ -650,38 +622,49 @@ class HistoryKupaController extends Controller
             $departemen = $value->departemen;
             $formulir = $value->formulir;
             $doc = $value->no_doc;
+            $data[$key] = [
+                'data' => $result[$key],
+                'total_row' => $total_row,
+                "result_total" => $result_total,
+                "catatan" =>   $value->catatan,
+                'nama_pengirim' => $nama_pengirim,
+                'petugas_penerima_sampel' => $petugas_penerima_sampel,
+                'approval' => $status,
+                'memo_created' => $memo_created,
+                'verifikasi_admin_timestamp' => $verifikasi_admin_timestamp,
+                'isVerifiedByHead' => $approveby_head,
+                'verifikasi_head_timestamp' => $verifikasi_head_timestamp,
+                'jenis_kupa' => $jenis_kupa,
+                'tanggal_penerimaan' => $tanggal_penerimaan,
+                'no_kupa' => $no_kupa,
+                'departemen' => $departemen,
+                'formulir' => $formulir,
+                'labkiri' => $labkiri,
+                'labkanan' => $labkanan,
+                'doc' => $doc,
+                'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
+            ];
+            $jenis_sampel[] = $value->jenisSampel->nama;
+            $date[] = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('F Y');
+        }
+        if ($filename === 'bulk') {
+            $uniqueArray = array_unique($jenis_sampel);
+            $uniquedate = array_unique($date);
+            // dd($uniquedate);
+
+            $newfilename =  'Kupa_' . implode('_', $uniqueArray) . '_Date_' . implode('_', $uniquedate);
+        } else {
+            $newfilename = $filename;
         }
 
-        $data = [
-            'data' => $result,
-            'total_row' => $total_row,
-            'result_total' => $result_total,
-            'catatan' => $catatan,
-            'nama_pengirim' => $nama_pengirim,
-            'petugas_penerima_sampel' => $petugas_penerima_sampel,
-            'approval' => $status,
-            'memo_created' => $memo_created,
-            'verifikasi_admin_timestamp' => $verifikasi_admin_timestamp,
-            'isVerifiedByHead' => $approveby_head,
-            'verifikasi_head_timestamp' => $verifikasi_head_timestamp,
-            'jenis_kupa' => $jenis_kupa,
-            'tanggal_penerimaan' => $tanggal_penerimaan,
-            'no_kupa' => $no_kupa,
-            'departemen' => $departemen,
-            'formulir' => $formulir,
-            'labkiri' => $labkiri,
-            'labkanan' => $labkanan,
-            'doc' => $doc,
-            'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
-        ];
 
-        // dd($data);
+
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
         $options->set('isRemoteEnabled', true); // Enable loading of remote resources
         $dompdf = new Dompdf($options);
 
-        $view = view('pdfview.export_kupa', $data)->render();
+        $view = view('pdfview.export_kupa', ['data' => $data])->render();
         $dompdf->loadHtml($view);
 
         // Set paper size and orientation
@@ -691,7 +674,7 @@ class HistoryKupaController extends Controller
         $dompdf->render();
 
 
-        $dompdf->stream($filename, ["Attachment" => false]);
+        $dompdf->stream($newfilename, ["Attachment" => false]);
     }
 
     public function export_pr_pdf($id, $filename)

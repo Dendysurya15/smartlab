@@ -125,9 +125,13 @@ class InputProgress extends Component implements HasForms
                     ->required()
                     ->live(debounce: 500),
                 TextInput::make('jenis_pupuk')
-                    ->hidden(fn(Get $get): bool => $get('Jenis_Sampel') !== '11' ? True : false)
-                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
-                    ->label('Jenis Pupuk'),
+                    ->label(function (Get $get) {
+                        $string = JenisSampel::find($get('Jenis_Sampel'))->nama ?? 'Sample';
+                        return 'Jenis Sampel ' . $string;
+                        // dd($get('Jenis_Sampel'));
+                    })
+                    // ->hidden(fn(Get $get): bool => $get('Jenis_Sampel') !== '11' ? True : false)
+                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
                     ->disabled(function ($get) {

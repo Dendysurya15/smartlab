@@ -74,6 +74,7 @@
                     <tr>
                         <th rowspan="2" class="border-text">NO</th>
                         <th rowspan="2" class="border-text">tanggal sample</th>
+                        <th rowspan="2" class="border-text">Sampel</th>
                         <th rowspan="2" class="border-text">Jenis Sampel</th>
                         <th rowspan="2" class="border-text">Asal Sampel</th>
                         <th rowspan="2" class="border-text">No Kupa</th>
@@ -120,6 +121,7 @@
                         <td class="border-text">{{$inc++}}</td>
                         <td class="border-text">{{$item2['tanggal_terima']}}</td>
                         <td class="border-text">{{$item2['jenis_sample']}}</td>
+                        <td class="border-text">{{$item2['jenis_sample_komoditas']}}</td>
                         <td class="border-text">{{$item2['asal_sampel']}}</td>
                         <td class="border-text">{{$item2['nomor_kupa']}}</td>
                         <td class="border-text">{{$item2['nomor_lab']}}</td>

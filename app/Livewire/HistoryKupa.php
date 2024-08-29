@@ -389,6 +389,40 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->color('info')
                     ->label('Export PR'),
                 ActionGroup::make([
+                    BulkAction::make('export_kupa_pdf')
+                        ->label('PDF')
+                        ->button()
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('warning')
+                        ->deselectRecordsAfterCompletion()
+                        ->modalHeading('Perhatian')
+                        ->modalSubheading(
+                            "Harap Memilih data yang tidak dalam kondisi status Draft"
+                        )
+                        ->modalButton('Export PDF')
+                        ->action(function (Collection $records) {
+                            $recordIds = [];
+                            $jenis_sampel = [];
+                            $dates = [];
+                            $year = [];
+
+                            $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
+                                if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                                    $recordIds[] = $record->id;
+                                }
+                                $jenis_sampel[] = $record->jenisSampel->nama;
+                                $carbonDate = Carbon::parse($record->tanggal_memo);
+                                $dates[] = $carbonDate->format('F');
+                                $year[] = $carbonDate->format('Y');
+                            });
+                            $data = implode('$', $recordIds);
+
+                            return redirect()->route('exporpdfkupa', ['id' => $data, 'filename' => 'bulk'])->with('target', '_blank');
+                        }),
+                ])->button()
+                    ->color('info')
+                    ->label('Export Kupa'),
+                ActionGroup::make([
                     BulkAction::make('export')
                         ->label('Excel')
                         ->button()
