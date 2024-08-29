@@ -141,7 +141,7 @@ class Editprogress extends Component implements HasForms
                 TextInput::make('jenis_pupuk')
                     ->default($this->opt->jenis_pupuk)
                     ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                    ->hidden($this->opt->jenis_sampel !== 11 ? true : false)
+                    ->hidden(is_null($this->opt->pupuk))
                     ->label('Jenis Pupuk'),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
