@@ -250,6 +250,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 Group::make('status')
                     ->label('Status'),
             ])
+            ->recordClasses(fn(TrackSampel $record) => match ($record->progressSampel->nama) {
+                'Recheck' => 'bg-yellow-100',
+                'Rilis Sertifikat' => 'bg-green-100',
+                default => null,
+            })
             ->filters([
                 SelectFilter::make('jenisSampel')
                     ->label('Jenis sampel')
