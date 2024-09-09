@@ -448,8 +448,8 @@ if (!function_exists('Generateresult')) {
         $result_data = [];
         foreach ($data as $keys => $value) {
             $source = Kuesionerpertanyaan::where('id', (int)$value['key'])->with('Tipe', 'template_jawaban')->first();
-            $source_pertanyaan = $source->label;
-            $source_tipe = $source->Tipe->nama;
+            $source_pertanyaan = $source->label ?? 'Kosong';
+            $source_tipe = $source->Tipe->nama ?? 'Kosong';
             $answer_data = $value['value'];
             $options = [];
 
@@ -466,23 +466,45 @@ if (!function_exists('Generateresult')) {
                 'option' => $options
             ];
         }
+        $adding_new = [
+            "id_pertanyaan" => 41,
+            "pertanyaan" => "Kesesuaian harga layanan dengan produk jasa",
+            "tipe" => "radio",
+            "jawaban" => "null",
+            "option" => [
+                1 => "Tidak puas",
+                2 => "Kurang puas",
+                3 => "Puas",
+                4 => "Sangat puas",
+            ]
+        ];
+        $check = count($result_data);
+
+        if ($check < 19) {
+            $new_result = array_merge($result_data, [$adding_new]);
+        } else {
+            $new_result = $result_data;
+        }
+        // dd($result_data);
+        // Wrap $adding_new in an array to merge it properly
 
         $new_data_text = [];
         $new_data_radio = [];
 
-        foreach ($result_data as $key => $item) {
+        foreach ($new_result as $key => $item) {
             if ($item['tipe'] === 'text') {
-                $new_data_text[] = TextInput::make($key)
+                $new_data_text[] = TextInput::make($item['id_pertanyaan'])
                     ->label($item['pertanyaan'])
+                    ->required()
                     ->default($item['jawaban']);
             } elseif ($item['tipe'] === 'radio') {
-                $new_data_radio[] = Radio::make($key)
+                $new_data_radio[] = Radio::make($item['id_pertanyaan'])
                     ->label($item['pertanyaan'])
                     ->default($item['jawaban'])
+                    ->required()
                     ->options($item['option']);
             }
         }
-
         $fieldset_text = Fieldset::make('Text Inputs')
             ->schema($new_data_text)
             ->columns(1);
@@ -491,9 +513,12 @@ if (!function_exists('Generateresult')) {
             ->schema($new_data_radio)
             ->columns(3);
 
+
         return [
             $fieldset_text,
-            $fieldset_radio
+            $fieldset_radio,
+
+
         ];
     }
 }

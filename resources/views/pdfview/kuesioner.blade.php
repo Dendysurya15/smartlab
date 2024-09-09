@@ -102,7 +102,6 @@
     @php
     $data_diri = $valuex['Data diri']['text'];
     $pelayanan = $valuex['Pelayanan']['radio'];
-    $pelayanan_text = $valuex['Pelayanan']['text'] ?? 'null';
     $signature = $valuex['signature'];
     $datetime = $valuex['datetime'];
     $laporan = $valuex['Laporan']['radio'] ?? $valuex['Laporan hasil uji (Report of Analysis)']['radio'] ;
@@ -225,11 +224,7 @@
             </tr>
             @endforeach
             <tr>
-                @if($pelayanan_text !== 'null')
                 <td class="border" rowspan="9">2</td>
-                @else
-                <td class="border" rowspan="8">2</td>
-                @endif
                 <td class="border2" colspan="5" style="font-weight:bold;">Pelayanan</td>
 
             </tr>
@@ -266,14 +261,6 @@
 
             </tr>
             @endforeach
-            @if($pelayanan_text !== 'null')
-            @foreach ($pelayanan_text as $key => $value)
-            <tr>
-                <td class="border2">{{$value['pertanyaan']}}</td>
-                <td class="border2" style="text-align: center;" colspan="4">{{$value['jawaban']}}</td>
-            </tr>
-            @endforeach
-            @endif
         </table>
 
         <section style="padding-top: 10px;">
