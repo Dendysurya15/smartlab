@@ -287,17 +287,21 @@ class HistoryKupaController extends Controller
                 foreach ($sampel_data as $keyx => $valuex) {
                     $new_sampel[$incc++] = implode(',', $valuex);
                 }
-
+                // dd($value2);
+                $timestamp = strtotime($value2['tanggal_terima']);
+                $year = date('Y', $timestamp);
+                $lab =  substr($year, 2) . $value2->jenisSampel->kode . '.';
 
                 foreach ($sampel_data as $keysx => $valuems) {
                     foreach ($kode_sampel as $index => $kode) {
                         if ((string)$keysx === $kode) {
                             $result[$key][$key1][$keysx]['jenis_sample'] = $jenissample;
+                            $result[$key][$key1][$keysx]['nama_unsur'] = $keysx;
                             $result[$key][$key1][$keysx]['jenis_sample_komoditas'] = $jenissample_komuditas;
                             $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
                             $result[$key][$key1][$keysx]['catatan'] = ($index == 0) ? $catatan : 'null';
                             $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
-                            $result[$key][$key1][$keysx]['nomor_lab'] = $nomor_lab[0] + $index;
+                            $result[$key][$key1][$keysx]['nomor_lab'] = $lab . $nomor_lab[0] + $index;
                             $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
                             $result[$key][$key1][$keysx]['asal_sampel'] = $value2['asal_sampel'];
                             $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
@@ -336,10 +340,7 @@ class HistoryKupaController extends Controller
         $pdf = Pdf::setPaper('letter', 'portrait');
         $pdf->setOptions([
             'dpi' => 100,
-            'defaultFont' => 'Nunito, sans-serif',
-            'isHtml5ParserEnabled' => true,
             'isRemoteEnabled' => true,
-            'isJavascriptEnabled' => true
         ]);
 
         // $pdf->setOptions(['dpi' => 150, 'isHtml5ParserEnabled' => true, 'defaultFont' => 'sans-serif']);

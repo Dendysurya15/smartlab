@@ -35,6 +35,7 @@
             <tr>
                 <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">NO</th>
                 <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">tanggal sample</th>
+                <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">Sampel</th>
                 <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">Jenis Sampel</th>
                 <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">Asal Sampel</th>
                 <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">No Kupa</th>
@@ -79,6 +80,10 @@
                 <td style="border:1px solid black;">{{$inc++}}</td>
                 <td style="border:1px solid black;">{{$item2['tanggal_terima']}}</td>
                 <td style="border:1px solid black;">{{$item2['jenis_sample']}}</td>
+                <td style="border:1px solid black; white-space: nowrap;">
+                    {{$item2['jenissample_komuditas']}}
+                </td>
+
                 <td style="border:1px solid black;">{{$item2['asal_sampel']}}</td>
                 <td style="border:1px solid black;">{{$item2['nomor_kupa']}}</td>
                 <td style="border:1px solid black;">{{$item2['nomor_lab']}}</td>

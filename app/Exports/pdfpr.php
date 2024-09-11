@@ -50,6 +50,7 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                 $nama_parameter = [];
                 foreach ($value1 as $key2 => $value2) {
                     $jenissample = $value2->jenisSampel->nama;
+                    $jenissample_komuditas = $value2->jenis_pupuk;
                     $jumlahsample = $value2['jumlah_sampel'];
                     $kdsmpel = $value2['kode_sampel'];
                     $nolab = $value2['nomor_lab'];
@@ -138,6 +139,7 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                     foreach ($kode_sampel as $index => $kode) {
                         if ((string)$keysx === $kode) {
                             $result[$key][$key1][$keysx]['jenis_sample'] = $jenissample;
+                            $result[$key][$key1][$keysx]['jenissample_komuditas'] = $jenissample_komuditas;
                             $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
                             $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
                             $result[$key][$key1][$keysx]['nomor_lab'] = $nomor_lab[0] + $index;
