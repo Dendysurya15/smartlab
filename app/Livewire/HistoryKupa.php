@@ -32,6 +32,8 @@ use App\Exports\LogbookBulkExport;
 use App\Exports\pdfpr;
 use App\Mail\EmailPelanggan;
 use App\Models\Invoice;
+use App\Models\JenisSampel;
+use App\Models\Progress;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Grouping\Group;
@@ -42,6 +44,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Illuminate\Support\Facades\Mail;
 use GuzzleHttp\Client;
+use Filament\Tables\Columns\SelectColumn;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -92,12 +95,71 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->copyMessage(fn(string $state): string => "Copied {$state} to clipboard")
                     ->copyMessageDuration(1500)
                     ->size('xs'),
-                TextColumn::make('progressSampel.nama')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->searchable()
-                    ->copyable()
-                    ->sortable()
-                    ->size('xs'),
+                // TextColumn::make('progressSampel.nama')
+                //     ->toggleable(isToggledHiddenByDefault: false)
+                //     ->searchable()
+                //     ->copyable()
+                //     ->sortable()
+                //     ->size('xs'),
+                SelectColumn::make('progress')
+                    ->label('Progres detail sampel')
+                    ->default(fn(TrackSampel $record) => $record->progress)
+                    ->selectablePlaceholder(false)
+                    ->options(function (TrackSampel $record) {
+                        $jenisSampel = JenisSampel::find($record->jenis_sampel);
+                        // dd($jenisSampel);
+                        $progress = $jenisSampel->progress;
+                        $currentStatus = $record->progress;
+
+                        $progressArray = explode(',', $progress);
+
+                        $getdata = [];
+
+                        foreach ($progressArray as $key => $value) {
+                            $option = Progress::find($value);
+
+                            // Only include options starting from the current status
+                            if ($option->id >= $currentStatus) {
+                                $getdata[$option->id] = $option->nama;
+                            }
+                        }
+                        // dd($getdata, $record->jenis_sampel);
+                        return $getdata;
+                    })
+                    ->afterStateUpdated(function ($record, $state) {
+                        // dd($state, $record);
+                        if ($record->asal_sampel !== 'Eksternal') {
+                            $nomor_hp = explode(',', $record->no_hp);
+                            $progress = Progress::where('id', $state)->first()->pluck('nama') ?? null;
+                            foreach ($nomor_hp as $key => $value) {
+                                $dataToInsert2[] = [
+                                    'no_surat' => $record->nomor_surat,
+                                    'nama_departemen' => $record->departemen,
+                                    'jenis_sampel' => $record->jenisSampel->nama,
+                                    'jumlah_sampel' => $record->jumlah_sampel,
+                                    'progresss' => $progress,
+                                    'kodesample' => $record->kode_track,
+                                    'penerima' =>  str_replace('+', '', $value),
+                                    'type' => 'update',
+                                ];
+                            }
+                            event(new Smartlabsnotification($dataToInsert2));
+
+                            $emailAddresses = !empty($record['Emaiilto']) ? explode(',', $record['Emaiilto']) : null;
+                            $emailcc = !empty($record['Emaiilcc']) ? explode(',', $record['Emaiilcc']) : null;
+
+
+                            Mail::to($emailAddresses)
+                                ->cc($emailcc)
+                                ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress, $record->kode_track, null));
+
+                            Notification::make()
+                                ->title("Progress Sampel Berhasil Diupdate")
+                                ->body("Record dengan kode " . $record->kode_track . "  berhasil update")
+                                ->success()
+                                ->send();
+                        }
+                    }),
                 TextColumn::make('nomor_kupa')
                     ->toggleable(isToggledHiddenByDefault: true)
 
