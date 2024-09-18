@@ -59,6 +59,7 @@ class Trackingprogres extends Component
 
                 // Initialize the final data array
                 $final_data = [];
+                $final_step_time = null; // To store the final step time
 
                 foreach ($data_update as $key => $item) {
                     // Default values
@@ -76,11 +77,30 @@ class Trackingprogres extends Component
                             if ($record['progress'] == $item['id']) {
                                 $final_data[$key]['time'] = $record['updated_at'];
                                 $final_data[$key]['status'] = 'checked';
+
+                                // If this is the final step (id 7), store the time for skipped steps
+                                if ($item['id'] == '7') {
+                                    $final_step_time = $record['updated_at'];
+                                }
+
                                 break; // Exit loop once matching record is found
                             }
                         }
                     }
                 }
+
+                // Check if the final step (id 7) is reached and marked as checked
+                if ($final_step_time) {
+                    // If final step is checked, update all unchecked steps with final step's time
+                    foreach ($final_data as &$data) {
+                        if ($data['status'] == 'uncheck') {
+                            $data['status'] = 'checked';
+                            $data['time'] = $final_step_time; // Use the final step's time for skipped steps
+                        }
+                    }
+                }
+
+                // dd($final_data);
                 $this->resultData = $final_data;
             } else {
                 $this->resultData = 'kosong';

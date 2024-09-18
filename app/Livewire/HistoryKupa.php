@@ -95,37 +95,19 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->copyMessage(fn(string $state): string => "Copied {$state} to clipboard")
                     ->copyMessageDuration(1500)
                     ->size('xs'),
-                // TextColumn::make('progressSampel.nama')
-                //     ->toggleable(isToggledHiddenByDefault: false)
-                //     ->searchable()
-                //     ->copyable()
-                //     ->sortable()
-                //     ->size('xs'),
+                TextColumn::make('progressSampel.nama')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable()
+                    ->copyable()
+                    ->sortable()
+                    ->visible(auth()->user()->can('send_invoice'))
+                    ->size('xs'),
                 SelectColumn::make('progress')
                     ->label('Progres detail sampel')
+                    ->visible(auth()->user()->can('edit_kupa'))
                     ->default(fn(TrackSampel $record) => $record->progress)
                     ->selectablePlaceholder(false)
-                    ->options(function (TrackSampel $record) {
-                        $jenisSampel = JenisSampel::find($record->jenis_sampel);
-                        // dd($jenisSampel);
-                        $progress = $jenisSampel->progress;
-                        $currentStatus = $record->progress;
-
-                        $progressArray = explode(',', $progress);
-
-                        $getdata = [];
-
-                        foreach ($progressArray as $key => $value) {
-                            $option = Progress::find($value);
-
-                            // Only include options starting from the current status
-                            if ($option->id >= $currentStatus) {
-                                $getdata[$option->id] = $option->nama;
-                            }
-                        }
-                        // dd($getdata, $record->jenis_sampel);
-                        return $getdata;
-                    })
+                    ->options(Progress::query()->pluck('nama', 'id'))
                     ->afterStateUpdated(function ($record, $state) {
                         // dd($state, $record);
                         if ($record->asal_sampel !== 'Eksternal') {
@@ -143,26 +125,87 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                     'type' => 'update',
                                 ];
                             }
-                            event(new Smartlabsnotification($dataToInsert2));
-
                             $emailAddresses = !empty($record['Emaiilto']) ? explode(',', $record['Emaiilto']) : null;
                             $emailcc = !empty($record['Emaiilcc']) ? explode(',', $record['Emaiilcc']) : null;
 
 
-                            Mail::to($emailAddresses)
-                                ->cc($emailcc)
-                                ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress, $record->kode_track, null));
+                            $id = $record->id;
+                            $trackSampel = TrackSampel::find($id);
+                            $date = Carbon::now()->format('Y-m-d H:i:s');
+                            $data_progres = json_decode($record->last_update, true);
+                            $progress = $data_progres;
+                            // dd($progress);
+                            $current = [
+                                'jenis_sampel' => $record->jenis_sampel,
+                                'progress' => ($record->progress ?? "0") == "0" ? "4" : ($record->progress ?? null),
+                                'updated_at' => $date
+                            ];
 
-                            Notification::make()
-                                ->title("Progress Sampel Berhasil Diupdate")
-                                ->body("Record dengan kode " . $record->kode_track . "  berhasil update")
-                                ->success()
-                                ->send();
+
+                            // Check if the progress already exists in the $progress array
+                            $exists = false;
+                            foreach ($progress as $item) {
+                                if ($item['jenis_sampel'] == $current['jenis_sampel'] && $item['progress'] == $current['progress']) {
+                                    $exists = true;
+                                    break;
+                                }
+                            }
+
+                            // Add the $current array to $progress only if it doesn't already exist
+                            if (!$exists) {
+                                $progress[] = $current;
+                            }
+
+                            // dd($progress, $current, $progress);
+                            $current = json_encode($progress);
+                            $trackSampel->last_update = $current;
+                            $trackSampel->save();
+                            if ($trackSampel) {
+                                event(new Smartlabsnotification($dataToInsert2));
+
+
+
+                                Mail::to($emailAddresses)
+                                    ->cc($emailcc)
+                                    ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress, $record->kode_track, null));
+
+                                Notification::make()
+                                    ->title("Progress Sampel Berhasil Diupdate")
+                                    ->body("Record dengan kode " . $record->kode_track . "  berhasil update")
+                                    ->success()
+                                    ->send();
+                            } else {
+
+                                Notification::make()
+                                    ->title("Error di update")
+                                    ->body("Record dengan kode " . $record->kode_track . "  gagal update")
+                                    ->danger()
+                                    ->send();
+                            }
                         }
                     }),
                 TextColumn::make('nomor_kupa')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable()
+                    ->sortable()
+                    ->size('xs'),
+                TextColumn::make('nomor_lab')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->state(function (TrackSampel $record) {
 
+                        $nolab = explode('$', $record->nomor_lab);
+                        $year = Carbon::parse($record->tanggal_terima)->format('y');
+                        $kode_sampel = $record->jenisSampel->kode;
+
+                        $nolab = explode('$', $record->nomor_lab);
+                        $year = Carbon::parse($record->tanggal_terima)->format('y');
+                        $kode_sampel = $record->jenisSampel->kode;
+
+                        $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
+                        $labkanan = isset($nolab[1]) ? $year . $kode_sampel . '.' . formatLabNumber($nolab[1]) : '??';
+
+                        return $labkiri . '-' . $labkanan;
+                    })
                     ->searchable()
                     ->sortable()
                     ->size('xs'),
@@ -172,6 +215,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->searchable()
                     ->sortable()
                     ->size('xs'),
+
                 TextColumn::make('nomor_surat')
                     ->toggleable(isToggledHiddenByDefault: false)
 
