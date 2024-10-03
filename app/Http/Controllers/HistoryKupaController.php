@@ -255,7 +255,7 @@ class HistoryKupaController extends Controller
                     $total_akhir = $totalppn_harga->subtract($discount);
                     $newnamaparameter = [];
 
-
+                    // dd($namakode_sampelparams);
 
                     $sampel_data = [];
 
@@ -276,6 +276,7 @@ class HistoryKupaController extends Controller
                         }
                     }
                 }
+                // dd($sampel_data);
                 // dd($sampel_data, $namakode_sampelparams);
 
                 $kode_sampel = explode('$', $kdsmpel);

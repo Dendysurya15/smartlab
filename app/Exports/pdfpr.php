@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\ParameterAnalisis;
 use App\Models\TrackSampel;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -71,7 +72,21 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                             $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
                             $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
                             $jumlah_per_parameter[] = $trackParameter->jumlah;
-                            $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
+
+                            $statuspaket = $trackParameter->ParameterAnalisis->paket_id;
+
+                            if ($statuspaket != null) {
+                                $paket = explode('$', $statuspaket);
+                                $params = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
+                                // $nama_parameter[] = $nama_params;
+                                // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
+                                $namakode_sampelparams[implode(',', $params)] =  explode('$', $trackParameter->namakode_sampel);
+                            } else {
+                                // $nama_parameter[] = $namaunsur;
+                                $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
+                            }
+
+                            // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
                         }
                         $hargatotal += $trackParameter->totalakhir;
                         $jumlah_per_parametertotal += $trackParameter->jumlah;
@@ -124,7 +139,8 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                         }
                     }
                 }
-
+                // dd($sampel_data);
+                // dd($newnamaparameter);
                 $kode_sampel = explode('$', $kdsmpel);
 
                 // dd($kode_sampel, $sampel_data);

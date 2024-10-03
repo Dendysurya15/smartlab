@@ -322,33 +322,33 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->toggleable(isToggledHiddenByDefault: true)
 
                     ->size('xs'),
-                TextColumn::make('invoice')
-                    ->label('Detail Invoice')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'Update' => 'warning',
-                        'Invoice Send Pending' => 'warning',
-                        'Invoice Send' => 'success',
-                        'Default' => 'grey',
-                        default => 'danger',
-                    })
-                    ->state(function (TrackSampel $record) {
-                        if ($record->asal_sampel == 'Eksternal') {
-                            if ($record->invoice_status == 0) {
-                                return  'Update';
-                            } else if ($record->invoice_status == 1) {
-                                return  'Invoice Send Pending';
-                            } else if ($record->invoice_status == 2) {
-                                return  'Invoice Send';
-                            } else {
-                                return 'Invalid Status';
-                            }
-                        } else {
-                            return 'Default';
-                        }
-                    })
-                    ->size('xs'),
+                // TextColumn::make('invoice')
+                //     ->label('Detail Invoice')
+                //     ->toggleable(isToggledHiddenByDefault: false)
+                //     ->badge()
+                //     ->color(fn(string $state): string => match ($state) {
+                //         'Update' => 'warning',
+                //         'Invoice Send Pending' => 'warning',
+                //         'Invoice Send' => 'success',
+                //         'Default' => 'grey',
+                //         default => 'danger',
+                //     })
+                //     ->state(function (TrackSampel $record) {
+                //         if ($record->asal_sampel == 'Eksternal') {
+                //             if ($record->invoice_status == 0) {
+                //                 return  'Update';
+                //             } else if ($record->invoice_status == 1) {
+                //                 return  'Invoice Send Pending';
+                //             } else if ($record->invoice_status == 2) {
+                //                 return  'Invoice Send';
+                //             } else {
+                //                 return 'Invalid Status';
+                //             }
+                //         } else {
+                //             return 'Default';
+                //         }
+                //     })
+                //     ->size('xs'),
             ])->striped()
             ->groups([
                 Group::make('jenisSampel.nama')
