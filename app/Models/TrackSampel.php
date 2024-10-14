@@ -39,4 +39,9 @@ class TrackSampel extends Model
     {
         return $this->belongsTo(Invoice::class, 'invoice_id', 'id');
     }
+
+    public function DepartementTrack()
+    {
+        return $this->belongsTo(DepartementTrack::class, 'departemen', 'nama');
+    }
 }

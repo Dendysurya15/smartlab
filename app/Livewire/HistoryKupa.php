@@ -31,6 +31,7 @@ use App\Exports\MonitoringKupabulk;
 use App\Exports\LogbookBulkExport;
 use App\Exports\pdfpr;
 use App\Mail\EmailPelanggan;
+use App\Models\DepartementTrack;
 use App\Models\Invoice;
 use App\Models\JenisSampel;
 use App\Models\Progress;
@@ -366,6 +367,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->label('Jenis sampel')
                     ->relationship('jenisSampel', 'nama')
                     // ->multiple()
+                    ->preload(),
+                SelectFilter::make('departemen')
+                    ->label('Departement')
+                    ->multiple()
+                    ->options(DepartementTrack::query()->pluck('nama', 'nama'))
                     ->preload(),
                 SelectFilter::make('skala_prioritas')
                     ->options([

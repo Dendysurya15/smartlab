@@ -147,7 +147,7 @@
                         <td class="border-text" rowspan="{{$rowspan}}">{{$item2['jumlah_sampel']}}</td>
                         @endif
                         @if ($item2['catatan'] !== 'null')
-                        <td class="border-text" rowspan="{{$rowspan}}">{{$item2['catatan']}}</td>
+                        <td class="border-text" rowspan="{{$rowspan}}">{{$item2['catatan'] ?? '-'}}</td>
                         @endif
                     </tr>
 

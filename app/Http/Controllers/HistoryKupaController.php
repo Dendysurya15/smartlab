@@ -276,7 +276,7 @@ class HistoryKupaController extends Controller
                         }
                     }
                 }
-                // dd($sampel_data);
+
                 // dd($sampel_data, $namakode_sampelparams);
 
                 $kode_sampel = explode('$', $kdsmpel);
@@ -292,7 +292,9 @@ class HistoryKupaController extends Controller
                 $timestamp = strtotime($value2['tanggal_terima']);
                 $year = date('Y', $timestamp);
                 $lab =  substr($year, 2) . $value2->jenisSampel->kode . '.';
+                $kode_sampel = array_map('rtrim', $kode_sampel);
 
+                // dd($sampel_data, $kode_sampel);
                 foreach ($sampel_data as $keysx => $valuems) {
                     foreach ($kode_sampel as $index => $kode) {
                         if ((string)$keysx === $kode) {
@@ -447,7 +449,7 @@ class HistoryKupaController extends Controller
     {
 
 
-        $idsc = '71$69';
+        // $idsc = '71$69';
         $idsArray = explode('$', $id);
         $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
         $petugas = ExcelManagement::where('status', 1)->get();
@@ -618,7 +620,7 @@ class HistoryKupaController extends Controller
 
             $approveby_head = $value->approveby_head;
             $petugas_penerima_sampel = User::where('id', $value->created_by)->pluck('name')->first();
-            $jenis_kupa = $value->jenisSampel->nama;
+            $jenis_kupa = $value->jenis_pupuk ?? $value->jenisSampel->nama;
             $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('d F Y');
             $no_kupa = $value->nomor_kupa;
             $departemen = $value->departemen;
@@ -659,7 +661,7 @@ class HistoryKupaController extends Controller
             $newfilename = $filename;
         }
 
-
+        // dd($data);
 
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');

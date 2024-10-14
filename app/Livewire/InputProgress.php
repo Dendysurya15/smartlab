@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Events\Smartlabsnotification;
 use App\Mail\EmailPelanggan;
+use App\Models\DepartementTrack;
 use App\Models\JenisSampel;
 use App\Models\Progress;
 use App\Models\ParameterAnalisis;
@@ -59,7 +60,14 @@ class InputProgress extends Component implements HasForms
 
     public function mount(): void
     {
-
+        // $data = TrackSampel::all()->pluck('departemen')->unique();
+        // foreach ($data as $key => $value) {
+        //     // dd($value);
+        //     DB::table('departemet_pelanggan')->updateOrInsert([
+        //         'nama' => $value
+        //     ]);
+        // }
+        // dd($data);
         $this->form->fill();
     }
 
@@ -256,11 +264,47 @@ class InputProgress extends Component implements HasForms
                     ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->minLength(2)
                     ->maxLength(255),
-                TextInput::make('NamaDep')
+                // TextInput::make('NamaDep')
+                //     ->label('Nama Departemen')
+                //     ->minLength(2)
+                //     ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
+                //     ->maxLength(255),
+                Select::make('NamaDep')
                     ->label('Nama Departemen')
-                    ->minLength(2)
-                    ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
-                    ->maxLength(255),
+                    ->searchable()
+                    ->createOptionForm([
+                        TextInput::make('nama')
+                            ->required(),
+                    ])
+                    ->createOptionUsing(function (array $data): int {
+                        // Check if the department already exists in the database
+                        $check = DepartementTrack::where('nama', $data['nama'])->first();
+
+                        if ($check) {
+                            Notification::make()
+                                ->title('Departemen ini sudah ada di dalam database')
+                                ->color('warning')
+                                ->warning()
+                                ->send();
+
+                            // You should return something, possibly the existing ID or some other response
+                            return $check->id;
+                        }
+
+                        // Create new department
+                        $newDepartment = DepartementTrack::create($data);
+
+                        Notification::make()
+                            ->title('Departemen baru berhasil ditambahkan')
+                            ->color('success')
+                            ->success()
+                            ->send();
+
+                        // Return the newly created department ID
+                        return $newDepartment->id;
+                    })
+                    ->options(DepartementTrack::query()->pluck('nama', 'nama'))
+                    ->required(fn(Get $get): bool => $get('drafting') !== true),
                 TextInput::make('NamaKodeSampel')
                     ->label('Nama Kode Sampel')
                     ->minLength(2)
@@ -678,7 +722,7 @@ class InputProgress extends Component implements HasForms
         $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
 
 
-        // dd($form);
+        dd($form);
         if (isset($form['drafting']) && $form['drafting'] !== true || $roles->contains('marcom')) {
             try {
                 DB::beginTransaction();
