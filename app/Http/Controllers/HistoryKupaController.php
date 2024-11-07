@@ -205,7 +205,7 @@ class HistoryKupaController extends Controller
                 $nama_parameter = [];
                 foreach ($value1 as $key2 => $value2) {
                     $jenissample = $value2->jenisSampel->nama;
-                    $jenissample_komuditas = $value2->jenis_pupuk;
+                    $jenissample_komuditas = $value2->jenis_pupuk ?? 'Tidak tersedia';
                     $jumlahsample = $value2['jumlah_sampel'];
                     $catatan = $value2['catatan'];
                     $kdsmpel = $value2['kode_sampel'];

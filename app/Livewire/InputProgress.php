@@ -722,7 +722,7 @@ class InputProgress extends Component implements HasForms
         $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
 
 
-        dd($form);
+        // dd($form);
         if (isset($form['drafting']) && $form['drafting'] !== true || $roles->contains('marcom')) {
             try {
                 DB::beginTransaction();

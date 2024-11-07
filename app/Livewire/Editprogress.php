@@ -36,6 +36,7 @@ use Filament\Notifications\Actions\Action;
 use Illuminate\Support\Facades\Mail;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Split;
 use Filament\Forms\Components\ToggleButtons;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
@@ -140,10 +141,12 @@ class Editprogress extends Component implements HasForms
                     ->options(JenisSampel::query()->where('soft_delete_id', '!=', 1)->pluck('nama', 'id'))
                     ->disabled(),
                 TextInput::make('jenis_pupuk')
+                    ->label('Jenis')
                     ->default($this->opt->jenis_pupuk)
-                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                    ->hidden(is_null($this->opt->pupuk))
-                    ->label('Jenis Pupuk'),
+                    ->placeholder($this->opt->jenis_pupuk ?? 'Anda belum memasukkan jenis sampel')
+                    // ->hidden(is_null($this->opt->pupuk))
+                    // ->label('Jenis Pupuk')
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true),
                 Select::make('status_pengerjaan')
                     ->label('Status Pengerjaan')
                     ->required()
