@@ -31,8 +31,21 @@
         }
 
         table {
-            page-break-inside: avoid !important;
-            page-break-before: auto !important;
+            page-break-inside: auto !important;
+            margin-bottom: 10px;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tbody {
+            display: table-row-group;
         }
     </style>
     @foreach ($data as $item)
@@ -74,7 +87,7 @@
 
 
             <table style="width: 100%; border-collapse: collapse;padding:10px">
-                <thead>
+                <thead style="display: table-header-group;">
                     <tr>
                         <th rowspan="2" class="border-text">NO</th>
                         <th rowspan="2" class="border-text">tanggal sample</th>
@@ -112,8 +125,6 @@
                     @if (is_array($item1))
                     @php
                     $inc = 1;
-                    @endphp
-                    @php
                     $rowspan = count($item1);
                     @endphp
                     @foreach ($item1 as $item2)
@@ -139,10 +150,16 @@
                         <td class="border-text">{{$item2['Tanggal_Selesai_Analisa']}}</td>
                         <td class="border-text">{{$item2['Tanggal_Rilis_Sertifikat']}}</td>
                         <td class="border-text">{{$item2['No_sertifikat']}}</td>
+
+
                         @if ($item2['total'] !== 'null')
-                        <td class="border-text" rowspan="{{$rowspan}}">{{$item2['total']}}</td>
+                        <td class="border-text">{{$item2['total']}}</td>
+                        @else
+                        <td class="border-text"></td>
                         @endif
-                        <td class="border-text">{{$jum_samptotal}}</td>
+
+
+                        <td class="border-text">{{$item2['Jumlah_Parameter']}}</td>
                         @if ($item2['jumlah_sampel'] !== 'null')
                         <td class="border-text" rowspan="{{$rowspan}}">{{$item2['jumlah_sampel']}}</td>
                         @endif

@@ -276,7 +276,7 @@ class HistoryKupaController extends Controller
                         }
                     }
                 }
-
+                // dd($total_akhir);
                 // dd($sampel_data, $namakode_sampelparams);
 
                 $kode_sampel = explode('$', $kdsmpel);
@@ -292,7 +292,10 @@ class HistoryKupaController extends Controller
                 $timestamp = strtotime($value2['tanggal_terima']);
                 $year = date('Y', $timestamp);
                 $lab =  substr($year, 2) . $value2->jenisSampel->kode . '.';
-                $kode_sampel = array_map('rtrim', $kode_sampel);
+                // Remove leading and trailing spaces from each element
+                $kode_sampel = array_map(function ($value) {
+                    return trim($value); // Removes spaces from both start and end
+                }, $kode_sampel);
 
                 // dd($sampel_data, $kode_sampel);
                 foreach ($sampel_data as $keysx => $valuems) {
@@ -324,10 +327,11 @@ class HistoryKupaController extends Controller
                         }
                     }
                 }
+                // dd($result);
             }
             $result[$key]['jenis'] = $jenissample;
         }
-        // dd($result);
+
         $jenissamplel = [];
         foreach ($result as $key => $value) {
             $jenissamplel[] = $value['jenis'];

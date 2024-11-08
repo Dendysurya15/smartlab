@@ -153,7 +153,9 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                 $timestamp = strtotime($value2['tanggal_terima']);
                 $year = date('Y', $timestamp);
                 $lab =  substr($year, 2) . $value2->jenisSampel->kode . '.';
-                $kode_sampel = array_map('rtrim', $kode_sampel);
+                $kode_sampel = array_map(function ($value) {
+                    return trim($value); // Removes spaces from both start and end
+                }, $kode_sampel);
 
                 foreach ($sampel_data as $keysx => $valuems) {
                     foreach ($kode_sampel as $index => $kode) {
