@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Artisan;
 use App\Http\Middleware\BlockIpAfterFailedAttempts;
 use App\Livewire\Trackingprogres;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\PdfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,4 +101,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         return response()->json(['error' => 'File not found'], 404);
     })->name('download.pdf');
+
+    Route::post('/cleanup-pdf', [PdfController::class, 'cleanup'])->name('cleanup.pdf');
 });

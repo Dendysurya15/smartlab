@@ -153,6 +153,18 @@
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(link.href);
 
+                    // Add cleanup request after successful download
+                    fetch('/cleanup-pdf', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            filename: filename
+                        })
+                    });
+
                     showDownloadProgress(filename, 100, 'Download completed!');
                 })
                 .catch(error => {
