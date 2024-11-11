@@ -419,15 +419,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ])
             ->bulkActions([
                 // In your bulk action for KUPA PDF export
-                BulkAction::make('export_pr_pdf_jobs')
-                    ->label('PDF Jobs')
-                    ->button()
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->color('warning')
-                    ->deselectRecordsAfterCompletion()
-                    ->action(function (Collection $records) {
-                        startExport($records);
-                    }),
                 BulkAction::make('delete')
                     ->requiresConfirmation()
                     ->label('Hapus Kupa')
@@ -446,37 +437,37 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         });
                     }),
                 ActionGroup::make([
-                    BulkAction::make('export_pdf')
-                        ->label('PDF')
-                        ->button()
-                        ->icon('heroicon-o-document-arrow-down')
-                        ->color('warning')
-                        ->deselectRecordsAfterCompletion()
-                        ->modalHeading('Perhatian')
-                        ->modalSubheading(
-                            "Harap Memilih data yang tidak dalam kondisi status Draft"
-                        )
-                        ->modalButton('Export PDF')
-                        ->action(function (Collection $records) {
-                            $recordIds = [];
-                            $jenis_sampel = [];
-                            $dates = [];
-                            $year = [];
+                    // BulkAction::make('export_pdf')
+                    //     ->label('PDF')
+                    //     ->button()
+                    //     ->icon('heroicon-o-document-arrow-down')
+                    //     ->color('warning')
+                    //     ->deselectRecordsAfterCompletion()
+                    //     ->modalHeading('Perhatian')
+                    //     ->modalSubheading(
+                    //         "Harap Memilih data yang tidak dalam kondisi status Draft"
+                    //     )
+                    //     ->modalButton('Export PDF')
+                    //     ->action(function (Collection $records) {
+                    //         $recordIds = [];
+                    //         $jenis_sampel = [];
+                    //         $dates = [];
+                    //         $year = [];
 
-                            $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
-                                if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
-                                    $recordIds[] = $record->id;
-                                }
-                                $jenis_sampel[] = $record->jenisSampel->nama;
-                                $carbonDate = Carbon::parse($record->tanggal_memo);
-                                $dates[] = $carbonDate->format('F');
-                                $year[] = $carbonDate->format('Y');
-                            });
-                            $data = implode('$', $recordIds);
+                    //         $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
+                    //             if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                    //                 $recordIds[] = $record->id;
+                    //             }
+                    //             $jenis_sampel[] = $record->jenisSampel->nama;
+                    //             $carbonDate = Carbon::parse($record->tanggal_memo);
+                    //             $dates[] = $carbonDate->format('F');
+                    //             $year[] = $carbonDate->format('Y');
+                    //         });
+                    //         $data = implode('$', $recordIds);
 
-                            // Redirect with a target attribute for opening in a new tab
-                            return redirect()->route('exportvr', $data)->with('target', '_blank');
-                        }),
+                    //         // Redirect with a target attribute for opening in a new tab
+                    //         return redirect()->route('exportvr', $data)->with('target', '_blank');
+                    //     }),
                     BulkAction::make('export_excelpr')
                         ->label('Excel')
                         ->button()
@@ -514,7 +505,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $filename = 'PR Kupa ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
                             return Excel::download(new pdfpr($data), $filename);
                         }),
-
+                    BulkAction::make('export_pr_pdf_jobs')
+                        ->label('PDF')
+                        ->button()
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('warning')
+                        ->deselectRecordsAfterCompletion()
+                        ->action(function (Collection $records) {
+                            startExport($records);
+                        }),
                 ])->button()
                     ->color('info')
                     ->label('Export PR'),

@@ -16,6 +16,7 @@ use App\Livewire\Managementkuesioner;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Middleware\BlockIpAfterFailedAttempts;
 use App\Livewire\Trackingprogres;
+use Illuminate\Support\Facades\File;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,13 +90,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::post('delete-data/{id}', [SystemController::class, 'delete_parameter_and_metode'])->name('delete-data');
     Route::get('/Managementkuesioner', Managementkuesioner::class)->name('Managementkuesioner');
-    Route::get('/download-pdf/{file}', function ($file) {
-        $path = storage_path('app/public/temp/' . auth()->id() . '/' . $file);
 
-        if (file_exists($path)) {
-            return response()->download($path)->deleteFileAfterSend();
+    Route::get('/download-pdf/{filename}', function ($filename) {
+        $path = storage_path('app/public/temp/' . $filename);
+
+        if (File::exists($path)) {
+            return response()->download($path)->deleteFileAfterSend(true);
         }
 
-        abort(404);
+        return response()->json(['error' => 'File not found'], 404);
     })->name('download.pdf');
 });
