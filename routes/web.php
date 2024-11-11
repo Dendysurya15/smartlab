@@ -90,7 +90,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/excelsettings', [ExcelmanagementController::class, 'index'])->name('excelsettings');
 
     Route::post('delete-data/{id}', [SystemController::class, 'delete_parameter_and_metode'])->name('delete-data');
-    Route::get('/Managementkuesioner', Managementkuesioner::class)->name('Managementkuesioner');
+    Route::get('/Managementkuesioner', function () {
+        return view('pages.managementkuesioner');
+    })->name('Managementkuesioner');
 
     Route::get('/download-pdf/{filename}', function ($filename) {
         $path = storage_path('app/public/temp/' . $filename);

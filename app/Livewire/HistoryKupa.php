@@ -247,7 +247,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                 }
                             }
                         } else {
-                            return $track->status . 'dadada';
+                            return $track->status;
                         }
                     })
                     ->toggleable(isToggledHiddenByDefault: false)
