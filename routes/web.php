@@ -89,4 +89,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::post('delete-data/{id}', [SystemController::class, 'delete_parameter_and_metode'])->name('delete-data');
     Route::get('/Managementkuesioner', Managementkuesioner::class)->name('Managementkuesioner');
+    Route::get('/download-pdf/{file}', function ($file) {
+        $path = storage_path('app/public/temp/' . auth()->id() . '/' . $file);
+
+        if (file_exists($path)) {
+            return response()->download($path)->deleteFileAfterSend();
+        }
+
+        abort(404);
+    })->name('download.pdf');
 });

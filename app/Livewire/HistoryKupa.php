@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Illuminate\Contracts\View\View;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,12 +32,10 @@ use App\Exports\pdfpr;
 use App\Mail\EmailPelanggan;
 use App\Models\DepartementTrack;
 use App\Models\Invoice;
-use App\Models\JenisSampel;
 use App\Models\Progress;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Grouping\Group;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
@@ -239,12 +236,18 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             if ($user && $track->status !== 'Waiting Head Approval') {
                                 $roles = $user->getRoleNames();
                                 // dd($roles);
-                                return $track->status . ' by ' . ($roles->isNotEmpty() ? $roles->implode(', ') : 'No Role');
+                                // return $track->status . ' by ' . ($roles->isNotEmpty() ? $roles->implode(', ') : 'No Role');
+                                return $track->status . ' by Manager Lab';
                             } else {
-                                return $track->status;
+                                // return $track->status;
+                                if ($track->status == 'Waiting Head Approval') {
+                                    return 'Waiting Manager Lab Approval';
+                                } else {
+                                    return $track->status;
+                                }
                             }
                         } else {
-                            return $track->status;
+                            return $track->status . 'dadada';
                         }
                     })
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -415,6 +418,16 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
             ])
             ->bulkActions([
+                // In your bulk action for KUPA PDF export
+                BulkAction::make('export_pr_pdf_jobs')
+                    ->label('PDF Jobs')
+                    ->button()
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('warning')
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records) {
+                        startExport($records);
+                    }),
                 BulkAction::make('delete')
                     ->requiresConfirmation()
                     ->label('Hapus Kupa')
@@ -1359,17 +1372,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->size('xs')
                 ])->tooltip('Actions'),
             ]);
-    }
-
-    private function renderpdfdata($id)
-    {
-        $data = $id;
-        // dd($data);
-        $pdf = PDF::loadView('pdfview.vrdata', []);
-
-        $customPaper = array(360, 360, 360, 360);
-        $pdf->set_paper('A2', 'landscape');
-        return $pdf->stream('testiing');
     }
 
     public function render(): View

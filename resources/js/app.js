@@ -102,15 +102,30 @@ import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 window.Pusher = Pusher;
  
+// Add debug mode to Pusher
+var pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
+    enabledTransports: ['ws', 'wss'], // Explicitly enable WebSocket
+    debug: true // Enable debug mode
+});
+
+// Remove the duplicate Echo initialization and use a single Pusher instance
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: import.meta.env.VITE_PUSHER_APP_KEY,
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    forceTLS: true
-});
-var pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER
+    forceTLS: true,
+    client: pusher // Use the same Pusher instance
 });
 
+// Add connection debugging
+pusher.connection.bind('connected', () => {
+    console.log('Connected to Pusher');
+});
+
+pusher.connection.bind('error', (err) => {
+    console.error('Pusher connection error:', err);
+});
 
 window.channel = pusher.subscribe('my-channel');
