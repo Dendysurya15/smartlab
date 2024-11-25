@@ -125,6 +125,7 @@
                     @if (is_array($item1))
                     @php
                     $inc = 1;
+                    $incs = 1;
                     $rowspan = count($item1);
                     @endphp
                     @foreach ($item1 as $item2)
@@ -139,7 +140,7 @@
                         <td class="border-text">{{$item2['jenis_sample_komoditas']}}</td>
                         <td class="border-text">{{$item2['asal_sampel']}}</td>
                         <td class="border-text">{{$item2['nomor_kupa']}}</td>
-                        <td class="border-text">{{$item2['nomor_lab']}}</td>
+                        <td class="border-text">{{$lab . formatLabNumber($nomor_lab + $incs++)}}</td>
                         <td class="border-text">{{$item2['nama_pengirim']}}</td>
                         <td class="border-text">{{$item2['departemen']}}</td>
                         <td class="border-text">{{$item2['nomor_surat']}}</td>

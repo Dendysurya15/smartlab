@@ -299,6 +299,7 @@ class HistoryKupaController extends Controller
 
                 // dd($sampel_data, $kode_sampel);
                 foreach ($sampel_data as $keysx => $valuems) {
+                    // $inc = 1;
                     foreach ($kode_sampel as $index => $kode) {
                         if ((string)$keysx === $kode) {
                             $result[$key][$key1][$keysx]['jenis_sample'] = $jenissample;
@@ -307,7 +308,7 @@ class HistoryKupaController extends Controller
                             $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
                             $result[$key][$key1][$keysx]['catatan'] = ($index == 0) ? $catatan : 'null';
                             $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
-                            $result[$key][$key1][$keysx]['nomor_lab'] = $lab . $nomor_lab[0] + $index;
+                            // $result[$key][$key1][$keysx]['nomor_lab'] = $lab . $nomor_lab[0] + $inc;
                             $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
                             $result[$key][$key1][$keysx]['asal_sampel'] = $value2['asal_sampel'];
                             $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
@@ -331,7 +332,7 @@ class HistoryKupaController extends Controller
             }
             $result[$key]['jenis'] = $jenissample;
         }
-
+        // dd($result);
         $jenissamplel = [];
         foreach ($result as $key => $value) {
             $jenissamplel[] = $value['jenis'];
@@ -341,6 +342,8 @@ class HistoryKupaController extends Controller
 
         $data = [
             'data' => $result,
+            'lab' => $lab,
+            'nomor_lab' => $nomor_lab[0] - 1
         ];
         // dd($data);
         $filename = 'PDF Kupa,' . $jenissamplefix . '.pdf';

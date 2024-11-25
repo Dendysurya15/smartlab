@@ -67,6 +67,7 @@
             @if (is_array($item1))
             @php
             $inc = 1;
+            $incs = 1;
             @endphp
             @php
             $rowspan = count($item1);
@@ -83,10 +84,9 @@
                 <td style="border:1px solid black; white-space: nowrap;">
                     {{$item2['jenissample_komuditas']}}
                 </td>
-
                 <td style="border:1px solid black;">{{$item2['asal_sampel']}}</td>
                 <td style="border:1px solid black;">{{$item2['nomor_kupa']}}</td>
-                <td style="border:1px solid black;">{{$item2['nomor_lab']}}</td>
+                <td class="border-text">{{$lab . formatLabNumber($nomor_lab + $incs++)}}</td>
                 <td style="border:1px solid black;">{{$item2['nama_pengirim']}}</td>
                 <td style="border:1px solid black;">{{$item2['departemen']}}</td>
                 <td style="border:1px solid black;">{{$item2['nomor_surat']}}</td>

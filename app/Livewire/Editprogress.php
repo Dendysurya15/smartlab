@@ -64,6 +64,8 @@ class Editprogress extends Component implements HasForms
     public $status_progres;
     public ?array $data = [];
 
+    public $loading_totals = false;
+
     public function mount(): void
     {
         $this->opt = TrackSampel::with('trackParameters')->where('id', $this->sample)->first();
@@ -572,12 +574,12 @@ class Editprogress extends Component implements HasForms
                                                 return $params;
                                             })
                                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                            ->afterStateUpdated(function ($set, $state) {
+                                            ->afterStateUpdated(function ($set, $state, Get $get) {
                                                 $params = ParameterAnalisis::find($state);
                                                 $set('parametersdata', $params->nama_unsur);
                                                 $set('harga_sampel', $params->harga);
                                                 $set('total_harga', $params->harga);
-                                                // $set('total_sample', '3');
+                                                self::updateTotals($get, $set);
                                             })
                                             ->required(function () {
                                                 $data = $this->opt->status;
@@ -591,9 +593,11 @@ class Editprogress extends Component implements HasForms
 
                                                 return $data;
                                             })
-                                            ->live(debounce: 500),
+                                            ->live(),
                                         TextInput::make('total_sample')
                                             ->afterStateUpdated(function (Get $get, Set $set) {
+                                                $harga_sampel = $get('harga_sampel');
+                                                $set('total_harga', $harga_sampel);
                                                 self::updateTotals($get, $set);
                                             })
                                             ->numeric()
@@ -777,19 +781,39 @@ class Editprogress extends Component implements HasForms
             ->statePath('data');
     }
 
-    public static function updateTotals(Get $get, Set $set): void
+    public function updateTotals(Get $get, Set $set): void
     {
-
-        $selectedProducts = $get('total_sample') == '' ? 0 : $get('total_sample');
-
-        // dd($selectedProducts);
+        // Show loading notification
+        // sleep(5);
+        $selectedProducts = $get('total_sample') === '' ? 0 : $get('total_sample');
         $harga = $get('total_harga');
-        // dd($selectedProducts);
 
-        // Calculate subtotal based on the selected products and quantities
-        $subtotal = $harga * $selectedProducts;
+        if ($harga === '' || $harga === null) {
+            Notification::make()
+                ->title('Error')
+                ->body('Ada kesalahan pada menentukan harga, coba untuk mengganti status dan coba lagi')
+                ->danger()
+                ->send();
+        }
+        // dd($harga, $selectedProducts);
+        if (intval($selectedProducts) < 1) {
+            Notification::make()
+                ->title('Error')
+                ->body('Please enter a number with a minimum value of 1')
+                ->danger()
+                ->send();
+        }
 
-        // Update the state with the new values
+        $subtotal = intval($harga) * intval($selectedProducts);
+
+        if ($subtotal === 0 && $selectedProducts > 0 && intval($harga) > 0) {
+            Notification::make()
+                ->title('Error')
+                ->body('Please try again and check your internet connection')
+                ->danger()
+                ->send();
+        }
+
         $set('subtotal', $subtotal);
     }
 

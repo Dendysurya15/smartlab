@@ -164,7 +164,7 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                             $result[$key][$key1][$keysx]['jenissample_komuditas'] = $jenissample_komuditas;
                             $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
                             $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
-                            $result[$key][$key1][$keysx]['nomor_lab'] = $lab . $nomor_lab[0] + $index;
+                            // $result[$key][$key1][$keysx]['nomor_lab'] = $lab . $nomor_lab[0] + $index;
                             $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
                             $result[$key][$key1][$keysx]['asal_sampel'] = $value2['asal_sampel'];
                             $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
@@ -193,7 +193,11 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
         // dd($result);
 
 
-        return view('excelView.prexcel', ['data' => $result]);
+        return view('excelView.prexcel', [
+            'data' => $result,
+            'lab' => $lab,
+            'nomor_lab' => $nomor_lab[0] - 1
+        ]);
     }
 
 
