@@ -86,7 +86,7 @@
                 </td>
                 <td style="border:1px solid black;">{{$item2['asal_sampel']}}</td>
                 <td style="border:1px solid black;">{{$item2['nomor_kupa']}}</td>
-                <td class="border-text">{{$lab . formatLabNumber($nomor_lab + $incs++)}}</td>
+                <td style="border:1px solid black;">{{$item2['nomor_lab']}}</td>
                 <td style="border:1px solid black;">{{$item2['nama_pengirim']}}</td>
                 <td style="border:1px solid black;">{{$item2['departemen']}}</td>
                 <td style="border:1px solid black;">{{$item2['nomor_surat']}}</td>

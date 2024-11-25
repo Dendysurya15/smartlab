@@ -156,7 +156,9 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                 $kode_sampel = array_map(function ($value) {
                     return trim($value); // Removes spaces from both start and end
                 }, $kode_sampel);
-
+                $count_sampel = count($sampel_data);
+                $new_nomor_lab = $nomor_lab[0] - 1;
+                $lab_counter = 1; // Add a counter to track the sequence
                 foreach ($sampel_data as $keysx => $valuems) {
                     foreach ($kode_sampel as $index => $kode) {
                         if ((string)$keysx === $kode) {
@@ -164,7 +166,9 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
                             $result[$key][$key1][$keysx]['jenissample_komuditas'] = $jenissample_komuditas;
                             $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
                             $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
-                            // $result[$key][$key1][$keysx]['nomor_lab'] = $lab . $nomor_lab[0] + $index;
+                            $current_lab_number = $new_nomor_lab + $lab_counter;
+                            $result[$key][$key1][$keysx]['nomor_lab'] = $lab . formatLabNumber($current_lab_number);
+                            $lab_counter++; // Increment the counter for next iteration
                             $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
                             $result[$key][$key1][$keysx]['asal_sampel'] = $value2['asal_sampel'];
                             $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
@@ -186,6 +190,8 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
             }
             $result[$key]['jenis'] = $jenissample;
         }
+
+        // dd($result);
         $jenissamplel = [];
         foreach ($result as $key => $value) {
             $jenissamplel[] = $value['jenis'];
@@ -195,8 +201,7 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
 
         return view('excelView.prexcel', [
             'data' => $result,
-            'lab' => $lab,
-            'nomor_lab' => $nomor_lab[0] - 1
+
         ]);
     }
 

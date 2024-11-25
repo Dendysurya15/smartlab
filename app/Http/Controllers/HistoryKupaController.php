@@ -296,8 +296,8 @@ class HistoryKupaController extends Controller
                 $kode_sampel = array_map(function ($value) {
                     return trim($value); // Removes spaces from both start and end
                 }, $kode_sampel);
-
-                // dd($sampel_data, $kode_sampel);
+                $new_nomor_lab = $nomor_lab[0] - 1;
+                $lab_counter = 1; // Add a counter to track the sequence
                 foreach ($sampel_data as $keysx => $valuems) {
                     // $inc = 1;
                     foreach ($kode_sampel as $index => $kode) {
@@ -308,7 +308,9 @@ class HistoryKupaController extends Controller
                             $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
                             $result[$key][$key1][$keysx]['catatan'] = ($index == 0) ? $catatan : 'null';
                             $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
-                            // $result[$key][$key1][$keysx]['nomor_lab'] = $lab . $nomor_lab[0] + $inc;
+                            $current_lab_number = $new_nomor_lab + $lab_counter;
+                            $result[$key][$key1][$keysx]['nomor_lab'] = $lab . formatLabNumber($current_lab_number);
+                            $lab_counter++; // Increment the counter for next iteration
                             $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
                             $result[$key][$key1][$keysx]['asal_sampel'] = $value2['asal_sampel'];
                             $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
