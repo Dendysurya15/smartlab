@@ -34,7 +34,7 @@
 <body class="font-inter antialiased bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-600 dark:text-slate-400 h-screen overflow-hidden">
     <nav class="fixed top-0 left-1/2 transform -translate-x-1/2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg shadow-lg rounded-full w-11/12 max-w-6xl px-8 py-3 flex justify-between items-center z-50 mt-6">
         <a href="{{ route('dashboard') }}" class="flex items-center">
-            <img src="{{ asset('images/LOGO SRS REV WARNA.png') }}" class="h-10 w-auto" alt="Smartlab Logo">
+            <img src="{{ asset('images/logo_srs_new.png') }}" class="h-10 w-auto" alt="Smartlab Logo">
         </a>
 
         <label for="my_modal_7" class="btn btn-success hover:btn-success/90 text-white px-6 rounded-full transition-all duration-200 transform hover:scale-105">
@@ -105,7 +105,7 @@
 
         <div class="hidden md:block md:w-1/2 relative overflow-hidden">
             <img class="object-cover object-center w-full h-full transform hover:scale-105 transition-transform duration-700"
-                src="{{ asset('images/YCH09527.jpg') }}" alt="Authentication image" />
+                src="{{ asset('images/YCH09527aa.jpg') }}" alt="Authentication image" />
         </div>
     </main>
 

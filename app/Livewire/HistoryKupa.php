@@ -111,18 +111,28 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         if ($record->asal_sampel !== 'Eksternal') {
                             $nomor_hp = explode(',', $record->no_hp);
                             $progress = Progress::where('id', $state)->first()->pluck('nama') ?? null;
-                            foreach ($nomor_hp as $key => $value) {
-                                $dataToInsert2[] = [
-                                    'no_surat' => $record->nomor_surat,
-                                    'nama_departemen' => $record->departemen,
-                                    'jenis_sampel' => $record->jenisSampel->nama,
-                                    'jumlah_sampel' => $record->jumlah_sampel,
-                                    'progresss' => $progress,
-                                    'kodesample' => $record->kode_track,
-                                    'penerima' =>  str_replace('+', '', $value),
-                                    'type' => 'update',
-                                ];
+                            $dataToInsert2 = [];
+
+                            foreach ($nomor_hp as $data) {
+                                $nomorHp = str_replace('+', '', $data);
+
+                                // Validate the phone number (example: must be numeric and 10-15 digits)
+                                if (preg_match('/^\d{10,15}$/', $nomorHp)) {
+                                    $dataToInsert2[] = [
+                                        'no_surat' => $record->nomor_surat,
+                                        'nama_departemen' => $record->departemen,
+                                        'jenis_sampel' => $record->jenisSampel->nama,
+                                        'jumlah_sampel' => $record->jumlah_sampel,
+                                        'progresss' => $progress,
+                                        'kodesample' => $record->kode_track,
+                                        'penerima' =>  str_replace('+', '', $nomorHp),
+                                        'tanggal_registrasi' => $record->tanggal_terima,
+                                        'estimasi' => $record->estimasi,
+                                        'type' => 'update',
+                                    ];
+                                }
                             }
+
                             $emailAddresses = !empty($record['Emaiilto']) ? explode(',', $record['Emaiilto']) : null;
                             $emailcc = !empty($record['Emaiilcc']) ? explode(',', $record['Emaiilcc']) : null;
 
@@ -159,9 +169,9 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $trackSampel->last_update = $current;
                             $trackSampel->save();
                             if ($trackSampel) {
-                                event(new Smartlabsnotification($dataToInsert2));
-
-
+                                if (!empty($dataToInsert2)) {
+                                    event(new Smartlabsnotification($dataToInsert2));
+                                }
 
                                 Mail::to($emailAddresses)
                                     ->cc($emailcc)
@@ -1281,6 +1291,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                         'type' => 'input',
                                         'asal' => $records->asal_sampel,
                                         'id_invoice' => $records->id,
+                                        'tanggal_registrasi' => $records->tanggal_terima,
+                                        'estimasi' => $records->estimasi,
                                     ];
                                 }
                             }

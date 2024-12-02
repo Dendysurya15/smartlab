@@ -73,9 +73,15 @@
             <td colspan="3">Progress saat ini: <span class="bold">{{$progress ?? '-'}}</span></td>
         </tr>
         <tr>
+            <td>
+                <img src="{{ $message->embed(public_path('images/logocorp.png')) }}"
+                    alt="Citra Borneo Indah Group"
+                    style="max-width: 200px; height: auto; display: block;"
+                    width="200" />
+            </td>
+
             <td colspan="3">
                 Progress anda dapat dilihat di website:<a href="https://smartlab.srs-ssms.com/">https://smartlab.srs-ssms.com/</a>
-
             </td>
         </tr>
         <tr>

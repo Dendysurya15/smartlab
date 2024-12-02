@@ -817,6 +817,8 @@ class InputProgress extends Component implements HasForms
                                     'progresss' => $progress->nama,
                                     'kodesample' => $randomCode,
                                     'penerima' =>  str_replace('+', '', $data['NomorHp']),
+                                    'tanggal_registrasi' => $form['TanggalTerima'],
+                                    'estimasi' => $form['EstimasiKupa'],
                                     'type' => 'input',
                                     'asal' => $form['Asalampel'],
                                 ];

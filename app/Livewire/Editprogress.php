@@ -960,22 +960,35 @@ class Editprogress extends Component implements HasForms
 
 
                 if ($form['Asalampel'] !== 'Eksternal') {
-                    if ($form['nomerhpuser'] !== []) {
+                    // dd($form['nomerhpuser']);
+                    // Start of Selection
+                    if (!empty($form['nomerhpuser'])) {
+                        $dataToInsert2 = [];
+
                         foreach ($form['nomerhpuser'] as $data) {
-                            $dataToInsert2[] = [
-                                'no_surat' => $this->opt->nomor_surat,
-                                'nama_departemen' => $this->opt->departemen,
-                                'jenis_sampel' => $jenis_sampel_final,
-                                'jumlah_sampel' => $this->opt->jumlah_sampel,
-                                'progresss' => $progress->nama,
-                                'kodesample' => $this->opt->kode_track,
-                                'penerima' =>  str_replace('+', '', $data['NomorHp']),
-                                'type' => 'update',
-                            ];
+                            $nomorHp = str_replace('+', '', $data['NomorHp']);
+
+                            // Validate the phone number (example: must be numeric and 10-15 digits)
+                            if (preg_match('/^\d{10,15}$/', $nomorHp)) {
+                                $dataToInsert2[] = [
+                                    'no_surat' => $this->opt->nomor_surat,
+                                    'nama_departemen' => $this->opt->departemen,
+                                    'jenis_sampel' => $jenis_sampel_final,
+                                    'jumlah_sampel' => $this->opt->jumlah_sampel,
+                                    'progresss' => $progress->nama,
+                                    'kodesample' => $this->opt->kode_track,
+                                    'penerima' => $nomorHp,
+                                    'tanggal_registrasi' => $this->opt->tanggal_terima,
+                                    'estimasi' => $this->opt->estimasi,
+                                    'type' => 'update',
+                                ];
+                            }
                         }
-                        // dd($dataToInsert);
-                        // SendMsg::insert($dataToInsert2);
-                        event(new Smartlabsnotification($dataToInsert2));
+
+                        if (!empty($dataToInsert2)) {
+                            // SendMsg::insert($dataToInsert2);
+                            event(new Smartlabsnotification($dataToInsert2));
+                        }
                     }
 
                     $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;

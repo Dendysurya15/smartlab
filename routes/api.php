@@ -30,10 +30,16 @@ Route::get('/sendmail', function () {
     $nomorlab = 'testomg';
     $randomCode = 'testtest';
     $nomorserif = 'aaaa';
+    $departement = 'aaaa';
+    $jenis_sampel = 'aaaa';
+    $jumlah_sampel = 'aaaa';
+    $progress = 'aaaa';
+    $kode_tracking_sampel = 'aaaa';
+    $id = 32;
     try {
         Mail::to($recipients)
             ->cc($cc)
-            ->send(new EmailPelanggan($tgl, $nomor_surat, $nomorlab, $randomCode, $nomorserif));
+            ->send(new EmailPelanggan($nomor_surat, $departement, $jenis_sampel, $jumlah_sampel, $progress, $kode_tracking_sampel, $id));
 
         return "Email sent successfully!";
     } catch (\Exception $e) {
