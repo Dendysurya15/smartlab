@@ -154,22 +154,38 @@ class Editprogress extends Component implements HasForms
                     ->required()
                     ->default($this->opt->progress)
                     ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                        if ($state == 7) {
+                            $set('add_sertifikat', true);
+                        } else {
+                            $set('add_sertifikat', false);
+                        }
+                    })
+                    ->live()
                     ->options(function () {
                         $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
-                        // dd($jenisSampel);
                         $progress = $jenisSampel->progress;
-
                         $progressArray = explode(',', $progress);
-
-                        // dd($progressArray);
-
-                        foreach ($progressArray as $key => $value) {
-                            $option =  Progress::find($value);
-                            $getdata[$option->id] = $option->nama;
+                        $getdata = [];
+                        foreach ($progressArray as $value) {
+                            $option = Progress::find($value);
+                            if ($option) {
+                                $getdata[$option->id] = $option->nama;
+                            }
                         }
-                        // dd($getdata);
                         return $getdata;
                     }),
+                FileUpload::make('file_sertifikat')
+                    ->visible(fn(Get $get): bool => $get('add_sertifikat') === true || $this->opt->sertifikasi !== null)
+                    ->acceptedFileTypes(['application/pdf'])
+                    ->label('File Sertifikat')
+                    ->columnSpanFull()
+                    ->disk('public')
+                    ->default($this->opt->sertifikasi)
+                    ->directory('sertifikat')
+                    ->maxSize(5024)
+                    ->maxFiles(1)
+                    ->required(fn(Get $get): bool => $get('add_sertifikat') === true),
                 Select::make('Asalampel')
                     ->label('Asal Sampel')
                     ->required()
@@ -223,13 +239,6 @@ class Editprogress extends Component implements HasForms
                     ->minLength(2)
                     ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                     ->maxLength(255),
-                // TextInput::make('NamaDep')
-                //     ->label('Nama Departemen')
-                //     ->minLength(2)
-                //     ->required()
-                //     ->default($this->opt->departemen)
-                // ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
-                //     ->maxLength(255),
                 Select::make('NamaDep')
                     ->label('Nama Departemen')
                     ->searchable()
@@ -902,6 +911,13 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->estimasi = $form['EstimasiKupa'];
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
+                if ($trackSampel->sertifikasi !== null) {
+                    $filepath = storage_path('app/public/' . $trackSampel->sertifikasi);
+                    if (file_exists($filepath)) {
+                        unlink($filepath);
+                    }
+                }
+                $trackSampel->sertifikasi = $form['file_sertifikat'] ?? null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
@@ -997,7 +1013,6 @@ class Editprogress extends Component implements HasForms
 
                     Mail::to($emailAddresses)
                         ->cc($emailcc)
-                        // ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
                         ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track, null));
                 }
 
@@ -1059,6 +1074,13 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->estimasi = $form['EstimasiKupa'];
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
+                if ($trackSampel->sertifikasi !== null) {
+                    $filepath = storage_path('app/public/' . $trackSampel->sertifikasi);
+                    if (file_exists($filepath)) {
+                        unlink($filepath);
+                    }
+                }
+                $trackSampel->sertifikasi = $form['file_sertifikat'] ?? null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
@@ -1134,8 +1156,6 @@ class Editprogress extends Component implements HasForms
                                 'type' => 'input',
                             ];
                         }
-                        // dd($dataToInsert);
-                        // SendMsg::insert($dataToInsert2);
                         event(new Smartlabsnotification($dataToInsert2));
                     }
 
@@ -1145,7 +1165,6 @@ class Editprogress extends Component implements HasForms
 
                     Mail::to($emailAddresses)
                         ->cc($emailcc)
-                        // ->send(new EmailPelanggan($form['TanggalTerima'], $form['NomorSurat'], $NomorLab,  $this->opt->kode_track, $nomorserif));
                         ->send(new EmailPelanggan($this->opt->nomor_surat, $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $this->opt->kode_track, null));
                 }
 

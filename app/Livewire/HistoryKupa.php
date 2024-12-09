@@ -43,20 +43,23 @@ use Filament\Forms\Set;
 use Illuminate\Support\Facades\Mail;
 use GuzzleHttp\Client;
 use Filament\Tables\Columns\SelectColumn;
+use Filament\Forms\Form;
+use Filament\Forms\Components\FileUpload;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
 
     use InteractsWithTable;
     use InteractsWithForms;
+    public ?array $data = [];
     public $openurl;
-
     public $rolesAuthUser;
+    public $id_sertifikat;
 
     public function mount()
     {
         // $this->roles = Role::where('name', '<>', 'superuser')->orderBy('alur_approved')->pluck('name');
-
+        $this->form->fill();
         $this->rolesAuthUser = auth()->user()->roles[0]->name;
     }
 
@@ -107,89 +110,97 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->selectablePlaceholder(false)
                     ->options(Progress::query()->pluck('nama', 'id'))
                     ->afterStateUpdated(function ($record, $state) {
-                        // dd($state, $record);
-                        if ($record->asal_sampel !== 'Eksternal') {
-                            $nomor_hp = explode(',', $record->no_hp);
-                            $progress = Progress::where('id', $state)->first()->pluck('nama') ?? null;
-                            $dataToInsert2 = [];
+                        // // dd($state, $record);
+                        if ($state == 7) {
+                            $this->dispatch('open-modal', id: 'add-sertifikat');
+                            $this->id_sertifikat = $record->id;
+                        }
+                        $nomor_hp = explode(',', $record->no_hp);
+                        $progress = Progress::where('id', $state)->first()->pluck('nama') ?? null;
+                        $dataToInsert2 = [];
 
-                            foreach ($nomor_hp as $data) {
-                                $nomorHp = str_replace('+', '', $data);
+                        foreach ($nomor_hp as $data) {
+                            $nomorHp = str_replace('+', '', $data);
 
-                                // Validate the phone number (example: must be numeric and 10-15 digits)
-                                if (preg_match('/^\d{10,15}$/', $nomorHp)) {
-                                    $dataToInsert2[] = [
-                                        'no_surat' => $record->nomor_surat,
-                                        'nama_departemen' => $record->departemen,
-                                        'jenis_sampel' => $record->jenisSampel->nama,
-                                        'jumlah_sampel' => $record->jumlah_sampel,
-                                        'progresss' => $progress,
-                                        'kodesample' => $record->kode_track,
-                                        'penerima' =>  str_replace('+', '', $nomorHp),
-                                        'tanggal_registrasi' => $record->tanggal_terima,
-                                        'estimasi' => $record->estimasi,
-                                        'type' => 'update',
-                                    ];
-                                }
+                            // Validate the phone number (example: must be numeric and 10-15 digits)
+                            if (preg_match('/^\d{10,15}$/', $nomorHp)) {
+                                $dataToInsert2[] = [
+                                    'no_surat' => $record->nomor_surat,
+                                    'nama_departemen' => $record->departemen,
+                                    'jenis_sampel' => $record->jenisSampel->nama,
+                                    'jumlah_sampel' => $record->jumlah_sampel,
+                                    'progresss' => $progress,
+                                    'kodesample' => $record->kode_track,
+                                    'penerima' =>  str_replace('+', '', $nomorHp),
+                                    'tanggal_registrasi' => $record->tanggal_terima,
+                                    'estimasi' => $record->estimasi,
+                                    'type' => 'update',
+                                ];
                             }
+                        }
 
-                            $emailAddresses = !empty($record['Emaiilto']) ? explode(',', $record['Emaiilto']) : null;
-                            $emailcc = !empty($record['Emaiilcc']) ? explode(',', $record['Emaiilcc']) : null;
-
-
-                            $id = $record->id;
-                            $trackSampel = TrackSampel::find($id);
-                            $date = Carbon::now()->format('Y-m-d H:i:s');
-                            $data_progres = json_decode($record->last_update, true);
-                            $progress = $data_progres;
-                            // dd($progress);
-                            $current = [
-                                'jenis_sampel' => $record->jenis_sampel,
-                                'progress' => ($record->progress ?? "0") == "0" ? "4" : ($record->progress ?? null),
-                                'updated_at' => $date
-                            ];
+                        $emailAddresses = !empty($record['Emaiilto']) ? explode(',', $record['Emaiilto']) : null;
+                        $emailcc = !empty($record['Emaiilcc']) ? explode(',', $record['Emaiilcc']) : null;
 
 
-                            // Check if the progress already exists in the $progress array
-                            $exists = false;
-                            foreach ($progress as $item) {
-                                if ($item['jenis_sampel'] == $current['jenis_sampel'] && $item['progress'] == $current['progress']) {
-                                    $exists = true;
-                                    break;
-                                }
+                        $id = $record->id;
+                        $trackSampel = TrackSampel::find($id);
+                        $date = Carbon::now()->format('Y-m-d H:i:s');
+                        $data_progres = json_decode($record->last_update, true);
+                        $progress = $data_progres;
+                        // dd($progress);
+                        $current = [
+                            'jenis_sampel' => $record->jenis_sampel,
+                            'progress' => ($record->progress ?? "0") == "0" ? "4" : ($record->progress ?? null),
+                            'updated_at' => $date
+                        ];
+
+
+                        // Check if the progress already exists in the $progress array
+                        $exists = false;
+                        foreach ($progress as $item) {
+                            if ($item['jenis_sampel'] == $current['jenis_sampel'] && $item['progress'] == $current['progress']) {
+                                $exists = true;
+                                break;
                             }
+                        }
 
-                            // Add the $current array to $progress only if it doesn't already exist
-                            if (!$exists) {
-                                $progress[] = $current;
-                            }
+                        // Add the $current array to $progress only if it doesn't already exist
+                        if (!$exists) {
+                            $progress[] = $current;
+                        }
 
-                            // dd($progress, $current, $progress);
-                            $current = json_encode($progress);
-                            $trackSampel->last_update = $current;
-                            $trackSampel->save();
-                            if ($trackSampel) {
-                                if (!empty($dataToInsert2)) {
-                                    event(new Smartlabsnotification($dataToInsert2));
-                                }
+                        // dd($progress, $current, $progress);
+                        $current = json_encode($progress);
+                        $trackSampel->last_update = $current;
+                        $trackSampel->save();
 
-                                Mail::to($emailAddresses)
-                                    ->cc($emailcc)
-                                    ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress, $record->kode_track, null));
 
-                                Notification::make()
-                                    ->title("Progress Sampel Berhasil Diupdate")
-                                    ->body("Record dengan kode " . $record->kode_track . "  berhasil update")
-                                    ->success()
-                                    ->send();
-                            } else {
+                        // if ($record->asal_sampel !== 'Eksternal') {
 
-                                Notification::make()
-                                    ->title("Error di update")
-                                    ->body("Record dengan kode " . $record->kode_track . "  gagal update")
-                                    ->danger()
-                                    ->send();
-                            }
+                        // }
+                        if (!empty($dataToInsert2)) {
+                            event(new Smartlabsnotification($dataToInsert2));
+                        }
+
+                        Mail::to($emailAddresses)
+                            ->cc($emailcc)
+                            ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress, $record->kode_track, null));
+
+                        if ($trackSampel) {
+
+                            Notification::make()
+                                ->title("Progress Sampel Berhasil Diupdate")
+                                ->body("Record dengan kode " . $record->kode_track . "  berhasil update")
+                                ->success()
+                                ->send();
+                        } else {
+
+                            Notification::make()
+                                ->title("Error di update")
+                                ->body("Record dengan kode " . $record->kode_track . "  gagal update")
+                                ->danger()
+                                ->send();
                         }
                     }),
                 TextColumn::make('nomor_kupa')
@@ -1298,12 +1309,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             }
                             $emailAddresses = !empty($records->emailTo) ? explode(',', $records->emailTo) : null;
                             $emailcc = !empty($records->emailCc) ? explode(',', $records->emailCc) : null;
-                            // dd($emailAddresses, $emailcc);
-                            // dd($dataToInsert2);
                             if (!empty($dataToInsert2)) {
-                                // dd($dataToInsert2);
                                 event(new Smartlabsnotification($dataToInsert2));
-                                // SendMsg::insert($dataToInsert2);
                             }
 
                             // dd($progress, $progress_state);
@@ -1385,6 +1392,46 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ]);
     }
 
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                FileUpload::make('file')
+                    ->acceptedFileTypes(['application/pdf'])
+                    ->label('File Sertifikat')
+                    ->columnSpanFull()
+                    ->directory('sertifikat')
+                    ->maxSize(5024)
+                    ->maxFiles(1)
+                    ->required(),
+            ])
+            ->statePath('data');
+    }
+
+    public function create(): void
+    {
+        // dd($this->id_sertifikat);
+        $form = $this->form->getState();
+
+
+
+        $insert = TrackSampel::find($this->id_sertifikat);
+        if ($insert->sertifikasi !== null) {
+            $filepath = storage_path('app/public/' . $insert->sertifikasi);
+            if (file_exists($filepath)) {
+                unlink($filepath);
+            }
+        }
+        $insert->sertifikasi = $form['file'];
+        $insert->save();
+        $this->form->fill();
+        $this->dispatch('close-modal', id: 'add-sertifikat');
+        Notification::make()
+            ->success()
+            ->title('Success')
+            ->body('Sertifikat berhasil diunggah')
+            ->send();
+    }
     public function render(): View
     {
         return view('livewire.history-kupa');
