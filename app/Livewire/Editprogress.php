@@ -180,7 +180,8 @@ class Editprogress extends Component implements HasForms
                     ->acceptedFileTypes(['application/pdf'])
                     ->label('File Sertifikat')
                     ->columnSpanFull()
-                    ->disk('public')
+                    ->visibility('private')
+                    ->disk('private')
                     ->default($this->opt->sertifikasi)
                     ->directory('sertifikat')
                     ->maxSize(5024)
@@ -912,7 +913,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
                 if ($trackSampel->sertifikasi !== null) {
-                    $filepath = storage_path('app/public/' . $trackSampel->sertifikasi);
+                    $filepath = storage_path('app/private/' . $trackSampel->sertifikasi);
                     if (file_exists($filepath)) {
                         unlink($filepath);
                     }
@@ -1075,7 +1076,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
                 if ($trackSampel->sertifikasi !== null) {
-                    $filepath = storage_path('app/public/' . $trackSampel->sertifikasi);
+                    $filepath = storage_path('app/private/' . $trackSampel->sertifikasi);
                     if (file_exists($filepath)) {
                         unlink($filepath);
                     }

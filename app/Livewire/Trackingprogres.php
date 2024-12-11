@@ -16,6 +16,7 @@ class Trackingprogres extends Component
     public $dataakhir;
     public $resultData;
     public $captchaToken;
+    public $sertifikat;
 
     public function render()
     {
@@ -102,6 +103,8 @@ class Trackingprogres extends Component
 
                 // dd($final_data);
                 $this->resultData = $final_data;
+                $this->sertifikat = $query->sertifikasi;
+                // dd($this->sertifikat);
             } else {
                 $this->resultData = 'kosong';
             }
@@ -127,5 +130,11 @@ class Trackingprogres extends Component
         Cache::forget($ip . '_failed_attempts');
         Cache::forget($ip . '_blocked');
         return response()->json(['message' => 'IP unblocked']);
+    }
+
+    public function downloadSertifikat()
+    {
+        $filepath = storage_path('app/private/' . $this->sertifikat);
+        return response()->download($filepath);
     }
 }

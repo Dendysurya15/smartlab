@@ -18,10 +18,22 @@
                     </svg>
                 </div>
             </button>
+            @if ($resultData !== null && $resultData !== 'kosong')
+            @if ($sertifikat)
+            <button wire:click="downloadSertifikat" class="ml-4 text-blue-500 hover:text-blue-700">
+                Download Certificate
+            </button>
+            @else
+            <button disabled class="ml-4 text-gray-400 cursor-not-allowed">
+                Certificate Not Available
+            </button>
+            @endif
+            @endif
         </div>
     </form>
+    @if ($resultData !== null && $resultData !== 'kosong')
     <div id="progress-list" class="max-h-[400px] overflow-y-auto p-4 border border-gray-200 rounded-lg bg-white mt-4">
-        @if ($resultData !== null && $resultData !== 'kosong')
+
         @foreach ($resultData as $key => $value)
         <div class="mb-2">
             <h1 class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
@@ -50,8 +62,9 @@
                 Harap periksa dan cek kembali kode yang Anda masukkan.
             </p>
         </div>
-        @endif
+
     </div>
+    @endif
     {!! htmlScriptTagJsApi([
     'callback_then' => 'callbackThen',
     'callback_catch' => 'callbackCatch',

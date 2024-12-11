@@ -116,7 +116,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $this->id_sertifikat = $record->id;
                         }
                         $nomor_hp = explode(',', $record->no_hp);
-                        $progress = Progress::where('id', $state)->first()->pluck('nama') ?? null;
+                        $progress_data = Progress::where('id', $state)->get()->pluck('nama') ?? null;
                         $dataToInsert2 = [];
 
                         foreach ($nomor_hp as $data) {
@@ -129,7 +129,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                     'nama_departemen' => $record->departemen,
                                     'jenis_sampel' => $record->jenisSampel->nama,
                                     'jumlah_sampel' => $record->jumlah_sampel,
-                                    'progresss' => $progress,
+                                    'progresss' => $progress_data[0] ?? null,
                                     'kodesample' => $record->kode_track,
                                     'penerima' =>  str_replace('+', '', $nomorHp),
                                     'tanggal_registrasi' => $record->tanggal_terima,
@@ -138,10 +138,24 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                 ];
                             }
                         }
+                        // dd($dataToInsert2);
+                        // ... existing code ...
+                        // Remove the debug dd()
+                        // dd($record);
 
-                        $emailAddresses = !empty($record['Emaiilto']) ? explode(',', $record['Emaiilto']) : null;
-                        $emailcc = !empty($record['Emaiilcc']) ? explode(',', $record['Emaiilcc']) : null;
+                        $emailAddresses = !empty($record->emailTo) ? explode(',', $record->emailTo) : null;
+                        $emailcc = !empty($record->emailCc) ? explode(',', $record->emailCc) : null;
 
+                        // Remove the debug dd()
+                        // dd($emailAddresses, $emailcc);
+
+                        // Only send email if there are recipients
+                        if ($emailAddresses !== null || $emailcc !== null) {
+                            Mail::to($emailAddresses ?? [])
+                                ->cc($emailcc ?? [])
+                                ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null));
+                        }
+                        // ... existing code ...
 
                         $id = $record->id;
                         $trackSampel = TrackSampel::find($id);
@@ -174,18 +188,9 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         $current = json_encode($progress);
                         $trackSampel->last_update = $current;
                         $trackSampel->save();
-
-
-                        // if ($record->asal_sampel !== 'Eksternal') {
-
-                        // }
                         if (!empty($dataToInsert2)) {
-                            event(new Smartlabsnotification($dataToInsert2));
+                            // event(new Smartlabsnotification($dataToInsert2));
                         }
-
-                        Mail::to($emailAddresses)
-                            ->cc($emailcc)
-                            ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress, $record->kode_track, null));
 
                         if ($trackSampel) {
 
@@ -1403,6 +1408,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->directory('sertifikat')
                     ->maxSize(5024)
                     ->maxFiles(1)
+                    ->visibility('private')
+                    ->disk('private')
                     ->required(),
             ])
             ->statePath('data');
@@ -1417,7 +1424,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
         $insert = TrackSampel::find($this->id_sertifikat);
         if ($insert->sertifikasi !== null) {
-            $filepath = storage_path('app/public/' . $insert->sertifikasi);
+            $filepath = storage_path('app/private/' . $insert->sertifikasi);
             if (file_exists($filepath)) {
                 unlink($filepath);
             }
