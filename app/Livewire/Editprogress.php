@@ -176,16 +176,17 @@ class Editprogress extends Component implements HasForms
                         return $getdata;
                     }),
                 FileUpload::make('file_sertifikat')
-                    ->visible(fn(Get $get): bool => $get('add_sertifikat') === true || $this->opt->sertifikasi !== null)
-                    ->acceptedFileTypes(['application/pdf'])
+                    ->multiple()
                     ->label('File Sertifikat')
                     ->columnSpanFull()
+                    ->directory('sertifikat')
+                    ->preserveFilenames()
+                    ->maxFiles(5)
                     ->visibility('private')
+                    ->maxSize(5024)
                     ->disk('private')
                     ->default($this->opt->sertifikasi)
-                    ->directory('sertifikat')
-                    ->maxSize(5024)
-                    ->maxFiles(1)
+                    ->visible(fn(Get $get): bool => $get('add_sertifikat') === true || $this->opt->sertifikasi !== null)
                     ->required(fn(Get $get): bool => $get('add_sertifikat') === true),
                 Select::make('Asalampel')
                     ->label('Asal Sampel')
@@ -833,6 +834,7 @@ class Editprogress extends Component implements HasForms
         // dd($this->form->getState());
         $form = $this->form->getState();
         $randomCode = generateRandomCode();
+
         $date = Carbon::now();
         $date = $date->format('Y-m-d H:i:s');
         $progress = $this->status_progres;
@@ -913,12 +915,15 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
                 if ($trackSampel->sertifikasi !== null) {
-                    $filepath = storage_path('app/private/' . $trackSampel->sertifikasi);
-                    if (file_exists($filepath)) {
-                        unlink($filepath);
+                    $oldFiles = explode(',', $trackSampel->sertifikasi);
+                    foreach ($oldFiles as $oldFile) {
+                        $filepath = storage_path('app/private/' . $oldFile);
+                        if (file_exists($filepath)) {
+                            unlink($filepath);
+                        }
                     }
                 }
-                $trackSampel->sertifikasi = $form['file_sertifikat'] ?? null;
+                $trackSampel->sertifikasi = implode(',', $form['file_sertifikat']) ?? null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
@@ -1015,7 +1020,7 @@ class Editprogress extends Component implements HasForms
                 Mail::to($emailAddresses)
                     ->cc($emailcc)
                     ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track, null, $this->opt->tanggal_terima, $this->opt->estimasi));
-                // }
+
 
 
                 $trackSampel->save();
@@ -1076,12 +1081,15 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
                 if ($trackSampel->sertifikasi !== null) {
-                    $filepath = storage_path('app/private/' . $trackSampel->sertifikasi);
-                    if (file_exists($filepath)) {
-                        unlink($filepath);
+                    $oldFiles = explode(',', $trackSampel->sertifikasi);
+                    foreach ($oldFiles as $oldFile) {
+                        $filepath = storage_path('app/private/' . $oldFile);
+                        if (file_exists($filepath)) {
+                            unlink($filepath);
+                        }
                     }
                 }
-                $trackSampel->sertifikasi = $form['file_sertifikat'] ?? null;
+                $trackSampel->sertifikasi = implode(',', $form['file_sertifikat']) ?? null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');

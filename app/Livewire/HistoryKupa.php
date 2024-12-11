@@ -143,7 +143,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                             // dd($dataToInsert2);
                             if (!empty($dataToInsert2)) {
-                                // event(new Smartlabsnotification($dataToInsert2));
+                                event(new Smartlabsnotification($dataToInsert2));
                             }
                         }
                         // dd($dataToInsert2);
@@ -152,18 +152,18 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
 
                         // Only send email if there are recipients
-                        // if ($emailAddresses !== null || $emailcc !== null) {
-                        //     Mail::to($emailAddresses ?? [])
-                        //         ->cc($emailcc ?? [])
-                        //         ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
-                        // }
+                        if ($emailAddresses !== null || $emailcc !== null) {
+                            Mail::to($emailAddresses ?? [])
+                                ->cc($emailcc ?? [])
+                                ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
+                        }
 
                         $id = $record->id;
                         $trackSampel = TrackSampel::find($id);
+
                         $date = Carbon::now()->format('Y-m-d H:i:s');
                         $data_progres = json_decode($record->last_update, true);
                         $progress = $data_progres;
-                        // dd($progress);
                         $current = [
                             'jenis_sampel' => $record->jenis_sampel,
                             'progress' => ($record->progress ?? "0") == "0" ? "4" : ($record->progress ?? null),
@@ -1313,15 +1313,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $emailAddresses = !empty($records->emailTo) ? explode(',', $records->emailTo) : null;
                             $emailcc = !empty($records->emailCc) ? explode(',', $records->emailCc) : null;
                             if (!empty($dataToInsert2)) {
-                                // event(new Smartlabsnotification($dataToInsert2));
+                                event(new Smartlabsnotification($dataToInsert2));
                             }
 
                             // dd($progress, $progress_state);
-                            // if ($emailAddresses !== null) {
-                            //     Mail::to($emailAddresses)
-                            //         ->cc($emailcc)
-                            //         ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
-                            // }
+                            if ($emailAddresses !== null) {
+                                Mail::to($emailAddresses)
+                                    ->cc($emailcc)
+                                    ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
+                            }
                             $records->invoice_status = 2;
                             $records->save();
                             return Notification::make()
@@ -1400,17 +1400,12 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ->schema([
                 FileUpload::make('file')
                     ->multiple()
-                    ->image() // Accepts all image types
-                    ->acceptedFileTypes([
-                        'application/pdf',                    // PDF files
-                        'application/vnd.ms-excel',          // Excel .xls
-                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // Excel .xlsx
-                    ])
                     ->label('File Sertifikat')
                     ->columnSpanFull()
                     ->directory('sertifikat')
                     ->preserveFilenames()
                     ->maxFiles(5)
+                    ->maxSize(5024)
                     ->visibility('private')
                     ->disk('private')
                     ->required(),

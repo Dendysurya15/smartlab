@@ -97,12 +97,12 @@ class Trackingprogres extends Component
                         $final_data[$key]['time'] = $lastCompletedTime;
                     }
                 }
-                dd([
-                    'last_update' => $record_update,
-                    'final_data' => $final_data,
-                    'lastCompletedId' => $lastCompletedId,
-                    'lastCompletedTime' => $lastCompletedTime,
-                ]);
+                // dd([
+                //     'last_update' => $record_update,
+                //     'final_data' => $final_data,
+                //     'lastCompletedId' => $lastCompletedId,
+                //     'lastCompletedTime' => $lastCompletedTime,
+                // ]);
                 // dd($final_data);
                 $this->resultData = $final_data;
                 $this->sertifikat = $query->sertifikasi;
