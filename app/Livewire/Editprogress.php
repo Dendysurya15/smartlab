@@ -1014,7 +1014,7 @@ class Editprogress extends Component implements HasForms
 
                 Mail::to($emailAddresses)
                     ->cc($emailcc)
-                    ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track, null));
+                    ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track, null, $this->opt->tanggal_terima, $this->opt->estimasi));
                 // }
 
 
@@ -1166,7 +1166,7 @@ class Editprogress extends Component implements HasForms
 
                     Mail::to($emailAddresses)
                         ->cc($emailcc)
-                        ->send(new EmailPelanggan($this->opt->nomor_surat, $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $this->opt->kode_track, null));
+                        ->send(new EmailPelanggan($this->opt->nomor_surat, $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $this->opt->kode_track, null, $this->opt->tanggal_terima, $this->opt->estimasi));
                 }
 
                 $trackSampel->save();

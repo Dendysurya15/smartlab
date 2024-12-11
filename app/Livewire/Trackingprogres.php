@@ -60,7 +60,16 @@ class Trackingprogres extends Component
 
                 // Initialize the final data array
                 $final_data = [];
-                $final_step_time = null; // To store the final step time
+                $lastCompletedTime = null;
+                $lastCompletedId = null;
+
+                // First, find the last completed step ID
+                foreach ($record_update as $record) {
+                    if ($record['progress'] > $lastCompletedId) {
+                        $lastCompletedId = $record['progress'];
+                        $lastCompletedTime = $record['updated_at'];
+                    }
+                }
 
                 foreach ($data_update as $key => $item) {
                     // Default values
@@ -78,29 +87,22 @@ class Trackingprogres extends Component
                             if ($record['progress'] == $item['id']) {
                                 $final_data[$key]['time'] = $record['updated_at'];
                                 $final_data[$key]['status'] = 'checked';
-
-                                // If this is the final step (id 7), store the time for skipped steps
-                                if ($item['id'] == '7') {
-                                    $final_step_time = $record['updated_at'];
-                                }
-
-                                break; // Exit loop once matching record is found
+                                break;
                             }
                         }
                     }
-                }
-
-                // Check if the final step (id 7) is reached and marked as checked
-                if ($final_step_time) {
-                    // If final step is checked, update all unchecked steps with final step's time
-                    foreach ($final_data as &$data) {
-                        if ($data['status'] == 'uncheck') {
-                            $data['status'] = 'checked';
-                            $data['time'] = $final_step_time; // Use the final step's time for skipped steps
-                        }
+                    // Mark skipped steps as checked only if they are before the last completed step
+                    elseif (intval($item['id']) < intval($lastCompletedId)) {
+                        $final_data[$key]['status'] = 'checked';
+                        $final_data[$key]['time'] = $lastCompletedTime;
                     }
                 }
-
+                dd([
+                    'last_update' => $record_update,
+                    'final_data' => $final_data,
+                    'lastCompletedId' => $lastCompletedId,
+                    'lastCompletedTime' => $lastCompletedTime,
+                ]);
                 // dd($final_data);
                 $this->resultData = $final_data;
                 $this->sertifikat = $query->sertifikasi;
@@ -134,7 +136,40 @@ class Trackingprogres extends Component
 
     public function downloadSertifikat()
     {
-        $filepath = storage_path('app/private/' . $this->sertifikat);
-        return response()->download($filepath);
+        $files = explode(',', $this->sertifikat);
+
+        // If there's only one file, download it directly
+        if (count($files) === 1) {
+            $filepath = storage_path('app/private/' . $files[0]);
+            if (file_exists($filepath)) {
+                return response()->download($filepath);
+            }
+            abort(404, 'File not found');
+        }
+
+        // If there are multiple files, create a zip
+        $zip = new \ZipArchive();
+        $zipName = 'sertifikat_' . time() . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipName);
+
+        // Create temp directory if it doesn't exist
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+
+        if ($zip->open($zipPath, \ZipArchive::CREATE) === TRUE) {
+            foreach ($files as $file) {
+                $filepath = storage_path('app/private/' . trim($file));
+                if (file_exists($filepath)) {
+                    $zip->addFile($filepath, basename($filepath));
+                }
+            }
+            $zip->close();
+
+            // Download zip file and then delete it
+            return response()->download($zipPath)->deleteFileAfterSend(true);
+        }
+
+        abort(500, 'Could not create zip file');
     }
 }

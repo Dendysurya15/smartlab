@@ -106,14 +106,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 SelectColumn::make('progress')
                     ->label('Progres detail sampel')
                     ->visible(auth()->user()->can('edit_kupa'))
+                    ->disabled(fn(TrackSampel $record) => $record->approveby_admin == 0 || $record->progress == 7)
                     ->default(fn(TrackSampel $record) => $record->progress)
                     ->selectablePlaceholder(false)
                     ->options(Progress::query()->pluck('nama', 'id'))
                     ->afterStateUpdated(function ($record, $state) {
                         // // dd($state, $record);
                         if ($state == 7) {
-                            $this->dispatch('open-modal', id: 'add-sertifikat');
                             $this->id_sertifikat = $record->id;
+                            $this->dispatch('open-modal', id: 'upload-sertifikat');
                         }
                         $nomor_hp = explode(',', $record->no_hp);
                         $progress_data = Progress::where('id', $state)->get()->pluck('nama') ?? null;
@@ -142,7 +143,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                             // dd($dataToInsert2);
                             if (!empty($dataToInsert2)) {
-                                event(new Smartlabsnotification($dataToInsert2));
+                                // event(new Smartlabsnotification($dataToInsert2));
                             }
                         }
                         // dd($dataToInsert2);
@@ -151,11 +152,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
 
                         // Only send email if there are recipients
-                        if ($emailAddresses !== null || $emailcc !== null) {
-                            Mail::to($emailAddresses ?? [])
-                                ->cc($emailcc ?? [])
-                                ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null));
-                        }
+                        // if ($emailAddresses !== null || $emailcc !== null) {
+                        //     Mail::to($emailAddresses ?? [])
+                        //         ->cc($emailcc ?? [])
+                        //         ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
+                        // }
 
                         $id = $record->id;
                         $trackSampel = TrackSampel::find($id);
@@ -1312,15 +1313,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $emailAddresses = !empty($records->emailTo) ? explode(',', $records->emailTo) : null;
                             $emailcc = !empty($records->emailCc) ? explode(',', $records->emailCc) : null;
                             if (!empty($dataToInsert2)) {
-                                event(new Smartlabsnotification($dataToInsert2));
+                                // event(new Smartlabsnotification($dataToInsert2));
                             }
 
                             // dd($progress, $progress_state);
-                            if ($emailAddresses !== null) {
-                                Mail::to($emailAddresses)
-                                    ->cc($emailcc)
-                                    ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id));
-                            }
+                            // if ($emailAddresses !== null) {
+                            //     Mail::to($emailAddresses)
+                            //         ->cc($emailcc)
+                            //         ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
+                            // }
                             $records->invoice_status = 2;
                             $records->save();
                             return Notification::make()
@@ -1393,43 +1394,53 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 ])->tooltip('Actions'),
             ]);
     }
-
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 FileUpload::make('file')
-                    ->acceptedFileTypes(['application/pdf'])
+                    ->multiple()
+                    ->image() // Accepts all image types
+                    ->acceptedFileTypes([
+                        'application/pdf',                    // PDF files
+                        'application/vnd.ms-excel',          // Excel .xls
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // Excel .xlsx
+                    ])
                     ->label('File Sertifikat')
                     ->columnSpanFull()
                     ->directory('sertifikat')
-                    ->maxSize(5024)
-                    ->maxFiles(1)
+                    ->preserveFilenames()
+                    ->maxFiles(5)
                     ->visibility('private')
                     ->disk('private')
                     ->required(),
             ])
             ->statePath('data');
     }
-
     public function create(): void
     {
-        // dd($this->id_sertifikat);
         $form = $this->form->getState();
-
-
-
+        // dd($form);
         $insert = TrackSampel::find($this->id_sertifikat);
+
+        // Delete old file if exists
         if ($insert->sertifikasi !== null) {
-            $filepath = storage_path('app/private/' . $insert->sertifikasi);
-            if (file_exists($filepath)) {
-                unlink($filepath);
+            $oldFiles = explode(',', $insert->sertifikasi);
+            foreach ($oldFiles as $oldFile) {
+                $filepath = storage_path('app/private/' . $oldFile);
+                if (file_exists($filepath)) {
+                    unlink($filepath);
+                }
             }
         }
-        $insert->sertifikasi = $form['file'];
+
+        // Save new files
+        $insert->sertifikasi = implode(',', $form['file']);
         $insert->save();
+
         $this->form->fill();
-        $this->dispatch('close-modal', id: 'add-sertifikat');
+        $this->dispatch('close-modal', id: 'upload-sertifikat');
+
         Notification::make()
             ->success()
             ->title('Success')

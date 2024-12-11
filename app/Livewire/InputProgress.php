@@ -839,7 +839,7 @@ class InputProgress extends Component implements HasForms
                     if ($emailAddresses !== null) {
                         Mail::to($emailAddresses)
                             ->cc($emailcc)
-                            ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode, null));
+                            ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode, null, $form['TanggalTerima'], $form['EstimasiKupa']));
                     }
                 }
 

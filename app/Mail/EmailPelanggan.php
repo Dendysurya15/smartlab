@@ -24,11 +24,13 @@ class EmailPelanggan extends Mailable
     public $progress;
     public $kode_tracking_sampel;
     public $id;
+    public $tanggal_registrasi;
+    public $estimasi_kup;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($nomor_surat, $departement, $jenis_sampel, $jumlah_sampel, $progress, $kode_tracking_sampel, $id)
+    public function __construct($nomor_surat, $departement, $jenis_sampel, $jumlah_sampel, $progress, $kode_tracking_sampel, $id, $tanggal_registrasi, $estimasi_kup)
     {
         $this->nomor_surat = $nomor_surat;
         $this->departement = $departement;
@@ -37,6 +39,8 @@ class EmailPelanggan extends Mailable
         $this->progress = $progress;
         $this->kode_tracking_sampel = $kode_tracking_sampel;
         $this->id = $id;
+        $this->tanggal_registrasi = $tanggal_registrasi;
+        $this->estimasi_kup = $estimasi_kup;
     }
 
     /**

@@ -119,6 +119,16 @@
                 <td class="value">{{$nomor_surat ?? '-'}}</td>
             </tr>
             <tr>
+                <td class="label">Tanggal Registrasi</td>
+                <td class="separator">:</td>
+                <td class="value">{{$tanggal_registrasi ?? '-'}}</td>
+            </tr>
+            <tr>
+                <td class="label">Estimasi KUPA</td>
+                <td class="separator">:</td>
+                <td class="value">{{$estimasi_kup ?? '-'}}</td>
+            </tr>
+            <tr>
                 <td class="label">Departemen</td>
                 <td class="separator">:</td>
                 <td class="value">{{$departement ?? '-'}}</td>
