@@ -522,3 +522,13 @@ if (!function_exists('Generateresult')) {
         ];
     }
 }
+
+if (!function_exists('check_invalid_value')) {
+    function check_invalid_value($value)
+    {
+        if ($value == null || $value == '' || $value == '[]') {
+            return false;
+        }
+        return true;
+    }
+}

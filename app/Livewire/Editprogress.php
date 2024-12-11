@@ -976,46 +976,46 @@ class Editprogress extends Component implements HasForms
                 }
 
 
-                if ($form['Asalampel'] !== 'Eksternal') {
-                    // dd($form['nomerhpuser']);
-                    // Start of Selection
-                    if (!empty($form['nomerhpuser'])) {
-                        $dataToInsert2 = [];
+                // if ($form['Asalampel'] !== 'Eksternal') {
+                // dd($form['nomerhpuser']);
+                // Start of Selection
+                if (check_invalid_value($form['nomerhpuser'])) {
+                    $dataToInsert2 = [];
 
-                        foreach ($form['nomerhpuser'] as $data) {
-                            $nomorHp = str_replace('+', '', $data['NomorHp']);
+                    foreach ($form['nomerhpuser'] as $data) {
+                        $nomorHp = str_replace('+', '', $data['NomorHp']);
 
-                            // Validate the phone number (example: must be numeric and 10-15 digits)
-                            if (preg_match('/^\d{10,15}$/', $nomorHp)) {
-                                $dataToInsert2[] = [
-                                    'no_surat' => $this->opt->nomor_surat,
-                                    'nama_departemen' => $this->opt->departemen,
-                                    'jenis_sampel' => $jenis_sampel_final,
-                                    'jumlah_sampel' => $this->opt->jumlah_sampel,
-                                    'progresss' => $progress->nama,
-                                    'kodesample' => $this->opt->kode_track,
-                                    'penerima' => $nomorHp,
-                                    'tanggal_registrasi' => $this->opt->tanggal_terima,
-                                    'estimasi' => $this->opt->estimasi,
-                                    'type' => 'update',
-                                ];
-                            }
-                        }
-
-                        if (!empty($dataToInsert2)) {
-                            // SendMsg::insert($dataToInsert2);
-                            event(new Smartlabsnotification($dataToInsert2));
+                        // Validate the phone number (example: must be numeric and 10-15 digits)
+                        if (preg_match('/^\d{10,15}$/', $nomorHp)) {
+                            $dataToInsert2[] = [
+                                'no_surat' => $this->opt->nomor_surat,
+                                'nama_departemen' => $this->opt->departemen,
+                                'jenis_sampel' => $jenis_sampel_final,
+                                'jumlah_sampel' => $this->opt->jumlah_sampel,
+                                'progresss' => $progress->nama,
+                                'kodesample' => $this->opt->kode_track,
+                                'penerima' => $nomorHp,
+                                'tanggal_registrasi' => $this->opt->tanggal_terima,
+                                'estimasi' => $this->opt->estimasi,
+                                'type' => 'update',
+                            ];
                         }
                     }
 
-                    $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
-                    $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
-
-
-                    Mail::to($emailAddresses)
-                        ->cc($emailcc)
-                        ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track, null));
+                    if (!empty($dataToInsert2)) {
+                        // SendMsg::insert($dataToInsert2);
+                        event(new Smartlabsnotification($dataToInsert2));
+                    }
                 }
+
+                $emailAddresses = !empty($form['Emaiilto']) ? explode(',', $form['Emaiilto']) : null;
+                $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
+
+
+                Mail::to($emailAddresses)
+                    ->cc($emailcc)
+                    ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track, null));
+                // }
 
 
                 $trackSampel->save();
