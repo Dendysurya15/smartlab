@@ -53,10 +53,12 @@ Route::get('/seedroles', function () {
     ]);
     return "Roles seeded successfully!";
 });
+Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])
+    ->name('export.excel');
+Route::get('exporpdfkupa/{id}/{filename}', [HistoryKupaController::class, 'export_kupa_pdf'])->name('exporpdfkupa');
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
-    Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])
-        ->name('export.excel');
+
     Route::get('/export-form-monitoring-kupa/{id}', [HistoryKupaController::class, 'exportFormMonitoringKupa'])
         ->name('export.form-monitoring-kupa');
     Route::get('/export-monotoringbulk/{id}', [HistoryKupaController::class, 'exportFormMonitoringKupabulk'])
@@ -70,7 +72,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('get-progress-options', [HistoryKupaController::class, 'getProgressOptions']);
     Route::get('exportvr/{id}', [HistoryKupaController::class, 'exportvr'])->name('exportvr');
     Route::get('exporpdfform/{id}/{filename}', [HistoryKupaController::class, 'export_form_pdf'])->name('exporpdfform');
-    Route::get('exporpdfkupa/{id}/{filename}', [HistoryKupaController::class, 'export_kupa_pdf'])->name('exporpdfkupa');
     Route::get('exporpdfpr/{id}/{filename}', [HistoryKupaController::class, 'export_pr_pdf'])->name('exporpdfpr');
     Route::get('exportpdf_kuesiner/{id}/{filename}', [HistoryKupaController::class, 'exportpdf_kuesiner'])->name('exportpdf_kuesiner');
     Route::get('export_persurat/{id}/{filename}', [HistoryKupaController::class, 'export_persurat'])->name('exportpersurat');

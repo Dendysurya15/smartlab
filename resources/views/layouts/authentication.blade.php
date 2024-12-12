@@ -28,7 +28,7 @@
             document.querySelector('html').style.colorScheme = 'dark';
         }
     </script>
-
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
 </head>
 
 <body class="font-inter antialiased bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-600 dark:text-slate-400 h-screen overflow-hidden">
@@ -164,6 +164,34 @@
     @filamentScripts
     @livewireScripts
 
+    <script>
+        function onSubmitTrack(e) {
+            e.preventDefault();
+            console.log('Submit track started');
+
+            grecaptcha.ready(function() {
+                console.log('reCAPTCHA ready');
+
+                grecaptcha.execute('{{ config("services.recaptcha.site_key") }}', {
+                        action: 'submit'
+                    })
+                    .then(function(token) {
+                        console.log('Token length:', token ? token.length : 0);
+
+                        if (token) {
+                            Livewire.dispatch('setCaptchaToken', {
+                                token: token.trim() // Ensure no whitespace
+                            });
+                        } else {
+                            console.error('No token received from reCAPTCHA');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('reCAPTCHA error:', error);
+                    });
+            });
+        }
+    </script>
 
 </body>
 

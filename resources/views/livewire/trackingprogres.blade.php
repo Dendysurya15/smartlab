@@ -1,5 +1,6 @@
 <div>
-    <form wire:submit="save">
+
+    <form wire:submit.prevent="save">
         <div class="space-y-4">
             <div>
                 <x-label for="kode">{{ __('Kode') }} <span class="text-rose-500">*</span>
@@ -9,7 +10,9 @@
             </div>
         </div>
         <div class="flex items-center mt-6">
-            <button type="submit" wire:loading.attr="disabled" wire:loading.class="opacity-50" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
+            <button type="submit"
+                onclick="onSubmitTrack(event)"
+                class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500">
                 Submit
                 <div wire:loading>
                     <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,6 +31,47 @@
                 Certificate Not Available
             </button>
             @endif
+            <button wire:click="downloadPdf" wire:loading.attr="disabled"
+                x-data="{ downloading: false }"
+                x-on:click="if (!downloading) { 
+                    downloading = true;
+                    grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'download_pdf'})
+                        .then(function(token) {
+                            @this.set('captchaToken', token);
+                            @this.downloadPdf();
+                            downloading = false;
+                        });
+                }"
+                class="ml-4 text-blue-500 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span wire:loading.remove wire:target="downloadPdf">Download PDF</span>
+                <span wire:loading wire:target="downloadPdf">
+                    <svg class="inline w-4 h-4 me-3 text-blue-500 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- ... SVG path ... -->
+                    </svg>
+                    Downloading...
+                </span>
+            </button>
+
+            <button wire:click="downloadExcel" wire:loading.attr="disabled"
+                x-data="{ downloading: false }"
+                x-on:click="if (!downloading) { 
+                    downloading = true;
+                    grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'download_excel'})
+                        .then(function(token) {
+                            @this.set('captchaToken', token);
+                            @this.downloadExcel();
+                            downloading = false;
+                        });
+                }"
+                class="ml-4 text-blue-500 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span wire:loading.remove wire:target="downloadExcel">Download Excel</span>
+                <span wire:loading wire:target="downloadExcel">
+                    <svg class="inline w-4 h-4 me-3 text-blue-500 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- ... SVG path ... -->
+                    </svg>
+                    Downloading...
+                </span>
+            </button>
             @endif
         </div>
     </form>
@@ -65,25 +109,10 @@
 
     </div>
     @endif
-    {!! htmlScriptTagJsApi([
-    'callback_then' => 'callbackThen',
-    'callback_catch' => 'callbackCatch',
-    ]) !!}
-    <script>
-        function callbackThen(response) {
-            response.json().then(function(data) {
-                if (data.success && data.score > 0.5) {
-                    // console.log('valid recaptcha');
-                    @this.captchaToken = data.score;
-                } else {
-                    @this.captchaToken = data.score;
-                }
-            });
-        }
-
-        function callbackCatch(error) {
-            console.error('Error:', error);
-        }
-    </script>
+    @if (session()->has('error'))
+    <div class="mt-4 text-red-500">
+        {{ session('error') }}
+    </div>
+    @endif
 
 </div>
