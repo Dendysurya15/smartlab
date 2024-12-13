@@ -29,44 +29,6 @@
                     </svg>
                 </div>
             </button>
-
-            @if ($resultData !== null && $resultData !== 'kosong')
-            @if ($sertifikat)
-            <button wire:click="downloadSertifikat"
-                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-                </svg>
-                Download Certificate
-            </button>
-            @else
-            <button disabled
-                class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-500 text-sm font-medium rounded-md cursor-not-allowed">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-                </svg>
-                Certificate Not Available
-            </button>
-            @endif
-
-            <a href="{{ route('exporpdfkupa', ['id' => $id, 'filename' => $filename]) }}"
-                target="_blank"
-                class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-                </svg>
-                Download PDF
-            </a>
-
-            <a href="{{ route('export.excel', ['id' => $id]) }}"
-                target="_blank"
-                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-                </svg>
-                Download Excel
-            </a>
-            @endif
         </div>
     </form>
 
@@ -100,6 +62,45 @@
             @endforeach
         </div>
     </div>
+    <div class="mt-4">
+        <!-- Download Buttons Section -->
+        <div class="grid gap-4">
+            <!-- PDF Download -->
+            <button id="downloadPdfBtn"
+                wire:click="downloadPdf"
+                target="_blank"
+                class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+                </svg>
+                Download PDF
+            </button>
+
+            <!-- Excel Download -->
+            <button id="downloadExcelBtn"
+                wire:click="downloadExcel"
+                target="_blank"
+                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+                </svg>
+                Download Excel
+            </button>
+
+            @if($sertifikat)
+            <!-- Certificate Download -->
+            <button id="downloadCertBtn"
+                wire:click="downloadSertifikat"
+                target="_blank"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+                </svg>
+                Download Certificate
+            </button>
+            @endif
+        </div>
+    </div>
     @elseif ($resultData === 'kosong')
     <div class="mt-8 bg-red-50 border-l-4 border-red-400 p-4">
         <div class="flex">
@@ -119,7 +120,12 @@
         </div>
     </div>
     @endif
-
+    <div wire:ignore class="mt-8 mb-4">
+        <div class="g-recaptcha"
+            data-sitekey="{{ config('services.recaptcha.site_key_v2') }}"
+            data-callback="onCaptchaVerified">
+        </div>
+    </div>
     @if (session()->has('error'))
     <div class="mt-4 bg-red-50 border-l-4 border-red-400 p-4">
         <div class="flex">
@@ -137,5 +143,70 @@
     </div>
     @endif
 
+    <script>
+        window.addEventListener('openNewTab', event => {
+            window.open(event.detail.url, '_blank');
+        });
+
+        function onCaptchaVerified(token) {
+            @this.set('captchaResponse', token);
+            enableAllButtons();
+            @this.save();
+        }
+
+        function enableAllButtons() {
+            const buttons = ['downloadPdfBtn', 'downloadExcelBtn', 'downloadCertBtn'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.disabled = false;
+            });
+        }
+
+        function disableAllButtons() {
+            const buttons = ['downloadPdfBtn', 'downloadExcelBtn', 'downloadCertBtn'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.disabled = true;
+            });
+        }
+
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            disableAllButtons();
+        });
+
+        // Reset buttons when Livewire updates
+        document.addEventListener('livewire:load', function() {
+            Livewire.on('resetButtons', function() {
+                disableAllButtons();
+            });
+        });
+
+        function onCaptchaVerified(token) {
+            @this.set('captchaResponse', token);
+            enableAllButtons();
+        }
+
+        function enableAllButtons() {
+            const buttons = ['downloadPdfBtn', 'downloadExcelBtn', 'downloadCertBtn'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.disabled = false;
+            });
+        }
+
+        function disableAllButtons() {
+            const buttons = ['downloadPdfBtn', 'downloadExcelBtn', 'downloadCertBtn'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.disabled = true;
+            });
+        }
+
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            disableAllButtons();
+        });
+    </script>
 
 </div>
