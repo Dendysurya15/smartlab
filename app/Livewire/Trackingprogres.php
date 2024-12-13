@@ -146,12 +146,16 @@ class Trackingprogres extends Component
 
     public function downloadPdf()
     {
-        // dd('test');
         $this->isDownloading = true;
         $this->downloadType = 'pdf';
-        return redirect()->route('exporpdfkupa', ['id' => $this->id, 'filename' => $this->filename]);
+        // Add target attribute by returning a redirect with intended URL
+        return redirect()->route('exporpdfkupa', [
+            'id' => $this->id,
+            'filename' => $this->filename
+        ])->withHeaders([
+            'Target' => '_blank'
+        ]);
     }
-
     public function downloadExcel()
     {
         if ($this->isDownloading || $this->isDownloadTooFrequent()) {
@@ -162,9 +166,12 @@ class Trackingprogres extends Component
         $this->downloadType = 'excel';
         $this->lastDownloadTime = now();
 
-        return redirect()->route('export.excel', ['id' => $this->id]);
+        return redirect()->route('export.excel', [
+            'id' => $this->id
+        ])->withHeaders([
+            'Target' => '_blank'
+        ]);
     }
-
     private function isDownloadTooFrequent()
     {
         $now = now();

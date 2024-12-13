@@ -171,12 +171,7 @@
 
         function onSubmitTrack(e) {
             e.preventDefault();
-            console.log('Submit track started');
-
-            // if (!window.captchaV2Token) {
-            //     alert('Please complete the captcha verification');
-            //     return;
-            // }
+            // console.log('Submit track started');
 
             grecaptcha.ready(function() {
                 console.log('reCAPTCHA v3 ready');
