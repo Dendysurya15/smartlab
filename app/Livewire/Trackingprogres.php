@@ -25,6 +25,8 @@ class Trackingprogres extends Component
     public $isDownloading = false;
     public $downloadType;
     public $lastDownloadTime;
+    public $v2Token;
+    public $v3Token;
 
     // Add this listener
     protected $listeners = ['setCaptchaToken'];
@@ -44,16 +46,11 @@ class Trackingprogres extends Component
         try {
             // Verify with Google
             $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret' => config('services.recaptcha.secret_key'),
+                'secret' => config('services.recaptcha.secret_key_v3'),
                 'response' => $this->captchaToken,
-                'remoteip' => request()->ip()
             ]);
 
             $result = $response->json();
-            Log::info('Verification attempt with:', [
-                'token_length' => strlen($this->captchaToken),
-                'response' => $result
-            ]);
 
             if (!isset($result['success']) || !$result['success']) {
                 session()->flash('error', 'reCAPTCHA verification failed');
@@ -192,36 +189,47 @@ class Trackingprogres extends Component
 
     public function downloadPdf()
     {
-        // dd($this->id);
+        // if ($this->isDownloading) {
+        //     session()->flash('error', 'Download in progress');
+        //     return;
+        // }
 
-        if ($this->isDownloading || $this->isDownloadTooFrequent()) {
-            dd('failed download pdf to frequent');
-            return;
-        }
+        // // Check if captcha token exists
+        // if (!$this->captchaToken) {
+        //     session()->flash('error', 'Please complete the captcha verification');
+        //     return;
+        // }
 
-        // Wait for captcha token to be set by JavaScript
-        if (!$this->captchaToken || $this->captchaToken <= 0.5) {
-            session()->flash('error', 'Please verify that you are human.');
-            dd('failed download pdf to verify');
-            return;
-        }
+        // try {
+        //     // Verify captcha
+        //     $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        //         'secret' => config('services.recaptcha.secret_key_v2'),
+        //         'response' => $this->captchaToken
+        //     ]);
 
-        $ip = request()->ip();
-        $attemptsKey = "download_attempts:{$ip}";
-        $failedAttempts = Cache::get($attemptsKey, 0);
+        //     $result = $response->json();
 
-        // Check if IP is blocked
-        if (Cache::has($ip . '_download_blocked')) {
-            return redirect()->route('blocked');
-        }
+        //     if (!isset($result['success']) || !$result['success']) {
+        //         session()->flash('error', 'Captcha verification failed');
+        //         return;
+        //     }
+
+        //     $this->isDownloading = true;
+        //     $this->downloadType = 'pdf';
+        //     $this->captchaToken = null;
+
+        //     return redirect()->route('exporpdfkupa', ['id' => $this->id, 'filename' => $this->filename]);
+        // } catch (\Exception $e) {
+        //     Log::error('PDF download error:', ['error' => $e->getMessage()]);
+        //     session()->flash('error', 'An error occurred during download');
+        //     return;
+        // }
+
 
         $this->isDownloading = true;
         $this->downloadType = 'pdf';
-        $this->lastDownloadTime = now();
-
-        // Reset captcha token after successful use
         $this->captchaToken = null;
-        dd($this->id);
+
         return redirect()->route('exporpdfkupa', ['id' => $this->id, 'filename' => $this->filename]);
     }
 
@@ -268,17 +276,11 @@ class Trackingprogres extends Component
     public function setCaptchaToken($token)
     {
         Log::info('Received token data:', ['token' => $token]);
+        $this->captchaToken = $token;
 
-        if (is_array($token)) {
-            $this->captchaToken = $token['token'];
-        } else {
-            $this->captchaToken = $token;
-        }
-
-        if ($this->captchaToken) {
+        // Only execute save() if this is a form submission
+        if ($this->progressid) {
             $this->save();
-        } else {
-            session()->flash('error', 'reCAPTCHA verification failed - No token');
         }
     }
 }

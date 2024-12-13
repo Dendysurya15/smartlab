@@ -1415,21 +1415,25 @@ class HistoryKupa extends Component implements HasForms, HasTable
     public function create(): void
     {
         $form = $this->form->getState();
-        // dd($form);
         $insert = TrackSampel::find($this->id_sertifikat);
 
         // Delete old file if exists
-        if ($insert->sertifikasi !== null) {
-            $oldFiles = explode(',', $insert->sertifikasi);
-            foreach ($oldFiles as $oldFile) {
-                $filepath = storage_path('app/private/' . $oldFile);
-                if (file_exists($filepath)) {
-                    unlink($filepath);
-                }
-            }
-        }
+        // if ($insert->sertifikasi !== null) {
+        //     try {
+        //         $oldFiles = explode(',', $insert->sertifikasi);
+        //         foreach ($oldFiles as $oldFile) {
+        //             $filepath = storage_path('app/private/' . $oldFile);
+        //             if (is_file($filepath) && file_exists($filepath)) {
+        //                 unlink($filepath);
+        //             }
+        //         }
+        //     } catch (\Exception $e) {
+        //         // Log error but continue with save
+        //         \Log::error('Error deleting old files: ' . $e->getMessage());
+        //     }
+        // }
 
-        // Save new files
+        // Continue with save regardless of deletion success/failure
         $insert->sertifikasi = implode(',', $form['file']);
         $insert->save();
 

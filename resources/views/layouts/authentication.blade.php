@@ -28,7 +28,8 @@
             document.querySelector('html').style.colorScheme = 'dark';
         }
     </script>
-    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key_v3') }}"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body class="font-inter antialiased bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-600 dark:text-slate-400 h-screen overflow-hidden">
@@ -165,25 +166,35 @@
     @livewireScripts
 
     <script>
+        function onCaptchaVerified(v2Token) {
+            window.captchaV2Token = v2Token;
+        }
+
         function onSubmitTrack(e) {
             e.preventDefault();
             console.log('Submit track started');
 
-            grecaptcha.ready(function() {
-                console.log('reCAPTCHA ready');
+            if (!window.captchaV2Token) {
+                alert('Please complete the captcha verification');
+                return;
+            }
 
-                grecaptcha.execute('{{ config("services.recaptcha.site_key") }}', {
+            grecaptcha.ready(function() {
+                console.log('reCAPTCHA v3 ready');
+
+                grecaptcha.execute('{{ config("services.recaptcha.site_key_v3") }}', {
                         action: 'submit'
                     })
-                    .then(function(token) {
-                        console.log('Token length:', token ? token.length : 0);
+                    .then(function(v3Token) {
+                        console.log('V3 Token received');
 
-                        if (token) {
+                        if (v3Token) {
                             Livewire.dispatch('setCaptchaToken', {
-                                token: token.trim() // Ensure no whitespace
+                                v2Token: window.captchaV2Token,
+                                v3Token: v3Token.trim()
                             });
                         } else {
-                            console.error('No token received from reCAPTCHA');
+                            console.error('No v3 token received');
                         }
                     })
                     .catch(function(error) {

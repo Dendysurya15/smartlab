@@ -31,47 +31,59 @@
                 Certificate Not Available
             </button>
             @endif
-            <button wire:click="downloadPdf" wire:loading.attr="disabled"
-                x-data="{ downloading: false }"
-                x-on:click="if (!downloading) { 
-                    downloading = true;
-                    grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'download_pdf'})
-                        .then(function(token) {
-                            @this.set('captchaToken', token);
-                            @this.downloadPdf();
-                            downloading = false;
-                        });
-                }"
-                class="ml-4 text-blue-500 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span wire:loading.remove wire:target="downloadPdf">Download PDF</span>
-                <span wire:loading wire:target="downloadPdf">
-                    <svg class="inline w-4 h-4 me-3 text-blue-500 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- ... SVG path ... -->
-                    </svg>
-                    Downloading...
-                </span>
-            </button>
+            <div x-data="{ showCaptcha: false }" class="inline-block">
+                <button type="button"
+                    x-on:click="showCaptcha = true"
+                    class="ml-4 text-blue-500 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Download PDF
+                </button>
 
-            <button wire:click="downloadExcel" wire:loading.attr="disabled"
-                x-data="{ downloading: false }"
-                x-on:click="if (!downloading) { 
-                    downloading = true;
-                    grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'download_excel'})
-                        .then(function(token) {
-                            @this.set('captchaToken', token);
-                            @this.downloadExcel();
-                            downloading = false;
-                        });
-                }"
-                class="ml-4 text-blue-500 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span wire:loading.remove wire:target="downloadExcel">Download Excel</span>
-                <span wire:loading wire:target="downloadExcel">
-                    <svg class="inline w-4 h-4 me-3 text-blue-500 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- ... SVG path ... -->
-                    </svg>
-                    Downloading...
-                </span>
-            </button>
+                <div x-show="showCaptcha"
+                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white p-6 rounded-lg shadow-xl">
+                        <h3 class="text-lg font-semibold mb-4">Verify you're human</h3>
+
+                        <div class="g-recaptcha mb-4"
+                            data-sitekey="{{ config('services.recaptcha.site_key_v2') }}"
+                            data-callback="onPdfCaptchaVerified"></div>
+
+                        <div class="flex justify-end space-x-2">
+                            <button type="button"
+                                x-on:click="showCaptcha = false"
+                                class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-data="{ showCaptcha: false }" class="inline-block">
+                <button type="button"
+                    x-on:click="showCaptcha = true"
+                    class="ml-4 text-blue-500 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Download Excel
+                </button>
+
+                <div x-show="showCaptcha"
+                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white p-6 rounded-lg shadow-xl">
+                        <h3 class="text-lg font-semibold mb-4">Verify you're human</h3>
+
+                        <div class="g-recaptcha mb-4"
+                            data-sitekey="{{ config('services.recaptcha.site_key_v2') }}"
+                            data-callback="onExcelCaptchaVerified"></div>
+
+                        <div class="flex justify-end space-x-2">
+                            <button type="button"
+                                x-on:click="showCaptcha = false"
+                                class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             @endif
         </div>
     </form>
@@ -114,5 +126,25 @@
         {{ session('error') }}
     </div>
     @endif
+
+    <script>
+        function onPdfCaptchaVerified(token) {
+            Livewire.dispatch('setCaptchaToken', {
+                token: token
+            });
+            @this.downloadPdf();
+            // Close the modal
+            document.querySelector('[x-data]').__x.$data.showCaptcha = false;
+        }
+
+        function onExcelCaptchaVerified(token) {
+            Livewire.dispatch('setCaptchaToken', {
+                token: token
+            });
+            @this.downloadExcel();
+            // Close the modal
+            document.querySelector('[x-data]').__x.$data.showCaptcha = false;
+        }
+    </script>
 
 </div>

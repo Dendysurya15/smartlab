@@ -914,15 +914,21 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->estimasi = $form['EstimasiKupa'];
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
-                if ($trackSampel->sertifikasi !== null) {
-                    $oldFiles = explode(',', $trackSampel->sertifikasi);
-                    foreach ($oldFiles as $oldFile) {
-                        $filepath = storage_path('app/private/' . $oldFile);
-                        if (file_exists($filepath)) {
-                            unlink($filepath);
-                        }
-                    }
-                }
+                // if ($trackSampel->sertifikasi !== null) {
+                //     $oldFiles = explode(',', $trackSampel->sertifikasi);
+                //     $newFiles = $form['file_sertifikat'] ?? [];
+
+                //     // Only delete files that aren't in the new files list
+                //     foreach ($oldFiles as $oldFile) {
+                //         if (!in_array($oldFile, $newFiles)) {
+                //             $filepath = storage_path('app/private/' . $oldFile);
+                //             if (file_exists($filepath)) {
+                //                 unlink($filepath);
+                //             }
+                //         }
+                //     }
+                // }
+
                 $trackSampel->sertifikasi = implode(',', $form['file_sertifikat']) ?? null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
@@ -1080,15 +1086,21 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->estimasi = $form['EstimasiKupa'];
                 $trackSampel->tujuan = $form['Tujuan'];
                 $trackSampel->progress = $form['status_pengerjaan'];
-                if ($trackSampel->sertifikasi !== null) {
-                    $oldFiles = explode(',', $trackSampel->sertifikasi);
-                    foreach ($oldFiles as $oldFile) {
-                        $filepath = storage_path('app/private/' . $oldFile);
-                        if (file_exists($filepath)) {
-                            unlink($filepath);
-                        }
-                    }
-                }
+                // if ($trackSampel->sertifikasi !== null) {
+                //     $oldFiles = explode(',', $trackSampel->sertifikasi);
+                //     $newFiles = $form['file_sertifikat'] ?? [];
+
+                //     // Only delete files that aren't in the new files list
+                //     foreach ($oldFiles as $oldFile) {
+                //         if (!in_array($oldFile, $newFiles)) {
+                //             $filepath = storage_path('app/private/' . $oldFile);
+                //             if (file_exists($filepath)) {
+                //                 unlink($filepath);
+                //             }
+                //         }
+                //     }
+                // }
+
                 $trackSampel->sertifikasi = implode(',', $form['file_sertifikat']) ?? null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
