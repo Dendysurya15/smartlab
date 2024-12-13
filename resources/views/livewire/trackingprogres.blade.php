@@ -11,7 +11,6 @@
         </div>
         <div class="flex items-center mt-6">
             <button type="submit"
-                onclick="onSubmitTrack(event)"
                 class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500">
                 Submit
                 <div wire:loading>
@@ -21,6 +20,7 @@
                     </svg>
                 </div>
             </button>
+
             @if ($resultData !== null && $resultData !== 'kosong')
             @if ($sertifikat)
             <button wire:click="downloadSertifikat" class="ml-4 text-blue-500 hover:text-blue-700">
@@ -31,65 +31,22 @@
                 Certificate Not Available
             </button>
             @endif
-            <div x-data="{ showCaptcha: false }" class="inline-block">
-                <button type="button"
-                    x-on:click="showCaptcha = true"
-                    class="ml-4 text-blue-500 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Download PDF
-                </button>
 
-                <div x-show="showCaptcha"
-                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white p-6 rounded-lg shadow-xl">
-                        <h3 class="text-lg font-semibold mb-4">Verify you're human</h3>
+            <button wire:click="downloadPdf"
+                class="ml-4 text-blue-500 hover:text-blue-700">
+                Download PDF
+            </button>
 
-                        <div class="g-recaptcha mb-4"
-                            data-sitekey="{{ config('services.recaptcha.site_key_v2') }}"
-                            data-callback="onPdfCaptchaVerified"></div>
-
-                        <div class="flex justify-end space-x-2">
-                            <button type="button"
-                                x-on:click="showCaptcha = false"
-                                class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div x-data="{ showCaptcha: false }" class="inline-block">
-                <button type="button"
-                    x-on:click="showCaptcha = true"
-                    class="ml-4 text-blue-500 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Download Excel
-                </button>
-
-                <div x-show="showCaptcha"
-                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white p-6 rounded-lg shadow-xl">
-                        <h3 class="text-lg font-semibold mb-4">Verify you're human</h3>
-
-                        <div class="g-recaptcha mb-4"
-                            data-sitekey="{{ config('services.recaptcha.site_key_v2') }}"
-                            data-callback="onExcelCaptchaVerified"></div>
-
-                        <div class="flex justify-end space-x-2">
-                            <button type="button"
-                                x-on:click="showCaptcha = false"
-                                class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <button wire:click="downloadExcel"
+                class="ml-4 text-blue-500 hover:text-blue-700">
+                Download Excel
+            </button>
             @endif
         </div>
     </form>
+
     @if ($resultData !== null && $resultData !== 'kosong')
     <div id="progress-list" class="max-h-[400px] overflow-y-auto p-4 border border-gray-200 rounded-lg bg-white mt-4">
-
         @foreach ($resultData as $key => $value)
         <div class="mb-2">
             <h1 class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
@@ -109,42 +66,22 @@
             </p>
         </div>
         @endforeach
-        @elseif ($resultData === 'kosong')
-        <div class="mt-4">
-            <h5 class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                Kode Sampel Tidak Valid ❌
-            </h5>
-            <p class="font-normal text-sm text-gray-700 dark:text-gray-400">
-                Harap periksa dan cek kembali kode yang Anda masukkan.
-            </p>
-        </div>
-
+    </div>
+    @elseif ($resultData === 'kosong')
+    <div class="mt-4">
+        <h5 class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+            Kode Sampel Tidak Valid ❌
+        </h5>
+        <p class="font-normal text-sm text-gray-700 dark:text-gray-400">
+            Harap periksa dan cek kembali kode yang Anda masukkan.
+        </p>
     </div>
     @endif
+
     @if (session()->has('error'))
     <div class="mt-4 text-red-500">
         {{ session('error') }}
     </div>
     @endif
-
-    <script>
-        function onPdfCaptchaVerified(token) {
-            Livewire.dispatch('setCaptchaToken', {
-                token: token
-            });
-            @this.downloadPdf();
-            // Close the modal
-            document.querySelector('[x-data]').__x.$data.showCaptcha = false;
-        }
-
-        function onExcelCaptchaVerified(token) {
-            Livewire.dispatch('setCaptchaToken', {
-                token: token
-            });
-            @this.downloadExcel();
-            // Close the modal
-            document.querySelector('[x-data]').__x.$data.showCaptcha = false;
-        }
-    </script>
 
 </div>
