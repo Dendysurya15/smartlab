@@ -929,7 +929,7 @@ class Editprogress extends Component implements HasForms
                 //     }
                 // }
 
-                $trackSampel->sertifikasi = implode(',', $form['file_sertifikat']) ?? null;
+                $trackSampel->sertifikasi = isset($form['file_sertifikat']) ? implode(',', $form['file_sertifikat']) : null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
@@ -1101,7 +1101,7 @@ class Editprogress extends Component implements HasForms
                 //     }
                 // }
 
-                $trackSampel->sertifikasi = implode(',', $form['file_sertifikat']) ?? null;
+                $trackSampel->sertifikasi = isset($form['file_sertifikat']) ? implode(',', $form['file_sertifikat']) : null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');

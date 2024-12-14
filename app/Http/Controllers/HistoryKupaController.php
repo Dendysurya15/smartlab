@@ -456,9 +456,238 @@ class HistoryKupaController extends Controller
 
     public function export_kupa_pdf($id, $filename)
     {
-        return GeneratePdfKupa($id, $filename);
-        // $idsc = '71$69';
 
+
+        // $idsc = '71$69';
+        $idsArray = explode('$', $id);
+        $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
+        $petugas = ExcelManagement::where('status', 1)->get();
+        $petugas = $petugas->groupBy(['jabatan']);
+        $petugas = json_decode($petugas, true);
+        // dd($petugas);
+        // dd($queries);
+        $result = [];
+        $result_total = [];
+        $inc = 1;
+        function transformArray($list_row)
+        {
+            $result = [];
+            $total = 0;
+
+            foreach ($list_row as $valuxe) {
+                $result[$total] = $valuxe;
+                $total += $valuxe;
+            }
+
+            return $result;
+        }
+        function combineKeysAndValues($keys, $values)
+        {
+            $result = [];
+
+            foreach ($keys as $index => $key) {
+                $result[$key] = $values[$index];
+            }
+
+            return $result;
+        }
+
+        $data = [];
+        foreach ($queries as $key => $value) {
+            $tanggal_terima = Carbon::parse($value->tanggal_terima);
+            $trackparam = $value->trackParameters;
+
+            $nama_params = [];
+            foreach ($trackparam as $trackParameter) {
+                if ($trackParameter->ParameterAnalisis) {
+                    if ($trackParameter->ParameterAnalisis->paket_id != null) {
+                        $data_paket = explode('$', $trackParameter->ParameterAnalisis->paket_id);
+                        $nama_params[] = [
+                            'unsur' => ParameterAnalisis::whereIn('id', $data_paket)->pluck('nama_unsur')->toArray(),
+                            'metode_analisis' => ParameterAnalisis::whereIn('id', $data_paket)->pluck('metode_analisis')->toArray(),
+                            'harga' => $trackParameter->ParameterAnalisis->harga,
+                            'jenis' => 'Paket',
+                            'row' => count($data_paket),
+                            'jumlah_sampel' => $trackParameter->jumlah,
+                            'satuan' => ParameterAnalisis::whereIn('id', $data_paket)->pluck('satuan')->toArray(),
+                            'sub_total' => $trackParameter->ParameterAnalisis->harga * $trackParameter->jumlah,
+                        ];
+                    } else {
+                        $nama_params[] = [
+                            'unsur' => $trackParameter->ParameterAnalisis->nama_unsur,
+                            'metode_analisis' => $trackParameter->ParameterAnalisis->metode_analisis,
+                            'harga' => $trackParameter->ParameterAnalisis->harga,
+                            'jenis' => 'Paket',
+                            'row' => 1,
+                            'jumlah_sampel' => $trackParameter->jumlah,
+                            'satuan' => $trackParameter->ParameterAnalisis->satuan,
+                            'sub_total' => $trackParameter->ParameterAnalisis->harga * $trackParameter->jumlah,
+                        ];
+                    }
+                }
+            }
+
+            $total_row = 0;
+            $jum_sampel = 0;
+            $harga_total_per_sampel = 0;
+            $list_unsur = [];
+            $list_analisis = [];
+            $list_satuan = [];
+            $list_row = [];
+            $list_jumlah_sampel = [];
+            $list_harga = [];
+            $sub_total = [];
+
+            foreach ($nama_params as $param) {
+                $total_row += $param['row'];
+                $jum_sampel += $param['jumlah_sampel'];
+                $harga_total_per_sampel += $param['sub_total'];
+
+                $list_jumlah_sampel[] = $param['jumlah_sampel'];
+                $list_harga[] = $param['harga'];
+                $sub_total[] = $param['sub_total'];
+                $list_row[] = $param['row'];
+
+                if (is_array($param['unsur'])) {
+                    $list_unsur = array_merge($list_unsur, $param['unsur']);
+                    $list_analisis = array_merge($list_analisis, $param['metode_analisis']);
+                    $list_satuan = array_merge($list_satuan, $param['satuan']);
+                } else {
+                    $list_unsur[] = $param['unsur'];
+                    $list_analisis[] = $param['metode_analisis'];
+                    $list_satuan[] = $param['satuan'];
+                }
+            }
+            $harga_total_dengan_ppn = Money::IDR(hitungPPN($harga_total_per_sampel), true);
+            $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($harga_total_per_sampel, true));
+
+            $discountDecimal = $value->discount != 0 ? $value->discount / 100 : 0;
+            $discount = $totalppn_harga->multiply($discountDecimal);
+            $total_akhir = $totalppn_harga->subtract($discount);
+
+            $nolab = explode('$', $value->nomor_lab);
+            $year = Carbon::parse($value->tanggal_terima)->format('y');
+            $kode_sampel = $value->jenisSampel->kode;
+
+            $nolab = explode('$', $value->nomor_lab);
+            $year = Carbon::parse($value->tanggal_terima)->format('y');
+            $kode_sampel = $value->jenisSampel->kode;
+
+            $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
+            $labkanan = isset($nolab[1]) ? $year . $kode_sampel . '.' . formatLabNumber($nolab[1]) : '';
+
+            $colspandata = transformArray($list_row);
+            $keys_default = array_keys($colspandata);
+
+            $list_jumlah_sampel = combineKeysAndValues($keys_default, $list_jumlah_sampel);
+            $list_harga = combineKeysAndValues($keys_default, $list_harga);
+            $sub_total = combineKeysAndValues($keys_default, $sub_total);
+            for ($i = 0; $i < $total_row; $i++) {
+
+                $result[$key][$i] = [
+                    'no_surat' => ($i == 0) ? $value->nomor_surat : '',
+                    'kemasan' => ($i == 0) ? $value->kemasan_sampel : '',
+                    'colspan' => ($i == 0) ? $total_row : 0,
+                    'jum_sampel' => ($i == 0) ? $value->jumlah_sampel : '',
+                    'nolab' => ($i == 0) ? $labkiri : (($i == 1) ? $labkanan : ''),
+                    'Parameter_Analisis' => $list_unsur[$i] ?? '',
+                    'mark' => '✓',
+                    'Metode_Analisis' => $list_analisis[$i] ?? '',
+                    'satuan' => $list_satuan[$i] ?? '',
+                    'Personel' => ($value->personel == 1) ? '✔' : '',
+                    'alat' => ($value->alat == 1) ? '✔' : '',
+                    'bahan' => ($value->bahan == 1) ? '✔' : '',
+                    'cols' => isset($colspandata[$i]) ? $colspandata[$i] : 0,
+                    'jum_data' => isset($list_jumlah_sampel[$i]) ? $list_jumlah_sampel[$i] : 0,
+                    'jum_harga' => isset($list_harga[$i]) ? $list_harga[$i] : 0,
+                    'jum_sub_total' => isset($sub_total[$i]) ? $sub_total[$i] : 0,
+                    'Konfirmasi' => ($value->konfirmasi == 1) ? '✔' : '',
+                    'kondisi_sampel' => $value->kondisi_sampel,
+                    'estimasi' => ($i == 0) ? Carbon::parse($value->estimasi)->locale('id')->translatedFormat('d F Y') : '',
+                ];
+            }
+
+            $titles = ["Total Per Parameter", "PPn 11%", "Diskon", "Total"];
+            $values_title = [Money::IDR($harga_total_per_sampel, true), $harga_total_dengan_ppn, $discount, $total_akhir];
+
+            for ($i = 0; $i < 4; $i++) {
+                // Initialize the array with empty strings
+                $result_total[$i] = array_fill(0, 16, '');
+
+                // Set the specific value at index 5
+                $result_total[$i][5] = $titles[$i];
+                $result_total[$i][11] = $values_title[$i];
+            }
+            $catatan = $value->catatan;
+            $nama_pengirim = $value->nama_pengirim;
+            $status = $value->status;
+            $memo_created = $value->tanggal_memo;
+            $verif = explode(',', $value->status_timestamp);
+
+            $verifikasi_admin_timestamp = $verif[0];
+            $verifikasi_head_timestamp = $verif[1] ?? '-';
+
+            $approveby_head = $value->approveby_head;
+            $petugas_penerima_sampel = User::where('id', $value->created_by)->pluck('name')->first();
+            $jenis_kupa = $value->jenis_pupuk ?? $value->jenisSampel->nama;
+            $tanggal_penerimaan = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('d F Y');
+            $no_kupa = $value->nomor_kupa;
+            $departemen = $value->departemen;
+            $formulir = $value->formulir;
+            $doc = $value->no_doc;
+            $data[$key] = [
+                'data' => $result[$key],
+                'total_row' => $total_row,
+                "result_total" => $result_total,
+                "catatan" =>   $value->catatan,
+                'nama_pengirim' => $nama_pengirim,
+                'petugas_penerima_sampel' => $petugas_penerima_sampel,
+                'approval' => $status,
+                'memo_created' => $memo_created,
+                'verifikasi_admin_timestamp' => $verifikasi_admin_timestamp,
+                'isVerifiedByHead' => $approveby_head,
+                'verifikasi_head_timestamp' => $verifikasi_head_timestamp,
+                'jenis_kupa' => $jenis_kupa,
+                'tanggal_penerimaan' => $tanggal_penerimaan,
+                'no_kupa' => $no_kupa,
+                'departemen' => $departemen,
+                'formulir' => $formulir,
+                'labkiri' => $labkiri,
+                'labkanan' => $labkanan,
+                'doc' => $doc,
+                'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
+            ];
+            $jenis_sampel[] = $value->jenisSampel->nama;
+            $date[] = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('F Y');
+        }
+        if ($filename === 'bulk') {
+            $uniqueArray = array_unique($jenis_sampel);
+            $uniquedate = array_unique($date);
+            // dd($uniquedate);
+
+            $newfilename =  'Kupa_' . implode('_', $uniqueArray) . '_Date_' . implode('_', $uniquedate);
+        } else {
+            $newfilename = $filename;
+        }
+
+        // dd($data);
+
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', true); // Enable loading of remote resources
+        $dompdf = new Dompdf($options);
+
+        $view = view('pdfview.export_kupa', ['data' => $data])->render();
+        $dompdf->loadHtml($view);
+
+        // Set paper size and orientation
+        $dompdf->setPaper('A2', 'landscape');
+
+        // Render the PDF
+        $dompdf->render();
+
+
+        $dompdf->stream($newfilename, ["Attachment" => false]);
     }
 
     public function export_pr_pdf($id, $filename)
