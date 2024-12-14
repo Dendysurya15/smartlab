@@ -19,8 +19,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class Trackingprogres extends Component
 {
-    protected $listeners = ['save'];
-    public $captchaResponse;
+    protected $listeners = ['captchaResponse'];
+    public $captchaResponse = null;
     public $progressid;
     public $dataakhir;
     public $resultData;
@@ -38,7 +38,6 @@ class Trackingprogres extends Component
 
     public function save()
     {
-        // Only verify reCAPTCHA v2
         if (!$this->captchaResponse) {
             session()->flash('error', 'Please complete the captcha verification');
             return;
@@ -118,6 +117,8 @@ class Trackingprogres extends Component
             $this->sertifikat = $query->sertifikasi;
             $this->id = $query->id;
             $this->filename = $filename;
+
+            $this->resetCaptcha();
         } else {
             $this->resultData = 'kosong';
         }
@@ -125,21 +126,6 @@ class Trackingprogres extends Component
 
     public function downloadSertifikat()
     {
-        if (!$this->captchaResponse) {
-            session()->flash('error', 'Please complete the captcha verification');
-            return;
-        }
-
-        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => config('services.recaptcha.secret_key_v2'),
-            'response' => $this->captchaResponse
-        ]);
-
-        if (!$response->json()['success']) {
-            session()->flash('error', 'Invalid captcha verification');
-            return;
-        }
-
         $files = explode(',', $this->sertifikat);
 
         // If there's only one file, download it directly
@@ -179,11 +165,6 @@ class Trackingprogres extends Component
 
     public function downloadPdf()
     {
-
-        if (!$this->captchaResponse) {
-            session()->flash('error', 'Please complete the captcha verification');
-            return;
-        }
         try {
             $data = GeneratePdfKupa($this->id, $this->filename);
             $options = new Options();
@@ -196,44 +177,41 @@ class Trackingprogres extends Component
             $dompdf->setPaper('A2', 'landscape');
             $dompdf->render();
 
-            // Set proper headers for PDF download
-            $headers = [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $data['filename'] . '.pdf"',
-            ];
-
-            // Return response with proper headers
             return response()->streamDownload(
                 function () use ($dompdf) {
                     echo $dompdf->output();
                 },
                 $data['filename'] . '.pdf',
-                $headers
+                [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $data['filename'] . '.pdf"',
+                ]
             );
         } catch (\Exception $e) {
-            // Handle any errors
             Notification::make()
                 ->title('Error generating PDF')
                 ->danger()
                 ->send();
-
             return null;
         }
     }
+
     public function downloadExcel()
     {
-
-        if (!$this->captchaResponse) {
-            session()->flash('error', 'Please complete the captcha verification');
-            return;
-        }
-
         $query = TrackSampel::find($this->id);
-
-        // dd($query);
-
         $filename = 'Kupa ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
-
         return Excel::download(new FormDataExport($this->id), $filename);
+    }
+
+
+    private function resetCaptcha()
+    {
+        $this->captchaResponse = null;
+        $this->dispatch('resetCaptcha');
+    }
+
+    public function captchaResponse($response)
+    {
+        $this->captchaResponse = $response;
     }
 }
