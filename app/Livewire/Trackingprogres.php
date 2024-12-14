@@ -9,6 +9,13 @@ use App\Models\JenisSampel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\FormDataExport;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use NumberToWords\NumberToWords;
+use Filament\Notifications\Notification;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class Trackingprogres extends Component
 {
@@ -172,26 +179,61 @@ class Trackingprogres extends Component
 
     public function downloadPdf()
     {
+
         if (!$this->captchaResponse) {
             session()->flash('error', 'Please complete the captcha verification');
             return;
         }
+        try {
+            $data = GeneratePdfKupa($this->id, $this->filename);
+            $options = new Options();
+            $options->set('defaultFont', 'DejaVu Sans');
+            $options->set('isRemoteEnabled', true);
+            $dompdf = new Dompdf($options);
 
-        return redirect()->route('exporpdfkupa', [
-            'id' => $this->id,
-            'filename' => $this->filename
-        ]);
+            $view = view('pdfview.export_kupa', ['data' => $data['data']])->render();
+            $dompdf->loadHtml($view);
+            $dompdf->setPaper('A2', 'landscape');
+            $dompdf->render();
+
+            // Set proper headers for PDF download
+            $headers = [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $data['filename'] . '.pdf"',
+            ];
+
+            // Return response with proper headers
+            return response()->streamDownload(
+                function () use ($dompdf) {
+                    echo $dompdf->output();
+                },
+                $data['filename'] . '.pdf',
+                $headers
+            );
+        } catch (\Exception $e) {
+            // Handle any errors
+            Notification::make()
+                ->title('Error generating PDF')
+                ->danger()
+                ->send();
+
+            return null;
+        }
     }
-
     public function downloadExcel()
     {
+
         if (!$this->captchaResponse) {
             session()->flash('error', 'Please complete the captcha verification');
             return;
         }
 
-        return redirect()->route('export.excel', [
-            'id' => $this->id
-        ]);
+        $query = TrackSampel::find($this->id);
+
+        // dd($query);
+
+        $filename = 'Kupa ' . $query->JenisSampel->nama . '-' .  $query->nomor_kupa . ' ' . tanggal_indo($query->tanggal_terima, false, false, true) . '.xlsx';
+
+        return Excel::download(new FormDataExport($this->id), $filename);
     }
 }

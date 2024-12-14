@@ -24,6 +24,10 @@
             bottom: 0;
             width: 100%;
         }
+
+        body {
+            font-family: DejaVu Sans, sans-serif;
+        }
     </style>
 
 </head>

@@ -207,6 +207,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             disableAllButtons();
         });
+        document.addEventListener('livewire:load', function() {
+            Livewire.on('notify', function(data) {
+                // You can use any notification library here (Toastr, SweetAlert2, etc.)
+                // Or create a simple alert
+                alert(data.message);
+            });
+        });
     </script>
 
 </div>
