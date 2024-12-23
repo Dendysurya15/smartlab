@@ -143,7 +143,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                             // dd($dataToInsert2);
                             if (!empty($dataToInsert2)) {
-                                event(new Smartlabsnotification($dataToInsert2));
+                                // event(new Smartlabsnotification($dataToInsert2));
                             }
                         }
                         // dd($dataToInsert2);
@@ -152,11 +152,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
 
                         // Only send email if there are recipients
-                        if ($emailAddresses !== null || $emailcc !== null) {
-                            Mail::to($emailAddresses ?? [])
-                                ->cc($emailcc ?? [])
-                                ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
-                        }
+                        // if ($emailAddresses !== null || $emailcc !== null) {
+                        //     Mail::to($emailAddresses ?? [])
+                        //         ->cc($emailcc ?? [])
+                        //         ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
+                        // }
 
                         $id = $record->id;
                         $trackSampel = TrackSampel::find($id);
@@ -461,37 +461,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         });
                     }),
                 ActionGroup::make([
-                    // BulkAction::make('export_pdf')
-                    //     ->label('PDF')
-                    //     ->button()
-                    //     ->icon('heroicon-o-document-arrow-down')
-                    //     ->color('warning')
-                    //     ->deselectRecordsAfterCompletion()
-                    //     ->modalHeading('Perhatian')
-                    //     ->modalSubheading(
-                    //         "Harap Memilih data yang tidak dalam kondisi status Draft"
-                    //     )
-                    //     ->modalButton('Export PDF')
-                    //     ->action(function (Collection $records) {
-                    //         $recordIds = [];
-                    //         $jenis_sampel = [];
-                    //         $dates = [];
-                    //         $year = [];
-
-                    //         $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
-                    //             if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
-                    //                 $recordIds[] = $record->id;
-                    //             }
-                    //             $jenis_sampel[] = $record->jenisSampel->nama;
-                    //             $carbonDate = Carbon::parse($record->tanggal_memo);
-                    //             $dates[] = $carbonDate->format('F');
-                    //             $year[] = $carbonDate->format('Y');
-                    //         });
-                    //         $data = implode('$', $recordIds);
-
-                    //         // Redirect with a target attribute for opening in a new tab
-                    //         return redirect()->route('exportvr', $data)->with('target', '_blank');
-                    //     }),
                     BulkAction::make('export_excelpr')
                         ->label('Excel')
                         ->button()
@@ -1313,15 +1282,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $emailAddresses = !empty($records->emailTo) ? explode(',', $records->emailTo) : null;
                             $emailcc = !empty($records->emailCc) ? explode(',', $records->emailCc) : null;
                             if (!empty($dataToInsert2)) {
-                                event(new Smartlabsnotification($dataToInsert2));
+                                // event(new Smartlabsnotification($dataToInsert2));
                             }
 
                             // dd($progress, $progress_state);
-                            if ($emailAddresses !== null) {
-                                Mail::to($emailAddresses)
-                                    ->cc($emailcc)
-                                    ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
-                            }
+                            // if ($emailAddresses !== null) {
+                            //     Mail::to($emailAddresses)
+                            //         ->cc($emailcc)
+                            //         ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
+                            // }
                             $records->invoice_status = 2;
                             $records->save();
                             return Notification::make()
@@ -1394,6 +1363,9 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 ])->tooltip('Actions'),
             ]);
     }
+
+
+
     public function form(Form $form): Form
     {
         return $form
@@ -1412,6 +1384,10 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ])
             ->statePath('data');
     }
+
+
+
+
     public function create(): void
     {
         $form = $this->form->getState();

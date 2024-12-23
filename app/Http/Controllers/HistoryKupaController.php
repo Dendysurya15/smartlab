@@ -184,183 +184,24 @@ class HistoryKupaController extends Controller
 
     public function exportvr($ids)
     {
-        $data = $ids;
 
-        $id = explode('$', $data);
-
-        $queries = TrackSampel::whereIn('id', $id)
-            ->with('trackParameters')
-            ->with('progressSampel')
-            ->with('jenisSampel')
-            ->get();
-
-        $queries = $queries->groupBy(['jenis_sampel', 'nomor_kupa']);
-        // dd($queries);
-
-        $result = [];
-        foreach ($queries as $key => $value) {
-            foreach ($value as $key1 => $value1) {
-                $kode_sampel = [];
-                $nomor_lab = [];
-                $nama_parameter = [];
-                foreach ($value1 as $key2 => $value2) {
-                    $jenissample = $value2->jenisSampel->nama;
-                    $jenissample_komuditas = $value2->jenis_pupuk ?? 'Tidak tersedia';
-                    $jumlahsample = $value2['jumlah_sampel'];
-                    $catatan = $value2['catatan'];
-                    $kdsmpel = $value2['kode_sampel'];
-                    $nolab = $value2['nomor_lab'];
-                    $trackparam = $value2->trackParameters;
-                    $carbonDate = Carbon::parse($value2['tanggal_terima'])->locale('id')->translatedFormat('d F Y');
-                    $carbonDate2 = Carbon::parse($value2['estimasi'])->locale('id')->translatedFormat('d F Y');
-                    $nama_parameter = [];
-                    $hargatotal = 0;
-                    $jumlah_per_parametertotal = 0;
-                    $hargaasli = [];
-                    $harga_total_per_sampel = [];
-                    $jumlah_per_parameter = [];
-                    $namakode_sampelparams = [];
-                    foreach ($trackparam as $trackParameter) {
-
-                        if ($trackParameter->ParameterAnalisis) {
-                            $nama_parameter[] = $trackParameter->ParameterAnalisis->nama_parameter;
-                            $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
-                            $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
-                            $jumlah_per_parameter[] = $trackParameter->jumlah;
-
-                            $statuspaket = $trackParameter->ParameterAnalisis->paket_id;
-
-                            if ($statuspaket != null) {
-                                $paket = explode('$', $statuspaket);
-                                $params = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
-                                // $nama_parameter[] = $nama_params;
-                                // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
-                                $namakode_sampelparams[implode(',', $params)] =  explode('$', $trackParameter->namakode_sampel);
-                            } else {
-                                // $nama_parameter[] = $namaunsur;
-                                $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
-                            }
-
-                            // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
-                        }
-                        $hargatotal += $trackParameter->totalakhir;
-                        $jumlah_per_parametertotal += $trackParameter->jumlah;
-                    }
-                    $harga_total_dengan_ppn = Money::IDR(hitungPPN($hargatotal), true);
-                    $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($hargatotal, true));
-
-                    $discountDecimal = $value2->discount != 0 ? $value2->discount / 100 : 0;
-                    $discount = $totalppn_harga->multiply($discountDecimal);
-
-                    $total_akhir = $totalppn_harga->subtract($discount);
-                    $newnamaparameter = [];
-
-                    // dd($namakode_sampelparams);
-
-                    $sampel_data = [];
-
-                    foreach ($namakode_sampelparams as $attribute => $items) {
-                        foreach ($items as $item) {
-                            if (!isset($sampel_data[$item])) {
-                                $sampel_data[$item] = [];
-                            }
-
-                            $explodedAttributes = strpos($attribute, ',') !== false ? explode(',', $attribute) : [$attribute];
-
-                            foreach ($explodedAttributes as $attr) {
-                                $trimmedAttr = trim($attr); // Ensure no leading/trailing spaces
-                                if (!in_array($trimmedAttr, $sampel_data[$item])) {
-                                    $sampel_data[$item][] = $trimmedAttr;
-                                }
-                            }
-                        }
-                    }
-                }
-                // dd($total_akhir);
-                // dd($sampel_data, $namakode_sampelparams);
-
-                $kode_sampel = explode('$', $kdsmpel);
-
-
-                $nomor_lab = explode('$', $nolab);
-                $new_sampel = [];
-                $incc = 0;
-                foreach ($sampel_data as $keyx => $valuex) {
-                    $new_sampel[$incc++] = implode(',', $valuex);
-                }
-                // dd($value2);
-                $timestamp = strtotime($value2['tanggal_terima']);
-                $year = date('Y', $timestamp);
-                $lab =  substr($year, 2) . $value2->jenisSampel->kode . '.';
-                // Remove leading and trailing spaces from each element
-                $kode_sampel = array_map(function ($value) {
-                    return trim($value); // Removes spaces from both start and end
-                }, $kode_sampel);
-                $new_nomor_lab = $nomor_lab[0] - 1;
-                $lab_counter = 1; // Add a counter to track the sequence
-                foreach ($sampel_data as $keysx => $valuems) {
-                    // $inc = 1;
-                    foreach ($kode_sampel as $index => $kode) {
-                        if ((string)$keysx === $kode) {
-                            $result[$key][$key1][$keysx]['jenis_sample'] = $jenissample;
-                            $result[$key][$key1][$keysx]['nama_unsur'] = $keysx;
-                            $result[$key][$key1][$keysx]['jenis_sample_komoditas'] = $jenissample_komuditas;
-                            $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
-                            $result[$key][$key1][$keysx]['catatan'] = ($index == 0) ? $catatan : 'null';
-                            $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
-                            $current_lab_number = $new_nomor_lab + $lab_counter;
-                            $result[$key][$key1][$keysx]['nomor_lab'] = $lab . formatLabNumber($current_lab_number);
-                            $lab_counter++; // Increment the counter for next iteration
-                            $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
-                            $result[$key][$key1][$keysx]['asal_sampel'] = $value2['asal_sampel'];
-                            $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
-                            $result[$key][$key1][$keysx]['nomor_surat'] = $value2['nomor_surat'];
-                            $result[$key][$key1][$keysx]['nomor_kupa'] = $value2['nomor_kupa'];
-                            $result[$key][$key1][$keysx]['tanggal_terima'] = $carbonDate;
-                            $result[$key][$key1][$keysx]['tanggal_memo'] = $value2['tanggal_memo'];
-                            $result[$key][$key1][$keysx]['Jumlah_Parameter'] = count($valuems);
-                            $result[$key][$key1][$keysx]['Parameter_Analisa'] = implode(',', $valuems);
-                            $result[$key][$key1][$keysx]['tujuan'] = $value2['tujuan'];
-                            $result[$key][$key1][$keysx]['estimasi'] = $carbonDate2;
-                            $result[$key][$key1][$keysx]['Tanggal_Selesai_Analisa'] = '-';
-                            $result[$key][$key1][$keysx]['Tanggal_Rilis_Sertifikat'] = '-';
-                            $result[$key][$key1][$keysx]['No_sertifikat'] = '-';
-                            $result[$key][$key1][$keysx]['total'] = ($index == 0) ? $total_akhir : 'null';
-                            $result[$key][$key1][$keysx]['total_string'] = ($index == 0) ? NumberToWords::transformNumber('id', $hargatotal) : 'null';
-                        }
-                    }
-                }
-                // dd($result);
-            }
-            $result[$key]['jenis'] = $jenissample;
-        }
         // dd($result);
-        $jenissamplel = [];
-        foreach ($result as $key => $value) {
-            $jenissamplel[] = $value['jenis'];
-        }
-        // dd($result);
-        $jenissamplefix = implode(',', $jenissamplel);
-
+        $generate = GeneratePR($ids);
+        // dd($generate);
         $data = [
-            'data' => $result,
-            'lab' => $lab,
-            'nomor_lab' => $nomor_lab[0] - 1
+            'data' => $generate['result'],
+            'lab' => $generate,
+            'nomor_lab' => $generate['nomor_lab']
         ];
-        // dd($data);
-        $filename = 'PDF Kupa,' . $jenissamplefix . '.pdf';
         $pdf = Pdf::setPaper('letter', 'portrait');
         $pdf->setOptions([
             'dpi' => 100,
             'isRemoteEnabled' => true,
         ]);
-
-        // $pdf->setOptions(['dpi' => 150, 'isHtml5ParserEnabled' => true, 'defaultFont' => 'sans-serif']);
         $pdf->loadView('pdfview.vrdata', $data);
         $pdf->set_paper('A2', 'landscape');
 
-        return $pdf->stream($filename);
-        // return $pdf->download($filename);
+        return $pdf->stream($generate['filename']);
     }
 
     public function export_form_pdf($id, $filename)

@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
 
 </head>
 
@@ -13,18 +12,18 @@
     <table style="width: 100%; border-collapse: collapse;">
         <thead>
             <tr>
-                <th colspan="18" style="border:1px solid black;text-align:center;vertical-align:center">PT. CITRA BORNEO INDAH </th>
+                <th colspan="19" style="border:1px solid black;text-align:center;vertical-align:center">PT. CITRA BORNEO INDAH </th>
             </tr>
             <tr>
                 <th style="border:1px solid black;text-align:center;vertical-align:center" rowspan="3" colspan="2"></th>
-                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="16">RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</th>
+                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="17">RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</th>
 
             </tr>
             <tr>
-                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="16"></th>
+                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="17"></th>
             </tr>
             <tr>
-                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="16"></th>
+                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="17"></th>
             </tr>
         </thead>
     </table>
@@ -82,7 +81,7 @@
                 <td style="border:1px solid black;">{{$item2['tanggal_terima']}}</td>
                 <td style="border:1px solid black;">{{$item2['jenis_sample']}}</td>
                 <td style="border:1px solid black; white-space: nowrap;">
-                    {{$item2['jenissample_komuditas']}}
+                    {{$item2['jenis_sample_komoditas']}}
                 </td>
                 <td style="border:1px solid black;">{{$item2['asal_sampel']}}</td>
                 <td style="border:1px solid black;">{{$item2['nomor_kupa']}}</td>
