@@ -24,9 +24,8 @@
                 @if(!$captchaResponse) disabled @endif
                 class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 Submit
-                <div wire:loading wire:target="save" class="ml-2"> <!-- Add wire:target="save" -->
+                <div wire:loading wire:target="save" class="ml-2">
                     <svg aria-hidden="true" class="w-4 h-4 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- ... svg path ... -->
                     </svg>
                 </div>
             </button>
@@ -40,25 +39,8 @@
                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
                 </svg>
-                <span wire:loading.remove wire:target="downloadPdf">Download PDF</span>
+                <span wire:loading.remove wire:target="downloadPdf">Download KUPA</span>
                 <span wire:loading wire:target="downloadPdf" class="inline-flex items-center">
-                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <!-- ... svg path ... -->
-                    </svg>
-                    Processing...
-                </span>
-            </button>
-
-            <!-- Excel Download -->
-            <button id="downloadExcelBtn"
-                wire:click.prevent="downloadExcel"
-                wire:loading.attr="disabled"
-                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-                </svg>
-                <span wire:loading.remove wire:target="downloadExcel">Download Excel</span>
-                <span wire:loading wire:target="downloadExcel" class="inline-flex items-center">
                     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <!-- ... svg path ... -->
                     </svg>

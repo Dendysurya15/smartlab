@@ -38,6 +38,7 @@ class Trackingprogres extends Component
 
     public function save()
     {
+        // turnofcaptcha temporary
         if (!$this->captchaResponse) {
             session()->flash('error', 'Please complete the captcha verification');
             return;
@@ -87,25 +88,43 @@ class Trackingprogres extends Component
                         if ($record['progress'] == $item['id']) {
                             $final_data[$key]['time'] = $record['updated_at'];
                             $final_data[$key]['status'] = 'checked';
-
-                            if ($item['id'] == '7') {
-                                $final_step_time = $record['updated_at'];
-                            }
                             break;
                         }
                     }
                 }
             }
 
-            if ($final_step_time) {
-                foreach ($final_data as &$data) {
-                    if ($data['status'] == 'uncheck') {
-                        $data['status'] = 'checked';
-                        $data['time'] = $final_step_time;
+            // Find the last completed step's time for each section
+            $last_completed_time = null;
+            foreach ($record_update as $record) {
+                $last_completed_time = $record['updated_at'];
+            }
+
+            // Fill in skipped steps
+            if ($last_completed_time) {
+                $found_incomplete = false;
+                foreach ($final_data as $key => $data) {
+                    if ($data['status'] === 'checked') {
+                        continue;
+                    }
+
+                    // Check if there's a later step that's completed
+                    $has_later_completion = false;
+                    for ($i = $key + 1; $i < count($final_data); $i++) {
+                        if ($final_data[$i]['status'] === 'checked') {
+                            $has_later_completion = true;
+                            break;
+                        }
+                    }
+
+                    if ($has_later_completion) {
+                        $final_data[$key]['status'] = 'checked';
+                        $final_data[$key]['time'] = $last_completed_time;
                     }
                 }
             }
 
+            // dd($final_data);
             $jenis_sample_final = $query->jenisSampel->nama;
             $carbonDate = Carbon::parse($query->tanggal_memo);
             $dates_final = $carbonDate->format('F');
@@ -118,7 +137,7 @@ class Trackingprogres extends Component
             $this->id = $query->id;
             $this->filename = $filename;
 
-            $this->resetCaptcha();
+            // $this->resetCaptcha();
         } else {
             $this->resultData = 'kosong';
         }
