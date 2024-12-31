@@ -231,29 +231,44 @@ class InputProgress extends Component implements HasForms
                     ->minValue(1)
                     ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
-                        $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $get('Jenis_Sampel'))->orderBy('id', 'desc')->first();
+                        $tanggalTerima = $get('TanggalTerima');
+                        $selectedYear = $tanggalTerima ? Carbon::parse($tanggalTerima)->year : date('Y');
 
-                        // dd($_SESSION)
-                        $nomorlab = isset($getlates_id->nomor_lab) ?  explode('$', $getlates_id->nomor_lab) : null;
-                        // dd($nomorlab);
-                        if ($nomorlab != null) {
-                            $nomorlabdata = $nomorlab[1];
-                            // dd($nomorlabdata);
+                        // Get the latest record for the selected year
+                        $getlates_id = TrackSampel::with('trackParameters')
+                            ->where('jenis_sampel', $get('Jenis_Sampel'))
+                            ->whereYear('tanggal_terima', $selectedYear) // Changed from created_at to tanggal_terima
+                            ->orderBy('id', 'desc')
+                            ->first();
+
+                        // If no record exists for selected year or nomor_lab is null, start from 1
+                        if (!$getlates_id || !$getlates_id->nomor_lab) {
+                            $set('lab_kiri', '1');
+                            $set('lab_kanan', $state);
+                            $set('NamaKodeSampeljamak', '');
+                            return;
+                        }
+
+                        $nomorlab = explode('$', $getlates_id->nomor_lab);
+
+                        if (count($nomorlab) > 0) {
+                            $nomorlabdata = $nomorlab[1] ?? '-';
+
                             if ($nomorlabdata !== '-') {
-                                $data_labkiri =  (int)$nomorlab[1] + 1;
+                                $data_labkiri = (int)$nomorlab[1] + 1;
                             } else {
-                                $data_labkiri =  (int)$nomorlab[0] + 1;
+                                $data_labkiri = (int)$nomorlab[0] + 1;
                             }
 
                             $data_labkanan = (int)$state + $data_labkiri - 1;
-                            // dd($data);
 
                             $set('lab_kiri', $data_labkiri);
                             $set('lab_kanan', $data_labkanan);
                             $set('NamaKodeSampeljamak', '');
                         } else {
-                            $set('lab_kiri', '');
-                            $set('lab_kanan', '');
+                            // Fallback if the nomor_lab format is unexpected
+                            $set('lab_kiri', '1');
+                            $set('lab_kanan', $state);
                             $set('NamaKodeSampeljamak', '');
                         }
                     })
@@ -386,7 +401,9 @@ class InputProgress extends Component implements HasForms
                         ->minLength(1)
                         ->required(fn(Get $get): bool => $get('drafting') !== true)
                         ->prefix(function (Get $get, Set $set) {
-                            $lastTwoDigitsOfYear = Carbon::now()->format('y');
+                            $tanggalTerima = $get('TanggalTerima');
+                            // $lastTwoDigitsOfYear = $tanggalTerima ? Carbon::parse($tanggalTerima)->format('y') : Carbon::now()->format('y');
+                            $lastTwoDigitsOfYear = '25';
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
                         ->afterStateUpdated(function (Get $get, Set $set, $state) {
@@ -405,8 +422,9 @@ class InputProgress extends Component implements HasForms
                         ->minLength(1)
                         ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                         ->prefix(function (Get $get) {
-                            // dd($get('preflab'));
-                            $lastTwoDigitsOfYear = Carbon::now()->format('y');
+                            $tanggalTerima = $get('TanggalTerima');
+                            // $lastTwoDigitsOfYear = $tanggalTerima ? Carbon::parse($tanggalTerima)->format('y') : Carbon::now()->format('y');
+                            $lastTwoDigitsOfYear = '25';
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
                         ->maxLength(255)
@@ -680,7 +698,6 @@ class InputProgress extends Component implements HasForms
 
 
         $form = $this->form->getState();
-        // dd($form);
 
         $randomCode = generateRandomCode();
 

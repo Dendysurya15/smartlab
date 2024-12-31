@@ -366,7 +366,9 @@ class Editprogress extends Component implements HasForms
                         ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
-                            $lastTwoDigitsOfYear = Carbon::now()->format('y');
+                            // $tanggalTerima = $this->opt->tanggal_terima;
+                            // $lastTwoDigitsOfYear = Carbon::parse($tanggalTerima)->format('y');
+                            $lastTwoDigitsOfYear = '25';
                             return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
                         })
                         ->afterStateUpdated(function (Get $get, Set $set, $state) {
@@ -388,7 +390,9 @@ class Editprogress extends Component implements HasForms
                         ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
-                            $lastTwoDigitsOfYear = Carbon::now()->format('y');
+                            $tanggalTerima = $this->opt->tanggal_terima;
+                            // $lastTwoDigitsOfYear = Carbon::parse($tanggalTerima)->format('y');
+                            $lastTwoDigitsOfYear = '25';
                             return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
                         })
                         ->maxLength(255)

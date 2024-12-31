@@ -143,7 +143,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                             // dd($dataToInsert2);
                             if (!empty($dataToInsert2)) {
-                                // event(new Smartlabsnotification($dataToInsert2));
+                                event(new Smartlabsnotification($dataToInsert2));
                             }
                         }
                         // dd($dataToInsert2);
@@ -152,11 +152,11 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
 
                         // Only send email if there are recipients
-                        // if ($emailAddresses !== null || $emailcc !== null) {
-                        //     Mail::to($emailAddresses ?? [])
-                        //         ->cc($emailcc ?? [])
-                        //         ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
-                        // }
+                        if ($emailAddresses !== null || $emailcc !== null) {
+                            Mail::to($emailAddresses ?? [])
+                                ->cc($emailcc ?? [])
+                                ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
+                        }
 
                         $id = $record->id;
                         $trackSampel = TrackSampel::find($id);
@@ -390,6 +390,17 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 default => null,
             })
             ->filters([
+                SelectFilter::make('tahun')
+                    ->label('Tahun')
+                    ->options([
+                        '2024' => '2024',
+                        '2025' => '2025',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when($data['value'], function ($query, $value) {
+                            return $query->whereYear('tanggal_terima', $value);
+                        });
+                    }),
                 SelectFilter::make('jenisSampel')
                     ->label('Jenis sampel')
                     ->relationship('jenisSampel', 'nama')
@@ -1282,15 +1293,15 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $emailAddresses = !empty($records->emailTo) ? explode(',', $records->emailTo) : null;
                             $emailcc = !empty($records->emailCc) ? explode(',', $records->emailCc) : null;
                             if (!empty($dataToInsert2)) {
-                                // event(new Smartlabsnotification($dataToInsert2));
+                                event(new Smartlabsnotification($dataToInsert2));
                             }
 
                             // dd($progress, $progress_state);
-                            // if ($emailAddresses !== null) {
-                            //     Mail::to($emailAddresses)
-                            //         ->cc($emailcc)
-                            //         ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
-                            // }
+                            if ($emailAddresses !== null) {
+                                Mail::to($emailAddresses)
+                                    ->cc($emailcc)
+                                    ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
+                            }
                             $records->invoice_status = 2;
                             $records->save();
                             return Notification::make()
