@@ -62,6 +62,8 @@ class Editprogress extends Component implements HasForms
     public $kode_sampel;
     public $Konfirmasi;
     public $status_progres;
+    public $lab_label_tahun;
+    public $change_label_lab;
     public ?array $data = [];
 
     public $loading_totals = false;
@@ -98,7 +100,11 @@ class Editprogress extends Component implements HasForms
         $img = explode('%', $img);
         $this->foto_sampel = $img;
         $this->status_progres = json_decode($this->opt->last_update, true);
-        // dd($this->status_progres);
+        // $lab_label_tahun = $this->opt->lab_label_tahun;
+        // dd($lab_label_tahun);
+        // Get last 2 digits of year if not null
+        $this->lab_label_tahun = $this->opt->lab_label_tahun;
+        // dd($lab_label_tahun, $this->lab_label_tahun);
         $this->form->fill();
     }
     public function form(Form $form): Form
@@ -357,6 +363,24 @@ class Editprogress extends Component implements HasForms
                         'Normal' => 'Normal',
                         'Abnormal' => 'Abnormal',
                     ]),
+                Select::make('change_label_lab')
+                    ->label('Change Label Lab')
+                    ->required()
+                    ->default($this->opt->lab_label_tahun)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->options(function () {
+                        $currentYear = (int)$this->opt->lab_label_tahun;
+                        $years = [];
+                        for ($i = -1; $i <= 1; $i++) {
+                            $year = $currentYear + $i;
+                            $years[$year] = (string)$year;
+                        }
+                        return $years;
+                    })
+                    ->live(debounce: 500)
+                    ->afterStateUpdated(function ($state) {
+                        $this->lab_label_tahun = $state;
+                    }),
                 Split::make([
                     TextInput::make('lab_kiri')
                         ->label('Nomor Lab')
@@ -366,10 +390,7 @@ class Editprogress extends Component implements HasForms
                         ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
-                            // $tanggalTerima = $this->opt->tanggal_terima;
-                            // $lastTwoDigitsOfYear = Carbon::parse($tanggalTerima)->format('y');
-                            $lastTwoDigitsOfYear = '25';
-                            return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
+                            return substr($this->lab_label_tahun, -2) . '-' . $jenisSampel->kode;
                         })
                         ->afterStateUpdated(function (Get $get, Set $set, $state) {
                             if (!is_numeric($state)) {
@@ -390,10 +411,7 @@ class Editprogress extends Component implements HasForms
                         ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
                         ->prefix(function (Get $get) {
                             $jenisSampel = JenisSampel::find($this->opt->jenis_sampel);
-                            $tanggalTerima = $this->opt->tanggal_terima;
-                            // $lastTwoDigitsOfYear = Carbon::parse($tanggalTerima)->format('y');
-                            $lastTwoDigitsOfYear = '25';
-                            return $lastTwoDigitsOfYear . '-' . $jenisSampel->kode;
+                            return substr($this->lab_label_tahun, -2) . '-' . $jenisSampel->kode;
                         })
                         ->maxLength(255)
                         ->hidden(fn(Get $get): bool => empty($get('JumlahSampel')) || intval($get('JumlahSampel') == 1) ? true : false)
@@ -953,6 +971,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->jenis_pupuk = isset($form['jenis_pupuk']) ? $form['jenis_pupuk'] : null;
+                $trackSampel->lab_label_tahun = $this->lab_label_tahun;
 
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {
@@ -1127,7 +1146,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->status = 'Waiting Admin Approval';
                 $trackSampel->last_update = $current;
                 $trackSampel->jenis_pupuk = isset($form['jenis_pupuk']) ? $form['jenis_pupuk'] : null;
-
+                $trackSampel->lab_label_tahun = $this->lab_label_tahun;
 
                 // dd($trackSampel->toArray()); 
                 if (!empty($form['foto_sampel'])) {

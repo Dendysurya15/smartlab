@@ -406,12 +406,13 @@ class HistoryKupaController extends Controller
             $discount = $totalppn_harga->multiply($discountDecimal);
             $total_akhir = $totalppn_harga->subtract($discount);
 
+            $year = substr($value->lab_label_tahun, -2);
             $nolab = explode('$', $value->nomor_lab);
-            $year = Carbon::parse($value->tanggal_terima)->format('y');
+            // $year = Carbon::parse($value->tanggal_terima)->format('y');
             $kode_sampel = $value->jenisSampel->kode;
 
             $nolab = explode('$', $value->nomor_lab);
-            $year = Carbon::parse($value->tanggal_terima)->format('y');
+            // $year = Carbon::parse($value->tanggal_terima)->format('y');
             $kode_sampel = $value->jenisSampel->kode;
 
             $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
@@ -629,7 +630,7 @@ class HistoryKupaController extends Controller
             $total_namaparams = 20 - count($newArray);
             $timestamp = strtotime($value->tanggal_terima);
             $year = date('Y', $timestamp);
-            $lab =  substr($year, 2) . $value->jenisSampel->kode . '.';
+            $lab =  substr($value->lab_label_tahun, -2) . $value->jenisSampel->kode . '.';
             $Nomorlab = explode('$', $value->nomor_lab);
             $Nomorlab = array_filter($Nomorlab, function ($value) {
                 return $value !== "-";
@@ -907,7 +908,8 @@ class HistoryKupaController extends Controller
             $total_akhir = $totalppn_harga->subtract($discount);
 
             $nolab = explode('$', $value->nomor_lab);
-            $year = Carbon::parse($value->tanggal_terima)->format('y');
+            $year = substr($value->lab_label_tahun, -2);
+            // $year = Carbon::parse($value->tanggal_terima)->format('y');
             $kode_sampel = $value->jenisSampel->kode;
 
 
@@ -1134,7 +1136,7 @@ class HistoryKupaController extends Controller
             $total_namaparams = 20 - count($newArray);
             $timestamp = strtotime($value->tanggal_terima);
             $year = date('Y', $timestamp);
-            $lab =  substr($year, 2) . $value->jenisSampel->kode . '.';
+            $lab =  substr($value->lab_label_tahun, -2) . $value->jenisSampel->kode . '.';
             $Nomorlab = explode('$', $value->nomor_lab);
             $Nomorlab = array_filter($Nomorlab, function ($value) {
                 return $value !== "-";

@@ -214,13 +214,13 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 TextColumn::make('nomor_lab')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->state(function (TrackSampel $record) {
-
+                        $year = substr($record->lab_label_tahun, -2);
                         $nolab = explode('$', $record->nomor_lab);
-                        $year = Carbon::parse($record->tanggal_terima)->format('y');
+                        // $year = Carbon::parse($record->tanggal_terima)->format('y');
                         $kode_sampel = $record->jenisSampel->kode;
 
                         $nolab = explode('$', $record->nomor_lab);
-                        $year = Carbon::parse($record->tanggal_terima)->format('y');
+                        // $year = Carbon::parse($record->tanggal_terima)->format('y');
                         $kode_sampel = $record->jenisSampel->kode;
 
                         $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);

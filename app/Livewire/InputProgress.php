@@ -46,6 +46,7 @@ use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
 use PhpOffice\PhpSpreadsheet\Worksheet\AutoFit;
 use Spatie\Permission\Models\Role;
+use App\Models\Lablabel;
 
 class InputProgress extends Component implements HasForms
 {
@@ -76,6 +77,50 @@ class InputProgress extends Component implements HasForms
 
         return $form
             ->schema([
+                DatePicker::make('Nomor_Lab_Label')
+                    ->label('Reset Nomor Lab Label')
+                    ->default(function (Set $set) {
+                        $labLabel = Lablabel::latest('tanggal')
+                            ->first();
+                        $labLabel = Carbon::parse($labLabel->tanggal)->format('Y-m-d');
+                        $today = Carbon::now()->format('Y-m-d');
+
+                        if ($today > $labLabel) {
+                            // If today is after lab label date, set to next year January 1st
+                            $nextYear = Carbon::parse($labLabel)->addYear()->startOfYear()->format('Y-m-d');
+                            $set('default_lab_label', $nextYear);
+                        } else {
+                            $set('default_lab_label', $labLabel);
+                        }
+
+                        return $labLabel;
+                    })
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                        $labLabel = Lablabel::latest('tanggal')
+                            ->first();
+                        $labLabel->tanggal = $state;
+                        $labLabel->save();
+
+                        $labLabel = Carbon::parse($labLabel->tanggal)->format('Y-m-d');
+                        $today = Carbon::now()->format('Y-m-d');
+
+                        if ($today > $labLabel) {
+                            // If today is after lab label date, set to next year January 1st
+                            $nextYear = Carbon::parse($labLabel)->addYear()->startOfYear()->format('Y-m-d');
+                            $set('default_lab_label', $nextYear);
+                        } else {
+                            $set('default_lab_label', $labLabel);
+                        }
+
+
+                        Notification::make()
+                            ->title('Nomor Lab Label berhasil diubah')
+                            ->color('success')
+                            ->success()
+                            ->send();
+                    })
+                    ->live(debounce: 500)
+                    ->required(),
                 Select::make('Jenis_Sampel')
                     ->label('Jenis Komoditas')
                     ->options(JenisSampel::query()->where('soft_delete_id', '!=', 1)->pluck('nama', 'id'))
@@ -231,16 +276,17 @@ class InputProgress extends Component implements HasForms
                     ->minValue(1)
                     ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
-                        $tanggalTerima = $get('TanggalTerima');
+                        $tanggalTerima = $get('Nomor_Lab_Label');
                         $selectedYear = $tanggalTerima ? Carbon::parse($tanggalTerima)->year : date('Y');
 
                         // Get the latest record for the selected year
                         $getlates_id = TrackSampel::with('trackParameters')
                             ->where('jenis_sampel', $get('Jenis_Sampel'))
-                            ->whereYear('tanggal_terima', $selectedYear) // Changed from created_at to tanggal_terima
+                            // ->whereYear('tanggal_terima', $selectedYear) // Changed from created_at to tanggal_terima
                             ->orderBy('id', 'desc')
                             ->first();
 
+                        // dd($getlates_id);
                         // If no record exists for selected year or nomor_lab is null, start from 1
                         if (!$getlates_id || !$getlates_id->nomor_lab) {
                             $set('lab_kiri', '1');
@@ -401,9 +447,9 @@ class InputProgress extends Component implements HasForms
                         ->minLength(1)
                         ->required(fn(Get $get): bool => $get('drafting') !== true)
                         ->prefix(function (Get $get, Set $set) {
-                            $tanggalTerima = $get('TanggalTerima');
-                            // $lastTwoDigitsOfYear = $tanggalTerima ? Carbon::parse($tanggalTerima)->format('y') : Carbon::now()->format('y');
-                            $lastTwoDigitsOfYear = '25';
+                            $tanggalTerima = $get('default_lab_label');
+                            $lastTwoDigitsOfYear = $tanggalTerima ? Carbon::parse($tanggalTerima)->format('y') : Carbon::now()->format('y');
+                            // $lastTwoDigitsOfYear = '25';
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
                         ->afterStateUpdated(function (Get $get, Set $set, $state) {
@@ -422,9 +468,9 @@ class InputProgress extends Component implements HasForms
                         ->minLength(1)
                         ->required(fn(Get $get): bool => $get('drafting') !== True ? True : false)
                         ->prefix(function (Get $get) {
-                            $tanggalTerima = $get('TanggalTerima');
-                            // $lastTwoDigitsOfYear = $tanggalTerima ? Carbon::parse($tanggalTerima)->format('y') : Carbon::now()->format('y');
-                            $lastTwoDigitsOfYear = '25';
+                            $tanggalTerima = $get('default_lab_label');
+                            $lastTwoDigitsOfYear = $tanggalTerima ? Carbon::parse($tanggalTerima)->format('y') : Carbon::now()->format('y');
+                            // $lastTwoDigitsOfYear = '25';
                             return $lastTwoDigitsOfYear . '-' . $get('preflab');
                         })
                         ->maxLength(255)
@@ -737,7 +783,20 @@ class InputProgress extends Component implements HasForms
         // dd($NamaKodeSampeljamak);
         $commonRandomString = generateRandomString(rand(5, 10));
         $NomorLab = ($form['lab_kiri'] ?? '-') . '$' . ($form['lab_kanan'] ?? '-');
+        $labLabel = Lablabel::latest('tanggal')
+            ->first();
 
+        $labLabel = Carbon::parse($labLabel->tanggal)->format('Y-m-d');
+        $today = Carbon::now()->format('Y-m-d');
+
+        if ($today > $labLabel) {
+            // If today is after lab label date, set to next year January 1st
+            $lab_label_tahun = Carbon::parse($labLabel)->addYear()->format('Y');
+        } else {
+            $lab_label_tahun = Carbon::parse($labLabel)->format('Y');
+        }
+
+        // dd($lab_label_tahun);
 
         // dd($form);
         if (isset($form['drafting']) && $form['drafting'] !== true || $roles->contains('marcom')) {
@@ -783,6 +842,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->formulir = $form['nama_formulir'];
                 $trackSampel->created_by = auth()->user()->id;
                 $trackSampel->jenis_pupuk = isset($form['jenis_pupuk']) ? $form['jenis_pupuk'] : null;
+                $trackSampel->lab_label_tahun = $lab_label_tahun;
 
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {
@@ -934,6 +994,7 @@ class InputProgress extends Component implements HasForms
                 $trackSampel->status = 'Draft';
                 $trackSampel->created_by = auth()->user()->id;
                 $trackSampel->jenis_pupuk = isset($form['jenis_pupuk']) ? $form['jenis_pupuk'] : null;
+                $trackSampel->lab_label_tahun = $lab_label_tahun;
 
                 // dd($trackSampel->toArray()); 
                 if ($form['foto_sampel']) {

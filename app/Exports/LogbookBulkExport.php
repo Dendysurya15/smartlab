@@ -122,7 +122,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $total_namaparams = 13 - count($newArray);
             $timestamp = strtotime($value->tanggal_terima);
             $year = date('Y', $timestamp);
-            $lab =  substr($year, 2) . $value->jenisSampel->kode . '.';
+            $lab =  substr($value->lab_label_tahun, -2) . $value->jenisSampel->kode . '.';
             $Nomorlab = explode('$', $value->nomor_lab);
             $Nomorlab = array_filter($Nomorlab, function ($value) {
                 return $value !== "-";
