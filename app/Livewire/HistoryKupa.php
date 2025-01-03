@@ -45,6 +45,9 @@ use GuzzleHttp\Client;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Forms\Form;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Enums\FiltersLayout;
+use App\Models\JenisSampel;
+use App\Models\ProgressPengerjaan;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -378,12 +381,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 //     })
                 //     ->size('xs'),
             ])->striped()
-            ->groups([
-                Group::make('jenisSampel.nama')
-                    ->label('Jenis Sampel'),
-                Group::make('status')
-                    ->label('Status'),
-            ])
             ->recordClasses(fn(TrackSampel $record) => match ($record->progressSampel->nama) {
                 'Recheck' => 'bg-yellow-100',
                 'Rilis Sertifikat' => 'bg-green-100',
@@ -391,21 +388,27 @@ class HistoryKupa extends Component implements HasForms, HasTable
             })
             ->filters([
                 SelectFilter::make('tahun')
-                    ->label('Tahun')
-                    ->options([
-                        '2024' => '2024',
-                        '2025' => '2025',
-                    ])
+                    ->label('Tahun terima')
+                    ->options(function () {
+                        $year = TrackSampel::query()
+                            ->selectRaw('YEAR(tanggal_terima) as year')
+                            ->distinct()
+                            ->pluck('year')
+                            ->mapWithKeys(fn($item) => [$item => $item]);
+
+                        // dd($year);
+
+                        return $year;
+                    })
                     ->query(function (Builder $query, array $data): Builder {
+                        // if ($data['value'] !== null) {
+                        //     dd($data, $query);
+                        // }
+
                         return $query->when($data['value'], function ($query, $value) {
                             return $query->whereYear('tanggal_terima', $value);
                         });
                     }),
-                SelectFilter::make('jenisSampel')
-                    ->label('Jenis sampel')
-                    ->relationship('jenisSampel', 'nama')
-                    // ->multiple()
-                    ->preload(),
                 SelectFilter::make('departemen')
                     ->label('Departement')
                     ->multiple()
@@ -422,36 +425,56 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         }
                         return  'Skala Prioritas : ' . ($data['value'] === 'normal' ? 'Normal' : 'Tinggi');
                     }),
-                Filter::make('created_at')
-                    ->form([
-                        DatePicker::make('created_from')
-                            ->label('Tanggal terima dari'),
-                        DatePicker::make('created_until')
-                            ->label('Tanggal terima sampai'),
+                SelectFilter::make('Jenis Sampel')
+                    ->label('Jenis Sampel')
+                    ->options(JenisSampel::query()->pluck('nama', 'nama'))
+                    ->relationship('jenisSampel', 'nama')
+                    ->preload(),
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Approved' => 'Approved',
+                        'Rejected' => 'Rejected',
+                        'Waiting Admin Approval' => 'Waiting Admin Approval',
+                        'Waiting Head Approval' => 'Waiting Head Approval',
+                        'Draft' => 'Draft',
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        // dd($data);
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                function (Builder $query, $date) {
-                                    // dd($query->whereDate('tanggal_terima', '>=', $date));
+                    ->preload(),
+                SelectFilter::make('progress')
+                    ->label('Progress')
+                    ->options(ProgressPengerjaan::query()->pluck('nama', 'id'))
+                    ->preload(),
+                // Filter::make('created_at')
+                //     ->form([
+                //         DatePicker::make('created_from')
+                //             ->label('Tanggal terima dari'),
+                //         DatePicker::make('created_until')
+                //             ->label('Tanggal terima sampai'),
+                //     ])
+                //     ->query(function (Builder $query, array $data): Builder {
+                //         // dd($data);
+                //         return $query
+                //             ->when(
+                //                 $data['created_from'],
+                //                 function (Builder $query, $date) {
+                //                     // dd($query->whereDate('tanggal_terima', '>=', $date));
 
-                                    return $query->whereDate('tanggal_terima', '>=', $date);
-                                }
-                                // fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                function (Builder $query, $date) {
-                                    return $query->whereDate('tanggal_terima', '<=', $date);
-                                }
-                            );
-                    })
+                //                     return $query->whereDate('tanggal_terima', '>=', $date);
+                //                 }
+                //                 // fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
+                //             )
+                //             ->when(
+                //                 $data['created_until'],
+                //                 function (Builder $query, $date) {
+                //                     return $query->whereDate('tanggal_terima', '<=', $date);
+                //                 }
+                //             );
+                //     })
 
 
 
-            ])
+            ], layout: FiltersLayout::AboveContent)
+            ->filtersFormColumns(3)
             ->bulkActions([
                 // In your bulk action for KUPA PDF export
                 BulkAction::make('delete')
