@@ -400,14 +400,13 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                         return $year;
                     })
+                    ->default(Carbon::now()->format('Y'))
                     ->query(function (Builder $query, array $data): Builder {
                         // if ($data['value'] !== null) {
                         //     dd($data, $query);
                         // }
 
-                        return $query->when($data['value'], function ($query, $value) {
-                            return $query->whereYear('tanggal_terima', $value);
-                        });
+                        return $query->where('lab_label_tahun', $data['value']);
                     }),
                 SelectFilter::make('departemen')
                     ->label('Departement')
