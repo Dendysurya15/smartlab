@@ -136,40 +136,67 @@
 
         function downloadPdf(url, filename) {
             removeDownloadProgress();
-
             showDownloadProgress(filename, 0, 'Starting download...');
 
-            fetch(url)
+            fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/pdf',
+                    },
+                })
                 .then(response => {
-                    if (!response.ok) throw new Error('Download failed');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    // Check if we received a PDF
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/pdf')) {
+                        throw new Error('Received non-PDF content');
+                    }
                     return response.blob();
                 })
                 .then(blob => {
+                    // Verify we have a valid PDF blob
+                    if (blob.size === 0) {
+                        throw new Error('Received empty PDF file');
+                    }
+
+                    // Create object URL immediately after receiving blob
+                    const objectUrl = window.URL.createObjectURL(blob);
+
+                    // Create hidden download link
                     const link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(blob);
+                    link.style.display = 'none';
+                    link.href = objectUrl;
                     link.download = filename;
+
+                    // Trigger download
                     document.body.appendChild(link);
                     link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(link.href);
 
-                    // Add cleanup request after successful download
-                    fetch('/cleanup-pdf', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            filename: filename
-                        })
-                    });
+                    // Cleanup
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(objectUrl);
+
+                        // Send cleanup request
+                        fetch('/cleanup-pdf', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                filename: filename
+                            })
+                        });
+                    }, 100);
 
                     showDownloadProgress(filename, 100, 'Download completed!');
                 })
                 .catch(error => {
                     console.error('Download error:', error);
-                    showDownloadProgress(filename, 0, 'Download failed. Please try again.');
+                    showDownloadProgress(filename, 0, `Download failed: ${error.message}`);
                     setTimeout(removeDownloadProgress, 5000);
                 });
         }

@@ -18,6 +18,8 @@ use App\Http\Middleware\BlockIpAfterFailedAttempts;
 use App\Livewire\Trackingprogres;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\PdfController;
+use Illuminate\Http\Request;
+use App\Jobs\Generatebulkpdfpr;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,15 +97,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         return view('pages.managementkuesioner');
     })->name('Managementkuesioner');
 
-    Route::get('/download-pdf/{filename}', function ($filename) {
-        $path = storage_path('app/public/temp/' . $filename);
 
-        if (File::exists($path)) {
-            return response()->download($path)->deleteFileAfterSend(true);
-        }
-
-        return response()->json(['error' => 'File not found'], 404);
-    })->name('download.pdf');
-
-    Route::post('/cleanup-pdf', [PdfController::class, 'cleanup'])->name('cleanup.pdf');
+    Route::get('/download-bulk-pdf/{filename}', [PdfController::class, 'downloadBulkPdf'])
+        ->name('download.bulk.pdf');
 });

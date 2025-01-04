@@ -48,6 +48,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Enums\FiltersLayout;
 use App\Models\JenisSampel;
 use App\Models\ProgressPengerjaan;
+use App\Jobs\Generatebulkpdfpr;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -58,6 +59,9 @@ class HistoryKupa extends Component implements HasForms, HasTable
     public $openurl;
     public $rolesAuthUser;
     public $id_sertifikat;
+    public $count;
+    public $filename;
+    public $dataexport;
 
     public function mount()
     {
@@ -531,15 +535,50 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $filename = 'PR Kupa ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
                             return Excel::download(new pdfpr($data), $filename);
                         }),
+                    // ... existing code ...
                     BulkAction::make('export_pr_pdf_jobs')
                         ->label('PDF')
                         ->button()
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('warning')
                         ->deselectRecordsAfterCompletion()
+                        // ->closeModalByClickingAway(false)
                         ->action(function (Collection $records) {
-                            startExport($records);
-                        }),
+
+
+
+                            $recordIds = [];
+                            $totalItems = 0;
+
+                            $records->each(function ($record) use (&$recordIds, &$totalItems) {
+                                if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                                    $recordIds[] = $record->id;
+                                    $totalItems++;
+                                }
+                            });
+
+                            $this->dataexport = implode('$', $recordIds);
+                            $this->filename = 'kupa_export_' . now()->format('Y-m-d_H-i-s');
+                            $this->count = count($recordIds);
+                            // // Show processing notification
+                            // Notification::make()
+                            //     ->title('Processing PDF Export')
+                            //     ->body("Generating PDF for {$totalItems} items. This may take a few minutes...")
+                            //     ->persistent()
+                            //     ->warning()
+                            //     ->send();
+
+                            // // Redirect to download endpoint
+                            // return redirect()->route('download.bulk.pdf', [
+                            //     'data' => $data,
+                            //     'filename' => $filename
+                            // ]);
+                            $this->dispatch('open-modal', id: 'generate-bulk-pdf', data: [
+                                'dataexport' => $this->dataexport,
+                                'filename' => $this->filename,
+                                'count' => $this->count
+                            ]);
+                        })
                 ])->button()
                     ->color('info')
                     ->label('Export PR'),
@@ -1397,7 +1436,25 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ]);
     }
 
+    public function generateBulkPdf()
+    {
+        // dd($this->dataexport);
+        $data = $this->dataexport;
+        $filename = $this->filename;
 
+        // Generate PDF synchronously
+        $pdf = app(Generatebulkpdfpr::class, [
+            'data' => $data,
+            'filename' => $filename,
+            'user_id' => auth()->id(),
+            'totalItems' => count(explode('$', $data)),
+            'random_task_id' => generateRandomString(10) . date('YmdHis')
+        ])->handle();
+
+        // Return PDF download response
+        $this->dispatch('close-modal', id: 'generate-bulk-pdf');
+        return response()->download($pdf['filepath'], $pdf['filename']);
+    }
 
     public function form(Form $form): Form
     {
@@ -1455,6 +1512,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
             ->body('Sertifikat berhasil diunggah')
             ->send();
     }
+
     public function render(): View
     {
         return view('livewire.history-kupa');
