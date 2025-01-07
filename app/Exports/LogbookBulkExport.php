@@ -159,6 +159,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             // dd($namakode_sampel, $sampel_data);
             $petugas_prep = $value->petugas_preparasi;
             $penyelia_prep = $value->penyelia;
+            $penerima_sampel = $value->penerima_sampel;
             $doc = $value->no_doc;
             $formulir = $value->formulir;
             $no_doc_indentitas = $value->no_doc_indentitas;
@@ -182,7 +183,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             'data' => $result,
             'namaparams' =>  array_unique($newArray),
             'total_namaparams' => $total_namaparams,
-            'PenerimaSampel' => $PenerimaSampel,
+            'PenerimaSampel' => $penerima_sampel,
             'Preparasi' => $Preparasi,
             'Staff' => $Staff,
             'Penyelia' => $Penyelia,

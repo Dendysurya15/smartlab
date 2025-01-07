@@ -662,6 +662,8 @@ class HistoryKupaController extends Controller
 
                 $PenerimaSampel = $petugas['Petugas Penerima Sampel'][0]['nama'];
             }
+
+            // dd($PenerimaSampel, $admin_prep, $value->id);
             $timestamps = array_filter(array_map('trim', explode(',', $value->status_timestamp)));
 
             // Get the last timestamp
@@ -689,10 +691,10 @@ class HistoryKupaController extends Controller
                         $result[$key]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
                         $result[$key]['no_order'] = $value->nomor_kupa;
                         $result[$key]['total_namaparams'] = $total_namaparams;
-                        $result[$key]['PenerimaSampel'] = $PenerimaSampel;
-                        $result[$key]['Preparasi'] = $Preparasi[0];
+                        $result[$key]['PenerimaSampel'] = $value->penerima_sampel;
+                        $result[$key]['Preparasi'] = $value->petugas_preparasi;
                         $result[$key]['Staff'] = $Staff;
-                        $result[$key]['Penyelia'] = $Penyelia[0];
+                        $result[$key]['Penyelia'] = $value->penyelia;
                         $result[$key]['doc'] = $value->no_doc;
                         $result[$key]['status'] = $value->approveby_admin;
                         $result[$key]['status_timestamp'] = $lastTimestamp;
@@ -1169,6 +1171,7 @@ class HistoryKupaController extends Controller
                 $PenerimaSampel = $petugas['Petugas Penerima Sampel'][0]['nama'];
             }
 
+            // dd($PenerimaSampel);
             $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
             $Penyelia = (!is_null($penyelia_prep) ? $penyelia_prep : $petugas['Penyelia'][0]['nama']);
             foreach ($namakode_sampel as $keyx => $valuex) {
@@ -1192,7 +1195,7 @@ class HistoryKupaController extends Controller
                         $result[$key]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
                         $result[$key]['no_order'] = $value->nomor_kupa;
                         $result[$key]['total_namaparams'] = $total_namaparams;
-                        $result[$key]['PenerimaSampel'] = $PenerimaSampel;
+                        $result[$key]['PenerimaSampel'] = $value->penerima_sampel;
                         $result[$key]['Preparasi'] = $Preparasi[0];
                         $result[$key]['Staff'] = $Staff;
                         $result[$key]['Penyelia'] = $Penyelia[0];

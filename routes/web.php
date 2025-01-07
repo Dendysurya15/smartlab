@@ -98,6 +98,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     })->name('Managementkuesioner');
 
 
-    Route::get('/download-bulk-pdf/{filename}', [PdfController::class, 'downloadBulkPdf'])
-        ->name('download.bulk.pdf');
+    // Route::get('/download-bulk-pdf/{filename}', [PdfController::class, 'downloadBulkPdf'])
+    //     ->name('download.bulk.pdf');
 });

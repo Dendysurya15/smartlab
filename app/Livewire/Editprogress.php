@@ -456,6 +456,12 @@ class Editprogress extends Component implements HasForms
                     ])
                     ->default($this->Peralatan)
                     ->columns(3),
+                TextInput::make('penerima_sampel')
+                    ->label('Penerima Sampel')
+                    ->minLength(2)
+                    ->disabled(fn(Get $get): bool => ($get('status_data') === 'Approved' || $get('status_data') === 'Draft') ? false : true)
+                    ->default($this->opt->penerima_sampel)
+                    ->maxLength(255),
                 TextInput::make('petugas_preperasi')
                     ->label('Petugas Preperasi')
                     ->minLength(2)
@@ -967,6 +973,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
+                $trackSampel->penerima_sampel = $form['penerima_sampel'];
                 $trackSampel->no_doc = $form['no_document'];
                 $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
@@ -1140,6 +1147,7 @@ class Editprogress extends Component implements HasForms
                 $trackSampel->catatan = $form['catatan'];
                 $trackSampel->petugas_preparasi = $form['petugas_preperasi'];
                 $trackSampel->penyelia = $form['penyelia'];
+                $trackSampel->penerima_sampel = $form['penerima_sampel'];
                 $trackSampel->no_doc = $form['no_document'];
                 $trackSampel->no_doc_indentitas = $form['no_document_indentitas'];
                 $trackSampel->formulir = $form['nama_formulir'];
