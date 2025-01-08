@@ -225,7 +225,14 @@
                 <td style="text-align: center;border:1px solid black" colspan="2" rowspan="5">{{$Staff}}</td>
 
 
-                <td colspan="4" rowspan="6" style="vertical-align: top;text-align:left;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
+                <td colspan="4" rowspan="6" style="vertical-align: top;text-align:left;border:1px solid black">
+                    @if ($catatan != null)
+                    {{$catatan}}
+                    @else
+                    Ket = ( √ ) : Telah dilakukan Preparasi
+                    @endif
+                </td>
+
             </tr>
 
             <tr>

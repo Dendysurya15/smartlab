@@ -163,6 +163,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $doc = $value->no_doc;
             $formulir = $value->formulir;
             $no_doc_indentitas = $value->no_doc_indentitas;
+            $catatan = $value->catatan;
             // dd($result, $namakode_sampel, $sampel_data);
         }
         // dd($newArray, $result);
@@ -190,6 +191,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             'doc' => $doc,
             'no_doc_indentitas' => $no_doc_indentitas,
             'formulir' => $formulir,
+            'catatan' => $catatan,
         ]);
     }
 

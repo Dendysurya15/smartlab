@@ -700,6 +700,7 @@ class HistoryKupaController extends Controller
                         $result[$key]['status_timestamp'] = $lastTimestamp;
                         $result[$key]['no_doc_indentitas'] = $value->no_doc_indentitas;
                         $result[$key]['formulir'] = $value->formulir;
+                        $result[$key]['catatan'] = $value->catatan;
                     }
                 }
             }

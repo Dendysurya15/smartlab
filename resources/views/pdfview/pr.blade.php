@@ -230,7 +230,13 @@
                 <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
                 <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
                 <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
-                <td colspan="8" rowspan="5" style="text-align: left;vertical-align:top;border:1px solid black">Ket = ( √ ) : Telah dilakukan Preparasi</td>
+                <td colspan="8" rowspan="5" style="text-align: left;vertical-align:top;border:1px solid black">
+                    @if ($listitems['catatan'] != null)
+                    {{$listitems['catatan']}}
+                    @else
+                    Ket = ( √ ) : Telah dilakukan Preparasi
+                    @endif
+                </td>
             </tr>
             <tr>
                 <td style="text-align: center;border:1px solid black;border-bottom:none;border-top:none">
