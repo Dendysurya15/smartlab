@@ -152,6 +152,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
                         $result[$valuex]['no_order'] = $value->nomor_kupa;
                         $result[$valuex]['jenis_sampel'] = $value->jenisSampel->nama;
                         $result[$valuex]['parameter_sampel'] = $valuex2;
+                        $result[$valuex]['kode_sampel'] = $value->kode_sampel;
                     }
                 }
             }

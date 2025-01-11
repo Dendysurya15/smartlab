@@ -32,118 +32,123 @@
     @foreach ($data as $index => $listitems)
 
     <table style="border: 1px solid black;width:100%">
+        <tr>
+            <td></td>
+            <td rowspan="4" colspan="3">
+                <div>
+                    <img src="{{ asset('images/Logo_CBI_2.png') }}" style="height:60px;margin-left:50px">
+                </div>
+            </td>
+            <td colspan="22" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px;text-align:center">
+                PT . CITRA BORNEO INDAH</td>
+        </tr>
+        <tr>
+            <th></th>
+            <td colspan="22" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold;text-align:center">
+                RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
+        </tr>
+        <tr>
+            <th></th>
+            <td colspan="22" style="border: 1px solid black;text-align:center">Formulir</td>
+        </tr>
+        <tr>
+            <th></th>
+            <td colspan="22" style="border: 1px solid black;text-align:center">
+                Identitas Sampel {{$listitems['jenis_sampel'] ?? 0}}
+            </td>
+        </tr>
+        <tr>
+            <th></th>
+            <th colspan="3" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                No.Dokumen
+            </th>
+            <th colspan="8" style="border: 1px solid black;text-align:center;">
+                Revisi
+            </th>
+            <th colspan="10" style="border: 1px solid black;text-align:center;">
+                Berlaku Efektif
+            </th>
+            <th colspan="4" style="border: 1px solid black;text-align:center;">
+                Halaman
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th colspan="3" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
+                @if($listitems['no_doc_indentitas'] != null)
+                {{$listitems['no_doc_indentitas']}}
+                @else
+                FR-7.4-1.2-1
+                @endif
+
+            </th>
+            <th colspan="8" style="border: 1px solid black;text-align:center;">
+                02
+            </th>
+            <th colspan="10" style="border: 1px solid black;text-align:center;">
+                1-jul-21
+            </th>
+            <th colspan="4" style="border: 1px solid black;text-align:center;">
+                1 dari 1
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th colspan="3">
+                No Order
+            </th>
+            <th colspan="8" style="text-align:left;">
+                : {{$listitems['no_order']}}
+            </th>
+            <th colspan="10" style="text-align:center;">
+
+            </th>
+            <th colspan="2" style="text-align:left;">
+                Tanggal Penyelesaian
+            </th>
+            <th colspan="2" style="text-align:left;">
+                :{{$listitems['tanggal_penyelesaian'] ?? 0}}
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th colspan="3">
+                Tanggal Terima
+            </th>
+            <th colspan="8" style="text-align:left;">
+                : {{$listitems['tanggal_terima']}}
+            </th>
+            <th colspan="10" style="text-align:center;">
+
+            </th>
+            <th colspan="2" style="text-align:left;">
+                Kondisi fisik sampel
+            </th>
+            <th colspan="2" style="text-align:left;">
+                : {{$listitems['kondisi_sampel'] ?? 0}}
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th colspan="3">
+                Jumlah Sampel
+            </th>
+            <th colspan="8" style="text-align:left;">
+                : {{$listitems['jumlah_sampel']}}
+            </th>
+            <th colspan="10" style="text-align:center;">
+
+            </th>
+            <th colspan="2" style="text-align:left;">
+                Jenis Sampel
+            </th>
+            <th colspan="2" style="text-align:left;">
+                : {{$listitems['kode_sampel'] ?? '-'}}
+            </th>
+        </tr>
+    </table>
+    <table style="border: 1px solid black;width:100%">
         <thead>
-            <tr>
-                <td></td>
-                <td rowspan="4" colspan="3">
-                    <div>
-                        <img src="{{ asset('images/Logo_CBI_2.png') }}" style="height:60px;margin-left:50px">
-                    </div>
-                </td>
-                <td colspan="22" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px;text-align:center">
-                    PT . CITRA BORNEO INDAH</td>
-            </tr>
-            <tr>
-                <th></th>
-                <td colspan="22" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold;text-align:center">
-                    RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
-            </tr>
-            <tr>
-                <th></th>
-                <td colspan="22" style="border: 1px solid black;text-align:center">Formulir</td>
-            </tr>
-            <tr>
-                <th></th>
-                <td colspan="22" style="border: 1px solid black;text-align:center">
-                    Identitas Sampel {{$listitems['jenis_sampel'] ?? 0}}
-                </td>
-            </tr>
-            <tr>
-                <th></th>
-                <th colspan="3" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
-                    No.Dokumen
-                </th>
-                <th colspan="8" style="border: 1px solid black;text-align:center;">
-                    Revisi
-                </th>
-                <th colspan="10" style="border: 1px solid black;text-align:center;">
-                    Berlaku Efektif
-                </th>
-                <th colspan="4" style="border: 1px solid black;text-align:center;">
-                    Halaman
-                </th>
-            </tr>
-            <tr>
-                <th></th>
-                <th colspan="3" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
-                    @if($listitems['no_doc_indentitas'] != null)
-                    {{$listitems['no_doc_indentitas']}}
-                    @else
-                    FR-7.4-1.2-1
-                    @endif
-
-                </th>
-                <th colspan="8" style="border: 1px solid black;text-align:center;">
-                    02
-                </th>
-                <th colspan="10" style="border: 1px solid black;text-align:center;">
-                    1-jul-21
-                </th>
-                <th colspan="4" style="border: 1px solid black;text-align:center;">
-                    1 dari 1
-                </th>
-            </tr>
-            <tr>
-                <th></th>
-                <th colspan="3">
-                    No Order
-                </th>
-                <th colspan="8" style="text-align:left;">
-                    : {{$listitems['no_order']}}
-                </th>
-                <th colspan="10" style="text-align:center;">
-
-                </th>
-                <th colspan="2" style="text-align:left;">
-                    Tanggal Penyelesaian
-                </th>
-                <th colspan="2" style="text-align:left;">
-                    :{{$listitems['tanggal_penyelesaian'] ?? 0}}
-                </th>
-            </tr>
-            <tr>
-                <th></th>
-                <th colspan="3">
-                    Tanggal Terima
-                </th>
-                <th colspan="8" style="text-align:left;">
-                    : {{$listitems['tanggal_terima']}}
-                </th>
-                <th colspan="10" style="text-align:center;">
-
-                </th>
-                <th colspan="2" style="text-align:left;">
-                    Kondisi fisik sampel
-                </th>
-                <th colspan="2" style="text-align:left;">
-                    : {{$listitems['kondisi_sampel'] ?? 0}}
-                </th>
-            </tr>
-            <tr>
-                <th></th>
-                <th colspan="3">
-                    Jumlah Sampel
-                </th>
-                <th colspan="3" style="text-align:left;">
-                    : {{$listitems['jumlah_sampel']}}
-                </th>
-                <th colspan="9" style="text-align:center;">
-
-                </th>
-                <th colspan="10" style="text-align:right;">
-
-                </th>
-            </tr>
             <tr>
                 <th></th>
                 <th rowspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;text-align:center;">
@@ -231,11 +236,9 @@
                 <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
                 <td style="text-align: center;border:1px solid black;border-bottom:none">&NonBreakingSpace;</td>
                 <td colspan="8" rowspan="5" style="text-align: left;vertical-align:top;border:1px solid black">
-                    @if ($listitems['catatan'] != null)
-                    {{$listitems['catatan']}}
-                    @else
                     Ket = ( √ ) : Telah dilakukan Preparasi
-                    @endif
+                    <br>
+                    {{$listitems['catatan']}}
                 </td>
             </tr>
             <tr>

@@ -18,7 +18,7 @@
     $no_order = $items['no_order'];
     $jumlah_sampel = $items['jumlah_sampel'];
     $jenis_sampel = $items['jenis_sampel'];
-
+    $kode_sampel = $items['kode_sampel'];
     }
 
     @endphp
@@ -119,17 +119,17 @@
             </tr>
             <tr>
                 <th></th>
-                <th colspan="2" style="border-left: 1px solid black;border-bottom: 1px solid black;text-align:left">
+                <th colspan="2" style="border-left: 1px solid black;border-bottom: 1px solid black;">
                     Jumlah Sampel :
                 </th>
-                <th style="border-bottom: 1px solid black;text-align:left">
+                <th style="border-bottom: 1px solid black;">
                     {{$jumlah_sampel}}
                 </th>
-                <th colspan="15" style="border-bottom: 1px solid black;">
 
-                </th>
+                <th colspan="12" style="border-bottom: 1px solid black;"></th>
+                <th colspan="2" style="border-bottom: 1px solid black;">Jenis Sampel</th>
+                <th style="border-bottom: 1px solid black;border-right:1px solid black">{{$kode_sampel}}</th>
             </tr>
-
             <tr>
                 <th></th>
                 <th rowspan="2" style="border: 1px solid black;text-align:center;">
@@ -226,11 +226,9 @@
 
 
                 <td colspan="4" rowspan="6" style="vertical-align: top;text-align:left;border:1px solid black">
-                    @if ($catatan != null)
-                    {{$catatan}}
-                    @else
                     Ket = ( √ ) : Telah dilakukan Preparasi
-                    @endif
+                    <br>
+                    {{$catatan}}
                 </td>
 
             </tr>

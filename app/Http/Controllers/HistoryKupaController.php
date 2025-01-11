@@ -271,6 +271,7 @@ class HistoryKupaController extends Controller
                 'text_disc' => $value->discount,
                 'formulir' => $value->formulir,
                 'nodoc' => $value->no_doc,
+                'kode_sampel' => $value->kode_sampel,
             ];
         }
         $data = [
@@ -701,6 +702,7 @@ class HistoryKupaController extends Controller
                         $result[$key]['no_doc_indentitas'] = $value->no_doc_indentitas;
                         $result[$key]['formulir'] = $value->formulir;
                         $result[$key]['catatan'] = $value->catatan;
+                        $result[$key]['kode_sampel'] = $value->kode_sampel;
                     }
                 }
             }
