@@ -333,6 +333,32 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                     ->sortable()
                     ->size('xs'),
+                TextColumn::make('sertifikasi')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->state(function (TrackSampel $track) {
+                        if ($track->progress == 7) {
+                            if ($track->sertifikasi == null) {
+                                return 'Sertifikasi Belum Diupload';
+                            } else {
+                                return 'Sertifikasi Sudah Diupload';
+                            }
+                        }
+                        return 'Progress belum selesai';
+                    })
+                    ->color(function (TrackSampel $track) {
+                        if ($track->progress != 7) {
+                            return 'info'; // Progress belum selesai
+                        }
+
+                        if ($track->sertifikasi == null) {
+                            return 'danger'; // Sertifikasi Belum Diupload
+                        }
+
+                        return 'success'; // Sertifikasi Sudah Diupload
+                    })
+                    ->searchable()
+                    ->sortable()
+                    ->size('xs'),
                 TextColumn::make('asal_sampel')
                     ->toggleable(isToggledHiddenByDefault: true)
 

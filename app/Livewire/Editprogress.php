@@ -192,7 +192,13 @@ class Editprogress extends Component implements HasForms
                     ->maxSize(5024)
                     ->disk('private')
                     ->default($this->opt->sertifikasi)
-                    ->visible(fn(Get $get): bool => $get('add_sertifikat') === true || $this->opt->sertifikasi !== null)
+                    ->visible(function (Get $get) {
+                        if ($this->opt->progress == 7 && $this->opt->sertifikasi == null || $get('add_sertifikat') === true) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    })
                     ->required(fn(Get $get): bool => $get('add_sertifikat') === true),
                 Select::make('Asalampel')
                     ->label('Asal Sampel')
