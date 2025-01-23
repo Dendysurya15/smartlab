@@ -143,7 +143,7 @@
                 Jenis Sampel
             </th>
             <th colspan="2" style="text-align:left;">
-                : {{$listitems['kode_sampel'] ?? '-'}}
+                : {{$listitems['jenis_pupuk'] ?? '-'}}
             </th>
         </tr>
     </table>
@@ -213,10 +213,10 @@
 
     </table>
 
-    @if(count($listitems['data']) > 15)
+    @if(count($listitems['data']) > 40)
     <div style="page-break-after: always;"></div>
     @else
-    <div style="margin-top: 20px;"></div>
+    <div style="margin-top: 25px;"></div>
     @endif
 
     <table style="border: 1px solid black;width:100%">

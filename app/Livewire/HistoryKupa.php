@@ -832,7 +832,90 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         $filename = 'Dokumentasi ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final;
                         return redirect()->route('exportdokumntasi', ['id' => $data, 'filename' => $filename])->with('target', '_blank');
                     }),
+                BulkAction::make('Approve')
+                    ->label('Approve')
+                    ->button()
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->modalSubmitActionLabel('Submit')
+                    ->visible(auth()->user()->can('verify_kupa'))
+                    ->form([
+                        Select::make('status')
+                            ->options([
+                                'Approved' => 'Approved',
+                                'Rejected' => 'Rejected',
+                            ])
+                            ->required()
+                    ])
+                    ->successNotification(null)
+                    ->action(function (Collection $records, array $data) {
+                        try {
+                            DB::beginTransaction();
 
+                            $records->each(function ($record) use ($data) {
+                                $state = $data['status'];
+                                $admin = $record->approveby_admin;
+                                $head = $record->approveby_head;
+                                $statusadmin = $admin;
+                                $statushead = $head;
+                                $userRole = auth()->user()->roles[0]->name;
+
+                                if ($record->status_timestamp != null) {
+                                    $status_timestamp = $record->status_timestamp . ' , ' . Carbon::now()->format('Y-m-d H:i:s') . ' , ';
+                                } else {
+                                    $status_timestamp = Carbon::now()->format('Y-m-d H:i:s');
+                                }
+
+                                if ($userRole === 'Admin') {
+                                    if ($state === 'Approved' && $head == 0) {
+                                        $statusadmin = 1;
+                                        $statusdata = 'Waiting Head Approval';
+                                    } elseif ($state === 'Approved' && $head == 1) {
+                                        $statusadmin = 1;
+                                        $statusdata = 'Approved';
+                                    } else {
+                                        $statusadmin = 0;
+                                        $statusdata = 'Rejected';
+                                    }
+                                } elseif ($userRole === 'Head Of Lab SRS') {
+                                    if ($state === 'Approved' && $admin == 0) {
+                                        $statushead = 1;
+                                        $statusdata = 'Rejected';
+                                    } elseif ($state === 'Approved' && $admin == 1) {
+                                        $statushead = 1;
+                                        $statusdata = 'Approved';
+                                    } else {
+                                        $statushead = 0;
+                                        $statusdata = 'Rejected';
+                                    }
+                                }
+
+                                $record->update([
+                                    'approveby_admin' => $statusadmin,
+                                    'approveby_head' => $statushead,
+                                    'status' => $statusdata,
+                                    'status_changed_by_id' => auth()->user()->id,
+                                    'status_approved_by_role' => auth()->user()->roles[0]->name,
+                                    'status_timestamp' => $status_timestamp,
+                                ]);
+                            });
+
+                            DB::commit();
+
+                            Notification::make()
+                                ->success()
+                                ->title('Bulk Verification Success')
+                                ->body('Selected records have been processed successfully')
+                                ->send();
+                        } catch (\Throwable $th) {
+                            DB::rollBack();
+
+                            Notification::make()
+                                ->title('Error ' . $th->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
             ])
             ->actions([
                 ActionGroup::make([

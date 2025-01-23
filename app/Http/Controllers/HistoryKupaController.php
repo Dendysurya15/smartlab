@@ -703,6 +703,7 @@ class HistoryKupaController extends Controller
                         $result[$key]['formulir'] = $value->formulir;
                         $result[$key]['catatan'] = $value->catatan;
                         $result[$key]['kode_sampel'] = $value->kode_sampel;
+                        $result[$key]['jenis_pupuk'] = $value->jenis_pupuk;
                     }
                 }
             }

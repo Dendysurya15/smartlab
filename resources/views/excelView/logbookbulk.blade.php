@@ -19,6 +19,7 @@
     $jumlah_sampel = $items['jumlah_sampel'];
     $jenis_sampel = $items['jenis_sampel'];
     $kode_sampel = $items['kode_sampel'];
+    $jenis_pupuk = $items['jenis_pupuk'];
     }
 
     @endphp
@@ -128,7 +129,7 @@
 
                 <th colspan="12" style="border-bottom: 1px solid black;"></th>
                 <th colspan="2" style="border-bottom: 1px solid black;">Jenis Sampel</th>
-                <th style="border-bottom: 1px solid black;border-right:1px solid black">{{$kode_sampel}}</th>
+                <th style="border-bottom: 1px solid black;border-right:1px solid black">{{$jenis_pupuk}}</th>
             </tr>
             <tr>
                 <th></th>
