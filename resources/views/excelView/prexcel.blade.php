@@ -12,18 +12,18 @@
     <table style="width: 100%; border-collapse: collapse;">
         <thead>
             <tr>
-                <th colspan="19" style="border:1px solid black;text-align:center;vertical-align:center">PT. CITRA BORNEO INDAH </th>
+                <th colspan="22" style="border:1px solid black;text-align:center;vertical-align:center">PT. CITRA BORNEO INDAH </th>
             </tr>
             <tr>
                 <th style="border:1px solid black;text-align:center;vertical-align:center" rowspan="3" colspan="2"></th>
-                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="17">RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</th>
+                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="20">RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</th>
 
             </tr>
             <tr>
-                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="17"></th>
+                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="20"></th>
             </tr>
             <tr>
-                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="17"></th>
+                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="20"></th>
             </tr>
         </thead>
     </table>
@@ -49,6 +49,9 @@
                 <th colspan="3" style="border:1px solid black;text-align:center;vertical-align:center">Keterangan</th>
                 <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">Jumlah Parameter</th>
                 <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">Jumlah Sampel</th>
+                <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">Tujuan</th>
+                <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">Kode Tracking</th>
+                <th rowspan="2" style="border:1px solid black;text-align:center;vertical-align:center">Catatan</th>
             </tr>
 
             <tr>
@@ -101,6 +104,11 @@
                 <td style="border:1px solid black;text-align:center;vertical-align:center">{{$jum_samptotal}}</td>
                 @if ($item2['jumlah_sampel'] !== 'null')
                 <td style="border:1px solid black;text-align:center;vertical-align:center" rowspan="{{$rowspan}}">{{$item2['jumlah_sampel']}}</td>
+                @endif
+                <td style="border:1px solid black;">{{$item2['tujuan']}}</td>
+                @if ($item2['catatan'] !== 'null')
+                <td style="border:1px solid black;text-align:center;vertical-align:center" rowspan="{{$rowspan}}">{{$item2['kode_track']}}</td>
+                <td style="border:1px solid black;text-align:center;vertical-align:center" rowspan="{{$rowspan}}">{{$item2['catatan']}}</td>
                 @endif
 
             </tr>

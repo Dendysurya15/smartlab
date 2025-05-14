@@ -473,32 +473,32 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->label('Progress')
                     ->options(ProgressPengerjaan::query()->pluck('nama', 'id'))
                     ->preload(),
-                // Filter::make('created_at')
-                //     ->form([
-                //         DatePicker::make('created_from')
-                //             ->label('Tanggal terima dari'),
-                //         DatePicker::make('created_until')
-                //             ->label('Tanggal terima sampai'),
-                //     ])
-                //     ->query(function (Builder $query, array $data): Builder {
-                //         // dd($data);
-                //         return $query
-                //             ->when(
-                //                 $data['created_from'],
-                //                 function (Builder $query, $date) {
-                //                     // dd($query->whereDate('tanggal_terima', '>=', $date));
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('Tanggal terima dari'),
+                        DatePicker::make('created_until')
+                            ->label('Tanggal terima sampai'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        // dd($data);
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                function (Builder $query, $date) {
+                                    // dd($query->whereDate('tanggal_terima', '>=', $date));
 
-                //                     return $query->whereDate('tanggal_terima', '>=', $date);
-                //                 }
-                //                 // fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
-                //             )
-                //             ->when(
-                //                 $data['created_until'],
-                //                 function (Builder $query, $date) {
-                //                     return $query->whereDate('tanggal_terima', '<=', $date);
-                //                 }
-                //             );
-                //     })
+                                    return $query->whereDate('tanggal_terima', '>=', $date);
+                                }
+                                // fn (Builder $query, $date): Builder => $query->whereDate('tanggal_terima', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                function (Builder $query, $date) {
+                                    return $query->whereDate('tanggal_terima', '<=', $date);
+                                }
+                            );
+                    })
 
 
 

@@ -104,6 +104,7 @@
                         <th rowspan="2" class="border-text">Kode Sampel</th>
                         <th rowspan="2" class="border-text">Estimasi KUPA</th>
                         <th rowspan="2" class="border-text">Tanggal Selesai Analisa</th>
+                        <th rowspan="2" class="border-text">Kode Tracking</th>
                         <th colspan="3" class="border-text">Keterangan</th>
                         <th rowspan="2" class="border-text">Jumlah Parameter</th>
                         <th rowspan="2" class="border-text">Jumlah Sampel</th>
@@ -149,17 +150,16 @@
                         <td class="border-text">{{$item2['kode_sampel']}}</td>
                         <td class="border-text">{{$item2['estimasi']}}</td>
                         <td class="border-text">{{$item2['Tanggal_Selesai_Analisa']}}</td>
+                        @if ($item2['catatan'] !== 'null')
+                        <td class="border-text" rowspan="{{$rowspan}}">{{$item2['kode_track']}}</td>
+                        @endif
                         <td class="border-text">{{$item2['Tanggal_Rilis_Sertifikat']}}</td>
                         <td class="border-text">{{$item2['No_sertifikat']}}</td>
-
-
                         @if ($item2['total'] !== 'null')
                         <td class="border-text">{{$item2['total']}}</td>
                         @else
                         <td class="border-text"></td>
                         @endif
-
-
                         <td class="border-text">{{$item2['Jumlah_Parameter']}}</td>
                         @if ($item2['jumlah_sampel'] !== 'null')
                         <td class="border-text" rowspan="{{$rowspan}}">{{$item2['jumlah_sampel']}}</td>
@@ -176,10 +176,9 @@
 
                 </tbody>
             </table>
-
+            <div style="page-break-after: always;"></div>
         </div>
     </div>
-    <div style="page-break-after: always;"></div>
     @endforeach
 
 

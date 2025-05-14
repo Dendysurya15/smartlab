@@ -948,6 +948,8 @@ if (!function_exists('GeneratePR')) {
                             $result[$key][$key1][$keysx]['nomor_kupa'] = $value2['nomor_kupa'];
                             $result[$key][$key1][$keysx]['tanggal_terima'] = $carbonDate;
                             $result[$key][$key1][$keysx]['tanggal_memo'] = $value2['tanggal_memo'];
+                            $result[$key][$key1][$keysx]['kode_track'] = $value2['kode_track'];
+                            $result[$key][$key1][$keysx]['tujuan'] = $value2['tujuan'];
                             $result[$key][$key1][$keysx]['Jumlah_Parameter'] = count($valuems);
                             $result[$key][$key1][$keysx]['Parameter_Analisa'] = implode(',', $valuems);
                             $result[$key][$key1][$keysx]['tujuan'] = $value2['tujuan'];
