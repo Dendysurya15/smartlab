@@ -1017,12 +1017,14 @@ if (!function_exists('GeneratePR')) {
                     // return 'PT. CITRA BORNEO INDAH';
                     return [
                         'nama' => 'PT. CITRA BORNEO INDAH',
-                        'revisi' => '02'
+                        'revisi' => '02',
+                        'tanggal_berlaku' => '1-jul-21'
                     ];
                 } else {
                     return [
                         'nama' => 'PT. Sulung Research Station',
-                        'revisi' => '00'
+                        'revisi' => '00',
+                        'tanggal_berlaku' => '01 Mei 2025'
                     ];
                 }
             } catch (Exception $e) {

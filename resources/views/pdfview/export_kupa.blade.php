@@ -112,7 +112,7 @@
                             {{$pt['revisi']}}
                         </th>
                         <th colspan="6" style="border: 1px solid black;text-align:center;">
-                            1-jul-21
+                            {{$pt['tanggal_berlaku']}}
                         </th>
                         <th colspan="5" style="border: 1px solid black;text-align:center;">
                             1 dari 1
