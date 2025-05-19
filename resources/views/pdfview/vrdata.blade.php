@@ -56,7 +56,7 @@
             <div style="border: 1px solid black;text-align:center">
                 <h2 class="text-center">
                     @php
-                    $pt = defaultPTname($item['tanggal_penerimaan']);
+                    $pt = defaultPTname($item['tanggal_terima']);
                     @endphp
                     {{$pt['nama']}}
                 </h2>
@@ -67,7 +67,7 @@
                 <tr>
                     <td style="vertical-align: middle; padding-left: 0; width: 10%;border:0;">
                         <div>
-                            @if (defaultIconPT($item['tanggal_penerimaan']))
+                            @if (defaultIconPT($item['tanggal_terima']))
                             <img src="{{ asset('images/Logo_CBI_2.png') }}" style="height:60px">
                             @else
                             <img src="{{ asset('images/logocorp.png') }}" style="height:60px">
