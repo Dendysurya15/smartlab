@@ -13,12 +13,7 @@
 
 <body>
 
-    <style>
-        .getborder {
-            border: 1px solid black;
-            vertical-align: middle;
-        }
-    </style>
+
 
     <table>
 
@@ -28,7 +23,11 @@
                 <th></th>
                 <td rowspan="4" colspan="2" style="border-left:1px solid black;"></td>
                 <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
-                    PT . CITRA BORNEO INDAH</td>
+                    @php
+                    $pt = defaultPTname($tanggal_penerimaan);
+                    @endphp
+                    {{$pt['nama']}}
+                </td>
             </tr>
             <tr>
                 <th></th>
@@ -75,7 +74,7 @@
                     @endif
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
-                    02
+                    {{$pt['revisi']}}
                 </th>
                 <th colspan="6" style="border: 1px solid black;text-align:center;">
                     1-jul-21

@@ -16,6 +16,13 @@
                 </button>
 
             </div>
+            <div class="flex items-center justify-center">
+                <p class="font-semibold">
+                    <span class="text-gray-800">SMART</span><span class="text-green-600">LAB</span>
+                    <span class="text-green-600 font-bold">SRS</span>
+                </p>
+                <img src="{{ asset('images/SRS.PNG') }}" alt="Logo" class="w-10 h-10 ml-2">
+            </div>
 
             <!-- Header: Right side -->
             <div class="flex items-center space-x-3">

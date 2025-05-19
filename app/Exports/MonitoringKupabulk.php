@@ -25,11 +25,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class MonitoringKupabulk implements FromView, ShouldAutoSize, WithEvents, WithDrawings
 {
     private $id;
-
+    private $tanggal_penerimaan;
 
     public function __construct($id)
     {
         $this->id = $id;
+
         // dd($id);
     }
 
@@ -103,6 +104,7 @@ class MonitoringKupabulk implements FromView, ShouldAutoSize, WithEvents, WithDr
                 'formulir' => $value->formulir,
                 'nodoc' => $value->no_doc,
             ];
+            $this->tanggal_penerimaan = $value->tanggal_terima;
         }
         $jenis_samples_string = implode(',', array_column($result, 'jenis_sample'));
         $tanggalterima = implode(',', array_column($result, 'tanggalterima'));
@@ -147,7 +149,14 @@ class MonitoringKupabulk implements FromView, ShouldAutoSize, WithEvents, WithDr
                     ],
                 ];
                 $arrcells = [
-                    'B11', 'C11', 'D11', 'E11', 'F11', 'G11', 'H12', 'I11',
+                    'B11',
+                    'C11',
+                    'D11',
+                    'E11',
+                    'F11',
+                    'G11',
+                    'H12',
+                    'I11',
                     'J11',
                     'K11',
                     'L11',
@@ -207,7 +216,12 @@ class MonitoringKupabulk implements FromView, ShouldAutoSize, WithEvents, WithDr
         $drawing = new Drawing();
         $drawing->setName('Logo');
         $drawing->setDescription('This is my logo');
-        $drawing->setPath(public_path('images/Logo_CBI_2.png'));
+
+        if (defaultIconPT($this->tanggal_penerimaan)) {
+            $drawing->setPath(public_path('images/Logo_CBI_2.png'));
+        } else {
+            $drawing->setPath(public_path('images/logocorp.png'));
+        }
         $drawing->setHeight(70);
         $drawing->setWidth(100);
         $drawing->setCoordinates('B1');

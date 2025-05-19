@@ -29,6 +29,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
     private $countnamaarr; // Class property to store countnamaarr value
     private $semuaRowParameter;
     private $status;
+    private $tanggal_penerimaan;
 
     public function __construct($id)
     {
@@ -257,6 +258,7 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
         } else {
             $test = $total_row;
         }
+        $this->tanggal_penerimaan = $tanggal_penerimaan;
         return view('excelView.exportexcel', [
             'data' => $result,
             'total_row' => $total_row,
@@ -372,16 +374,18 @@ class FormDataExport implements FromView, ShouldAutoSize, WithColumnWidths, With
 
         $drawings = [];
 
-        $lokasiKolomTtdPenerimaSampel = "B$tinggiDefaultKolom";
-        $lokasiKolomTtdHeadOfLab = "D$tinggiDefaultKolom";
-
         // First Image
         $drawing1 = new Drawing();
         $drawing1->setName('Logo1');
         $drawing1->setDescription('This is my first logo');
-        $drawing1->setPath(public_path('images/Logo_CBI_2.png'));
-        $drawing1->setHeight(70);
-        $drawing1->setCoordinates('B1');
+
+        if (defaultIconPT($this->tanggal_penerimaan)) {
+            $drawing1->setPath(public_path('images/Logo_CBI_2.png'));
+        } else {
+            $drawing1->setPath(public_path('images/logocorp.png'));
+        }
+        $drawing1->setHeight(60);
+        $drawing1->setCoordinates('B2');
         $drawings[] = $drawing1;
 
 

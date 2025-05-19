@@ -113,7 +113,7 @@
             <table style="width: 100%;border-bottom: 1px solid black">
                 <tr>
                     <td style="width: 30%;">
-                        <img src="{{asset('images/Logo_CBI_2.png')}}" alt="Company Logo" class="logo">
+                        <img src="{{asset('images/logocorp.png')}}" alt="Company Logo" class="logo">
                     </td>
                     <td style="width: auto;">
                         <div class="company-info">

@@ -25,7 +25,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDrawings, WithMultipleSheets, WithTitle, WithColumnWidths
 {
     private $id;
-
+    private $tanggal_penerimaan;
 
     public function __construct($id)
     {
@@ -166,6 +166,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
             $formulir = $value->formulir;
             $no_doc_indentitas = $value->no_doc_indentitas;
             $catatan = $value->catatan;
+            $this->tanggal_penerimaan = $value->tanggal_terima;
             // dd($result, $namakode_sampel, $sampel_data);
         }
         // dd($newArray, $result);
@@ -182,6 +183,7 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
         $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
         $Penyelia = (!is_null($penyelia_prep) ? $penyelia_prep : $petugas['Penyelia'][0]['nama']);
         // dd($result[300]);
+
         return view('excelView.logbookbulk', [
             'data' => $result,
             'namaparams' =>  array_unique($newArray),
@@ -288,7 +290,12 @@ class LogbookBulkExport implements FromView, ShouldAutoSize, WithEvents, WithDra
         $drawing = new Drawing();
         $drawing->setName('Logo');
         $drawing->setDescription('This is my logo');
-        $drawing->setPath(public_path('images/Logo_CBI_2.png'));
+
+        if (defaultIconPT($this->tanggal_penerimaan)) {
+            $drawing->setPath(public_path('images/Logo_CBI_2.png'));
+        } else {
+            $drawing->setPath(public_path('images/logocorp.png'));
+        }
         $drawing->setHeight(70);
         $drawing->setWidth(100);
         $drawing->setCoordinates('B1');

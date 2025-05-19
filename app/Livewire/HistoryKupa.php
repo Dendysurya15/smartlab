@@ -534,7 +534,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->modalSubheading(
                             "Harap Memilih data yang tidak dalam kondisi status Draft"
                         )
-                        ->modalButton('Export PR')
+                        ->modalButton('Export Log Book')
                         ->action(function (Collection $records) {
                             $recordIds = [];
                             $jenis_sampel = [];
@@ -607,7 +607,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         })
                 ])->button()
                     ->color('info')
-                    ->label('Export PR'),
+                    ->label('Export Log Book'),
                 ActionGroup::make([
                     BulkAction::make('export_kupa_pdf')
                         ->label('PDF')
@@ -642,83 +642,83 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 ])->button()
                     ->color('info')
                     ->label('Export Kupa'),
-                ActionGroup::make([
-                    BulkAction::make('export')
-                        ->label('Excel')
-                        ->button()
-                        ->icon('heroicon-o-document-chart-bar')
-                        ->color('success')
-                        ->deselectRecordsAfterCompletion()
-                        ->modalHeading('Perhatian')
-                        ->modalSubheading(
-                            "Harap Memilih data yang tidak dalam kondisi status Draft"
-                        )
-                        ->modalButton('Excel')
-                        ->action(function (Collection $records) {
-                            $recordIds = [];
-                            $jenis_sampel = [];
-                            $dates = [];
-                            $year = [];
+                // ActionGroup::make([
+                //     BulkAction::make('export')
+                //         ->label('Excel')
+                //         ->button()
+                //         ->icon('heroicon-o-document-chart-bar')
+                //         ->color('success')
+                //         ->deselectRecordsAfterCompletion()
+                //         ->modalHeading('Perhatian')
+                //         ->modalSubheading(
+                //             "Harap Memilih data yang tidak dalam kondisi status Draft"
+                //         )
+                //         ->modalButton('Excel')
+                //         ->action(function (Collection $records) {
+                //             $recordIds = [];
+                //             $jenis_sampel = [];
+                //             $dates = [];
+                //             $year = [];
 
-                            $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
-                                if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
-                                    $recordIds[] = $record->id;
-                                }
-                                $jenis_sampel[] = $record->jenisSampel->nama;
-                                $carbonDate = Carbon::parse($record->tanggal_memo);
-                                $dates[] = $carbonDate->format('F');
-                                $year[] = $carbonDate->format('Y');
-                            });
+                //             $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
+                //                 if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                //                     $recordIds[] = $record->id;
+                //                 }
+                //                 $jenis_sampel[] = $record->jenisSampel->nama;
+                //                 $carbonDate = Carbon::parse($record->tanggal_memo);
+                //                 $dates[] = $carbonDate->format('F');
+                //                 $year[] = $carbonDate->format('Y');
+                //             });
 
-                            $jenis_sample_final = implode(',', array_unique($jenis_sampel));
-                            $dates_final = implode(',', array_unique($dates));
-                            $year_final = implode(',', array_unique($year));
-                            // dd($recordIds, $records);
-                            $data = implode('$', $recordIds);
+                //             $jenis_sample_final = implode(',', array_unique($jenis_sampel));
+                //             $dates_final = implode(',', array_unique($dates));
+                //             $year_final = implode(',', array_unique($year));
+                //             // dd($recordIds, $records);
+                //             $data = implode('$', $recordIds);
 
-                            // Concatenate strings and variables using the concatenation operator (.)
-                            $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
-                            return Excel::download(new MonitoringKupabulk($data), $filename);
-                        }),
+                //             // Concatenate strings and variables using the concatenation operator (.)
+                //             $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
+                //             return Excel::download(new MonitoringKupabulk($data), $filename);
+                //         }),
 
-                    BulkAction::make('export_pdf_monotoring')
-                        ->label('PDF')
-                        ->button()
-                        ->icon('heroicon-o-document-arrow-down')
-                        ->color('warning')
-                        ->deselectRecordsAfterCompletion()
-                        ->modalHeading('Perhatian')
-                        ->modalSubheading(
-                            "Harap Memilih data yang tidak dalam kondisi status Draft"
-                        )
-                        ->modalButton('Export PDF')
-                        ->action(function (Collection $records) {
-                            $recordIds = [];
-                            $jenis_sampel = [];
-                            $dates = [];
-                            $year = [];
+                //     BulkAction::make('export_pdf_monotoring')
+                //         ->label('PDF')
+                //         ->button()
+                //         ->icon('heroicon-o-document-arrow-down')
+                //         ->color('warning')
+                //         ->deselectRecordsAfterCompletion()
+                //         ->modalHeading('Perhatian')
+                //         ->modalSubheading(
+                //             "Harap Memilih data yang tidak dalam kondisi status Draft"
+                //         )
+                //         ->modalButton('Export PDF')
+                //         ->action(function (Collection $records) {
+                //             $recordIds = [];
+                //             $jenis_sampel = [];
+                //             $dates = [];
+                //             $year = [];
 
-                            $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
-                                if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
-                                    $recordIds[] = $record->id;
-                                }
-                                $jenis_sampel[] = $record->jenisSampel->nama;
-                                $carbonDate = Carbon::parse($record->tanggal_memo);
-                                $dates[] = $carbonDate->format('F');
-                                $year[] = $carbonDate->format('Y');
-                            });
+                //             $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
+                //                 if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
+                //                     $recordIds[] = $record->id;
+                //                 }
+                //                 $jenis_sampel[] = $record->jenisSampel->nama;
+                //                 $carbonDate = Carbon::parse($record->tanggal_memo);
+                //                 $dates[] = $carbonDate->format('F');
+                //                 $year[] = $carbonDate->format('Y');
+                //             });
 
-                            $jenis_sample_final = implode(',', array_unique($jenis_sampel));
-                            $dates_final = implode(',', array_unique($dates));
-                            $year_final = implode(',', array_unique($year));
-                            // dd($recordIds, $records);
-                            $data = implode('$', $recordIds);
-                            $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final;
-                            return redirect()->route('exporpdfform', ['id' => $data, 'filename' => $filename])->with('target', '_blank');
-                        }),
-                ])->button()
-                    ->color('info')
-                    ->label('Export Form Monitoring'),
+                //             $jenis_sample_final = implode(',', array_unique($jenis_sampel));
+                //             $dates_final = implode(',', array_unique($dates));
+                //             $year_final = implode(',', array_unique($year));
+                //             // dd($recordIds, $records);
+                //             $data = implode('$', $recordIds);
+                //             $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final;
+                //             return redirect()->route('exporpdfform', ['id' => $data, 'filename' => $filename])->with('target', '_blank');
+                //         }),
+                // ])->button()
+                //     ->color('info')
+                //     ->label('Export Form Monitoring'),
                 ActionGroup::make([
                     BulkAction::make('export_logbook_pdf')
                         ->label('PDF')

@@ -20,7 +20,7 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
 {
 
     private $id;
-
+    private $tanggal_penerimaan;
     public function __construct($id)
     {
         $this->id = $id;
@@ -30,10 +30,12 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
     public function view(): View
     {
         $generate = GeneratePR($this->id);
-
+        // dd($generate);
+        $this->tanggal_penerimaan = $generate['tanggal_penerimaan'];
         // dd($generate['result']);
         return view('excelView.prexcel', [
             'data' => $generate['result'],
+            'tanggal_terima' => $generate['tanggal_penerimaan']
         ]);
     }
 
@@ -99,9 +101,14 @@ class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, W
         $drawing1 = new Drawing();
         $drawing1->setName('Logo1');
         $drawing1->setDescription('This is my first logo');
-        $drawing1->setPath(public_path('images/Logo_CBI_2.png'));
-        $drawing1->setHeight(70);
-        $drawing1->setCoordinates('B2');
+
+        if (defaultIconPT($this->tanggal_penerimaan)) {
+            $drawing1->setPath(public_path('images/Logo_CBI_2.png'));
+        } else {
+            $drawing1->setPath(public_path('images/logocorp.png'));
+        }
+        $drawing1->setHeight(30);
+        $drawing1->setCoordinates('B3');
         $drawings[] = $drawing1;
 
 

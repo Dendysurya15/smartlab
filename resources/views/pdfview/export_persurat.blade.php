@@ -30,11 +30,19 @@
                 <td></td>
                 <td rowspan="4" colspan="2">
                     <div>
+                        @if (defaultIconPT($data_kupa['tanggal_penerimaan']))
                         <img src="{{ asset('images/Logo_CBI_2.png') }}" style="height:60px;margin-left:50px">
+                        @else
+                        <img src="{{ asset('images/logocorp.png') }}" style="height:60px;margin-left:50px">
+                        @endif
                     </div>
                 </td>
                 <td colspan="16" style="text-align:center; border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
-                    PT . CITRA BORNEO INDAH</td>
+                    @php
+                    $pt = defaultPTname($data_kupa['tanggal_penerimaan']);
+                    @endphp
+                    {{$pt['nama']}}
+                </td>
             </tr>
             <tr>
                 <th></th>
@@ -83,7 +91,7 @@
 
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
-                    02
+                    {{$pt['revisi']}}
                 </th>
                 <th colspan="6" style="border: 1px solid black;text-align:center;">
                     1-jul-21
@@ -397,11 +405,15 @@
                 <td></td>
                 <td rowspan="4" colspan="3">
                     <div>
+                        @if (defaultIconPT($listitems['tanggal_terima']))
                         <img src="{{ asset('images/Logo_CBI_2.png') }}" style="height:60px;margin-left:50px">
+                        @else
+                        <img src="{{ asset('images/logocorp.png') }}" style="height:60px;margin-left:50px">
+                        @endif
                     </div>
                 </td>
                 <td colspan="22" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px;text-align:center">
-                    PT . CITRA BORNEO INDAH</td>
+                    {{$pt['nama']}}
             </tr>
             <tr>
                 <th></th>
@@ -444,7 +456,7 @@
 
                 </th>
                 <th colspan="8" style="border: 1px solid black;text-align:center;">
-                    02
+                    {{$pt['revisi']}}
                 </th>
                 <th colspan="10" style="border: 1px solid black;text-align:center;">
                     1-jul-21

@@ -31,7 +31,11 @@
                 <td></td>
                 <td rowspan="4" style="border-left:1px solid black;"></td>
                 <td colspan="17" style="text-align:center;border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
-                    PT . CITRA BORNEO INDAH</td>
+                    @php
+                    $pt = defaultPTname($tanggal_terima);
+                    @endphp
+                    {{$pt['nama']}}
+                </td>
             </tr>
             <tr>
                 <td></td>
@@ -76,7 +80,7 @@
                     @endif
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
-                    02
+                    {{$pt['revisi']}}
                 </th>
                 <th colspan="5" style="border: 1px solid black;text-align:center;">
                     1-jul-21

@@ -12,7 +12,12 @@
     <table style="width: 100%; border-collapse: collapse;">
         <thead>
             <tr>
-                <th colspan="22" style="border:1px solid black;text-align:center;vertical-align:center">PT. CITRA BORNEO INDAH </th>
+                <th colspan="22" style="border:1px solid black;text-align:center;vertical-align:center">
+                    @php
+                    $pt = defaultPTname($tanggal_terima);
+                    @endphp
+                    {{$pt['nama']}}
+                </th>
             </tr>
             <tr>
                 <th style="border:1px solid black;text-align:center;vertical-align:center" rowspan="3" colspan="2"></th>

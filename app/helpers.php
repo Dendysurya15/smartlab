@@ -979,7 +979,97 @@ if (!function_exists('GeneratePR')) {
         return [
             'result' => $result,
             'filename' => $filename,
-            'nomor_lab' => $nomor_labs
+            'nomor_lab' => $nomor_labs,
+            'tanggal_penerimaan' => $value2['tanggal_terima']
         ];
+    }
+
+    if (!function_exists('defaultPTname')) {
+        function defaultPTname($tanggal)
+        {
+            try {
+                // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
+                $bulanIndonesia = [
+                    'Januari' => '01',
+                    'Februari' => '02',
+                    'Maret' => '03',
+                    'April' => '04',
+                    'Mei' => '05',
+                    'Juni' => '06',
+                    'Juli' => '07',
+                    'Agustus' => '08',
+                    'September' => '09',
+                    'Oktober' => '10',
+                    'November' => '11',
+                    'Desember' => '12'
+                ];
+
+                // Split tanggal "17 Mei 2025"
+                $parts = explode(' ', $tanggal);
+                if (count($parts) === 3) {
+                    $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
+                }
+
+                $tanggalPenerimaan = Carbon::parse($tanggal);
+                $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
+
+                if ($tanggalPenerimaan < $batasTanggal) {
+                    // return 'PT. CITRA BORNEO INDAH';
+                    return [
+                        'nama' => 'PT. CITRA BORNEO INDAH',
+                        'revisi' => '02'
+                    ];
+                } else {
+                    return [
+                        'nama' => 'PT. Sulung Research Station',
+                        'revisi' => '00'
+                    ];
+                }
+            } catch (Exception $e) {
+                // Fallback jika parsing gagal
+                return 'PT. CITRA BORNEO INDAH';
+            }
+        }
+    }
+
+    if (!function_exists('defaultIconPT ')) {
+        function defaultIconPT($tanggal)
+        {
+            try {
+                // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
+                $bulanIndonesia = [
+                    'Januari' => '01',
+                    'Februari' => '02',
+                    'Maret' => '03',
+                    'April' => '04',
+                    'Mei' => '05',
+                    'Juni' => '06',
+                    'Juli' => '07',
+                    'Agustus' => '08',
+                    'September' => '09',
+                    'Oktober' => '10',
+                    'November' => '11',
+                    'Desember' => '12'
+                ];
+
+                // Split tanggal "17 Mei 2025"
+                $parts = explode(' ', $tanggal);
+                if (count($parts) === 3) {
+                    $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
+                }
+
+                $tanggalPenerimaan = Carbon::parse($tanggal);
+                $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
+
+                if ($tanggalPenerimaan < $batasTanggal) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (Exception $e) {
+                // Fallback jika parsing gagal
+                return true;
+            }
+        }
     }
 }
