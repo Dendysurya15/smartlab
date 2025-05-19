@@ -302,7 +302,16 @@ class HistoryKupaController extends Controller
 
         // $idsc = '71$69';
         $idsArray = explode('$', $id);
-        $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
+        $queries = TrackSampel::whereIn('id', $idsArray)
+            ->with(['trackParameters', 'progressSampel', 'jenisSampel'])
+            ->get();
+
+        if ($queries->isEmpty()) {
+            return redirect('/404');
+        }
+
+
+        // dd($id, $filename, $queries);
         $petugas = ExcelManagement::where('status', 1)->get();
         $petugas = $petugas->groupBy(['jabatan']);
         $petugas = json_decode($petugas, true);
@@ -503,6 +512,7 @@ class HistoryKupaController extends Controller
             $jenis_sampel[] = $value->jenisSampel->nama;
             $date[] = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('F Y');
         }
+        // dd($queries);
         if ($filename === 'bulk') {
             $uniqueArray = array_unique($jenis_sampel);
             $uniquedate = array_unique($date);

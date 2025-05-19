@@ -97,6 +97,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         return view('pages.managementkuesioner');
     })->name('Managementkuesioner');
 
+    Route::get('/404', function () {
+        return view('errorpages.404');
+    })->name('404');
 
     // Route::get('/download-bulk-pdf/{filename}', [PdfController::class, 'downloadBulkPdf'])
     //     ->name('download.bulk.pdf');
