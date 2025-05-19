@@ -21,7 +21,7 @@
             </tr>
             <tr>
                 <th style="border:1px solid black;text-align:center;vertical-align:center" rowspan="3" colspan="2"></th>
-                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="20">RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</th>
+                <th style="border:1px solid black;text-align:left;vertical-align:center" colspan="20">{{$pt['nama_lab']}}</th>
 
             </tr>
             <tr>

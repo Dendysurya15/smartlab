@@ -30,7 +30,8 @@
             <tr>
                 <td></td>
                 <td colspan="16" style="border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
-                    RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
+                    {{$pt['nama_lab']}}
+                </td>
             </tr>
             <tr>
                 <td></td>

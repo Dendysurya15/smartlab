@@ -76,7 +76,7 @@
                     </td>
                     <td style="width:30%;border:0;">
 
-                        <p style="text-align: left;">RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK</p>
+                        <p style="text-align: left;">{{$pt['nama_lab']}}</p>
                         <p style="text-align: left;">{{$item['jenis']}}</p>
 
                     </td>

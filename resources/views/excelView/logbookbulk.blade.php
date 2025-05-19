@@ -40,7 +40,8 @@
             <tr>
                 <td></td>
                 <td colspan="17" style="text-align:center;border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
-                    RESEARCH AND DEVELOPMENT - LABORATORIUM ANALITIK</td>
+                    {{$pt['nama_lab']}}
+                </td>
                 <td style="border-left:1px solid black;"></td>
             </tr>
             <tr>

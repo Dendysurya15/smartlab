@@ -1018,13 +1018,15 @@ if (!function_exists('GeneratePR')) {
                     return [
                         'nama' => 'PT. CITRA BORNEO INDAH',
                         'revisi' => '02',
-                        'tanggal_berlaku' => '1-jul-21'
+                        'tanggal_berlaku' => '1-jul-21',
+                        'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
                     ];
                 } else {
                     return [
                         'nama' => 'PT. Sulung Research Station',
                         'revisi' => '00',
-                        'tanggal_berlaku' => '01 Mei 2025'
+                        'tanggal_berlaku' => '01 Mei 2025',
+                        'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM PENGUJIAN'
                     ];
                 }
             } catch (Exception $e) {
