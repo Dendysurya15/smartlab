@@ -30,8 +30,17 @@ class EmailPelanggan extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($nomor_surat, $departement, $jenis_sampel, $jumlah_sampel, $progress, $kode_tracking_sampel, $id, $tanggal_registrasi, $estimasi_kup)
-    {
+    public function __construct(
+        $nomor_surat,
+        $departement,
+        $jenis_sampel,
+        $jumlah_sampel,
+        $progress,
+        $kode_tracking_sampel,
+        $id,
+        $tanggal_registrasi,
+        $estimasi_kup
+    ) {
         $this->nomor_surat = $nomor_surat;
         $this->departement = $departement;
         $this->jenis_sampel = $jenis_sampel;

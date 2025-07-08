@@ -49,6 +49,7 @@ use Filament\Tables\Enums\FiltersLayout;
 use App\Models\JenisSampel;
 use App\Models\ProgressPengerjaan;
 use App\Jobs\Generatebulkpdfpr;
+use App\Jobs\SendEmailPelangganJob;
 
 class HistoryKupa extends Component implements HasForms, HasTable
 {
@@ -159,10 +160,24 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
 
                         // Only send email if there are recipients
-                        if ($emailAddresses !== null || $emailcc !== null) {
-                            Mail::to($emailAddresses ?? [])
-                                ->cc($emailcc ?? [])
-                                ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
+                        // if ($emailAddresses !== null || $emailcc !== null) {
+                        //     Mail::to($emailAddresses ?? [])
+                        //         ->cc($emailcc ?? [])
+                        //         ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
+                        // }
+                        if ($emailAddresses !== null) {
+                            $emailData = [
+                                'nomor_surat' => $record->nomor_surat,
+                                'departement' => $record->departemen,
+                                'jenis_sampel' => $record->jenisSampel->nama,
+                                'jumlah_sampel' => $record->jumlah_sampel,
+                                'progress' => $progress_data[0] ?? null,
+                                'kode_tracking_sampel' => $record->kode_track,
+                                'id' => null,
+                                'tanggal_registrasi' => $record->tanggal_terima,
+                                'estimasi_kup' => $record->estimasi
+                            ];
+                            SendEmailPelangganJob::dispatch($emailAddresses, $emailcc, $emailData);
                         }
 
                         $id = $record->id;
@@ -1467,10 +1482,24 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             }
 
                             // dd($progress, $progress_state);
+                            // if ($emailAddresses !== null) {
+                            //     Mail::to($emailAddresses)
+                            //         ->cc($emailcc)
+                            //         ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
+                            // }
                             if ($emailAddresses !== null) {
-                                Mail::to($emailAddresses)
-                                    ->cc($emailcc)
-                                    ->send(new EmailPelanggan($records->nomor_surat, $records->departemen, $records->jenisSampel->nama, $records->jumlah_sampel, $records->progressSampel->nama, $records->kode_track, $records->id, $records->tanggal_terima, $records->estimasi));
+                                $emailData = [
+                                    'nomor_surat' => $records->nomor_surat,
+                                    'departement' => $records->departemen,
+                                    'jenis_sampel' => $records->jenisSampel->nama,
+                                    'jumlah_sampel' => $records->jumlah_sampel,
+                                    'progress' => $records->progressSampel->nama,
+                                    'kode_tracking_sampel' => $records->kode_track,
+                                    'id' => $records->id,
+                                    'tanggal_registrasi' => $records->tanggal_terima,
+                                    'estimasi_kup' => $records->estimasi
+                                ];
+                                SendEmailPelangganJob::dispatch($emailAddresses, $emailcc, $emailData);
                             }
                             $records->invoice_status = 2;
                             $records->save();

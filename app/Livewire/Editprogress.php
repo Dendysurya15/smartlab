@@ -44,6 +44,7 @@ use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
 use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
 use Ysfkaya\FilamentPhoneInput\Infolists\PhoneInputNumberType;
 use Filament\Support\RawJs;
+use App\Jobs\SendEmailPelangganJob;
 
 class Editprogress extends Component implements HasForms
 {
@@ -1059,10 +1060,36 @@ class Editprogress extends Component implements HasForms
                 $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
 
-                Mail::to($emailAddresses)
-                    ->cc($emailcc)
-                    ->send(new EmailPelanggan($this->opt->nomor_surat, $this->opt->departemen, $jenis_sampel_final, $this->opt->jumlah_sampel, $progress->nama, $this->opt->kode_track, null, $this->opt->tanggal_terima, $this->opt->estimasi));
+                // Mail::to($emailAddresses)
+                //     ->cc($emailcc)
+                //     ->send(new EmailPelanggan(
+                //         $this->opt->nomor_surat,
+                //         $this->opt->departemen,
+                //         $jenis_sampel_final,
+                //         $this->opt->jumlah_sampel,
+                //         $progress->nama,
+                //         $this->opt->kode_track,
+                //         null,
+                //         $this->opt->tanggal_terima,
+                //         $this->opt->estimasi
+                //     ));
+                if ($emailAddresses !== null) {
+                    // Siapkan data email
+                    $emailData = [
+                        'nomor_surat' => $this->opt->nomor_surat,
+                        'departement' => $this->opt->departemen,
+                        'jenis_sampel' => $jenis_sampel_final,
+                        'jumlah_sampel' => $this->opt->jumlah_sampel,
+                        'progress' => $progress->nama,
+                        'kode_tracking_sampel' => $this->opt->kode_track,
+                        'id' => null,
+                        'tanggal_registrasi' => $this->opt->tanggal_terima,
+                        'estimasi_kup' => $this->opt->estimasi
+                    ];
 
+                    // Dispatch job ke queue
+                    SendEmailPelangganJob::dispatch($emailAddresses, $emailcc, $emailData);
+                }
 
 
                 $trackSampel->save();
@@ -1221,9 +1248,34 @@ class Editprogress extends Component implements HasForms
                     $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
 
-                    Mail::to($emailAddresses)
-                        ->cc($emailcc)
-                        ->send(new EmailPelanggan($this->opt->nomor_surat, $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $this->opt->kode_track, null, $this->opt->tanggal_terima, $this->opt->estimasi));
+                    // Mail::to($emailAddresses)
+                    //     ->cc($emailcc)
+                    //     ->send(new EmailPelanggan(
+                    //         $this->opt->nomor_surat,
+                    //         $form['NamaDep'],
+                    //         $jenis_sampel_final,
+                    //         $form['JumlahSampel'],
+                    //         $progress->nama,
+                    //         $this->opt->kode_track,
+                    //         null,
+                    //         $this->opt->tanggal_terima,
+                    //         $this->opt->estimasi
+                    //     ));
+                    if ($emailAddresses !== null) {
+                        // Siapkan data email
+                        $emailData = [
+                            'nomor_surat' => $this->opt->nomor_surat,
+                            'departement' => $form['NamaDep'],
+                            'jenis_sampel' => $jenis_sampel_final,
+                            'jumlah_sampel' => $form['JumlahSampel'],
+                            'progress' => $progress->nama,
+                            'kode_tracking_sampel' => $this->opt->kode_track,
+                            'id' => null,
+                            'tanggal_registrasi' => $this->opt->tanggal_terima,
+                            'estimasi_kup' => $this->opt->estimasi
+                        ];
+                        SendEmailPelangganJob::dispatch($emailAddresses, $emailcc, $emailData);
+                    }
                 }
 
                 $trackSampel->save();

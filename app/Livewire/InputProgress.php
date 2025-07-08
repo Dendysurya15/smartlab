@@ -47,6 +47,7 @@ use Illuminate\Support\HtmlString;
 use PhpOffice\PhpSpreadsheet\Worksheet\AutoFit;
 use Spatie\Permission\Models\Role;
 use App\Models\Lablabel;
+use App\Jobs\SendEmailPelangganJob;
 
 class InputProgress extends Component implements HasForms
 {
@@ -920,10 +921,24 @@ class InputProgress extends Component implements HasForms
                     $emailcc = !empty($form['Emaiilcc']) ? explode(',', $form['Emaiilcc']) : null;
 
                     // dd($progress, $progress_state);
+                    // if ($emailAddresses !== null) {
+                    //     Mail::to($emailAddresses)
+                    //         ->cc($emailcc)
+                    //         ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode, null, $form['TanggalTerima'], $form['EstimasiKupa']));
+                    // }
                     if ($emailAddresses !== null) {
-                        Mail::to($emailAddresses)
-                            ->cc($emailcc)
-                            ->send(new EmailPelanggan($form['NomorSurat'], $form['NamaDep'], $jenis_sampel_final, $form['JumlahSampel'], $progress->nama, $randomCode, null, $form['TanggalTerima'], $form['EstimasiKupa']));
+                        $emailData = [
+                            'nomor_surat' => $form['NomorSurat'],
+                            'departement' => $form['NamaDep'],
+                            'jenis_sampel' => $jenis_sampel_final,
+                            'jumlah_sampel' => $form['JumlahSampel'],
+                            'progress' => $progress->nama,
+                            'kode_tracking_sampel' => $randomCode,
+                            'id' => null,
+                            'tanggal_registrasi' => $form['TanggalTerima'],
+                            'estimasi_kup' => $form['EstimasiKupa']
+                        ];
+                        SendEmailPelangganJob::dispatch($emailAddresses, $emailcc, $emailData);
                     }
                 }
 
