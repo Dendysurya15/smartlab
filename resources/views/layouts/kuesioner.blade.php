@@ -22,9 +22,9 @@
 <body class="bg-gray-100 font-sans">
     <div class="max-w-6xl mx-auto bg-white p-8 my-10 rounded-lg shadow-lg">
         <header class="flex items-center justify-between mb-8">
-            <img src="{{asset('images/SRS.PNG')}}" alt="Company Logo" class="h-16">
+            <img src="{{asset('images/logocorp.png')}}" alt="Company Logo" class="h-16">
             <div class="text-right">
-                <h1 class="text-xl font-bold">PT. Citra Borneo Indah</h1>
+                <h1 class="text-xl font-bold">PT. Sulung Research Station</h1>
                 <h2 class="text-md">Laboratorium Pengujian & Kalibrasi</h2>
             </div>
         </header>
