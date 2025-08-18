@@ -4,6 +4,9 @@ import $ from "jquery";
 window.$ = $;
 window.jQuery = $; // Ensure jQuery is globally available
 
+// Import reCAPTCHA functionality
+import './captcha.js';
+
 // Define the sign function as a jQuery plugin
 $.fn.sign = function (options) {
     var params = $.extend(

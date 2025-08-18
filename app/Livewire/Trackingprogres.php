@@ -19,7 +19,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class Trackingprogres extends Component
 {
-    protected $listeners = ['captchaResponse'];
+
     public $captchaResponse = null;
     public $progressid;
     public $dataakhir;
@@ -38,19 +38,31 @@ class Trackingprogres extends Component
 
     public function save()
     {
-        // turnofcaptcha temporary
+        // Debug: Log captcha response
+        Log::info('Captcha response received:', ['response' => $this->captchaResponse]);
+
+        // Validate reCAPTCHA v3
         if (!$this->captchaResponse) {
+            Log::warning('No captcha response received');
             session()->flash('error', 'Please complete the captcha verification');
             return;
         }
 
         $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => config('services.recaptcha.secret_key_v2'),
+            'secret' => config('services.recaptcha.secret_key_v3'),
             'response' => $this->captchaResponse
         ]);
 
-        if (!$response->json()['success']) {
+        $responseData = $response->json();
+
+        if (!$responseData['success']) {
             session()->flash('error', 'Invalid captcha verification');
+            return;
+        }
+
+        // Check score for v3 (optional but recommended)
+        if (isset($responseData['score']) && $responseData['score'] < 0.5) {
+            session()->flash('error', 'Captcha verification failed. Please try again.');
             return;
         }
 
@@ -222,12 +234,6 @@ class Trackingprogres extends Component
         return Excel::download(new FormDataExport($this->id), $filename);
     }
 
-
-    private function resetCaptcha()
-    {
-        $this->captchaResponse = null;
-        $this->dispatch('resetCaptcha');
-    }
 
     public function captchaResponse($response)
     {

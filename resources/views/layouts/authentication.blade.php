@@ -28,7 +28,7 @@
             document.querySelector('html').style.colorScheme = 'dark';
         }
     </script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key_v3') }}" async defer></script>
 </head>
 
 <body class="font-inter antialiased bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-600 dark:text-slate-400 h-screen overflow-hidden">

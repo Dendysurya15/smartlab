@@ -1,6 +1,9 @@
 <div class="max-w-3xl mx-auto px-4 py-8">
 
     <form wire:submit.prevent="save" class="space-y-6">
+        <!-- Hidden captcha response field -->
+        <input type="hidden" wire:model="captchaResponse" />
+
         <div>
             <x-label for="kode" class="block text-sm font-medium text-gray-700">
                 {{ __('Kode') }} <span class="text-rose-500">*</span>
@@ -21,7 +24,6 @@
         <div class="flex flex-wrap gap-3">
             <!-- Submit Button -->
             <button type="submit"
-                @if(!$captchaResponse) disabled @endif
                 class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 Submit
                 <div wire:loading wire:target="save" class="ml-2">
@@ -112,12 +114,7 @@
         </div>
     </div>
     @endif
-    <div wire:ignore class="mt-8 mb-4">
-        <div class="g-recaptcha"
-            data-sitekey="{{ config('services.recaptcha.site_key_v2') }}"
-            data-callback="onCaptchaVerified">
-        </div>
-    </div>
+
     @if (session()->has('error') && !request()->isMethod('post'))
     <div class="mt-4 bg-red-50 border-l-4 border-red-400 p-4">
         <div class="flex">
@@ -134,21 +131,9 @@
         </div>
     </div>
     @endif
-    <script>
-        function onCaptchaVerified(token) {
-            @this.dispatch('captchaResponse', {
-                response: token
-            });
-        }
 
-        function resetCaptchaWidget() {
-            grecaptcha.reset();
-        }
-
-        document.addEventListener('livewire:load', function() {
-            Livewire.on('resetCaptcha', function() {
-                resetCaptchaWidget();
-            });
-        });
-    </script>
+    <!-- reCAPTCHA data attributes for JavaScript initialization -->
+    <div data-recaptcha-site-key="{{ config('services.recaptcha.site_key_v3') }}"
+        data-livewire-id="{{ $this->getId() }}"
+        style="display: none;"></div>
 </div>
