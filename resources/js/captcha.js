@@ -48,13 +48,9 @@ window.initRecaptcha = function(siteKey, componentId) {
     });
 };
 
-// Auto-initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // console.log('DOM loaded, looking for reCAPTCHA element...');
-    
-    // Check if we have the necessary data attributes
+// Function to initialize reCAPTCHA when element becomes available
+function initRecaptchaWhenReady() {
     const recaptchaElement = document.querySelector('[data-recaptcha-site-key]');
-    // console.log('reCAPTCHA element found:', recaptchaElement);
     
     if (recaptchaElement) {
         const siteKey = recaptchaElement.getAttribute('data-recaptcha-site-key');
@@ -106,7 +102,36 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.error('Missing site key or component ID');
         }
+        return true; // Element found and processed
     } else {
-        console.error('reCAPTCHA element not found');
+        return false; // Element not found yet
+    }
+}
+
+// Auto-initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Try immediately
+    if (!initRecaptchaWhenReady()) {
+        // If element not found, wait for Livewire components to load
+        document.addEventListener('livewire:initialized', function() {
+            setTimeout(initRecaptchaWhenReady, 100);
+        });
+        
+        document.addEventListener('livewire:load', function() {
+            setTimeout(initRecaptchaWhenReady, 100);
+        });
+        
+        // Polling fallback - check every 500ms for up to 10 seconds
+        let pollAttempts = 0;
+        const maxPollAttempts = 20;
+        const pollInterval = setInterval(function() {
+            pollAttempts++;
+            if (initRecaptchaWhenReady() || pollAttempts >= maxPollAttempts) {
+                clearInterval(pollInterval);
+                if (pollAttempts >= maxPollAttempts) {
+                    console.warn('reCAPTCHA element not found after polling');
+                }
+            }
+        }, 500);
     }
 });

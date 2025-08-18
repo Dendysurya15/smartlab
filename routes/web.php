@@ -48,6 +48,9 @@ Route::get('/linkstorage', function () {
 Route::get('kuesioner', Kuesionerdata::class);
 // Route::get('kuesioner', [Kuesionerroot::class, 'index'])->middleware([TrackCaptchaFailures::class]);
 Route::get('kuesioner', [Kuesionerroot::class, 'index']);
+Route::get('thanks', function () {
+    return view('pages.utility.thanks');
+})->name('thanks');
 Route::get('flush', [TrackSampelController::class, 'unblockIp']);
 Route::get('/seedroles', function () {
     Artisan::call('db:seed', [

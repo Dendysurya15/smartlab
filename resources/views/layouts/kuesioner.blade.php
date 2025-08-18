@@ -13,10 +13,7 @@
     @filamentStyles
     @livewireStyles
     @livewire('notifications')
-    {!! htmlScriptTagJsApi([
-    'callback_then' => 'callbackThen',
-    'callback_catch' => 'callbackCatch',
-    ]) !!}
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key_v3') }}" async defer></script>
 </head>
 
 <body class="bg-gray-100 font-sans">

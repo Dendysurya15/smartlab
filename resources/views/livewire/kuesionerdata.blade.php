@@ -50,6 +50,9 @@
     </div>
 
     <form wire:submit.prevent="create" class="flex flex-col items-end" id="formContainer">
+        <!-- Hidden captcha response field -->
+        <input type="hidden" wire:model="captchaResponse" />
+
         {{ $this->form }}
         <div class="flex justify-center mt-4">
             <x-filament::modal id="transactionModal">
@@ -80,4 +83,8 @@
         });
     </script>
 
+    <!-- reCAPTCHA data attributes for JavaScript initialization -->
+    <div data-recaptcha-site-key="{{ config('services.recaptcha.site_key_v3') }}"
+        data-livewire-id="{{ $this->getId() }}"
+        style="display: none;"></div>
 </div>
