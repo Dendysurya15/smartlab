@@ -10,8 +10,7 @@
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
-
-    <!-- Scripts -->
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key_v3') }}"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>
@@ -71,6 +70,7 @@
                 <img class="object-cover object-center w-full h-full" src="{{ asset('images/YCH09564.jpg') }}" width="760" height="1024" alt="Authentication image" />
             </div>
         </div>
+
 
     </main>
 

@@ -31,37 +31,94 @@ class Trackingprogres extends Component
     public $downloadType;
     public $lastDownloadTime;
 
+    // Property untuk menyimpan tracking code sebelumnya
+    public $previousProgressId = null;
+
     public function render()
     {
+        // Pastikan data ter-reset jika progressid kosong
+        if (empty(trim($this->progressid))) {
+            $this->resetData();
+        }
+
         return view('livewire.trackingprogres');
+    }
+
+    // Method untuk reset semua data
+    public function resetData()
+    {
+        $this->resultData = null;
+        $this->sertifikat = null;
+        $this->id = null;
+        $this->filename = null;
+        $this->dataakhir = null;
+        $this->captchaResponse = null;
+    }
+
+    // Method untuk memantau perubahan progressid
+    public function updatedProgressid()
+    {
+        // Reset data setiap kali progressid berubah
+        $this->resetData();
+        $this->previousProgressId = $this->progressid;
+    }
+
+    // Method untuk reset data ketika form di-submit
+    public function resetForm()
+    {
+        $this->resetData();
+        $this->previousProgressId = null;
+    }
+
+    // Method untuk handle input kosong
+    public function clearInput()
+    {
+        $this->progressid = '';
+        $this->resetData();
+        $this->previousProgressId = null;
     }
 
     public function save()
     {
-        // Debug: Log captcha response
-        Log::info('Captcha response received:', ['response' => $this->captchaResponse]);
-
-        // Validate reCAPTCHA v3
-        if (!$this->captchaResponse) {
-            Log::warning('No captcha response received');
-            session()->flash('error', 'Please complete the captcha verification');
+        // Validasi input tidak boleh kosong
+        if (empty(trim($this->progressid))) {
+            session()->flash('error', 'Kode tracking tidak boleh kosong');
             return;
         }
 
+        // PENTING: Hapus dd() dan tambahkan logging untuk debug
+        Log::info('Captcha response in save method:', [
+            'captchaResponse' => $this->captchaResponse,
+            'progressid' => $this->progressid
+        ]);
+
+        // Jika captcha masih null, coba refresh dulu
+        if (!$this->captchaResponse) {
+            $this->dispatch('refresh-captcha'); // Emit event ke JavaScript
+            session()->flash('error', 'Please wait for captcha verification to complete');
+            return;
+        }
+        // Log the secret key being used (for debugging)
+        $secretKey = config('services.recaptcha.secret_key_v3');
+        Log::info('Using secret key:', ['secret' => $secretKey ? 'set' : 'not set']);
+
         $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => config('services.recaptcha.secret_key_v3'),
+            'secret' => $secretKey,
             'response' => $this->captchaResponse
         ]);
 
         $responseData = $response->json();
+        Log::info('reCAPTCHA verification response:', $responseData);
 
         if (!$responseData['success']) {
+            Log::error('reCAPTCHA verification failed:', $responseData);
             session()->flash('error', 'Invalid captcha verification');
             return;
         }
 
         // Check score for v3 (optional but recommended)
         if (isset($responseData['score']) && $responseData['score'] < 0.5) {
+            Log::warning('reCAPTCHA score too low:', ['score' => $responseData['score']]);
             session()->flash('error', 'Captcha verification failed. Please try again.');
             return;
         }
@@ -149,9 +206,14 @@ class Trackingprogres extends Component
             $this->id = $query->id;
             $this->filename = $filename;
 
+            // Update previous progress ID
+            $this->previousProgressId = $this->progressid;
+
             // $this->resetCaptcha();
         } else {
             $this->resultData = 'kosong';
+            // Update previous progress ID even when no data found
+            $this->previousProgressId = $this->progressid;
         }
     }
 
@@ -234,9 +296,15 @@ class Trackingprogres extends Component
         return Excel::download(new FormDataExport($this->id), $filename);
     }
 
-
     public function captchaResponse($response)
     {
         $this->captchaResponse = $response;
+    }
+
+    public function refreshCaptcha()
+    {
+        // This method will be called from JavaScript to refresh captcha
+        $this->captchaResponse = null;
+        Log::info('Captcha refreshed');
     }
 }
