@@ -13,7 +13,7 @@ class TrackSampel extends Model
     public $timestamps = false;
     protected $guarded = ['id'];
     protected $casts = [
-        'foto_sampel' => 'array',
+        // 'foto_sampel' => 'array', // Removed - data is stored as string separated by %
     ];
 
     public function jenisSampel()

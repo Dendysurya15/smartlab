@@ -17,34 +17,32 @@
 
 <body class="font-inter antialiased bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400">
 
-    <main class="bg-white">
+    <main class="bg-white min-h-screen">
 
-        <div class="relative flex">
-
+        <div class="relative flex min-h-screen">
 
             <!-- Content -->
-            <div class="w-full md:w-1/2">
+            <div class="w-full lg:w-3/5 xl:w-1/2 flex flex-col">
 
-                <div class="min-h-screen h-full flex flex-col after:flex-1">
-
-                    <!-- Header -->
-                    <div class="flex-1">
-                        <div class="flex items-center justify-center h-16 px-4 sm:px-6 lg:px-8 pt-20">
-                            <!-- Logo -->
-                            <a class="block" href="{{ route('dashboard') }}">
-                                <div class="">
-                                    <img class="" src="{{ asset('images/LOGO-SRS.png') }}" width="170" height="170" alt="Alex Shatov" />
-                                </div>
-                            </a>
-                        </div>
+                <!-- Header -->
+                <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center h-16 px-4 sm:px-6 lg:px-8 pt-20">
+                        <!-- Logo -->
+                        <a class="block" href="{{ route('dashboard') }}">
+                            <div class="">
+                                <img class="" src="{{ asset('images/LOGO-SRS.png') }}" width="170" height="170" alt="Alex Shatov" />
+                            </div>
+                        </a>
                     </div>
+                </div>
 
-                    <div class="w-full max-w-sm mx-auto px-4 py-8">
-                        <h1 class="text-3xl text-slate-800 dark:text-slate-100 font-bold mb-6">{{ __('Track Progress
+                <!-- Main Content Area - Flexible and Scrollable -->
+                <div class="flex-1 overflow-y-auto">
+                    <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <h1 class="text-2xl text-slate-800 dark:text-slate-100 font-bold mb-4">{{ __('Track Progress
                             Sampel')
                             }}</h1>
-                        <h1 class="italic mb-4">Masukkan kode unik sistem untuk melacak progress sampel anda !
-                        </h1>
+                        <p class="text-gray-600 mb-6">Masukkan kode unik sistem untuk melacak progress sampel anda</p>
 
                         @livewire('trackingprogres')
 
@@ -60,13 +58,12 @@
 
                         </div>
                     </div>
-
                 </div>
 
             </div>
 
             <!-- Image -->
-            <div class="hidden md:block absolute top-0 bottom-0 right-0 md:w-1/2" aria-hidden="true">
+            <div class="hidden lg:block absolute top-0 bottom-0 right-0 lg:w-2/5 xl:w-1/2" aria-hidden="true">
                 <img class="object-cover object-center w-full h-full" src="{{ asset('images/YCH09564.jpg') }}" width="760" height="1024" alt="Authentication image" />
             </div>
         </div>

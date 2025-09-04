@@ -30,6 +30,7 @@ class Trackingprogres extends Component
     public $isDownloading = false;
     public $downloadType;
     public $lastDownloadTime;
+    public $fotoSampel; // Add new property for sample photos
 
     // Property untuk menyimpan tracking code sebelumnya
     public $previousProgressId = null;
@@ -53,6 +54,7 @@ class Trackingprogres extends Component
         $this->filename = null;
         $this->dataakhir = null;
         $this->captchaResponse = null;
+        $this->fotoSampel = null;
     }
 
     // Method untuk memantau perubahan progressid
@@ -94,33 +96,43 @@ class Trackingprogres extends Component
 
         // Jika captcha masih null, coba refresh dulu
         if (!$this->captchaResponse) {
-            $this->dispatch('refresh-captcha'); // Emit event ke JavaScript
-            session()->flash('error', 'Please wait for captcha verification to complete');
-            return;
+            // Skip captcha in development environment
+            if (config('app.env') === 'local' || config('app.debug')) {
+                Log::info('Skipping captcha verification in development environment');
+            } else {
+                $this->dispatch('refresh-captcha'); // Emit event ke JavaScript
+                session()->flash('error', 'Please wait for captcha verification to complete. If this persists, please refresh the page.');
+                return;
+            }
         }
-        // Log the secret key being used (for debugging)
-        $secretKey = config('services.recaptcha.secret_key_v3');
-        Log::info('Using secret key:', ['secret' => $secretKey ? 'set' : 'not set']);
+        // Skip reCAPTCHA verification in development environment
+        if (config('app.env') === 'local' || config('app.debug')) {
+            Log::info('Skipping reCAPTCHA verification in development environment');
+        } else {
+            // Log the secret key being used (for debugging)
+            $secretKey = config('services.recaptcha.secret_key_v3');
+            Log::info('Using secret key:', ['secret' => $secretKey ? 'set' : 'not set']);
 
-        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => $secretKey,
-            'response' => $this->captchaResponse
-        ]);
+            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => $secretKey,
+                'response' => $this->captchaResponse
+            ]);
 
-        $responseData = $response->json();
-        Log::info('reCAPTCHA verification response:', $responseData);
+            $responseData = $response->json();
+            Log::info('reCAPTCHA verification response:', $responseData);
 
-        if (!$responseData['success']) {
-            Log::error('reCAPTCHA verification failed:', $responseData);
-            session()->flash('error', 'Invalid captcha verification');
-            return;
-        }
+            if (!$responseData['success']) {
+                Log::error('reCAPTCHA verification failed:', $responseData);
+                session()->flash('error', 'Invalid captcha verification');
+                return;
+            }
 
-        // Check score for v3 (optional but recommended)
-        if (isset($responseData['score']) && $responseData['score'] < 0.5) {
-            Log::warning('reCAPTCHA score too low:', ['score' => $responseData['score']]);
-            session()->flash('error', 'Captcha verification failed. Please try again.');
-            return;
+            // Check score for v3 (optional but recommended)
+            if (isset($responseData['score']) && $responseData['score'] < 0.5) {
+                Log::warning('reCAPTCHA score too low:', ['score' => $responseData['score']]);
+                session()->flash('error', 'Captcha verification failed. Please try again.');
+                return;
+            }
         }
 
         $kode_input = $this->progressid;
@@ -205,6 +217,20 @@ class Trackingprogres extends Component
             $this->sertifikat = $query->sertifikasi;
             $this->id = $query->id;
             $this->filename = $filename;
+            // Handle foto_sampel - split by % if it's a string, otherwise use as array
+            $fotoSampelData = $query->foto_sampel;
+            if (is_string($fotoSampelData) && !empty($fotoSampelData)) {
+                // Split by % and clean up each filename
+                $fotos = array_filter(explode('%', $fotoSampelData));
+                $this->fotoSampel = array_map(function ($foto) {
+                    // Remove quotes and clean up the path
+                    return trim($foto, '"\'');
+                }, $fotos);
+            } elseif (is_array($fotoSampelData)) {
+                $this->fotoSampel = $fotoSampelData;
+            } else {
+                $this->fotoSampel = [];
+            }
 
             // Update previous progress ID
             $this->previousProgressId = $this->progressid;

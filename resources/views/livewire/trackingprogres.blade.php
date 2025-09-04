@@ -1,6 +1,6 @@
-<div class="max-w-3xl mx-auto px-4 py-8">
+<div class="w-full">
 
-    <form wire:submit.prevent="save" class="space-y-6">
+    <form wire:submit.prevent="save" class="space-y-4">
         <!-- Hidden captcha response field -->
         <input type="hidden" wire:model="captchaResponse" />
 
@@ -80,10 +80,43 @@
                 Download Certificate
             </button>
             @endif
+
+            @if($fotoSampel && count($fotoSampel) > 0)
+            <div wire:key="photos-{{ $progressid }}" class="mt-4 bg-white rounded-lg shadow overflow-hidden">
+                <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Foto Sampel</h3>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                        @foreach($fotoSampel as $index => $foto)
+                        <div class="relative group">
+                            @php
+                            $cleanFoto = ltrim($foto, '/');
+                            $imagePath = 'storage/' . $cleanFoto;
+                            @endphp
+                            <img src="{{ asset($imagePath) }}"
+                                alt="Foto Sampel {{ $index + 1 }}"
+                                class="w-full h-32 sm:h-40 lg:h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105"
+                                data-image-src="{{ asset($imagePath) }}"
+                                data-image-title="Foto Sampel {{ $index + 1 }}"
+                                onclick="openImageModal(this.dataset.imageSrc, this.dataset.imageTitle)"
+                                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZiNzI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4='; this.alt='Image not found';">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-lg flex items-center justify-center">
+                                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+
+
             @endif
         </div>
     </form>
-
     @if ($resultData === null)
     <!-- Initial State - Belum ada input -->
     <div wire:key="initial-state" class="mt-8 bg-blue-50 border-l-4 border-blue-400 p-4">
@@ -124,34 +157,42 @@
     </div>
 
     <!-- Progress Data -->
-    <div wire:key="progress-{{ $progressid }}" class="mt-6 bg-white rounded-lg shadow overflow-hidden">
-        <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">Progress Pengerjaan Sampel</h3>
+    <div wire:key="progress-{{ $progressid }}" class="mt-4 bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Progress Pengerjaan Sampel</h3>
         </div>
-        <div class="max-h-[400px] overflow-y-auto divide-y divide-gray-200">
+        <div class="max-h-[500px] overflow-y-auto">
             @foreach ($resultData as $key => $value)
-            <div class="p-4 hover:bg-gray-50">
+            <div class="px-6 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-sm font-medium text-gray-900">
-                        {{$value['text']}}
-                    </h2>
-                    <div>
+                    <div class="flex-1">
+                        <h2 class="text-sm font-medium text-gray-900">
+                            {{$value['text']}}
+                        </h2>
+                        @if ($value['status'] === 'checked' && $value['time'])
+                        <p class="text-xs text-gray-500 mt-1">
+                            {{ $value['time'] }}
+                        </p>
+                        @endif
+                    </div>
+                    <div class="ml-4 flex-shrink-0">
                         @if ($value['status'] === 'checked')
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ✓ Complete
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            Selesai
                         </span>
                         @else
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            Pending
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                            Menunggu
                         </span>
                         @endif
                     </div>
                 </div>
-                @if ($value['status'] === 'checked' && $value['time'])
-                <p class="mt-1 text-xs text-gray-500">
-                    Completed on: {{ $value['time'] }}
-                </p>
-                @endif
             </div>
             @endforeach
         </div>
@@ -200,7 +241,9 @@
             </div>
         </div>
     </div>
+
     @endif
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let siteKey = "{{ config('services.recaptcha.site_key_v3') }}";
