@@ -1,4 +1,4 @@
-<div class="w-full">
+<div class="w-full max-h-[70vh] overflow-y-auto">
 
     <form wire:submit.prevent="save" class="space-y-4">
         <!-- Hidden captcha response field -->
@@ -87,7 +87,7 @@
                     <h3 class="text-lg font-semibold text-gray-900">Foto Sampel</h3>
                 </div>
                 <div class="p-6">
-                    <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                    <div class="space-y-6">
                         @foreach($fotoSampel as $index => $foto)
                         <div class="relative group">
                             @php
@@ -96,13 +96,13 @@
                             @endphp
                             <img src="{{ asset($imagePath) }}"
                                 alt="Foto Sampel {{ $index + 1 }}"
-                                class="w-full h-32 sm:h-40 lg:h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105"
+                                class="w-full h-80 sm:h-96 lg:h-[500px] object-cover rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105"
                                 data-image-src="{{ asset($imagePath) }}"
                                 data-image-title="Foto Sampel {{ $index + 1 }}"
                                 onclick="openImageModal(this.dataset.imageSrc, this.dataset.imageTitle)"
                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZiNzI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4='; this.alt='Image not found';">
                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-lg flex items-center justify-center">
-                                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                                 </svg>
                             </div>
