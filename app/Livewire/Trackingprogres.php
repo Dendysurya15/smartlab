@@ -248,6 +248,14 @@ class Trackingprogres extends Component
         $files = explode(',', $this->sertifikat);
         $samplePhotos = $this->fotoSampel ?? [];
 
+        // Debug logging
+        Log::info('Download Sertifikat Debug:', [
+            'sertifikat' => $this->sertifikat,
+            'files' => $files,
+            'fotoSampel' => $this->fotoSampel,
+            'samplePhotos' => $samplePhotos
+        ]);
+
         // If there's only one certificate file and no sample photos, download it directly
         if (count($files) === 1 && empty($samplePhotos)) {
             $filepath = storage_path('app/private/' . $files[0]);
@@ -267,7 +275,17 @@ class Trackingprogres extends Component
             mkdir(storage_path('app/temp'), 0755, true);
         }
 
-        if ($zip->open($zipPath, \ZipArchive::CREATE) === TRUE) {
+        // Log::info('Creating zip file:', [
+        //     'zipPath' => $zipPath,
+        //     'zipName' => $zipName
+        // ]);
+
+        $zipResult = $zip->open($zipPath, \ZipArchive::CREATE);
+        Log::info('Zip open result:', ['result' => $zipResult]);
+
+        if ($zipResult === TRUE) {
+            $filesAdded = 0;
+
             // Add certificate files
             foreach ($files as $file) {
                 $filepath = storage_path('app/private/' . trim($file));
@@ -279,20 +297,54 @@ class Trackingprogres extends Component
             // Add sample photos if they exist
             if (!empty($samplePhotos)) {
                 foreach ($samplePhotos as $photo) {
-                    $photoPath = storage_path('app/private/' . trim($photo));
-                    if (file_exists($photoPath)) {
-                        $zip->addFile($photoPath, 'Foto_Sampel/' . basename($photoPath));
+                    // Clean the photo path and try both public and private locations
+                    $cleanPhoto = ltrim(trim($photo), '/');
+                    $photoPathPublic = storage_path('app/public/' . $cleanPhoto);
+                    $photoPathPrivate = storage_path('app/private/' . $cleanPhoto);
+
+                    // Log::info('Checking sample photo:', [
+                    //     'photo' => $photo,
+                    //     'cleanPhoto' => $cleanPhoto,
+                    //     'photoPathPublic' => $photoPathPublic,
+                    //     'photoPathPrivate' => $photoPathPrivate,
+                    //     'existsPublic' => file_exists($photoPathPublic),
+                    //     'existsPrivate' => file_exists($photoPathPrivate)
+                    // ]);
+
+                    $photoPath = null;
+                    if (file_exists($photoPathPublic)) {
+                        $photoPath = $photoPathPublic;
+                    } elseif (file_exists($photoPathPrivate)) {
+                        $photoPath = $photoPathPrivate;
+                    }
+
+                    if ($photoPath) {
+                        $result = $zip->addFile($photoPath, 'Foto_Sampel/' . basename($photoPath));
+                        Log::info('Added sample photo:', ['result' => $result, 'path' => $photoPath]);
+                        if ($result) $filesAdded++;
+                    } else {
+                        Log::warning('Sample photo not found in both locations:', ['photo' => $photo]);
                     }
                 }
             }
 
-            $zip->close();
+            Log::info('Files added to zip:', ['count' => $filesAdded]);
 
-            // Download zip file and then delete it
-            return response()->download($zipPath)->deleteFileAfterSend(true);
+            $closeResult = $zip->close();
+            Log::info('Zip close result:', ['result' => $closeResult]);
+
+            // Check if zip file was created successfully
+            if (file_exists($zipPath)) {
+                Log::info('Zip file created successfully:', ['path' => $zipPath, 'size' => filesize($zipPath)]);
+                return response()->download($zipPath)->deleteFileAfterSend(true);
+            } else {
+                Log::error('Zip file was not created');
+                abort(500, 'Zip file was not created successfully');
+            }
+        } else {
+            Log::error('Could not open zip file:', ['error' => $zip->getStatusString()]);
+            abort(500, 'Could not create zip file: ' . $zip->getStatusString());
         }
-
-        abort(500, 'Could not create zip file');
     }
 
     public function downloadPdf()
