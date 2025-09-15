@@ -246,9 +246,10 @@ class Trackingprogres extends Component
     public function downloadSertifikat()
     {
         $files = explode(',', $this->sertifikat);
+        $samplePhotos = $this->fotoSampel ?? [];
 
-        // If there's only one file, download it directly
-        if (count($files) === 1) {
+        // If there's only one certificate file and no sample photos, download it directly
+        if (count($files) === 1 && empty($samplePhotos)) {
             $filepath = storage_path('app/private/' . $files[0]);
             if (file_exists($filepath)) {
                 return response()->download($filepath);
@@ -256,7 +257,7 @@ class Trackingprogres extends Component
             abort(404, 'File not found');
         }
 
-        // If there are multiple files, create a zip
+        // If there are multiple files or sample photos, create a zip
         $zip = new \ZipArchive();
         $zipName = 'sertifikat_' . time() . '.zip';
         $zipPath = storage_path('app/temp/' . $zipName);
@@ -267,12 +268,24 @@ class Trackingprogres extends Component
         }
 
         if ($zip->open($zipPath, \ZipArchive::CREATE) === TRUE) {
+            // Add certificate files
             foreach ($files as $file) {
                 $filepath = storage_path('app/private/' . trim($file));
                 if (file_exists($filepath)) {
-                    $zip->addFile($filepath, basename($filepath));
+                    $zip->addFile($filepath, 'Sertifikat/' . basename($filepath));
                 }
             }
+
+            // Add sample photos if they exist
+            if (!empty($samplePhotos)) {
+                foreach ($samplePhotos as $photo) {
+                    $photoPath = storage_path('app/private/' . trim($photo));
+                    if (file_exists($photoPath)) {
+                        $zip->addFile($photoPath, 'Foto_Sampel/' . basename($photoPath));
+                    }
+                }
+            }
+
             $zip->close();
 
             // Download zip file and then delete it
