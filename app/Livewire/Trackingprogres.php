@@ -217,11 +217,11 @@ class Trackingprogres extends Component
             $this->sertifikat = $query->sertifikasi;
             $this->id = $query->id;
             $this->filename = $filename;
-            // Handle foto_sampel - split by % if it's a string, otherwise use as array
+            // Handle foto_sampel - split by %\/ if it's a string, otherwise use as array
             $fotoSampelData = $query->foto_sampel;
             if (is_string($fotoSampelData) && !empty($fotoSampelData)) {
-                // Split by % and clean up each filename
-                $fotos = array_filter(explode('%', $fotoSampelData));
+                // Split by %\/ and clean up each filename
+                $fotos = array_filter(explode('%\/', $fotoSampelData));
                 $this->fotoSampel = array_map(function ($foto) {
                     // Remove quotes and clean up the path
                     return trim($foto, '"\'');
@@ -275,10 +275,10 @@ class Trackingprogres extends Component
             mkdir(storage_path('app/temp'), 0755, true);
         }
 
-        // Log::info('Creating zip file:', [
-        //     'zipPath' => $zipPath,
-        //     'zipName' => $zipName
-        // ]);
+        Log::info('Creating zip file:', [
+            'zipPath' => $zipPath,
+            'zipName' => $zipName
+        ]);
 
         $zipResult = $zip->open($zipPath, \ZipArchive::CREATE);
         Log::info('Zip open result:', ['result' => $zipResult]);
@@ -289,27 +289,42 @@ class Trackingprogres extends Component
             // Add certificate files
             foreach ($files as $file) {
                 $filepath = storage_path('app/private/' . trim($file));
+                Log::info('Checking certificate file:', [
+                    'file' => $file,
+                    'filepath' => $filepath,
+                    'exists' => file_exists($filepath)
+                ]);
+
                 if (file_exists($filepath)) {
-                    $zip->addFile($filepath, 'Sertifikat/' . basename($filepath));
+                    $result = $zip->addFile($filepath, 'Sertifikat/' . basename($filepath));
+                    Log::info('Added certificate file:', ['result' => $result]);
+                    if ($result) $filesAdded++;
                 }
             }
 
             // Add sample photos if they exist
+            Log::info('Sample photos check:', [
+                'samplePhotos' => $samplePhotos,
+                'isEmpty' => empty($samplePhotos),
+                'count' => count($samplePhotos)
+            ]);
+
             if (!empty($samplePhotos)) {
+                Log::info('Processing sample photos...');
                 foreach ($samplePhotos as $photo) {
                     // Clean the photo path and try both public and private locations
                     $cleanPhoto = ltrim(trim($photo), '/');
                     $photoPathPublic = storage_path('app/public/' . $cleanPhoto);
                     $photoPathPrivate = storage_path('app/private/' . $cleanPhoto);
 
-                    // Log::info('Checking sample photo:', [
-                    //     'photo' => $photo,
-                    //     'cleanPhoto' => $cleanPhoto,
-                    //     'photoPathPublic' => $photoPathPublic,
-                    //     'photoPathPrivate' => $photoPathPrivate,
-                    //     'existsPublic' => file_exists($photoPathPublic),
-                    //     'existsPrivate' => file_exists($photoPathPrivate)
-                    // ]);
+                    Log::info('Checking sample photo:', [
+                        'photo' => $photo,
+                        'cleanPhoto' => $cleanPhoto,
+                        'photoPathPublic' => $photoPathPublic,
+                        'photoPathPrivate' => $photoPathPrivate,
+                        'existsPublic' => file_exists($photoPathPublic),
+                        'existsPrivate' => file_exists($photoPathPrivate)
+                    ]);
 
                     $photoPath = null;
                     if (file_exists($photoPathPublic)) {
