@@ -27,8 +27,15 @@
             text-align: center;
         }
 
+        .border-right-none {
+            border-right: none !important;
+            border-bottom: none !important;
+            border-top: none !important;
+        }
+
         .border-left-none {
             border-left: none !important;
+
         }
 
         .border-top-none {
@@ -37,6 +44,13 @@
 
         .border-bottom-none {
             border-bottom: none !important;
+        }
+
+        .border-left-right-none {
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: none !important;
+            border-top: none !important;
         }
     </style>
 </head>
@@ -88,27 +102,28 @@
             <th colspan="4" class="text-center">1 dari 1</th>
         </tr>
         <tr>
-            <th colspan="3">No Order</th>
-            <th colspan="8">: {{ $item['no_order'] }}</th>
-            <th colspan="10"></th>
-            <th colspan="2">Tanggal Penyelesaian</th>
-            <th colspan="2">: {{ $item['tanggal_penyelesaian'] ?? '-' }}</th>
+            <th colspan="3" class="border-right-none">No Order</th>
+            <th colspan="8" class="border-left-right-none">: {{ $item['no_order'] }}</th>
+            <th colspan="10" class="border-left-right-none"></th>
+            <th colspan="2" class="border-left-right-none">Tanggal Penyelesaian</th>
+            <th colspan="2" class="border-left-right-none">: {{ $item['tanggal_penyelesaian'] ?? '-' }}</th>
         </tr>
         <tr>
-            <th colspan="3">Tanggal Terima</th>
-            <th colspan="8">: {{ $item['tanggal_terima'] }}</th>
-            <th colspan="10"></th>
-            <th colspan="2">Kondisi fisik sampel</th>
-            <th colspan="2">: {{ $item['kondisi_sampel'] ?? '-' }}</th>
+            <th colspan="3" class="border-right-none">Tanggal Terima</th>
+            <th colspan="8" class="border-left-right-none">: {{ $item['tanggal_terima'] }}</th>
+            <th colspan="10" class="border-left-right-none"></th>
+            <th colspan="2" class="border-left-right-none">Kondisi fisik sampel</th>
+            <th colspan="2" class="border-left-right-none">: {{ $item['kondisi_sampel'] ?? '-' }}</th>
         </tr>
         <tr>
-            <th colspan="3">Jumlah Sampel</th>
-            <th colspan="8">: {{ $item['jumlah_sampel'] }}</th>
-            <th colspan="10"></th>
-            <th colspan="2">Jenis Sampel</th>
-            <th colspan="2">: {{ $item['jenis_pupuk'] ?? '-' }}</th>
+            <th colspan="3" class="border-right-none">Jumlah Sampel</th>
+            <th colspan="8" class="border-left-right-none">: {{ $item['jumlah_sampel'] }}</th>
+            <th colspan="10" class="border-left-right-none"></th>
+            <th colspan="2" class="border-left-right-none">Jenis Sampel</th>
+            <th colspan="2" class="border-left-right-none">: {{ $item['jenis_pupuk'] ?? '-' }}</th>
         </tr>
     </table>
+
 
     <!-- Parameter Analysis Table -->
     <table>
@@ -128,7 +143,14 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($item['data'] as $key => $sampel)
+            @php
+            $chunkSize = 40; // Jumlah row per halaman
+            $dataChunks = array_chunk($item['data'], $chunkSize, true);
+            $totalChunks = count($dataChunks);
+            @endphp
+
+            @foreach($dataChunks as $chunkIndex => $dataChunk)
+            @foreach($dataChunk as $key => $sampel)
             <tr>
                 <td class="text-center">{{ $sampel['id'] }}</td>
                 <td class="text-center">{{ $sampel['nomor_lab'] }}</td>
@@ -140,23 +162,43 @@
                 </td>
                 @endforeach
                 @if($loop->first)
-                <td rowspan="{{ count($item['data']) }}"></td>
-                <td rowspan="{{ count($item['data']) }}"></td>
-                <td rowspan="{{ count($item['data']) }}"></td>
+                <td rowspan="{{ count($dataChunk) }}"></td>
+                <td rowspan="{{ count($dataChunk) }}"></td>
+                <td rowspan="{{ count($dataChunk) }}"></td>
                 @endif
             </tr>
+            @endforeach
+
+            @if($chunkIndex < $totalChunks - 1)
+                </tbody>
+    </table>
+    <div style="page-break-after: always;"></div>
+
+    <!-- Repeat header for next page -->
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2" class="text-center" style="width: 5%;">No</th>
+                <th rowspan="2" class="text-center" style="width: 10%;">NO.Lab</th>
+                <th colspan="{{ count($item['namaparams']) }}" class="text-center">Parameter Analisis</th>
+                <th rowspan="2" class="text-center" style="width: 12%;">Tanggal Preparasi</th>
+                <th rowspan="2" class="text-center" style="width: 8%;">Ket.</th>
+                <th rowspan="2" class="text-center" style="width: 8%;">Paraf</th>
+            </tr>
+            <tr>
+                @foreach ($item['namaparams'] as $param)
+                <th class="text-center">{{ $param }}</th>
+                @endforeach
+            </tr>
+        </thead>
+        <tbody>
+            @endif
             @endforeach
         </tbody>
     </table>
 
-    @if(count($item['data']) > 40)
-    <div style="page-break-after: always;"></div>
-    @else
-    <div style="margin-top: 25px;"></div>
-    @endif
-
-    <!-- Signature Table -->
-    <table>
+    <!-- Signature Table - Langsung di bawah tanpa page break -->
+    <table style="margin-top: 25px;">
         <thead>
             <tr>
                 <th style="width: 15%;">Diserah terimakan oleh</th>
