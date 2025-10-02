@@ -545,33 +545,29 @@ class HistoryKupaController extends Controller
 
     public function export_pr_pdf($id, $filename)
     {
-
         $idsArray = explode('$', $id);
-        $queries = TrackSampel::whereIn('id', $idsArray)->with('trackParameters')->with('progressSampel')->with('jenisSampel')->get();
+        $queries = TrackSampel::whereIn('id', $idsArray)
+            ->with('trackParameters')
+            ->with('progressSampel')
+            ->with('jenisSampel')
+            ->get();
+
         $petugas = ExcelManagement::where('status', 1)->get();
         $petugas = $petugas->groupBy(['jabatan']);
         $petugas = json_decode($petugas, true);
-        // dd($petugas);
-        // dd($queries);
+
         $result = [];
-        $inc = 1;
+
         foreach ($queries as $key => $value) {
-            // dd($value);
             $tanggal_terima = Carbon::parse($value->tanggal_terima);
             $trackparam = $value->trackParameters;
-            $namakode_sampel = explode('$', $value->kode_sampel);
-            $namakode_sampel = array_map('trim', $namakode_sampel);
+            $namakode_sampel = array_map('trim', explode('$', $value->kode_sampel));
 
-            // dd($namakode_sampel);
             $nama_parameter = [];
-            $hargatotal = 0;
-            $jumlah_per_parametertotal = 0;
-            $hargaasli = [];
-            $harga_total_per_sampel = [];
-            $jumlah_per_parameter = [];
             $namakode_sampelparams = [];
-            foreach ($trackparam as $trackParameter) {
 
+            // Collect parameters
+            foreach ($trackparam as $trackParameter) {
                 if ($trackParameter->ParameterAnalisis) {
                     $nama_params = $trackParameter->ParameterAnalisis->nama_parameter;
                     $namaunsur = $trackParameter->ParameterAnalisis->nama_unsur;
@@ -581,31 +577,15 @@ class HistoryKupaController extends Controller
                         $paket = explode('$', $statuspaket);
                         $params = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
                         $nama_parameter[] = $nama_params;
-                        // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
-                        $namakode_sampelparams[implode(',', $params)] =  explode('$', $trackParameter->namakode_sampel);
+                        $namakode_sampelparams[implode(',', $params)] = explode('$', $trackParameter->namakode_sampel);
                     } else {
                         $nama_parameter[] = $namaunsur;
                         $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
                     }
-                    // if (strpos($nama_params, ',') !== false) {
-                    //     $nama_parameter[] = $nama_params;
-                    //     $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
-                    // } else if ($namaunsur === '-' || $namaunsur === '' || $namaunsur === null) {
-                    //     $nama_parameter[] = $nama_params;
-                    //     $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
-                    // } else {
-                    //     $nama_parameter[] = $namaunsur;
-                    //     $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
-                    // }
-
-
-                    $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
-                    $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
-                    $jumlah_per_parameter[] = $trackParameter->jumlah;
                 }
-                $hargatotal += $trackParameter->totalakhir;
-                $jumlah_per_parametertotal += $trackParameter->jumlah;
             }
+
+            // Flatten parameters
             $newArray = [];
             foreach ($nama_parameter as $item) {
                 if (strpos($item, ',') !== false) {
@@ -615,21 +595,21 @@ class HistoryKupaController extends Controller
                     $newArray[] = $item;
                 }
             }
-            // dd($nama_parameter, $namakode_sampelparams);
 
+            // Build sampel_data with parameters as simple array
             $sampel_data = [];
-            $inc = 0;
             foreach ($namakode_sampelparams as $attribute => $items) {
                 foreach ($items as $item) {
                     if (!isset($sampel_data[$item])) {
                         $sampel_data[$item] = [];
                     }
 
-                    $explodedAttributes = strpos($attribute, ',') !== false ? explode(',', $attribute) : [$attribute];
+                    $explodedAttributes = strpos($attribute, ',') !== false
+                        ? explode(',', $attribute)
+                        : [$attribute];
 
-                    // Merge the exploded attributes only if they are not already present in the array
                     foreach ($explodedAttributes as $attr) {
-                        $trimmedAttr = trim($attr); // Trim the attribute to remove any leading or trailing spaces
+                        $trimmedAttr = trim($attr);
                         if (!in_array($trimmedAttr, $sampel_data[$item])) {
                             $sampel_data[$item][] = $trimmedAttr;
                         }
@@ -637,113 +617,81 @@ class HistoryKupaController extends Controller
                 }
             }
 
-            // dd($sampel_data, $namakode_sampelparams);
-            $total_namaparams = 20 - count($newArray);
+            // Prepare lab number and dates
             $timestamp = strtotime($value->tanggal_terima);
-            $year = date('Y', $timestamp);
-            $lab =  substr($value->lab_label_tahun, -2) . $value->jenisSampel->kode . '.';
-            $Nomorlab = explode('$', $value->nomor_lab);
-            $Nomorlab = array_filter($Nomorlab, function ($value) {
-                return $value !== "-";
+            $lab = substr($value->lab_label_tahun, -2) . $value->jenisSampel->kode . '.';
+            $Nomorlab = array_filter(explode('$', $value->nomor_lab), function ($v) {
+                return $v !== "-";
             });
-            $timestamp2 = strtotime($value->estimasi);
+
             $tanggal_terima = date('Y-m-d', $timestamp);
-            $tanggal_penyelesaian = date('Y-m-d', $timestamp2);
+            $tanggal_penyelesaian = date('Y-m-d', strtotime($value->estimasi));
+
+            $startingValue = $Nomorlab[0];
+            $timestamps = array_filter(array_map('trim', explode(',', $value->status_timestamp)));
+            $lastTimestamp = end($timestamps);
+
+            $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
+
+            // Build result data
             $inc = 0;
             $inc2 = 1;
-            $startingValue = $Nomorlab[0];
-            // dd($startingValue);
-            $data = count($namakode_sampel);
 
-            $petugas_prep[$key] = $value->petugas_preparasi;
-            $penyelia_prep[$key] = $value->penyelia;
-            $admin_prep[$key] = $value->status_changed_by_id;
-            // dd($admin_prep);
-            if (!is_null($petugas_prep)) {
-                // dd($petugas_prep);
-                $Preparasi = $petugas_prep;
-            } else {
+            foreach ($namakode_sampel as $valuex) {
+                if (isset($sampel_data[$valuex])) {
+                    $nolabdata = formatLabNumber($startingValue + $inc);
 
-                $Preparasi = $petugas['Petugas Preparasi'][0]['nama'];
-            }
-            if (!is_null($admin_prep[0])) {
-                // dd($petugas_prep);
-                $PenerimaSampel =  User::where('id', $admin_prep[0])->pluck('name')->first();
-            } else {
-
-                $PenerimaSampel = $petugas['Petugas Penerima Sampel'][0]['nama'];
-            }
-
-            // dd($PenerimaSampel, $admin_prep, $value->id);
-            $timestamps = array_filter(array_map('trim', explode(',', $value->status_timestamp)));
-
-            // Get the last timestamp
-            $lastTimestamp = end($timestamps);
-            $Staff = $petugas['Staff Kimia & Lingkungan'][0]['nama'];
-            $Penyelia = (!is_null($penyelia_prep) ? $penyelia_prep : $petugas['Penyelia'][0]['nama']);
-            foreach ($namakode_sampel as $keyx => $valuex) {
-                foreach ($sampel_data as $keyx2 => $valuex2) {
-                    if ($valuex == $keyx2) { // Change === to ==
-                        $nolabdata = $startingValue + $inc;
-                        $nolabdata = formatLabNumber($nolabdata);
-                        $result[$key]['data'][$valuex]['id'] = $inc2++;
-                        $result[$key]['data'][$valuex]['id_data'] = $inc++;
-                        $result[$key]['data'][$valuex]['nomor_lab'] = $lab .  $nolabdata;
-                        $result[$key]['data'][$valuex]['jumlah_sampel'] = $value->jumlah_sampel;
-                        $result[$key]['data'][$valuex]['tanggal_terima'] = $tanggal_terima;
-                        $result[$key]['data'][$valuex]['kondisi_sampel'] = $value->kondisi_sampel;
-                        $result[$key]['data'][$valuex]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
-                        $result[$key]['data'][$valuex]['parameter_sampel'] = $valuex2;
-                        $result[$key]['namaparams'] = array_unique($newArray);
-                        $result[$key]['jenis_sampel'] = $value->jenisSampel->nama;
-                        $result[$key]['jumlah_sampel'] = $value->jumlah_sampel;
-                        $result[$key]['tanggal_terima'] = $tanggal_terima;
-                        $result[$key]['kondisi_sampel'] = $value->kondisi_sampel;
-                        $result[$key]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
-                        $result[$key]['no_order'] = $value->nomor_kupa;
-                        $result[$key]['total_namaparams'] = $total_namaparams;
-                        $result[$key]['PenerimaSampel'] = $value->penerima_sampel;
-                        $result[$key]['Preparasi'] = $value->petugas_preparasi;
-                        $result[$key]['Staff'] = $Staff;
-                        $result[$key]['Penyelia'] = $value->penyelia;
-                        $result[$key]['doc'] = $value->no_doc;
-                        $result[$key]['status'] = $value->approveby_admin;
-                        $result[$key]['status_timestamp'] = $lastTimestamp;
-                        $result[$key]['no_doc_indentitas'] = $value->no_doc_indentitas;
-                        $result[$key]['formulir'] = $value->formulir;
-                        $result[$key]['catatan'] = $value->catatan;
-                        $result[$key]['kode_sampel'] = $value->kode_sampel;
-                        $result[$key]['jenis_pupuk'] = $value->jenis_pupuk;
-                    }
+                    $result[$key]['data'][$valuex] = [
+                        'id' => $inc2++,
+                        'id_data' => $inc++,
+                        'nomor_lab' => $lab . $nolabdata,
+                        'jumlah_sampel' => $value->jumlah_sampel,
+                        'tanggal_terima' => $tanggal_terima,
+                        'kondisi_sampel' => $value->kondisi_sampel,
+                        'tanggal_penyelesaian' => $tanggal_penyelesaian,
+                        'parameter_sampel' => $sampel_data[$valuex], // Simple array, bukan associative!
+                    ];
                 }
             }
-        }
-        $data = [
-            'data' => $result,
-        ];
-        // dd($data);
 
-        // dd($data);
+            // Set common data
+            $result[$key]['namaparams'] = array_values(array_unique($newArray));
+            $result[$key]['jenis_sampel'] = $value->jenisSampel->nama;
+            $result[$key]['jumlah_sampel'] = $value->jumlah_sampel;
+            $result[$key]['tanggal_terima'] = $tanggal_terima;
+            $result[$key]['kondisi_sampel'] = $value->kondisi_sampel;
+            $result[$key]['tanggal_penyelesaian'] = $tanggal_penyelesaian;
+            $result[$key]['no_order'] = $value->nomor_kupa;
+            $result[$key]['PenerimaSampel'] = $value->penerima_sampel;
+            $result[$key]['Preparasi'] = $value->petugas_preparasi;
+            $result[$key]['Staff'] = $Staff;
+            $result[$key]['Penyelia'] = $value->penyelia;
+            $result[$key]['doc'] = $value->no_doc;
+            $result[$key]['status'] = $value->approveby_admin;
+            $result[$key]['status_timestamp'] = $lastTimestamp;
+            $result[$key]['no_doc_indentitas'] = $value->no_doc_indentitas;
+            $result[$key]['formulir'] = $value->formulir;
+            $result[$key]['catatan'] = $value->catatan;
+            $result[$key]['kode_sampel'] = $value->kode_sampel;
+            $result[$key]['jenis_pupuk'] = $value->jenis_pupuk;
+        }
+
+        // dd($result);
+        $data = ['data' => $result];
+
+        // Generate PDF
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
-        $options->set('isRemoteEnabled', true); // Enable loading of remote resources
+        $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
 
         $view = view('pdfview.pr', $data)->render();
         $dompdf->loadHtml($view);
-
-        // Set paper size and orientation
-        $dompdf->setPaper('A2', 'potrait');
-        // $dompdf->setPaper('A2', 'landscape');
-
-        // Render the PDF
+        $dompdf->setPaper('A2', 'portrait');
         $dompdf->render();
 
-
-        // $dompdf->stream($filename, ["Attachment" => true]);
         return $dompdf->stream($filename, ["Attachment" => false]);
     }
-
     public function export_dokumentasi($id, $filename)
     {
         $idsArray = explode('$', $id);
