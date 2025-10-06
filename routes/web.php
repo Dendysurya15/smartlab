@@ -10,6 +10,7 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TrackSampelController;
 use App\Http\Controllers\ExcelmanagementController;
 use App\Http\Controllers\Kuesionerroot;
+use App\Http\Controllers\LandingPageSettingsController;
 use App\Http\Middleware\TrackCaptchaFailures;
 use App\Livewire\Kuesionerdata;
 use App\Livewire\Managementkuesioner;
@@ -99,6 +100,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/Managementkuesioner', function () {
         return view('pages.managementkuesioner');
     })->name('Managementkuesioner');
+
+    Route::get('/landing-page-settings', [LandingPageSettingsController::class, 'index'])->name('landing-page-settings');
+    Route::get('/api/landing-settings/{key}', [LandingPageSettingsController::class, 'getSetting']);
+    Route::get('/api/landing-settings-group/{group}', [LandingPageSettingsController::class, 'getGroup']);
+    Route::get('/api/landing-settings-all', [LandingPageSettingsController::class, 'getAllSettings']);
 
     Route::get('/404', function () {
         return view('errorpages.404');

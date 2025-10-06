@@ -47,7 +47,8 @@
         },
         "files": [
             "app/helpers.php",
-            "app/jobhelper.php"
+            "app/jobhelper.php",
+            "app/helpers/landing_page_helpers.php"
         ]
     },
     "autoload-dev": {
