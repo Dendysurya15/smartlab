@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\PdfController;
 use Illuminate\Http\Request;
 use App\Jobs\Generatebulkpdfpr;
-
+use App\Http\Controllers\LandingPageController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,7 +32,8 @@ use App\Jobs\Generatebulkpdfpr;
 |
 */
 
-Route::redirect('/', 'login');
+// Route::redirect('/', 'login');
+Route::get('/', [LandingPageController::class, 'index'])->name('landing');
 Route::get('unblock', [Trackingprogres::class, 'unblockIp']);
 Route::get('/blocked', function () {
     $exception = new \Exception('Your IP is blocked due to multiple failed attempts.');
@@ -61,7 +62,7 @@ Route::get('/seedroles', function () {
 Route::get('/export-excel/{id}', [HistoryKupaController::class, 'exportExcel'])
     ->name('export.excel');
 Route::get('exporpdfkupa/{id}/{filename}', [HistoryKupaController::class, 'export_kupa_pdf'])->name('exporpdfkupa');
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::middleware(['auth:web'])->group(function () {
 
 
     Route::get('/export-form-monitoring-kupa/{id}', [HistoryKupaController::class, 'exportFormMonitoringKupa'])
