@@ -33,7 +33,14 @@ use App\Jobs\Generatebulkpdfpr;
 |
 */
 
-Route::redirect('/', 'login');
+Route::get('/', function () {
+    return view('pages.landing');
+})->name('landing');
+
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
 Route::get('unblock', [Trackingprogres::class, 'unblockIp']);
 Route::get('/blocked', function () {
     $exception = new \Exception('Your IP is blocked due to multiple failed attempts.');

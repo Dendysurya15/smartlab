@@ -1,3 +1,6 @@
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -94,9 +97,9 @@
     <main class="bg-white dark:bg-slate-900 h-full mt-16 flex">
         <div class="w-full md:w-1/2 flex items-center justify-center p-8">
             <div class="max-w-md w-full">
-                <h1 class="text-4xl text-slate-800 dark:text-slate-100 font-bold mb-4">{{ __('Track Progress Sampel') }}</h1>
+                <h1 class="text-4xl text-slate-800 dark:text-slate-100 font-bold mb-4">{{ landing_setting('hero_title', 'Track Progress Sampel') }}</h1>
                 <p class="text-lg text-slate-600 dark:text-slate-400 mb-8">
-                    Masukkan kode unik sistem untuk melacak progress sampel anda!
+                    {{ landing_setting('hero_subtitle', 'Masukkan kode unik sistem untuk melacak progress sampel anda!') }}
                 </p>
 
                 {{ $slot }}
@@ -104,8 +107,13 @@
         </div>
 
         <div class="hidden md:block md:w-1/2 relative overflow-hidden">
+            @php
+            $heroImage = landing_setting('hero_background_image');
+            $defaultImage = asset('images/YCH09527aa.jpg');
+            $imageSrc = $heroImage ? Storage::url($heroImage) : $defaultImage;
+            @endphp
             <img class="object-cover object-center w-full h-full transform hover:scale-105 transition-transform duration-700"
-                src="{{ asset('images/YCH09527aa.jpg') }}" alt="Authentication image" />
+                src="{{ $imageSrc }}" alt="{{ landing_setting('hero_title', 'Laboratorium SMARTLAB SRS') }}" />
         </div>
     </main>
 

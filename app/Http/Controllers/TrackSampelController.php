@@ -17,6 +17,33 @@ class TrackSampelController extends Controller
         return view('pages/trackingSampel/index');
     }
 
+    public function search(Request $request)
+    {
+        $kode = $request->get('kode');
+
+        if (!$kode) {
+            return redirect('/')->with('error', 'Kode tracking harus diisi');
+        }
+
+        try {
+            // Cari data berdasarkan kode tracking
+            $trackSampel = TrackSampel::where('kode_tracking_sampel', $kode)->first();
+
+            if (!$trackSampel) {
+                return redirect('/')->with('error', 'Kode tracking tidak ditemukan');
+            }
+
+            // Ambil progress pengerjaan
+            $progressData = ProgressPengerjaan::where('kode_tracking_sampel', $kode)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return view('pages.tracking-result', compact('trackSampel', 'progressData', 'kode'));
+        } catch (\Exception $e) {
+            return redirect('/')->with('error', 'Terjadi kesalahan saat mencari data tracking');
+        }
+    }
+
     public function unblockIp(Request $request)
     {
         $ip = $request->ip(); // Or set a specific IP if needed
