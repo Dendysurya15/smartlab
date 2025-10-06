@@ -70,12 +70,41 @@
         <div class="bg-white rounded-lg shadow-lg p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold text-slate-800">Informasi Sampel</h2>
-                <button wire:click="clear" class="text-sm text-slate-500 hover:text-slate-700 flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    Tutup
-                </button>
+                <div class="flex items-center space-x-3">
+                    @if($trackSampel)
+                    <button wire:click="downloadKupa"
+                        wire:loading.attr="disabled"
+                        wire:target="downloadKupa"
+                        class="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors">
+                        <div wire:loading wire:target="downloadKupa" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        <svg wire:loading.remove wire:target="downloadKupa" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span wire:loading.remove wire:target="downloadKupa">Download KUPA</span>
+                        <span wire:loading wire:target="downloadKupa">Menyiapkan...</span>
+                    </button>
+
+                    @if($trackSampel->sertifikasi)
+                    <button wire:click="downloadCertificate"
+                        wire:loading.attr="disabled"
+                        wire:target="downloadCertificate"
+                        class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors">
+                        <div wire:loading wire:target="downloadCertificate" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        <svg wire:loading.remove wire:target="downloadCertificate" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span wire:loading.remove wire:target="downloadCertificate">Download Certificate</span>
+                        <span wire:loading wire:target="downloadCertificate">Menyiapkan...</span>
+                    </button>
+                    @endif
+                    @endif
+                    <button wire:click="clear" class="text-sm text-slate-500 hover:text-slate-700 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Tutup
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -88,20 +117,20 @@
                     <p class="text-lg text-slate-800">{{ $trackSampel->nomor_surat ?? '-' }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-500">Tanggal Registrasi</label>
-                    <p class="text-lg text-slate-800">{{ $trackSampel->tanggal_registrasi ? \Carbon\Carbon::parse($trackSampel->tanggal_registrasi)->format('d/m/Y') : '-' }}</p>
+                    <label class="block text-sm font-medium text-gray-500">Tanggal Terima</label>
+                    <p class="text-lg text-slate-800">{{ $trackSampel->tanggal_terima ? \Carbon\Carbon::parse($trackSampel->tanggal_terima)->format('d/m/Y') : '-' }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-500">Estimasi KUPA</label>
-                    <p class="text-lg text-slate-800">{{ $trackSampel->estimasi_kup ?? '-' }}</p>
+                    <label class="block text-sm font-medium text-gray-500">Nomor KUPA</label>
+                    <p class="text-lg text-slate-800">{{ $trackSampel->nomor_kupa ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-500">Departemen</label>
-                    <p class="text-lg text-slate-800">{{ $trackSampel->departement ?? '-' }}</p>
+                    <p class="text-lg text-slate-800">{{ $trackSampel->departemen ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-500">Jenis Sampel</label>
-                    <p class="text-lg text-slate-800">{{ $trackSampel->jenis_sampel ?? '-' }}</p>
+                    <p class="text-lg text-slate-800">{{ $trackSampel->jenisSampel->nama ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-500">Jumlah Sampel</label>
@@ -109,6 +138,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Sample Photos -->
+        @if($trackSampel && $trackSampel->foto_sampel)
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-slate-800 mb-4">Foto Sampel</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @php
+                $fotoSampel = [];
+                $fotoSampelData = $trackSampel->foto_sampel;
+                if (is_string($fotoSampelData) && !empty($fotoSampelData)) {
+                $fotos = array_filter(explode('%\/', $fotoSampelData));
+                $fotoSampel = array_map(function ($foto) {
+                return trim($foto, '"\'');
+                }, $fotos);
+                } elseif (is_array($fotoSampelData)) {
+                $fotoSampel = $fotoSampelData;
+                }
+                @endphp
+
+                @foreach($fotoSampel as $photo)
+                @php
+                $cleanPhoto = ltrim(trim($photo), '/');
+                $photoPathPublic = 'storage/' . $cleanPhoto;
+                $photoPathPrivate = 'storage/app/private/' . $cleanPhoto;
+                $imageSrc = file_exists(public_path($photoPathPublic)) ? asset($photoPathPublic) : asset($photoPathPrivate);
+                @endphp
+                <div class="relative group">
+                    <img src="{{ $imageSrc }}"
+                        alt="Foto Sampel"
+                        class="w-full h-48 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-shadow">
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
 
         <!-- Progress Timeline -->
         <div class="bg-white rounded-lg shadow-lg p-6">
@@ -119,7 +188,7 @@
                 @foreach($progressData as $progress)
                 <div class="flex items-start space-x-4 p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                     <div class="flex-shrink-0">
-                        @if(isset($progress['status']) && ($progress['status'] === 'completed' || $progress['status'] === 'checked'))
+                        @if(isset($progress['status']) && $progress['status'] === 'checked')
                         <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                             <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -134,22 +203,15 @@
                         @endif
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-lg font-medium text-slate-800">{{ $progress['text'] ?? $progress['nama_progress'] ?? 'Progress' }}</h3>
-                        @if(isset($progress['waktu_selesai']) && $progress['waktu_selesai'])
+                        <h3 class="text-lg font-medium text-slate-800">{{ $progress['text'] ?? 'Progress' }}</h3>
+                        @if(isset($progress['time']) && $progress['time'])
                         <p class="text-sm text-slate-500 mt-1">
-                            Selesai: {{ \Carbon\Carbon::parse($progress['waktu_selesai'])->format('d/m/Y H:i') }}
+                            Selesai: {{ \Carbon\Carbon::parse($progress['time'])->format('d/m/Y H:i') }}
                         </p>
-                        @elseif(isset($progress['created_at']) && $progress['created_at'])
-                        <p class="text-sm text-slate-500 mt-1">
-                            Dibuat: {{ \Carbon\Carbon::parse($progress['created_at'])->format('d/m/Y H:i') }}
-                        </p>
-                        @endif
-                        @if(isset($progress['keterangan']) && $progress['keterangan'])
-                        <p class="text-sm text-slate-600 mt-2">{{ $progress['keterangan'] }}</p>
                         @endif
                     </div>
                     <div class="flex-shrink-0">
-                        @if(isset($progress['status']) && ($progress['status'] === 'completed' || $progress['status'] === 'checked'))
+                        @if(isset($progress['status']) && $progress['status'] === 'checked')
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                             Selesai
                         </span>

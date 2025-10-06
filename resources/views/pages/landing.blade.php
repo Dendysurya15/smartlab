@@ -158,27 +158,38 @@ use Illuminate\Support\Facades\Storage;
     @endif
 
     <!-- Announcements Section -->
-    @if(landing_setting('announcements_content') && landing_setting('announcements_content') !== 'Tidak ada pengumuman saat ini.')
+    @php $announcements = landing_announcements_list(); @endphp
+    @if(count($announcements) > 0)
     <section class="py-16 bg-blue-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-lg shadow-lg p-8">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
-                            </svg>
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Pengumuman</h2>
+                <p class="text-xl text-slate-600">Informasi terbaru dari SMARTLAB SRS</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($announcements as $announcement)
+                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+                                </svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="ml-4 flex-1">
-                        <h3 class="text-xl font-semibold text-slate-800 mb-2">
-                            {{ landing_setting('announcements_title', 'Pengumuman') }}
-                        </h3>
-                        <div class="text-slate-600 prose max-w-none">
-                            {!! nl2br(e(landing_setting('announcements_content', 'Tidak ada pengumuman saat ini.'))) !!}
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2">{{ $announcement['title'] }}</h3>
+                            <p class="text-sm text-slate-500 mb-3">
+                                {{ \Carbon\Carbon::parse($announcement['date'])->format('d F Y') }}
+                            </p>
+                            <div class="text-slate-600 prose prose-sm max-w-none">
+                                {!! nl2br(e($announcement['content'])) !!}
+                            </div>
                         </div>
                     </div>
                 </div>
+                @endforeach
             </div>
         </div>
     </section>

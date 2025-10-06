@@ -27,6 +27,38 @@ use App\Models\TrackSampel;
 use App\Models\ExcelManagement;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Forms\Components\Select;
+use Livewire\WithFileUploads;
+use Filament\Forms\Components\FileUpload;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\UsersImport;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\DB;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\DeleteAction;
+use Illuminate\Database\Eloquent\Collection;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use App\Models\Eskul;
+use App\Helpers\HashHelper;
+use Filament\Forms\Components\Repeater;
+use App\Models\EskulSchedule;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Tables\Actions\ActionGroup;
+use App\Models\EskulMaterial;
+use App\Models\EskulGallery;
+use Filament\Forms\Components\DatePicker;
+use App\Models\EskulEvent;
+use Filament\Forms\Components\Toggle;
+
 if (!function_exists('tanggal_indo')) {
     function tanggal_indo($tanggal, $cetak_hari = false, $cetak_bulan = false, $cetak_tanggal = false)
     {
@@ -1075,5 +1107,275 @@ if (!function_exists('GeneratePR')) {
                 return true;
             }
         }
+    }
+}
+
+
+if (!function_exists('formGallery')) {
+    function formGallery(): array
+    {
+        return [
+            TextInput::make('gallery_title')
+                ->label('Gallery Title')
+                ->default('Gallery Laboratorium')
+                ->required(),
+            Textarea::make('gallery_description')
+                ->label('Gallery Description')
+                ->maxLength(500)
+                ->helperText('Optional description for the gallery section'),
+            FileUpload::make('gallery_images')
+                ->label('Gallery Images')
+                ->image()
+                ->multiple()
+                ->directory('gallery')
+                ->visibility('public')
+                ->reorderable()
+                ->appendFiles()
+                ->maxFiles(20)
+                ->helperText('Upload multiple images for gallery (max 20 files)'),
+            Toggle::make('gallery_active')
+                ->label('Show Gallery on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formAnnouncements')) {
+    function formAnnouncements(): array
+    {
+        return [
+            TextInput::make('announcements_title')
+                ->label('Announcements Title')
+                ->default('Pengumuman')
+                ->required(),
+            Textarea::make('announcements_description')
+                ->label('Announcements Description')
+                ->maxLength(500)
+                ->helperText('Optional description for the announcements section'),
+            Repeater::make('announcements_list')
+                ->label('Announcements List')
+                ->schema([
+                    TextInput::make('title')
+                        ->label('Title')
+                        ->required()
+                        ->maxLength(255),
+                    Textarea::make('content')
+                        ->label('Content')
+                        ->required()
+                        ->rows(3)
+                        ->maxLength(1000),
+                    DatePicker::make('date')
+                        ->label('Date')
+                        ->required()
+                        ->default(now()),
+                    Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true),
+                ])
+                ->defaultItems(1)
+                ->addActionLabel('Add Announcement')
+                ->reorderable()
+                ->collapsible()
+                ->helperText('Add multiple announcements for the landing page'),
+            Toggle::make('announcements_active')
+                ->label('Show Announcements on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formHero')) {
+    function formHero(): array
+    {
+        return [
+            TextInput::make('hero_title')
+                ->label('Hero Title')
+                ->default('SMARTLAB SRS')
+                ->required(),
+            Textarea::make('hero_subtitle')
+                ->label('Hero Subtitle')
+                ->maxLength(500)
+                ->rows(3)
+                ->helperText('Main subtitle displayed below the hero title'),
+            FileUpload::make('hero_background_image')
+                ->label('Hero Background Image')
+                ->image()
+                ->directory('hero')
+                ->visibility('public')
+                ->helperText('Background image for hero section'),
+            TextInput::make('hero_button_text')
+                ->label('Hero Button Text')
+                ->default('Track Sampel')
+                ->maxLength(100),
+            TextInput::make('hero_button_link')
+                ->label('Hero Button Link')
+                ->default('#tracking')
+                ->maxLength(255)
+                ->helperText('Link for the hero button (e.g., #tracking, /login)'),
+            Toggle::make('hero_active')
+                ->label('Show Hero Section on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formGeneral')) {
+    function formGeneral(): array
+    {
+        return [
+            TextInput::make('site_name')
+                ->label('Site Name')
+                ->default('SMARTLAB SRS')
+                ->required(),
+            Textarea::make('site_description')
+                ->label('Site Description')
+                ->maxLength(1000)
+                ->rows(4)
+                ->helperText('Brief description of your laboratory services'),
+            TextInput::make('site_tagline')
+                ->label('Site Tagline')
+                ->maxLength(255)
+                ->helperText('Short tagline for the site'),
+            FileUpload::make('site_logo')
+                ->label('Site Logo')
+                ->image()
+                ->directory('general')
+                ->visibility('public')
+                ->helperText('Main logo for the site'),
+            Toggle::make('general_active')
+                ->label('Show General Info on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formFeatures')) {
+    function formFeatures(): array
+    {
+        return [
+            TextInput::make('features_title')
+                ->label('Features Title')
+                ->default('Layanan Kami')
+                ->required(),
+            Textarea::make('features_description')
+                ->label('Features Description')
+                ->maxLength(1000)
+                ->rows(3)
+                ->helperText('Description for the features section'),
+            Repeater::make('features_list')
+                ->label('Features List')
+                ->schema([
+                    TextInput::make('title')
+                        ->label('Feature Title')
+                        ->required()
+                        ->maxLength(255),
+                    Textarea::make('description')
+                        ->label('Feature Description')
+                        ->required()
+                        ->rows(2)
+                        ->maxLength(500),
+                    TextInput::make('icon')
+                        ->label('Icon Class')
+                        ->maxLength(100)
+                        ->helperText('CSS class for icon (e.g., heroicon-o-beaker)'),
+                    Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true),
+                ])
+                ->defaultItems(3)
+                ->addActionLabel('Add Feature')
+                ->reorderable()
+                ->collapsible()
+                ->helperText('Add multiple features for the landing page'),
+            Toggle::make('features_active')
+                ->label('Show Features on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formContact')) {
+    function formContact(): array
+    {
+        return [
+            TextInput::make('contact_phone')
+                ->label('Contact Phone')
+                ->default('+62 21 1234 5678')
+                ->required(),
+            TextInput::make('contact_email')
+                ->label('Contact Email')
+                ->email()
+                ->default('info@smartlab-srs.com')
+                ->maxLength(255),
+            Textarea::make('contact_address')
+                ->label('Contact Address')
+                ->rows(3)
+                ->maxLength(500)
+                ->helperText('Full address of the laboratory'),
+            TextInput::make('contact_whatsapp')
+                ->label('WhatsApp Number')
+                ->maxLength(20)
+                ->helperText('WhatsApp number for contact'),
+            TextInput::make('contact_instagram')
+                ->label('Instagram Handle')
+                ->maxLength(100)
+                ->helperText('Instagram username (without @)'),
+            TextInput::make('contact_facebook')
+                ->label('Facebook Page')
+                ->maxLength(255)
+                ->helperText('Facebook page URL'),
+            Toggle::make('contact_active')
+                ->label('Show Contact Info on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formFooter')) {
+    function formFooter(): array
+    {
+        return [
+            TextInput::make('footer_copyright')
+                ->label('Footer Copyright')
+                ->default('© 2024 SMARTLAB SRS. All rights reserved.')
+                ->required(),
+            Textarea::make('footer_description')
+                ->label('Footer Description')
+                ->maxLength(1000)
+                ->rows(3)
+                ->helperText('Brief description in footer'),
+            TextInput::make('footer_company_name')
+                ->label('Company Name')
+                ->default('SMARTLAB SRS')
+                ->maxLength(255),
+            TextInput::make('footer_website')
+                ->label('Website URL')
+                ->url()
+                ->maxLength(255)
+                ->helperText('Main website URL'),
+            Repeater::make('footer_links')
+                ->label('Footer Links')
+                ->schema([
+                    TextInput::make('title')
+                        ->label('Link Title')
+                        ->required()
+                        ->maxLength(100),
+                    TextInput::make('url')
+                        ->label('Link URL')
+                        ->required()
+                        ->maxLength(255),
+                    Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true),
+                ])
+                ->defaultItems(2)
+                ->addActionLabel('Add Footer Link')
+                ->reorderable()
+                ->collapsible()
+                ->helperText('Add multiple footer links'),
+            Toggle::make('footer_active')
+                ->label('Show Footer on Landing Page')
+                ->default(true),
+        ];
     }
 }
