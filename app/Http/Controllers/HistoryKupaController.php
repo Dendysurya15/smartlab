@@ -566,6 +566,9 @@ class HistoryKupaController extends Controller
             $nama_parameter = [];
             $namakode_sampelparams = [];
 
+            // Initialize data array to prevent undefined key error
+            $result[$key]['data'] = [];
+
             // Collect parameters
             foreach ($trackparam as $trackParameter) {
                 if ($trackParameter->ParameterAnalisis) {
@@ -679,6 +682,8 @@ class HistoryKupaController extends Controller
         // dd($result);
         $data = ['data' => $result];
 
+        // dd($data);
+
         // Generate PDF
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
@@ -692,6 +697,8 @@ class HistoryKupaController extends Controller
 
         return $dompdf->stream($filename, ["Attachment" => false]);
     }
+
+
     public function export_dokumentasi($id, $filename)
     {
         $idsArray = explode('$', $id);

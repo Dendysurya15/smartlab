@@ -145,7 +145,7 @@
         <tbody>
             @php
             $chunkSize = 40; // Jumlah row per halaman
-            $dataChunks = array_chunk($item['data'], $chunkSize, true);
+            $dataChunks = isset($item['data']) && is_array($item['data']) ? array_chunk($item['data'], $chunkSize, true) : [];
             $totalChunks = count($dataChunks);
             @endphp
 

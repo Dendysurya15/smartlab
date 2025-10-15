@@ -652,6 +652,8 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             });
                             $data = implode('$', $recordIds);
 
+                            // dd($data);
+
                             return redirect()->route('exporpdfkupa', ['id' => $data, 'filename' => 'bulk'])->with('target', '_blank');
                         }),
                 ])->button()
