@@ -1198,11 +1198,15 @@ if (!function_exists('formHero')) {
                 ->rows(3)
                 ->helperText('Main subtitle displayed below the hero title'),
             FileUpload::make('hero_background_image')
-                ->label('Hero Background Image')
+                ->label('Hero Background Images')
                 ->image()
+                ->multiple()
                 ->directory('hero')
                 ->visibility('public')
-                ->helperText('Background image for hero section'),
+                ->reorderable()
+                ->appendFiles()
+                ->maxFiles(10)
+                ->helperText('Upload multiple images for hero slideshow (max 10 files, changes every 10 seconds)'),
             TextInput::make('hero_button_text')
                 ->label('Hero Button Text')
                 ->default('Track Sampel')

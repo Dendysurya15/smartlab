@@ -54,7 +54,7 @@ use Illuminate\Support\Facades\Storage;
     </nav>
 
     <!-- Hero Section -->
-    <section class="pt-20 pb-16 bg-gradient-to-br from-emerald-50 to-blue-50">
+    <section class="pt-32 pb-16 bg-gradient-to-br from-emerald-50 to-blue-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
@@ -75,13 +75,25 @@ use Illuminate\Support\Facades\Storage;
                 </div>
                 <div class="relative">
                     @php
-                    $heroImage = landing_setting('hero_background_image');
+                    $heroImages = landing_hero_images();
                     $defaultImage = asset('images/YCH09527aa.jpg');
-                    $imageSrc = $heroImage ? Storage::url($heroImage) : $defaultImage;
                     @endphp
-                    <img src="{{ $imageSrc }}"
+
+                    @if(count($heroImages) > 0)
+                    <!-- Hero Slideshow Container -->
+                    <div id="hero-slideshow" class="w-full h-96 rounded-lg shadow-2xl overflow-hidden relative">
+                        @foreach($heroImages as $index => $image)
+                        <div class="hero-slide absolute inset-0 bg-cover bg-center transition-opacity duration-500 ease-in-out {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}"
+                            data-bg="{{ $image['url'] }}">
+                        </div>
+                        @endforeach
+                    </div>
+                    @else
+                    <!-- Fallback single image -->
+                    <img src="{{ $defaultImage }}"
                         alt="{{ landing_setting('hero_title', 'Laboratorium SMARTLAB SRS') }}"
                         class="w-full h-96 object-cover rounded-lg shadow-2xl">
+                    @endif
                 </div>
             </div>
         </div>
@@ -262,6 +274,55 @@ use Illuminate\Support\Facades\Storage;
 
     @filamentScripts
     @livewireScripts
+
+    <script>
+        // Hero Slideshow Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const slideshow = document.getElementById('hero-slideshow');
+            if (!slideshow) return;
+
+            const slides = slideshow.querySelectorAll('.hero-slide');
+            if (slides.length <= 1) return;
+
+            // Set background images for each slide
+            slides.forEach(slide => {
+                const bgUrl = slide.getAttribute('data-bg');
+                if (bgUrl) {
+                    slide.style.backgroundImage = `url('${bgUrl}')`;
+                }
+            });
+
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+
+            function showSlide(index) {
+                // Hide all slides
+                slides.forEach(slide => {
+                    slide.style.opacity = '0';
+                });
+
+                // Show current slide
+                slides[index].style.opacity = '1';
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                showSlide(currentSlide);
+            }
+
+            // Start slideshow - change image every 10 seconds
+            setInterval(nextSlide, 10000);
+
+            // Optional: Pause slideshow on hover
+            slideshow.addEventListener('mouseenter', function() {
+                // You can add pause functionality here if needed
+            });
+
+            slideshow.addEventListener('mouseleave', function() {
+                // You can add resume functionality here if needed
+            });
+        });
+    </script>
 </body>
 
 </html>
