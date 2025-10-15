@@ -191,7 +191,8 @@ class HistoryKupaController extends Controller
         $data = [
             'data' => $generate['result'],
             'lab' => $generate,
-            'nomor_lab' => $generate['nomor_lab']
+            'nomor_lab' => $generate['nomor_lab'],
+            'tanggal_terima' => $generate['tanggal_terima']
         ];
         $pdf = Pdf::setPaper('letter', 'portrait');
         $pdf->setOptions([
@@ -272,6 +273,7 @@ class HistoryKupaController extends Controller
                 'formulir' => $value->formulir,
                 'nodoc' => $value->no_doc,
                 'kode_sampel' => $value->kode_sampel,
+                'tanggal_penerimaan' => Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('d F Y'),
             ];
         }
         $data = [
