@@ -720,7 +720,15 @@ class HistoryKupaController extends Controller
                 $labkanan = '';
             }
 
-            $filenames_array = explode('%', $value->foto_sampel);
+            // Clean the filename by removing extra characters like quotes and backslashes
+            $foto_sampel = $value->foto_sampel;
+            if ($foto_sampel) {
+                $foto_sampel = trim($foto_sampel, '"'); // Remove quotes
+                $foto_sampel = str_replace('\\/', '', $foto_sampel); // Remove backslash and forward slash
+                $filenames_array = explode('%', $foto_sampel);
+            } else {
+                $filenames_array = [];
+            }
 
             $result[$key] = [
                 'no_lab' => $labkiri . ' - ' . $labkanan,
@@ -1205,7 +1213,15 @@ class HistoryKupaController extends Controller
                 $labkanan = '';
             }
 
-            $filenames_array = explode('%', $value->foto_sampel);
+            // Clean the filename by removing extra characters like quotes and backslashes
+            $foto_sampel = $value->foto_sampel;
+            if ($foto_sampel) {
+                $foto_sampel = trim($foto_sampel, '"'); // Remove quotes
+                $foto_sampel = str_replace('\\/', '', $foto_sampel); // Remove backslash and forward slash
+                $filenames_array = explode('%', $foto_sampel);
+            } else {
+                $filenames_array = [];
+            }
 
             $result[$key] = [
                 'no_lab' => $labkiri . ' - ' . $labkanan,

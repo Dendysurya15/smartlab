@@ -98,7 +98,17 @@ class Editprogress extends Component implements HasForms
         $this->Peralatan = array_values($getarray);
         $this->Konfirmasi = $this->opt->konfirmasi == 1 ? true : false;
         $img = $this->opt->foto_sampel;
-        $img = explode('%', $img);
+
+        // Clean the filename by removing extra characters like quotes and backslashes
+        if ($img) {
+            $img = trim($img, '"'); // Remove quotes
+            $img = str_replace('\\/', '', $img); // Remove backslash and forward slash
+            $img = explode('%', $img);
+        } else {
+            $img = [];
+        }
+
+        // dd($img);
         $this->foto_sampel = $img;
         $this->status_progres = json_decode($this->opt->last_update, true);
         // $lab_label_tahun = $this->opt->lab_label_tahun;
