@@ -815,7 +815,6 @@ if (!function_exists('GeneratePdfKupa')) {
     }
 }
 
-
 if (!function_exists('GeneratePR')) {
     function GeneratePR($iddata)
     {
@@ -867,6 +866,7 @@ if (!function_exists('GeneratePR')) {
                 }
 
                 // Bulk fetch paket data to avoid N+1 queries
+                $paketData = [];
                 if (!empty($paketIds)) {
                     $allPaketIds = [];
                     foreach ($paketIds as $paketId) {
@@ -877,13 +877,13 @@ if (!function_exists('GeneratePR')) {
                         ->toArray();
                 }
 
-                // Build sampel_data efficiently
+                // Build sampel_data efficiently with normalization
                 foreach ($value1 as $value2) {
                     foreach ($value2->trackParameters as $trackParameter) {
                         if (!$trackParameter->ParameterAnalisis) continue;
 
                         $statuspaket = $trackParameter->ParameterAnalisis->paket_id;
-                        $kodeItems = explode('$', $trackParameter->namakode_sampel);
+                        $kodeItems = $trackParameter->namakode_sampel ? explode('$', $trackParameter->namakode_sampel) : [$trackParameter->namakode_sampel];
 
                         if ($statuspaket) {
                             $paket = explode('$', $statuspaket);
@@ -896,15 +896,18 @@ if (!function_exists('GeneratePR')) {
                         }
 
                         foreach ($kodeItems as $item) {
-                            if (!isset($sampel_data[$item])) {
-                                $sampel_data[$item] = [];
+                            // Normalisasi: trim dan hapus titik di akhir
+                            $item_normalized = rtrim(trim($item), '.');
+
+                            if (!isset($sampel_data[$item_normalized])) {
+                                $sampel_data[$item_normalized] = [];
                             }
 
                             $explodedAttributes = strpos($attribute, ',') !== false ? explode(',', $attribute) : [$attribute];
                             foreach ($explodedAttributes as $attr) {
                                 $trimmedAttr = trim($attr);
-                                if (!in_array($trimmedAttr, $sampel_data[$item])) {
-                                    $sampel_data[$item][] = $trimmedAttr;
+                                if (!in_array($trimmedAttr, $sampel_data[$item_normalized])) {
+                                    $sampel_data[$item_normalized][] = $trimmedAttr;
                                 }
                             }
                         }
@@ -918,8 +921,12 @@ if (!function_exists('GeneratePR')) {
                 $discount = $totalppn_harga->multiply($discountDecimal);
                 $total_akhir = $totalppn_harga->subtract($discount);
 
-                // Prepare common data
-                $kode_sampel = array_map('trim', explode('$', $kdsmpel));
+                // Prepare common data with normalization
+                $kode_sampel_raw = array_map('trim', explode('$', $kdsmpel));
+                $kode_sampel_normalized = array_map(function ($kode) {
+                    return rtrim($kode, '.');
+                }, $kode_sampel_raw);
+
                 $nomor_lab = explode('$', $nolab);
                 $year = date('y', strtotime($firstItem->tanggal_terima));
                 $lab = $year . $firstItem->jenisSampel->kode . '.';
@@ -953,20 +960,48 @@ if (!function_exists('GeneratePR')) {
                     }
                 }
 
-                // Build result data efficiently
-                foreach ($kode_sampel as $index => $kode) {
-                    if (!isset($sampel_data[$kode])) continue;
+                // Build result data efficiently with normalization
+                foreach ($kode_sampel_raw as $index => $kode) {
+                    $kode_normalized = $kode_sampel_normalized[$index];
 
-                    $valuems = $sampel_data[$kode];
+                    // Check if sampel_data exists for normalized code
+                    if (!isset($sampel_data[$kode_normalized])) {
+                        // If sampel_data is empty or key not found, create default entry
+                        if (empty($sampel_data)) {
+                            // Get default parameters from trackParameters
+                            $default_params = [];
+                            foreach ($value1 as $v) {
+                                foreach ($v->trackParameters as $tp) {
+                                    if ($tp->ParameterAnalisis) {
+                                        $param_name = $tp->ParameterAnalisis->nama_unsur;
+                                        if (!in_array($param_name, $default_params)) {
+                                            $default_params[] = $param_name;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (empty($default_params)) {
+                                $default_params = ['Default Parameter'];
+                            }
+
+                            $sampel_data[$kode_normalized] = $default_params;
+                        } else {
+                            // Skip if sampel_data has entries but not for this code
+                            continue;
+                        }
+                    }
+
+                    $valuems = $sampel_data[$kode_normalized];
                     $current_lab_number = $new_nomor_lab + $lab_counter;
 
-                    $result[$key][$key1][$kode] = [
+                    $result[$key][$key1][$kode] = [  // Use original $kode for key to preserve format
                         'jenis_sample' => $jenissample,
-                        'nama_unsur' => $kode,
+                        'nama_unsur' => $kode,  // Use original format for display
                         'jenis_sample_komoditas' => $jenissample_komuditas,
                         'jumlah_sampel' => ($index == 0) ? $jumlahsample : 'null',
                         'catatan' => ($index == 0) ? $catatan : 'null',
-                        'kode_sampel' => $kode_sampel[$index],
+                        'kode_sampel' => $kode,  // Use original format
                         'nomor_lab' => $lab . formatLabNumber($current_lab_number),
                         'nama_pengirim' => $firstItem->nama_pengirim,
                         'asal_sampel' => $firstItem->asal_sampel,
@@ -1004,105 +1039,117 @@ if (!function_exists('GeneratePR')) {
         return [
             'result' => $result,
             'filename' => $filename,
-            'nomor_lab' => $nomor_lab[0] - 1,
+            'nomor_lab' => isset($nomor_lab[0]) ? $nomor_lab[0] - 1 : 0,
             'tanggal_terima' => $firstItem->tanggal_terima ?? null
         ];
     }
+}
 
-    if (!function_exists('defaultPTname')) {
-        function defaultPTname($tanggal)
-        {
-            try {
-                // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
-                $bulanIndonesia = [
-                    'Januari' => '01',
-                    'Februari' => '02',
-                    'Maret' => '03',
-                    'April' => '04',
-                    'Mei' => '05',
-                    'Juni' => '06',
-                    'Juli' => '07',
-                    'Agustus' => '08',
-                    'September' => '09',
-                    'Oktober' => '10',
-                    'November' => '11',
-                    'Desember' => '12'
-                ];
-
-                // Split tanggal "17 Mei 2025"
-                $parts = explode(' ', $tanggal);
-                if (count($parts) === 3) {
-                    $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
-                }
-
-                $tanggalPenerimaan = Carbon::parse($tanggal);
-                $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
-
-                if ($tanggalPenerimaan < $batasTanggal) {
-                    // return 'PT. CITRA BORNEO INDAH';
-                    return [
-                        'nama' => 'PT. CITRA BORNEO INDAH',
-                        'revisi' => '02',
-                        'tanggal_berlaku' => '1-jul-21',
-                        'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
-                    ];
-                } else {
-                    return [
-                        'nama' => 'PT. Sulung Research Station',
-                        'revisi' => '00',
-                        'tanggal_berlaku' => '01 Mei 2025',
-                        'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM PENGUJIAN'
-                    ];
-                }
-            } catch (Exception $e) {
-                // Fallback jika parsing gagal
-                return 'PT. CITRA BORNEO INDAH';
-            }
-        }
+// Helper function formatLabNumber (jika belum ada)
+if (!function_exists('formatLabNumber')) {
+    function formatLabNumber($number)
+    {
+        return str_pad($number, 3, '0', STR_PAD_LEFT);
     }
+}
 
-    if (!function_exists('defaultIconPT ')) {
-        function defaultIconPT($tanggal)
-        {
-            try {
-                // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
-                $bulanIndonesia = [
-                    'Januari' => '01',
-                    'Februari' => '02',
-                    'Maret' => '03',
-                    'April' => '04',
-                    'Mei' => '05',
-                    'Juni' => '06',
-                    'Juli' => '07',
-                    'Agustus' => '08',
-                    'September' => '09',
-                    'Oktober' => '10',
-                    'November' => '11',
-                    'Desember' => '12'
-                ];
+// Keep your existing defaultPTname and defaultIconPT functions as they are
+if (!function_exists('defaultPTname')) {
+    function defaultPTname($tanggal)
+    {
+        try {
+            // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
+            $bulanIndonesia = [
+                'Januari' => '01',
+                'Februari' => '02',
+                'Maret' => '03',
+                'April' => '04',
+                'Mei' => '05',
+                'Juni' => '06',
+                'Juli' => '07',
+                'Agustus' => '08',
+                'September' => '09',
+                'Oktober' => '10',
+                'November' => '11',
+                'Desember' => '12'
+            ];
 
-                // Split tanggal "17 Mei 2025"
-                $parts = explode(' ', $tanggal);
-                if (count($parts) === 3) {
-                    $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
-                }
-
-                $tanggalPenerimaan = Carbon::parse($tanggal);
-                $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
-
-                if ($tanggalPenerimaan < $batasTanggal) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (Exception $e) {
-                // Fallback jika parsing gagal
-                return true;
+            // Split tanggal "17 Mei 2025"
+            $parts = explode(' ', $tanggal);
+            if (count($parts) === 3) {
+                $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
             }
+
+            $tanggalPenerimaan = Carbon::parse($tanggal);
+            $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
+
+            if ($tanggalPenerimaan < $batasTanggal) {
+                return [
+                    'nama' => 'PT. CITRA BORNEO INDAH',
+                    'revisi' => '02',
+                    'tanggal_berlaku' => '1-jul-21',
+                    'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
+                ];
+            } else {
+                return [
+                    'nama' => 'PT. Sulung Research Station',
+                    'revisi' => '00',
+                    'tanggal_berlaku' => '01 Mei 2025',
+                    'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM PENGUJIAN'
+                ];
+            }
+        } catch (Exception $e) {
+            // Fallback jika parsing gagal
+            return [
+                'nama' => 'PT. CITRA BORNEO INDAH',
+                'revisi' => '02',
+                'tanggal_berlaku' => '1-jul-21',
+                'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
+            ];
         }
     }
 }
 
+if (!function_exists('defaultIconPT')) {
+    function defaultIconPT($tanggal)
+    {
+        try {
+            // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
+            $bulanIndonesia = [
+                'Januari' => '01',
+                'Februari' => '02',
+                'Maret' => '03',
+                'April' => '04',
+                'Mei' => '05',
+                'Juni' => '06',
+                'Juli' => '07',
+                'Agustus' => '08',
+                'September' => '09',
+                'Oktober' => '10',
+                'November' => '11',
+                'Desember' => '12'
+            ];
+
+            // Split tanggal "17 Mei 2025"
+            $parts = explode(' ', $tanggal);
+            if (count($parts) === 3) {
+                $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
+            }
+
+            $tanggalPenerimaan = Carbon::parse($tanggal);
+            $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
+
+            if ($tanggalPenerimaan < $batasTanggal) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            // Fallback jika parsing gagal
+            return true;
+        }
+    }
+}
 
 if (!function_exists('formGallery')) {
     function formGallery(): array

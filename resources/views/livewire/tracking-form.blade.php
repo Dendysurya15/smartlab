@@ -142,7 +142,20 @@
         <!-- Sample Photos -->
         @if($trackSampel && $trackSampel->foto_sampel)
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-xl font-semibold text-slate-800 mb-4">Foto Sampel</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-slate-800">Foto Sampel</h2>
+                <button wire:click="downloadSamplePhotos"
+                    wire:loading.attr="disabled"
+                    wire:target="downloadSamplePhotos"
+                    class="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors">
+                    <div wire:loading wire:target="downloadSamplePhotos" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <svg wire:loading.remove wire:target="downloadSamplePhotos" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span wire:loading.remove wire:target="downloadSamplePhotos">Download Foto Sampel</span>
+                    <span wire:loading wire:target="downloadSamplePhotos">Menyiapkan...</span>
+                </button>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @php
                 $fotoSampel = [];
