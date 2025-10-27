@@ -371,7 +371,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                         return 'success'; // Sertifikasi Sudah Diupload
                     })
-                    ->searchable()
                     ->sortable()
                     ->size('xs'),
                 TextColumn::make('asal_sampel')
@@ -488,6 +487,29 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->label('Progress')
                     ->options(ProgressPengerjaan::query()->pluck('nama', 'id'))
                     ->preload(),
+                SelectFilter::make('progress')
+                    ->label('Sertifikat')
+                    ->options([
+                        'done' => 'Sertifikasi Sudah Diupload',
+                        'not_done' => 'Sertifikasi Belum Diupload'
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        // dd($data);
+                        // if ($data['value'] !== null) {
+                        //     dd($data, $query);
+                        // }
+
+                        switch ($data['value'] == "done") {
+                            case 'value':
+                                return $query->where('progress', 7);
+                                break;
+
+                            default:
+                                return $query->whereNot('progress', 7);
+                                break;
+                        }
+                    })
+                    ->preload(),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from')
@@ -514,9 +536,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                 }
                             );
                     })
-
-
-
             ], layout: FiltersLayout::AboveContent)
             ->filtersFormColumns(3)
             ->bulkActions([
@@ -659,83 +678,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 ])->button()
                     ->color('info')
                     ->label('Export Kupa'),
-                // ActionGroup::make([
-                //     BulkAction::make('export')
-                //         ->label('Excel')
-                //         ->button()
-                //         ->icon('heroicon-o-document-chart-bar')
-                //         ->color('success')
-                //         ->deselectRecordsAfterCompletion()
-                //         ->modalHeading('Perhatian')
-                //         ->modalSubheading(
-                //             "Harap Memilih data yang tidak dalam kondisi status Draft"
-                //         )
-                //         ->modalButton('Excel')
-                //         ->action(function (Collection $records) {
-                //             $recordIds = [];
-                //             $jenis_sampel = [];
-                //             $dates = [];
-                //             $year = [];
-
-                //             $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
-                //                 if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
-                //                     $recordIds[] = $record->id;
-                //                 }
-                //                 $jenis_sampel[] = $record->jenisSampel->nama;
-                //                 $carbonDate = Carbon::parse($record->tanggal_memo);
-                //                 $dates[] = $carbonDate->format('F');
-                //                 $year[] = $carbonDate->format('Y');
-                //             });
-
-                //             $jenis_sample_final = implode(',', array_unique($jenis_sampel));
-                //             $dates_final = implode(',', array_unique($dates));
-                //             $year_final = implode(',', array_unique($year));
-                //             // dd($recordIds, $records);
-                //             $data = implode('$', $recordIds);
-
-                //             // Concatenate strings and variables using the concatenation operator (.)
-                //             $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
-                //             return Excel::download(new MonitoringKupabulk($data), $filename);
-                //         }),
-
-                //     BulkAction::make('export_pdf_monotoring')
-                //         ->label('PDF')
-                //         ->button()
-                //         ->icon('heroicon-o-document-arrow-down')
-                //         ->color('warning')
-                //         ->deselectRecordsAfterCompletion()
-                //         ->modalHeading('Perhatian')
-                //         ->modalSubheading(
-                //             "Harap Memilih data yang tidak dalam kondisi status Draft"
-                //         )
-                //         ->modalButton('Export PDF')
-                //         ->action(function (Collection $records) {
-                //             $recordIds = [];
-                //             $jenis_sampel = [];
-                //             $dates = [];
-                //             $year = [];
-
-                //             $records->each(function ($record) use (&$recordIds, &$jenis_sampel, &$dates, &$year) {
-                //                 if ($record->status !== 'Draft' && $record->status !== 'Rejected') {
-                //                     $recordIds[] = $record->id;
-                //                 }
-                //                 $jenis_sampel[] = $record->jenisSampel->nama;
-                //                 $carbonDate = Carbon::parse($record->tanggal_memo);
-                //                 $dates[] = $carbonDate->format('F');
-                //                 $year[] = $carbonDate->format('Y');
-                //             });
-
-                //             $jenis_sample_final = implode(',', array_unique($jenis_sampel));
-                //             $dates_final = implode(',', array_unique($dates));
-                //             $year_final = implode(',', array_unique($year));
-                //             // dd($recordIds, $records);
-                //             $data = implode('$', $recordIds);
-                //             $filename = 'Form Monitoring Sampel ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final;
-                //             return redirect()->route('exporpdfform', ['id' => $data, 'filename' => $filename])->with('target', '_blank');
-                //         }),
-                // ])->button()
-                //     ->color('info')
-                //     ->label('Export Form Monitoring'),
                 ActionGroup::make([
                     BulkAction::make('export_logbook_pdf')
                         ->label('PDF')
@@ -1479,6 +1421,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             }
                             $emailAddresses = !empty($records->emailTo) ? explode(',', $records->emailTo) : null;
                             $emailcc = !empty($records->emailCc) ? explode(',', $records->emailCc) : null;
+
                             if (!empty($dataToInsert2)) {
                                 event(new Smartlabsnotification($dataToInsert2));
                             }
@@ -1571,7 +1514,27 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         ->icon('heroicon-o-document-chart-bar')
                         ->color('success')
                         ->visible(fn($record) => auth()->user()->can('send_invoice') && $record->asal_sampel === 'Eksternal')
-                        ->size('xs')
+                        ->size('xs'),
+                    Action::make('reupload_sertifikat')
+                        ->label('Reupload Sertifkat')
+                        ->action(function (TrackSampel $record) {
+
+                            if ($record->progress == 7) {
+                                $this->id_sertifikat = $record->id;
+                                $this->dispatch('open-modal', id: 'upload-sertifikat');
+
+                                return;
+                            }
+
+                            return Notification::make()
+                                ->title("Progress belum selesai tidak bisa upload sertifikat")
+                                ->warning()
+                                ->send();
+                        })
+                        ->icon('heroicon-o-document-chart-bar')
+                        ->color('success')
+                        // ->visible(fn($recor,d) => auth()->user()->can('send_invoice') && $record->asal_sampel === 'Eksternal')
+                        ->size('xs'),
                 ])->tooltip('Actions'),
             ]);
     }

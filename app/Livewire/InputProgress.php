@@ -135,26 +135,26 @@ class InputProgress extends Component implements HasForms
 
                         $params = ParameterAnalisis::where('id_jenis_sampel', $state)->pluck('nama_parameter', 'id')->toArray();
                         $getlates_id = TrackSampel::with('trackParameters')->where('jenis_sampel', $state)->orderBy('id', 'desc')->first();
-                        $getlates_doc = TrackSampel::with('trackParameters')
-                            ->where('no_doc', '!=', null)
-                            ->orderBy('id', 'desc')
-                            ->first();
+                        // $getlates_doc = TrackSampel::with('trackParameters')
+                        //     ->where('no_doc', '!=', null)
+                        //     ->orderBy('id', 'desc')
+                        //     ->first();
 
-                        $getlates_doc_identitas = TrackSampel::with('trackParameters')
-                            ->where('no_doc_indentitas', '!=', null)
-                            ->orderBy('id', 'desc')
-                            ->first();
+                        // $getlates_doc_identitas = TrackSampel::with('trackParameters')
+                        //     ->where('no_doc_indentitas', '!=', null)
+                        //     ->orderBy('id', 'desc')
+                        //     ->first();
 
                         // Extract the 'no_doc' field from the latest document
-                        $laststring = $getlates_doc ? $getlates_doc->no_doc : null;
-                        $laststring_identitas = $getlates_doc_identitas ? $getlates_doc_identitas->no_doc_indentitas : null;
+                        // $laststring = $getlates_doc ? $getlates_doc->no_doc : null;
+                        // $laststring_identitas = $getlates_doc_identitas ? $getlates_doc_identitas->no_doc_indentitas : null;
                         // dd($laststring_identitas);
                         // Increment the version or set to default if no document is found
-                        $newString = $laststring ? incrementVersion($laststring) : 'FR-7.1-1.1';
-                        $newString_identitas = $laststring_identitas ? incrementVersion_identitas($laststring_identitas) : 'FR-7.4-1.2-1';
+                        // $newString = $laststring ? incrementVersion($laststring) : 'FR-7.1-1.1';
+                        // $newString_identitas = $laststring_identitas ? incrementVersion_identitas($laststring_identitas) : 'FR-7.4-1.2-1';
                         // Assign the new string to 'no_document'
-                        $set('no_document', $newString);
-                        $set('no_document_indentitas', $newString_identitas);
+
+
                         $set('preflab', $jenisSampel ? $jenisSampel->kode : '1'); // Replace 'default_value' with the appropriate default value
                         $set('parametersAnal', $params);
                         $set('nama_formulir', 'Kaji Ulang Permintaan,Tender dan Kontrak Sampel' . ' ' . $jenisSampel->nama);
@@ -162,6 +162,8 @@ class InputProgress extends Component implements HasForms
                         $set('JumlahSampel', '');
                         $set('lab_kiri', '');
                         $set('lab_kanan', '');
+                        $set('no_document', $jenisSampel->nomor_kupa);
+                        $set('no_document_indentitas', $jenisSampel->nomor_identitas);
                         if ($jenisSampel) {
                             $progress = $jenisSampel->progress;
 
