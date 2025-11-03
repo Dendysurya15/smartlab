@@ -1093,6 +1093,7 @@ class Editprogress extends Component implements HasForms
                                 'tanggal_registrasi' => $this->opt->tanggal_terima,
                                 'estimasi' => $this->opt->estimasi,
                                 'type' => 'update',
+                                'tanggal_rilis_sertifikat' => $this->opt->tanggal_rilis_sertifikat,
                             ];
                         }
                     }

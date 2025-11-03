@@ -145,6 +145,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                         'tanggal_registrasi' => $record->tanggal_terima,
                                         'estimasi' => $record->estimasi,
                                         'type' => 'update',
+                                        'tanggal_rilis_sertifikat' => $record->tanggal_rilis_sertifikat,
                                     ];
                                 }
                             }
@@ -1417,6 +1418,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                         'asal' => $records->asal_sampel,
                                         'id_invoice' => $records->id,
                                         'tanggal_registrasi' => $records->tanggal_terima,
+                                        'tanggal_rilis_sertifikat' => $records->tanggal_rilis_sertifikat,
                                         'estimasi' => $records->estimasi,
                                     ];
                                 }
