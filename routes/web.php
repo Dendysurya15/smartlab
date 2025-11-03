@@ -11,6 +11,7 @@ use App\Http\Controllers\TrackSampelController;
 use App\Http\Controllers\ExcelmanagementController;
 use App\Http\Controllers\Kuesionerroot;
 use App\Http\Controllers\LandingPageSettingsController;
+use App\Http\Controllers\JenisSampleController;
 use App\Http\Middleware\TrackCaptchaFailures;
 use App\Livewire\Kuesionerdata;
 use App\Livewire\Managementkuesioner;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\PdfController;
 use Illuminate\Http\Request;
 use App\Jobs\Generatebulkpdfpr;
+use NumberToWords\Legacy\Numbers\Words\Locale\Ro;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,6 +118,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/404', function () {
         return view('errorpages.404');
     })->name('404');
+
+
+    Route::get('/jenis-sample', [JenisSampleController::class, 'index'])->name('jenis-sample');
 
     // Route::get('/download-bulk-pdf/{filename}', [PdfController::class, 'downloadBulkPdf'])
     //     ->name('download.bulk.pdf');
