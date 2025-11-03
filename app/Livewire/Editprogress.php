@@ -98,7 +98,17 @@ class Editprogress extends Component implements HasForms
         $this->Peralatan = array_values($getarray);
         $this->Konfirmasi = $this->opt->konfirmasi == 1 ? true : false;
         $img = $this->opt->foto_sampel;
-        $img = explode('%', $img);
+
+        // Clean the filename by removing extra characters like quotes and backslashes
+        if ($img) {
+            $img = trim($img, '"'); // Remove quotes
+            $img = str_replace('\\/', '', $img); // Remove backslash and forward slash
+            $img = explode('%', $img);
+        } else {
+            $img = [];
+        }
+
+        // dd($img);
         $this->foto_sampel = $img;
         $this->status_progres = json_decode($this->opt->last_update, true);
         // $lab_label_tahun = $this->opt->lab_label_tahun;
@@ -182,6 +192,40 @@ class Editprogress extends Component implements HasForms
                         }
                         return $getdata;
                     }),
+                DateTimePicker::make('tanggal_rilis_sertifikat')
+                    ->label('Tanggal rilis sertifikat')
+                    ->required()
+                    ->seconds(true)
+                    ->default(function () {
+                        if ($this->opt->sertifikasi) {
+                            if ($this->opt->tanggal_rilis_sertifikat) {
+                                return $this->opt->tanggal_rilis_sertifikat;
+                            }
+                            // [{"jenis_sampel":"11","progress":"1","updated_at":"2025-10-16 15:20:06"},{"jenis_sampel":11,"progress":"7","updated_at":"2025-10-21 16:51:36"}]
+                            $last_update = json_decode($this->opt->last_update, true);
+                            $result = collect($last_update)->firstWhere('progress', 7)['updated_at'] ?? Carbon::now();
+
+                            return Carbon::parse($result);
+                        } else {
+                            return Carbon::now();
+                        }
+                    })
+                    ->visible(function (Get $get) {
+                        // dd($this->opt->progress);
+                        if ($this->opt->progress == 7 || $get('add_sertifikat') === true) {
+                            // dd('true');
+                            return true;
+                        } else {
+                            // dd([
+                            //     'progress' => $this->opt->progress,
+                            //     'sertifikasi' => $this->opt->sertifikasi,
+                            //     'add_sertifikat' => $get('add_sertifikat'),
+                            //     'false'
+                            // ]);
+                            return false;
+                        }
+                    })
+                    ->required($this->opt->sertifikasi),
                 FileUpload::make('file_sertifikat')
                     ->multiple()
                     ->label('File Sertifikat')
@@ -192,9 +236,11 @@ class Editprogress extends Component implements HasForms
                     ->visibility('private')
                     ->maxSize(5024)
                     ->disk('private')
-                    ->default($this->opt->sertifikasi)
+                    ->default(function () {
+                        return explode(',', $this->opt->sertifikasi);
+                    })
                     ->visible(function (Get $get) {
-                        if ($this->opt->progress == 7 && $this->opt->sertifikasi == null || $get('add_sertifikat') === true) {
+                        if ($this->opt->progress == 7 || $get('add_sertifikat') === true) {
                             return true;
                         } else {
                             return false;
@@ -965,6 +1011,7 @@ class Editprogress extends Component implements HasForms
                 // }
 
                 $trackSampel->sertifikasi = isset($form['file_sertifikat']) ? implode(',', $form['file_sertifikat']) : null;
+                $trackSampel->tanggal_rilis_sertifikat = isset($form['tanggal_rilis_sertifikat']) ? $form['tanggal_rilis_sertifikat'] : null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');
@@ -1165,6 +1212,7 @@ class Editprogress extends Component implements HasForms
                 // }
 
                 $trackSampel->sertifikasi = isset($form['file_sertifikat']) ? implode(',', $form['file_sertifikat']) : null;
+                $trackSampel->tanggal_rilis_sertifikat = isset($form['tanggal_rilis_sertifikat']) ? $form['tanggal_rilis_sertifikat'] : null;
                 $trackSampel->last_update = $current;
                 $trackSampel->admin = $userId;
                 $nomorHpArray = array_column($form['nomerhpuser'], 'NomorHp');

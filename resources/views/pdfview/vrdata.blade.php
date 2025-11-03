@@ -48,6 +48,7 @@
             display: table-row-group;
         }
     </style>
+
     @foreach ($data as $item)
     <div style="border: 1px solid black;">
         <div style="margin: 10px;">

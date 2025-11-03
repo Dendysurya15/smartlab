@@ -18,99 +18,111 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class pdfpr implements FromView, ShouldAutoSize, WithColumnWidths, WithEvents, WithDrawings
 {
-
     private $id;
     private $tanggal_penerimaan;
+    private $generateData;
+
     public function __construct($id)
     {
         $this->id = $id;
-        // dd($id);
     }
 
     public function view(): View
     {
-        $generate = GeneratePR($this->id);
-        // dd($generate);
-        $this->tanggal_penerimaan = $generate['tanggal_penerimaan'];
-        // dd($generate['result']);
+        // Generate data once and cache it
+        $this->generateData = GeneratePR($this->id);
+
+        // Fix: Use correct key from GeneratePR function
+        $this->tanggal_penerimaan = $this->generateData['tanggal_terima'] ?? null;
+
         return view('excelView.prexcel', [
-            'data' => $generate['result'],
-            'tanggal_terima' => $generate['tanggal_penerimaan']
+            'data' => $this->generateData['result'] ?? [],
+            'tanggal_terima' => $this->tanggal_penerimaan
         ]);
     }
-
 
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $styleHeader = [
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => 'thin',
-                            'color' => ['rgb' => '808080']
-                        ],
+                // Define common border style
+                $borderStyle = [
+                    'allBorders' => [
+                        'borderStyle' => 'thin',
+                        'color' => ['rgb' => '808080']
                     ],
+                ];
+
+                // Header style with center alignment
+                $styleHeader = [
+                    'borders' => $borderStyle,
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                         'vertical' => Alignment::VERTICAL_CENTER,
                         'wrapText' => true,
                     ],
                 ];
-                $styleHeader2 = [
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => 'thin',
-                            'color' => ['rgb' => '808080']
-                        ],
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_LEFT,
-                        'vertical' => Alignment::VERTICAL_TOP,
-                        'wrapText' => true,
-                    ],
-                ];
+
+                // Apply styles efficiently
                 $event->sheet->getStyle('A6:R6')->applyFromArray($styleHeader);
                 $event->sheet->getStyle('N7')->applyFromArray($styleHeader);
+
+                // Auto-fit columns for better readability
+                foreach (range('A', 'R') as $column) {
+                    $event->sheet->getDelegate()->getColumnDimension($column)->setAutoSize(true);
+                }
             },
         ];
     }
 
     public function columnWidths(): array
     {
+        // Optimized column widths for better readability
         return [
-            'Q' => 10,
-            'D' => 12,
-            'L' => 12,
-            'M' => 12,
-            'R' => 10,
-            'N' => 12,
-            'E' => 8
+            'A' => 8,   // NO
+            'B' => 15,  // tanggal sample
+            'C' => 10,  // Sampel
+            'D' => 15,  // Jenis Sampel
+            'E' => 12,  // Asal Sampel
+            'F' => 10,  // No Kupa
+            'G' => 12,  // No Lab
+            'H' => 20,  // Nama Pengirim
+            'I' => 15,  // Departemen
+            'J' => 15,  // No Surat
+            'K' => 20,  // Parameter Analisa
+            'L' => 10,  // Tujuan
+            'M' => 25,  // Kode Sampel
+            'N' => 15,  // Estimasi KUPA
+            'O' => 18,  // Tanggal Selesai Analisa
+            'P' => 12,  // Kode Tracking
+            'Q' => 18,  // Tanggal Rilis Sertifikat
+            'R' => 15,  // No. Sertifikat
         ];
     }
 
-
     public function drawings()
     {
-
-
         $drawings = [];
 
+        // Only create drawing if we have tanggal_penerimaan
+        if ($this->tanggal_penerimaan) {
+            $drawing1 = new Drawing();
+            $drawing1->setName('Company Logo');
+            $drawing1->setDescription('Company logo for export');
 
-        // First Image
-        $drawing1 = new Drawing();
-        $drawing1->setName('Logo1');
-        $drawing1->setDescription('This is my first logo');
+            // Use optimized logo selection
+            $logoPath = defaultIconPT($this->tanggal_penerimaan)
+                ? public_path('images/Logo_CBI_2.png')
+                : public_path('images/logocorp.png');
 
-        if (defaultIconPT($this->tanggal_penerimaan)) {
-            $drawing1->setPath(public_path('images/Logo_CBI_2.png'));
-        } else {
-            $drawing1->setPath(public_path('images/logocorp.png'));
+            // Check if logo file exists before setting
+            if (file_exists($logoPath)) {
+                $drawing1->setPath($logoPath);
+                $drawing1->setHeight(30);
+                $drawing1->setCoordinates('B3');
+                $drawings[] = $drawing1;
+            }
         }
-        $drawing1->setHeight(30);
-        $drawing1->setCoordinates('B3');
-        $drawings[] = $drawing1;
-
 
         return $drawings;
     }

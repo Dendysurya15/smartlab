@@ -191,7 +191,8 @@ class HistoryKupaController extends Controller
         $data = [
             'data' => $generate['result'],
             'lab' => $generate,
-            'nomor_lab' => $generate['nomor_lab']
+            'nomor_lab' => $generate['nomor_lab'],
+            'tanggal_terima' => $generate['tanggal_terima']
         ];
         $pdf = Pdf::setPaper('letter', 'portrait');
         $pdf->setOptions([
@@ -272,6 +273,7 @@ class HistoryKupaController extends Controller
                 'formulir' => $value->formulir,
                 'nodoc' => $value->no_doc,
                 'kode_sampel' => $value->kode_sampel,
+                'tanggal_penerimaan' => Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('d F Y'),
             ];
         }
         $data = [
@@ -566,6 +568,9 @@ class HistoryKupaController extends Controller
             $nama_parameter = [];
             $namakode_sampelparams = [];
 
+            // Initialize data array to prevent undefined key error
+            $result[$key]['data'] = [];
+
             // Collect parameters
             foreach ($trackparam as $trackParameter) {
                 if ($trackParameter->ParameterAnalisis) {
@@ -679,6 +684,8 @@ class HistoryKupaController extends Controller
         // dd($result);
         $data = ['data' => $result];
 
+        // dd($data);
+
         // Generate PDF
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
@@ -692,6 +699,8 @@ class HistoryKupaController extends Controller
 
         return $dompdf->stream($filename, ["Attachment" => false]);
     }
+
+
     public function export_dokumentasi($id, $filename)
     {
         $idsArray = explode('$', $id);
@@ -711,7 +720,15 @@ class HistoryKupaController extends Controller
                 $labkanan = '';
             }
 
-            $filenames_array = explode('%', $value->foto_sampel);
+            // Clean the filename by removing extra characters like quotes and backslashes
+            $foto_sampel = $value->foto_sampel;
+            if ($foto_sampel) {
+                $foto_sampel = trim($foto_sampel, '"'); // Remove quotes
+                $foto_sampel = str_replace('\\/', '', $foto_sampel); // Remove backslash and forward slash
+                $filenames_array = explode('%', $foto_sampel);
+            } else {
+                $filenames_array = [];
+            }
 
             $result[$key] = [
                 'no_lab' => $labkiri . ' - ' . $labkanan,
@@ -1196,7 +1213,15 @@ class HistoryKupaController extends Controller
                 $labkanan = '';
             }
 
-            $filenames_array = explode('%', $value->foto_sampel);
+            // Clean the filename by removing extra characters like quotes and backslashes
+            $foto_sampel = $value->foto_sampel;
+            if ($foto_sampel) {
+                $foto_sampel = trim($foto_sampel, '"'); // Remove quotes
+                $foto_sampel = str_replace('\\/', '', $foto_sampel); // Remove backslash and forward slash
+                $filenames_array = explode('%', $foto_sampel);
+            } else {
+                $filenames_array = [];
+            }
 
             $result[$key] = [
                 'no_lab' => $labkiri . ' - ' . $labkanan,

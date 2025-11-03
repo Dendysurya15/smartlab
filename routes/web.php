@@ -10,6 +10,8 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TrackSampelController;
 use App\Http\Controllers\ExcelmanagementController;
 use App\Http\Controllers\Kuesionerroot;
+use App\Http\Controllers\LandingPageSettingsController;
+use App\Http\Controllers\JenisSampleController;
 use App\Http\Middleware\TrackCaptchaFailures;
 use App\Livewire\Kuesionerdata;
 use App\Livewire\Managementkuesioner;
@@ -20,6 +22,7 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\PdfController;
 use Illuminate\Http\Request;
 use App\Jobs\Generatebulkpdfpr;
+use NumberToWords\Legacy\Numbers\Words\Locale\Ro;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +35,14 @@ use App\Jobs\Generatebulkpdfpr;
 |
 */
 
-Route::redirect('/', 'login');
+Route::get('/', function () {
+    return view('pages.landing');
+})->name('landing');
+
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
 Route::get('unblock', [Trackingprogres::class, 'unblockIp']);
 Route::get('/blocked', function () {
     $exception = new \Exception('Your IP is blocked due to multiple failed attempts.');
@@ -100,9 +110,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         return view('pages.managementkuesioner');
     })->name('Managementkuesioner');
 
+    Route::get('/landing-page-settings', [LandingPageSettingsController::class, 'index'])->name('landing-page-settings');
+    Route::get('/api/landing-settings/{key}', [LandingPageSettingsController::class, 'getSetting']);
+    Route::get('/api/landing-settings-group/{group}', [LandingPageSettingsController::class, 'getGroup']);
+    Route::get('/api/landing-settings-all', [LandingPageSettingsController::class, 'getAllSettings']);
+
     Route::get('/404', function () {
         return view('errorpages.404');
     })->name('404');
+
+
+    Route::get('/jenis-sample', [JenisSampleController::class, 'index'])->name('jenis-sample');
 
     // Route::get('/download-bulk-pdf/{filename}', [PdfController::class, 'downloadBulkPdf'])
     //     ->name('download.bulk.pdf');

@@ -27,6 +27,38 @@ use App\Models\TrackSampel;
 use App\Models\ExcelManagement;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Forms\Components\Select;
+use Livewire\WithFileUploads;
+use Filament\Forms\Components\FileUpload;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\UsersImport;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\DB;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\DeleteAction;
+use Illuminate\Database\Eloquent\Collection;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use App\Models\Eskul;
+use App\Helpers\HashHelper;
+use Filament\Forms\Components\Repeater;
+use App\Models\EskulSchedule;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Tables\Actions\ActionGroup;
+use App\Models\EskulMaterial;
+use App\Models\EskulGallery;
+use Filament\Forms\Components\DatePicker;
+use App\Models\EskulEvent;
+use Filament\Forms\Components\Toggle;
+
 if (!function_exists('tanggal_indo')) {
     function tanggal_indo($tanggal, $cetak_hari = false, $cetak_bulan = false, $cetak_tanggal = false)
     {
@@ -783,297 +815,611 @@ if (!function_exists('GeneratePdfKupa')) {
     }
 }
 
-
 if (!function_exists('GeneratePR')) {
     function GeneratePR($iddata)
     {
         $id = explode('$', $iddata);
 
+        // Optimized query with eager loading
         $queries = TrackSampel::whereIn('id', $id)
-            ->with('trackParameters')
-            ->with('progressSampel')
-            ->with('jenisSampel')
-            ->get();
-
-        $queries = $queries->groupBy(['jenis_sampel', 'nomor_kupa']);
-        // dd($queries);
+            ->with(['trackParameters.ParameterAnalisis', 'progressSampel', 'jenisSampel'])
+            ->get()
+            ->groupBy(['jenis_sampel', 'nomor_kupa']);
 
         $result = [];
+        $jenissamplel = [];
+
         foreach ($queries as $key => $value) {
             foreach ($value as $key1 => $value1) {
-                $kode_sampel = [];
-                $nomor_lab = [];
-                $nama_parameter = [];
-                foreach ($value1 as $key2 => $value2) {
-                    $jenissample = $value2->jenisSampel->nama;
-                    $jenissample_komuditas = $value2->jenis_pupuk ?? 'Tidak tersedia';
-                    $jumlahsample = $value2['jumlah_sampel'];
-                    $catatan = $value2['catatan'];
-                    $kdsmpel = $value2['kode_sampel'];
-                    $nolab = $value2['nomor_lab'];
-                    $trackparam = $value2->trackParameters;
-                    $carbonDate = Carbon::parse($value2['tanggal_terima'])->locale('id')->translatedFormat('d F Y');
-                    $carbonDate2 = Carbon::parse($value2['estimasi'])->locale('id')->translatedFormat('d F Y');
-                    $nama_parameter = [];
-                    $hargatotal = 0;
-                    $jumlah_per_parametertotal = 0;
-                    $hargaasli = [];
-                    $harga_total_per_sampel = [];
-                    $jumlah_per_parameter = [];
-                    $namakode_sampelparams = [];
-                    foreach ($trackparam as $trackParameter) {
+                // Get first item for common data
+                $firstItem = $value1->first();
+                if (!$firstItem) continue;
 
-                        if ($trackParameter->ParameterAnalisis) {
-                            $nama_parameter[] = $trackParameter->ParameterAnalisis->nama_parameter;
-                            $hargaasli[] =  Money::IDR($trackParameter->ParameterAnalisis->harga, true);
-                            $harga_total_per_sampel[] = Money::IDR($trackParameter->totalakhir, true);
-                            $jumlah_per_parameter[] = $trackParameter->jumlah;
+                // Common data that doesn't change per item
+                $jenissample = $firstItem->jenisSampel->nama;
+                $jenissample_komuditas = $firstItem->jenis_pupuk ?? 'Tidak tersedia';
+                $jumlahsample = $firstItem->jumlah_sampel;
+                $catatan = $firstItem->catatan;
+                $kdsmpel = $firstItem->kode_sampel;
+                $nolab = $firstItem->nomor_lab;
 
-                            $statuspaket = $trackParameter->ParameterAnalisis->paket_id;
+                // Parse dates once
+                $carbonDate = Carbon::parse($firstItem->tanggal_terima)->locale('id')->translatedFormat('d F Y');
+                $carbonDate2 = Carbon::parse($firstItem->estimasi)->locale('id')->translatedFormat('d F Y');
 
-                            if ($statuspaket != null) {
-                                $paket = explode('$', $statuspaket);
-                                $params = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
-                                // $nama_parameter[] = $nama_params;
-                                // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = ParameterAnalisis::whereIn('id', $paket)->pluck('nama_unsur')->toArray();
-                                $namakode_sampelparams[implode(',', $params)] =  explode('$', $trackParameter->namakode_sampel);
-                            } else {
-                                // $nama_parameter[] = $namaunsur;
-                                $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_unsur] = explode('$', $trackParameter->namakode_sampel);
-                            }
+                // Process track parameters and build sampel_data
+                $hargatotal = 0;
+                $sampel_data = [];
+                $paketIds = [];
 
-                            // $namakode_sampelparams[$trackParameter->ParameterAnalisis->nama_parameter] = explode('$', $trackParameter->namakode_sampel);
-                        }
+                foreach ($value1 as $value2) {
+                    foreach ($value2->trackParameters as $trackParameter) {
+                        if (!$trackParameter->ParameterAnalisis) continue;
+
                         $hargatotal += $trackParameter->totalakhir;
-                        $jumlah_per_parametertotal += $trackParameter->jumlah;
+                        $statuspaket = $trackParameter->ParameterAnalisis->paket_id;
+
+                        if ($statuspaket) {
+                            $paketIds[] = $statuspaket;
+                        }
                     }
-                    $harga_total_dengan_ppn = Money::IDR(hitungPPN($hargatotal), true);
-                    $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($hargatotal, true));
+                }
 
-                    $discountDecimal = $value2->discount != 0 ? $value2->discount / 100 : 0;
-                    $discount = $totalppn_harga->multiply($discountDecimal);
+                // Bulk fetch paket data to avoid N+1 queries
+                $paketData = [];
+                if (!empty($paketIds)) {
+                    $allPaketIds = [];
+                    foreach ($paketIds as $paketId) {
+                        $allPaketIds = array_merge($allPaketIds, explode('$', $paketId));
+                    }
+                    $paketData = ParameterAnalisis::whereIn('id', array_unique($allPaketIds))
+                        ->pluck('nama_unsur', 'id')
+                        ->toArray();
+                }
 
-                    $total_akhir = $totalppn_harga->subtract($discount);
-                    $newnamaparameter = [];
+                // Build sampel_data efficiently with normalization
+                foreach ($value1 as $value2) {
+                    foreach ($value2->trackParameters as $trackParameter) {
+                        if (!$trackParameter->ParameterAnalisis) continue;
 
-                    // dd($namakode_sampelparams);
+                        $statuspaket = $trackParameter->ParameterAnalisis->paket_id;
+                        $kodeItems = $trackParameter->namakode_sampel ? explode('$', $trackParameter->namakode_sampel) : [$trackParameter->namakode_sampel];
 
-                    $sampel_data = [];
+                        if ($statuspaket) {
+                            $paket = explode('$', $statuspaket);
+                            $params = array_map(function ($id) use ($paketData) {
+                                return $paketData[$id] ?? '';
+                            }, $paket);
+                            $attribute = implode(',', $params);
+                        } else {
+                            $attribute = $trackParameter->ParameterAnalisis->nama_unsur;
+                        }
 
-                    foreach ($namakode_sampelparams as $attribute => $items) {
-                        foreach ($items as $item) {
-                            if (!isset($sampel_data[$item])) {
-                                $sampel_data[$item] = [];
+                        foreach ($kodeItems as $item) {
+                            // Normalisasi: trim dan hapus titik di akhir
+                            $item_normalized = rtrim(trim($item), '.');
+
+                            if (!isset($sampel_data[$item_normalized])) {
+                                $sampel_data[$item_normalized] = [];
                             }
 
                             $explodedAttributes = strpos($attribute, ',') !== false ? explode(',', $attribute) : [$attribute];
-
                             foreach ($explodedAttributes as $attr) {
-                                $trimmedAttr = trim($attr); // Ensure no leading/trailing spaces
-                                if (!in_array($trimmedAttr, $sampel_data[$item])) {
-                                    $sampel_data[$item][] = $trimmedAttr;
+                                $trimmedAttr = trim($attr);
+                                if (!in_array($trimmedAttr, $sampel_data[$item_normalized])) {
+                                    $sampel_data[$item_normalized][] = $trimmedAttr;
                                 }
                             }
                         }
                     }
                 }
-                // dd($total_akhir);
-                // dd($sampel_data, $namakode_sampelparams);
 
-                $kode_sampel = explode('$', $kdsmpel);
+                // Calculate pricing once
+                $harga_total_dengan_ppn = Money::IDR(hitungPPN($hargatotal), true);
+                $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($hargatotal, true));
+                $discountDecimal = $firstItem->discount ? $firstItem->discount / 100 : 0;
+                $discount = $totalppn_harga->multiply($discountDecimal);
+                $total_akhir = $totalppn_harga->subtract($discount);
 
+                // Prepare common data with normalization
+                $kode_sampel_raw = array_map('trim', explode('$', $kdsmpel));
+                $kode_sampel_normalized = array_map(function ($kode) {
+                    return rtrim($kode, '.');
+                }, $kode_sampel_raw);
 
                 $nomor_lab = explode('$', $nolab);
-                $new_sampel = [];
-                $incc = 0;
-                foreach ($sampel_data as $keyx => $valuex) {
-                    $new_sampel[$incc++] = implode(',', $valuex);
-                }
-                // dd($value2);
-                $timestamp = strtotime($value2['tanggal_terima']);
-                $year = date('Y', $timestamp);
-                $lab =  substr($year, 2) . $value2->jenisSampel->kode . '.';
-                // Remove leading and trailing spaces from each element
-                $kode_sampel = array_map(function ($value) {
-                    return trim($value); // Removes spaces from both start and end
-                }, $kode_sampel);
+                $year = date('y', strtotime($firstItem->tanggal_terima));
+                $lab = $year . $firstItem->jenisSampel->kode . '.';
                 $new_nomor_lab = $nomor_lab[0] - 1;
                 $lab_counter = 1;
-                $progress = $value2->progressSampel->nama;
-                $progresHistory = json_decode($value2->last_update, true);
+                $progress = $firstItem->progressSampel->nama;
 
+                // Process progress history once
+                $progresHistory = json_decode($firstItem->last_update, true) ?: [];
                 $dateSertifikat = '-';
                 $dateAnalisa = '-';
 
-                if ($value2->progressSampel->id == 7) {
+                if ($firstItem->progressSampel->id == 7) {
                     $dateSertifikat = Carbon::now()->locale('id')->translatedFormat('d F Y');
-                    $foundProgress6 = false;
 
-                    foreach ($progresHistory as $progress) {
-                        if ($progress['progress'] == '7') {
-                            $dateSertifikat = Carbon::parse($progress['updated_at'])
+                    foreach ($progresHistory as $progressItem) {
+                        if ($progressItem['progress'] == '7') {
+                            $dateSertifikat = Carbon::parse($progressItem['updated_at'])
                                 ->locale('id')
                                 ->translatedFormat('d F Y');
                         }
-
-                        if ($progress['progress'] == '6') {
-                            $dateAnalisa = Carbon::parse($progress['updated_at'])
+                        if ($progressItem['progress'] == '6') {
+                            $dateAnalisa = Carbon::parse($progressItem['updated_at'])
                                 ->locale('id')
                                 ->translatedFormat('d F Y');
-                            $foundProgress6 = true;
                         }
                     }
 
-                    if (!$foundProgress6) {
+                    if ($dateAnalisa === '-') {
                         $dateAnalisa = $dateSertifikat;
                     }
                 }
-                foreach ($sampel_data as $keysx => $valuems) {
-                    // $inc = 1;
-                    foreach ($kode_sampel as $index => $kode) {
-                        if ((string)$keysx === $kode) {
-                            $result[$key][$key1][$keysx]['jenis_sample'] = $jenissample;
-                            $result[$key][$key1][$keysx]['nama_unsur'] = $keysx;
-                            $result[$key][$key1][$keysx]['jenis_sample_komoditas'] = $jenissample_komuditas;
-                            $result[$key][$key1][$keysx]['jumlah_sampel'] = ($index == 0) ? $jumlahsample : 'null';
-                            $result[$key][$key1][$keysx]['catatan'] = ($index == 0) ? $catatan : 'null';
-                            $result[$key][$key1][$keysx]['kode_sampel'] = $kode_sampel[$index];
-                            $current_lab_number = $new_nomor_lab + $lab_counter;
-                            $result[$key][$key1][$keysx]['nomor_lab'] = $lab . formatLabNumber($current_lab_number);
-                            $lab_counter++; // Increment the counter for next iteration
-                            $result[$key][$key1][$keysx]['nama_pengirim'] = $value2['nama_pengirim'];
-                            $result[$key][$key1][$keysx]['asal_sampel'] = $value2['asal_sampel'];
-                            $result[$key][$key1][$keysx]['departemen'] = $value2['departemen'];
-                            $result[$key][$key1][$keysx]['nomor_surat'] = $value2['nomor_surat'];
-                            $result[$key][$key1][$keysx]['nomor_kupa'] = $value2['nomor_kupa'];
-                            $result[$key][$key1][$keysx]['tanggal_terima'] = $carbonDate;
-                            $result[$key][$key1][$keysx]['tanggal_memo'] = $value2['tanggal_memo'];
-                            $result[$key][$key1][$keysx]['kode_track'] = $value2['kode_track'];
-                            $result[$key][$key1][$keysx]['tujuan'] = $value2['tujuan'];
-                            $result[$key][$key1][$keysx]['Jumlah_Parameter'] = count($valuems);
-                            $result[$key][$key1][$keysx]['Parameter_Analisa'] = implode(',', $valuems);
-                            $result[$key][$key1][$keysx]['tujuan'] = $value2['tujuan'];
-                            $result[$key][$key1][$keysx]['estimasi'] = $carbonDate2;
-                            $result[$key][$key1][$keysx]['Tanggal_Selesai_Analisa'] = $dateAnalisa;
-                            $result[$key][$key1][$keysx]['No_sertifikat'] = '-';
-                            $result[$key][$key1][$keysx]['total'] = ($index == 0) ? $total_akhir : 'null';
-                            $result[$key][$key1][$keysx]['total_string'] = ($index == 0) ? NumberToWords::transformNumber('id', $hargatotal) : 'null';
-                            $result[$key][$key1][$keysx]['progress'] = $progress;
-                            $result[$key][$key1][$keysx]['Tanggal_Rilis_Sertifikat'] = $dateSertifikat;
+
+                // Build result data efficiently with normalization
+                foreach ($kode_sampel_raw as $index => $kode) {
+                    $kode_normalized = $kode_sampel_normalized[$index];
+
+                    // Check if sampel_data exists for normalized code
+                    if (!isset($sampel_data[$kode_normalized])) {
+                        // If sampel_data is empty or key not found, create default entry
+                        if (empty($sampel_data)) {
+                            // Get default parameters from trackParameters
+                            $default_params = [];
+                            foreach ($value1 as $v) {
+                                foreach ($v->trackParameters as $tp) {
+                                    if ($tp->ParameterAnalisis) {
+                                        $param_name = $tp->ParameterAnalisis->nama_unsur;
+                                        if (!in_array($param_name, $default_params)) {
+                                            $default_params[] = $param_name;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (empty($default_params)) {
+                                $default_params = ['Default Parameter'];
+                            }
+
+                            $sampel_data[$kode_normalized] = $default_params;
+                        } else {
+                            // Skip if sampel_data has entries but not for this code
+                            continue;
                         }
                     }
-                }
-                // dd($result);
-            }
-            $result[$key]['jenis'] = $jenissample;
-        }
-        // dd($result);
-        $jenissamplel = [];
-        foreach ($result as $key => $value) {
-            $jenissamplel[] = $value['jenis'];
-        }
-        $jenissamplefix = implode(',', $jenissamplel);
 
-        $filename = 'PDF Kupa,' . $jenissamplefix . '.pdf';
-        $nomor_labs = $nomor_lab[0] - 1;
+                    $valuems = $sampel_data[$kode_normalized];
+                    $current_lab_number = $new_nomor_lab + $lab_counter;
+
+                    $result[$key][$key1][$kode] = [  // Use original $kode for key to preserve format
+                        'jenis_sample' => $jenissample,
+                        'nama_unsur' => $kode,  // Use original format for display
+                        'jenis_sample_komoditas' => $jenissample_komuditas,
+                        'jumlah_sampel' => ($index == 0) ? $jumlahsample : 'null',
+                        'catatan' => ($index == 0) ? $catatan : 'null',
+                        'kode_sampel' => $kode,  // Use original format
+                        'nomor_lab' => $lab . formatLabNumber($current_lab_number),
+                        'nama_pengirim' => $firstItem->nama_pengirim,
+                        'asal_sampel' => $firstItem->asal_sampel,
+                        'departemen' => $firstItem->departemen,
+                        'nomor_surat' => $firstItem->nomor_surat,
+                        'nomor_kupa' => $firstItem->nomor_kupa,
+                        'tanggal_terima' => $carbonDate,
+                        'tanggal_memo' => $firstItem->tanggal_memo,
+                        'kode_track' => $firstItem->kode_track,
+                        'tujuan' => $firstItem->tujuan,
+                        'Jumlah_Parameter' => count($valuems),
+                        'Parameter_Analisa' => implode(',', $valuems),
+                        'estimasi' => $carbonDate2,
+                        'Tanggal_Selesai_Analisa' => $dateAnalisa,
+                        'No_sertifikat' => '-',
+                        'total' => ($index == 0) ? $total_akhir : 'null',
+                        'total_string' => ($index == 0) ? NumberToWords::transformNumber('id', $hargatotal) : 'null',
+                        'progress' => $progress,
+                        'Tanggal_Rilis_Sertifikat' => $dateSertifikat,
+                    ];
+
+                    $lab_counter++;
+                }
+            }
+
+            // Store jenis for filename generation
+            $result[$key]['jenis'] = $jenissample;
+            $result[$key]['tanggal_terima'] = $firstItem->tanggal_terima;
+            $jenissamplel[] = $jenissample;
+        }
+
+        // Generate filename efficiently
+        $filename = 'PDF Kupa,' . implode(',', array_unique($jenissamplel)) . '.pdf';
+
         return [
             'result' => $result,
             'filename' => $filename,
-            'nomor_lab' => $nomor_labs,
-            'tanggal_penerimaan' => $value2['tanggal_terima']
+            'nomor_lab' => isset($nomor_lab[0]) ? $nomor_lab[0] - 1 : 0,
+            'tanggal_terima' => $firstItem->tanggal_terima ?? null
         ];
     }
+}
 
-    if (!function_exists('defaultPTname')) {
-        function defaultPTname($tanggal)
-        {
-            try {
-                // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
-                $bulanIndonesia = [
-                    'Januari' => '01',
-                    'Februari' => '02',
-                    'Maret' => '03',
-                    'April' => '04',
-                    'Mei' => '05',
-                    'Juni' => '06',
-                    'Juli' => '07',
-                    'Agustus' => '08',
-                    'September' => '09',
-                    'Oktober' => '10',
-                    'November' => '11',
-                    'Desember' => '12'
-                ];
+// Helper function formatLabNumber (jika belum ada)
+if (!function_exists('formatLabNumber')) {
+    function formatLabNumber($number)
+    {
+        return str_pad($number, 3, '0', STR_PAD_LEFT);
+    }
+}
 
-                // Split tanggal "17 Mei 2025"
-                $parts = explode(' ', $tanggal);
-                if (count($parts) === 3) {
-                    $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
-                }
+// Keep your existing defaultPTname and defaultIconPT functions as they are
+if (!function_exists('defaultPTname')) {
+    function defaultPTname($tanggal)
+    {
+        try {
+            // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
+            $bulanIndonesia = [
+                'Januari' => '01',
+                'Februari' => '02',
+                'Maret' => '03',
+                'April' => '04',
+                'Mei' => '05',
+                'Juni' => '06',
+                'Juli' => '07',
+                'Agustus' => '08',
+                'September' => '09',
+                'Oktober' => '10',
+                'November' => '11',
+                'Desember' => '12'
+            ];
 
-                $tanggalPenerimaan = Carbon::parse($tanggal);
-                $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
-
-                if ($tanggalPenerimaan < $batasTanggal) {
-                    // return 'PT. CITRA BORNEO INDAH';
-                    return [
-                        'nama' => 'PT. CITRA BORNEO INDAH',
-                        'revisi' => '02',
-                        'tanggal_berlaku' => '1-jul-21',
-                        'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
-                    ];
-                } else {
-                    return [
-                        'nama' => 'PT. Sulung Research Station',
-                        'revisi' => '00',
-                        'tanggal_berlaku' => '01 Mei 2025',
-                        'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM PENGUJIAN'
-                    ];
-                }
-            } catch (Exception $e) {
-                // Fallback jika parsing gagal
-                return 'PT. CITRA BORNEO INDAH';
+            // Split tanggal "17 Mei 2025"
+            $parts = explode(' ', $tanggal);
+            if (count($parts) === 3) {
+                $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
             }
+
+            $tanggalPenerimaan = Carbon::parse($tanggal);
+            $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
+
+            if ($tanggalPenerimaan < $batasTanggal) {
+                return [
+                    'nama' => 'PT. CITRA BORNEO INDAH',
+                    'revisi' => '02',
+                    'tanggal_berlaku' => '1-jul-21',
+                    'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
+                ];
+            } else {
+                return [
+                    'nama' => 'PT. Sulung Research Station',
+                    'revisi' => '00',
+                    'tanggal_berlaku' => '01 Mei 2025',
+                    'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM PENGUJIAN'
+                ];
+            }
+        } catch (Exception $e) {
+            // Fallback jika parsing gagal
+            return [
+                'nama' => 'PT. CITRA BORNEO INDAH',
+                'revisi' => '02',
+                'tanggal_berlaku' => '1-jul-21',
+                'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
+            ];
         }
     }
+}
 
-    if (!function_exists('defaultIconPT ')) {
-        function defaultIconPT($tanggal)
-        {
-            try {
-                // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
-                $bulanIndonesia = [
-                    'Januari' => '01',
-                    'Februari' => '02',
-                    'Maret' => '03',
-                    'April' => '04',
-                    'Mei' => '05',
-                    'Juni' => '06',
-                    'Juli' => '07',
-                    'Agustus' => '08',
-                    'September' => '09',
-                    'Oktober' => '10',
-                    'November' => '11',
-                    'Desember' => '12'
-                ];
+if (!function_exists('defaultIconPT')) {
+    function defaultIconPT($tanggal)
+    {
+        try {
+            // Jika tanggal dalam format "17 Mei 2025" (Indonesia)
+            $bulanIndonesia = [
+                'Januari' => '01',
+                'Februari' => '02',
+                'Maret' => '03',
+                'April' => '04',
+                'Mei' => '05',
+                'Juni' => '06',
+                'Juli' => '07',
+                'Agustus' => '08',
+                'September' => '09',
+                'Oktober' => '10',
+                'November' => '11',
+                'Desember' => '12'
+            ];
 
-                // Split tanggal "17 Mei 2025"
-                $parts = explode(' ', $tanggal);
-                if (count($parts) === 3) {
-                    $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
-                }
-
-                $tanggalPenerimaan = Carbon::parse($tanggal);
-                $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
-
-                if ($tanggalPenerimaan < $batasTanggal) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (Exception $e) {
-                // Fallback jika parsing gagal
-                return true;
+            // Split tanggal "17 Mei 2025"
+            $parts = explode(' ', $tanggal);
+            if (count($parts) === 3) {
+                $tanggal = $parts[2] . '-' . $bulanIndonesia[$parts[1]] . '-' . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
             }
+
+            $tanggalPenerimaan = Carbon::parse($tanggal);
+            $batasTanggal = Carbon::createFromFormat('Y-m-d', '2025-05-01');
+
+            if ($tanggalPenerimaan < $batasTanggal) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            // Fallback jika parsing gagal
+            return true;
         }
+    }
+}
+
+if (!function_exists('formGallery')) {
+    function formGallery(): array
+    {
+        return [
+            TextInput::make('gallery_title')
+                ->label('Gallery Title')
+                ->default('Gallery Laboratorium')
+                ->required(),
+            Textarea::make('gallery_description')
+                ->label('Gallery Description')
+                ->maxLength(500)
+                ->helperText('Optional description for the gallery section'),
+            FileUpload::make('gallery_images')
+                ->label('Gallery Images')
+                ->image()
+                ->multiple()
+                ->directory('gallery')
+                ->visibility('public')
+                ->reorderable()
+                ->appendFiles()
+                ->maxFiles(20)
+                ->helperText('Upload multiple images for gallery (max 20 files)'),
+            Toggle::make('gallery_active')
+                ->label('Show Gallery on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formAnnouncements')) {
+    function formAnnouncements(): array
+    {
+        return [
+            TextInput::make('announcements_title')
+                ->label('Announcements Title')
+                ->default('Pengumuman')
+                ->required(),
+            Textarea::make('announcements_description')
+                ->label('Announcements Description')
+                ->maxLength(500)
+                ->helperText('Optional description for the announcements section'),
+            Repeater::make('announcements_list')
+                ->label('Announcements List')
+                ->schema([
+                    TextInput::make('title')
+                        ->label('Title')
+                        ->required()
+                        ->maxLength(255),
+                    Textarea::make('content')
+                        ->label('Content')
+                        ->required()
+                        ->rows(3)
+                        ->maxLength(1000),
+                    DatePicker::make('date')
+                        ->label('Date')
+                        ->required()
+                        ->default(now()),
+                    Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true),
+                ])
+                ->defaultItems(1)
+                ->addActionLabel('Add Announcement')
+                ->reorderable()
+                ->collapsible()
+                ->helperText('Add multiple announcements for the landing page'),
+            Toggle::make('announcements_active')
+                ->label('Show Announcements on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formHero')) {
+    function formHero(): array
+    {
+        return [
+            TextInput::make('hero_title')
+                ->label('Hero Title')
+                ->default('SMARTLAB SRS')
+                ->required(),
+            Textarea::make('hero_subtitle')
+                ->label('Hero Subtitle')
+                ->maxLength(500)
+                ->rows(3)
+                ->helperText('Main subtitle displayed below the hero title'),
+            FileUpload::make('hero_background_image')
+                ->label('Hero Background Images')
+                ->image()
+                ->multiple()
+                ->directory('hero')
+                ->visibility('public')
+                ->reorderable()
+                ->appendFiles()
+                ->maxFiles(10)
+                ->helperText('Upload multiple images for hero slideshow (max 10 files, changes every 10 seconds)'),
+            TextInput::make('hero_button_text')
+                ->label('Hero Button Text')
+                ->default('Track Sampel')
+                ->maxLength(100),
+            TextInput::make('hero_button_link')
+                ->label('Hero Button Link')
+                ->default('#tracking')
+                ->maxLength(255)
+                ->helperText('Link for the hero button (e.g., #tracking, /login)'),
+            Toggle::make('hero_active')
+                ->label('Show Hero Section on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formGeneral')) {
+    function formGeneral(): array
+    {
+        return [
+            TextInput::make('site_name')
+                ->label('Site Name')
+                ->default('SMARTLAB SRS')
+                ->required(),
+            Textarea::make('site_description')
+                ->label('Site Description')
+                ->maxLength(1000)
+                ->rows(4)
+                ->helperText('Brief description of your laboratory services'),
+            TextInput::make('site_tagline')
+                ->label('Site Tagline')
+                ->maxLength(255)
+                ->helperText('Short tagline for the site'),
+            FileUpload::make('site_logo')
+                ->label('Site Logo')
+                ->image()
+                ->directory('general')
+                ->visibility('public')
+                ->helperText('Main logo for the site'),
+            Toggle::make('general_active')
+                ->label('Show General Info on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formFeatures')) {
+    function formFeatures(): array
+    {
+        return [
+            TextInput::make('features_title')
+                ->label('Features Title')
+                ->default('Layanan Kami')
+                ->required(),
+            Textarea::make('features_description')
+                ->label('Features Description')
+                ->maxLength(1000)
+                ->rows(3)
+                ->helperText('Description for the features section'),
+            Repeater::make('features_list')
+                ->label('Features List')
+                ->schema([
+                    TextInput::make('title')
+                        ->label('Feature Title')
+                        ->required()
+                        ->maxLength(255),
+                    Textarea::make('description')
+                        ->label('Feature Description')
+                        ->required()
+                        ->rows(2)
+                        ->maxLength(500),
+                    TextInput::make('icon')
+                        ->label('Icon Class')
+                        ->maxLength(100)
+                        ->helperText('CSS class for icon (e.g., heroicon-o-beaker)'),
+                    Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true),
+                ])
+                ->defaultItems(3)
+                ->addActionLabel('Add Feature')
+                ->reorderable()
+                ->collapsible()
+                ->helperText('Add multiple features for the landing page'),
+            Toggle::make('features_active')
+                ->label('Show Features on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formContact')) {
+    function formContact(): array
+    {
+        return [
+            TextInput::make('contact_phone')
+                ->label('Contact Phone')
+                ->default('+62 21 1234 5678')
+                ->required(),
+            TextInput::make('contact_email')
+                ->label('Contact Email')
+                ->email()
+                ->default('info@smartlab-srs.com')
+                ->maxLength(255),
+            Textarea::make('contact_address')
+                ->label('Contact Address')
+                ->rows(3)
+                ->maxLength(500)
+                ->helperText('Full address of the laboratory'),
+            TextInput::make('contact_whatsapp')
+                ->label('WhatsApp Number')
+                ->maxLength(20)
+                ->helperText('WhatsApp number for contact'),
+            TextInput::make('contact_instagram')
+                ->label('Instagram Handle')
+                ->maxLength(100)
+                ->helperText('Instagram username (without @)'),
+            TextInput::make('contact_facebook')
+                ->label('Facebook Page')
+                ->maxLength(255)
+                ->helperText('Facebook page URL'),
+            Toggle::make('contact_active')
+                ->label('Show Contact Info on Landing Page')
+                ->default(true),
+        ];
+    }
+}
+
+if (!function_exists('formFooter')) {
+    function formFooter(): array
+    {
+        return [
+            TextInput::make('footer_copyright')
+                ->label('Footer Copyright')
+                ->default('© 2024 SMARTLAB SRS. All rights reserved.')
+                ->required(),
+            Textarea::make('footer_description')
+                ->label('Footer Description')
+                ->maxLength(1000)
+                ->rows(3)
+                ->helperText('Brief description in footer'),
+            TextInput::make('footer_company_name')
+                ->label('Company Name')
+                ->default('SMARTLAB SRS')
+                ->maxLength(255),
+            TextInput::make('footer_website')
+                ->label('Website URL')
+                ->url()
+                ->maxLength(255)
+                ->helperText('Main website URL'),
+            Repeater::make('footer_links')
+                ->label('Footer Links')
+                ->schema([
+                    TextInput::make('title')
+                        ->label('Link Title')
+                        ->required()
+                        ->maxLength(100),
+                    TextInput::make('url')
+                        ->label('Link URL')
+                        ->required()
+                        ->maxLength(255),
+                    Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true),
+                ])
+                ->defaultItems(2)
+                ->addActionLabel('Add Footer Link')
+                ->reorderable()
+                ->collapsible()
+                ->helperText('Add multiple footer links'),
+            Toggle::make('footer_active')
+                ->label('Show Footer on Landing Page')
+                ->default(true),
+        ];
     }
 }
