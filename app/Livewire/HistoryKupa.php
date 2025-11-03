@@ -487,29 +487,29 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->label('Progress')
                     ->options(ProgressPengerjaan::query()->pluck('nama', 'id'))
                     ->preload(),
-                SelectFilter::make('progress')
-                    ->label('Sertifikat')
-                    ->options([
-                        'done' => 'Sertifikasi Sudah Diupload',
-                        'not_done' => 'Sertifikasi Belum Diupload'
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        // dd($data);
-                        // if ($data['value'] !== null) {
-                        //     dd($data, $query);
-                        // }
+                // SelectFilter::make('progress')
+                //     ->label('Sertifikat')
+                //     ->options([
+                //         'done' => 'Sertifikasi Sudah Diupload',
+                //         'not_done' => 'Sertifikasi Belum Diupload'
+                //     ])
+                //     ->query(function (Builder $query, array $data): Builder {
+                //         // dd($data);
+                //         // if ($data['value'] !== null) {
+                //         //     dd($data, $query);
+                //         // }
 
-                        switch ($data['value'] == "done") {
-                            case 'value':
-                                return $query->where('progress', 7);
-                                break;
+                //         switch ($data['value'] == "done") {
+                //             case 'value':
+                //                 return $query->where('progress', 7);
+                //                 break;
 
-                            default:
-                                return $query->whereNot('progress', 7);
-                                break;
-                        }
-                    })
-                    ->preload(),
+                //             default:
+                //                 return $query->whereNot('progress', 7);
+                //                 break;
+                //         }
+                //     })
+                //     ->preload(),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from')
