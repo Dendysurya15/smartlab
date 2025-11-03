@@ -164,6 +164,8 @@ class InputProgress extends Component implements HasForms
                         $set('lab_kanan', '');
                         $set('no_document', $jenisSampel->nomor_kupa);
                         $set('no_document_indentitas', $jenisSampel->nomor_identitas);
+                        $set('penyelia', $jenisSampel->penyelia);
+                        $set('petugas_preperasi', $jenisSampel->petugas_preperasi);
                         if ($jenisSampel) {
                             $progress = $jenisSampel->progress;
 
@@ -550,6 +552,7 @@ class InputProgress extends Component implements HasForms
                             ->maxLength(255),
                         TextInput::make('Emaiilcc')
                             ->label('Email Cc')
+                            ->default('cs.labcbi@citraborneo.co.id')
                             ->placeholder('Harap pisahkan dengan Koma (,) Jika lebih dari satu')
                             ->maxLength(255),
 

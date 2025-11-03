@@ -157,14 +157,6 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         // dd($dataToInsert2);
                         $emailAddresses = !empty($record->emailTo) ? explode(',', $record->emailTo) : null;
                         $emailcc = !empty($record->emailCc) ? explode(',', $record->emailCc) : null;
-
-
-                        // Only send email if there are recipients
-                        // if ($emailAddresses !== null || $emailcc !== null) {
-                        //     Mail::to($emailAddresses ?? [])
-                        //         ->cc($emailcc ?? [])
-                        //         ->send(new EmailPelanggan($record->nomor_surat, $record->departemen, $record->jenisSampel->nama, $record->jumlah_sampel, $progress_data[0] ?? null, $record->kode_track, null, $record->tanggal_terima, $record->estimasi));
-                        // }
                         if ($emailAddresses !== null) {
                             $emailData = [
                                 'nomor_surat' => $record->nomor_surat,
@@ -209,6 +201,9 @@ class HistoryKupa extends Component implements HasForms, HasTable
 
                         // dd($progress, $current, $progress);
                         $current = json_encode($progress);
+                        if ($state == 7) {
+                            $trackSampel->tanggal_rilis_sertifikat = Carbon::now();
+                        }
                         $trackSampel->last_update = $current;
                         $trackSampel->save();
 
@@ -370,6 +365,13 @@ class HistoryKupa extends Component implements HasForms, HasTable
                         }
 
                         return 'success'; // Sertifikasi Sudah Diupload
+                    })
+                    ->sortable()
+                    ->size('xs'),
+                TextColumn::make('tanggal_rilis_sertifikat')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->formatStateUsing(function (TrackSampel $track) {
+                        return tanggal_indo($track->tanggal_rilis_sertifikat, false, false, true);
                     })
                     ->sortable()
                     ->size('xs'),
@@ -1531,6 +1533,32 @@ class HistoryKupa extends Component implements HasForms, HasTable
                                 ->warning()
                                 ->send();
                         })
+                        ->icon('heroicon-o-document-chart-bar')
+                        ->color('success')
+                        ->visible(fn($record) => $record->progress == 7)
+                        ->size('xs'),
+                    Action::make('update_date_sertifikat')
+                        ->label('Update Tanggal Rilis Sertifikat')
+                        ->action(function (TrackSampel $record) {
+
+                            if ($record->progress == 7) {
+                                $last_update = json_decode($record->last_update, true);
+                                $result = collect($last_update)->firstWhere('progress', 7)['updated_at'] ?? Carbon::now();
+
+                                $tanggal_rilis_sertifikat = Carbon::parse($result);
+                                $record->tanggal_rilis_sertifikat = $tanggal_rilis_sertifikat;
+                                $record->save();
+
+                                return Notification::make()
+                                    ->success()
+                                    ->title('Success')
+                                    ->body('Tanggal rilis sertifikat berhasil diupdate')
+                                    ->send();
+                            }
+
+                            return Notification::make()->title("Progress belum selesai tidak bisa update tanggal rilis sertifikat")->warning()->send();
+                        })
+                        ->visible(fn($record) => $record->progress == 7 && $record->tanggal_rilis_sertifikat == null)
                         ->icon('heroicon-o-document-chart-bar')
                         ->color('success')
                         // ->visible(fn($recor,d) => auth()->user()->can('send_invoice') && $record->asal_sampel === 'Eksternal')
