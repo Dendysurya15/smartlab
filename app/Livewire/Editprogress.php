@@ -225,7 +225,7 @@ class Editprogress extends Component implements HasForms
                             return false;
                         }
                     })
-                    ->required($this->opt->sertifikasi),
+                    ->required(is_null($this->opt->sertifikasi)),
                 FileUpload::make('file_sertifikat')
                     ->multiple()
                     ->label('File Sertifikat')
