@@ -437,11 +437,19 @@ class HistoryKupa extends Component implements HasForms, HasTable
                 SelectFilter::make('tahun')
                     ->label('Tahun terima')
                     ->options(function () {
+                        // $year = TrackSampel::query()
+                        //     ->selectRaw('YEAR(tanggal_terima) as year')
+                        //     ->distinct()
+                        //     ->pluck('year')
+                        //     ->mapWithKeys(fn($item) => [$item => $item]);
+
                         $year = TrackSampel::query()
-                            ->selectRaw('YEAR(tanggal_terima) as year')
+                            ->whereNotNull('lab_label_tahun')
+                            ->where('lab_label_tahun', '!=', '')
                             ->distinct()
-                            ->pluck('year')
-                            ->mapWithKeys(fn($item) => [$item => $item]);
+                            ->orderBy('lab_label_tahun', 'desc')
+                            ->pluck('lab_label_tahun', 'lab_label_tahun');
+
 
                         // dd($year);
 
@@ -450,7 +458,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                     ->default(Carbon::now()->format('Y'))
                     ->query(function (Builder $query, array $data): Builder {
                         // if ($data['value'] !== null) {
-                        //     dd($data, $query);
+                        //     dd($data, $query->where('lab_label_tahun', $data['value']));
                         // }
 
                         return $query->where('lab_label_tahun', $data['value']);
