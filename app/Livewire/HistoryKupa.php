@@ -601,7 +601,7 @@ class HistoryKupa extends Component implements HasForms, HasTable
                             $year_final = implode(',', array_unique($year));
                             // dd($recordIds, $records);
                             $data = implode('$', $recordIds);
-
+                            // dd($data);
                             // Concatenate strings and variables using the concatenation operator (.)
                             $filename = 'PR Kupa ' . $jenis_sample_final . ' Bulan ' . $dates_final . ' tahun ' . $year_final . '.xlsx';
                             return Excel::download(new pdfpr($data), $filename);

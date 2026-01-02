@@ -688,11 +688,10 @@ if (!function_exists('GeneratePdfKupa')) {
             $total_akhir = $totalppn_harga->subtract($discount);
 
             $nolab = explode('$', $value->nomor_lab);
-            $year = Carbon::parse($value->tanggal_terima)->format('y');
-            $kode_sampel = $value->jenisSampel->kode;
-
-            $nolab = explode('$', $value->nomor_lab);
-            $year = Carbon::parse($value->tanggal_terima)->format('y');
+            // Get the latest lab_label_tahun from database to ensure we have the correct year
+            $lab_label_tahun = $value->getRawOriginal('lab_label_tahun') ?? $value->lab_label_tahun;
+            $year_from_date = Carbon::parse($value->tanggal_terima)->format('y');
+            $year = !empty($lab_label_tahun) ? substr($lab_label_tahun, -2) : $year_from_date;
             $kode_sampel = $value->jenisSampel->kode;
 
             $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
@@ -928,7 +927,10 @@ if (!function_exists('GeneratePR')) {
                 }, $kode_sampel_raw);
 
                 $nomor_lab = explode('$', $nolab);
-                $year = date('y', strtotime($firstItem->tanggal_terima));
+                // Get the latest lab_label_tahun from database to ensure we have the correct year
+                $lab_label_tahun = $firstItem->getRawOriginal('lab_label_tahun') ?? $firstItem->lab_label_tahun;
+                $year_from_date = date('y', strtotime($firstItem->tanggal_terima));
+                $year = !empty($lab_label_tahun) ? substr($lab_label_tahun, -2) : $year_from_date;
                 $lab = $year . $firstItem->jenisSampel->kode . '.';
                 $new_nomor_lab = $nomor_lab[0] - 1;
                 $lab_counter = 1;
@@ -1088,14 +1090,14 @@ if (!function_exists('defaultPTname')) {
                     'nama' => 'PT. CITRA BORNEO INDAH',
                     'revisi' => '02',
                     'tanggal_berlaku' => '1-jul-21',
-                    'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
+                    'nama_lab' => 'LABORATORIUM PENGUJIAN'
                 ];
             } else {
                 return [
                     'nama' => 'PT. Sulung Research Station',
                     'revisi' => '00',
                     'tanggal_berlaku' => '01 Mei 2025',
-                    'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM PENGUJIAN'
+                    'nama_lab' => 'LABORATORIUM PENGUJIAN'
                 ];
             }
         } catch (Exception $e) {
@@ -1104,7 +1106,7 @@ if (!function_exists('defaultPTname')) {
                 'nama' => 'PT. CITRA BORNEO INDAH',
                 'revisi' => '02',
                 'tanggal_berlaku' => '1-jul-21',
-                'nama_lab' => 'RESEARCH & DEVELOPMENT - LABORATORIUM ANALITIK'
+                'nama_lab' => 'LABORATORIUM PENGUJIAN'
             ];
         }
     }
