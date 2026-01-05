@@ -298,6 +298,80 @@ class HistoryKupaController extends Controller
         return $pdf->download($filename . '.pdf');
     }
 
+    /**
+     * Paginate Kupa data into multiple pages with max rows per page
+     * Each page will have independent rowspan calculations
+     */
+    private function paginateKupaData($data, $maxRowsPerPage = 25)
+    {
+        $pagedData = [];
+
+        foreach ($data as $key => $valuex) {
+            $totalRows = $valuex['total_row'];
+
+            // If total rows is less than or equal to max, keep as is
+            if ($totalRows <= $maxRowsPerPage) {
+                $valuex['is_last_page'] = true;
+                $pagedData[] = $valuex;
+                continue;
+            }
+
+            // Split data into chunks
+            $dataRows = array_values($valuex['data']);
+            $chunks = array_chunk($dataRows, $maxRowsPerPage);
+            $totalChunks = count($chunks);
+
+            foreach ($chunks as $chunkIndex => $chunk) {
+                $chunkRows = count($chunk);
+                $newChunkData = [];
+
+                // Rebuild chunk data with recalculated cols
+                foreach ($chunk as $idx => $item) {
+                    $newItem = $item;
+
+                    // Only show rowspan values on first row of chunk
+                    // These columns will use rowspan = chunkRows
+                    if ($idx == 0) {
+                        // Keep the values for first row
+                        $newItem['no_surat'] = $dataRows[0]['no_surat'];
+                        $newItem['kemasan'] = $dataRows[0]['kemasan'];
+                        $newItem['jum_sampel'] = $dataRows[0]['jum_sampel'];
+                        $newItem['estimasi'] = $dataRows[0]['estimasi'];
+
+                        // Adjust cols if it exceeds chunkRows
+                        if ($newItem['cols'] > $chunkRows) {
+                            $newItem['cols'] = $chunkRows;
+                        }
+                    } else {
+                        // Empty for other rows (handled by rowspan)
+                        $newItem['no_surat'] = '';
+                        $newItem['kemasan'] = '';
+                        $newItem['jum_sampel'] = '';
+                        $newItem['estimasi'] = '';
+                        // Keep original cols value (will be 0 if not part of rowspan group)
+                    }
+
+                    $newChunkData[] = $newItem;
+                }
+
+                // Create new page data
+                $newPageData = $valuex;
+                $newPageData['data'] = $newChunkData;
+                $newPageData['total_row'] = $chunkRows;
+                $newPageData['is_last_page'] = ($chunkIndex == $totalChunks - 1);
+
+                // Only show result_total on last chunk
+                if ($chunkIndex < $totalChunks - 1) {
+                    $newPageData['result_total'] = [];
+                }
+
+                $pagedData[] = $newPageData;
+            }
+        }
+
+        return $pagedData;
+    }
+
     public function export_kupa_pdf($id, $filename)
     {
 
@@ -514,6 +588,14 @@ class HistoryKupaController extends Controller
             $jenis_sampel[] = $value->jenisSampel->nama;
             $date[] = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('F Y');
         }
+
+        // Split data into pages with max rows per page
+        // Set maximum rows per page to prevent rowspan issues across pages
+        // Adjust this value based on your PDF page size and content
+        // Recommended: 20-30 rows per page for A2 landscape
+        $maxRowsPerPage = 15;
+        $pagedData = $this->paginateKupaData($data, $maxRowsPerPage);
+
         // dd($queries);
         if ($filename === 'bulk') {
             $uniqueArray = array_unique($jenis_sampel);
@@ -525,14 +607,14 @@ class HistoryKupaController extends Controller
             $newfilename = $filename;
         }
 
-        // dd($data);
+        // dd($pagedData);
 
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
         $options->set('isRemoteEnabled', true); // Enable loading of remote resources
         $dompdf = new Dompdf($options);
 
-        $view = view('pdfview.export_kupa', ['data' => $data])->render();
+        $view = view('pdfview.export_kupa', ['data' => $pagedData])->render();
         $dompdf->loadHtml($view);
 
         // Set paper size and orientation
