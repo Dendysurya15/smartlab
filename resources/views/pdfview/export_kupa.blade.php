@@ -4,48 +4,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Export KUPA</title>
 
     <style>
-        .page-container {
-            position: relative;
-            min-height: 100vh;
-        }
-
-        .main-table-container {
-            padding-bottom: 250px;
-            /* Adjust based on your footer height */
-        }
-
-        .footer-table-container {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
+        }
+
+        .page-container {
+            position: relative;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        .main-table-container {
+            width: 100%;
+        }
+
+        .footer-table-container {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            padding: 4px 6px;
+            font-size: 11px;
+        }
+
+        .border-full {
+            border: 1px solid black;
+        }
+
+        .border-top {
+            border-top: 1px solid black;
+        }
+
+        .border-bottom {
+            border-bottom: 1px solid black;
+        }
+
+        .border-left {
+            border-left: 1px solid black;
+        }
+
+        .border-right {
+            border-right: 1px solid black;
+        }
+
+        .border-no-left {
+            border-top: 1px solid black;
+            border-right: 1px solid black;
+            border-bottom: 1px solid black;
+            border-left: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .v-top {
+            vertical-align: top;
+        }
+
+        .v-center {
+            vertical-align: middle;
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .page-info {
+            text-align: right;
+            font-size: 10px;
+            margin-bottom: 5px;
         }
     </style>
-
 </head>
 
 <body>
 
-
-
     @foreach ($data as $keysx => $valuex)
-    @if (!$loop->first)
-    <div style="page-break-before: always;">
-        @endif
-        <div class="main-table-container">
-            <table style="border: 1px solid black;">
-                <thead>
+    @foreach ($valuex['pages'] as $pageIndex => $pageData)
+    {{-- Page break untuk setiap halaman kecuali yang pertama --}}
+    @if ($pageIndex > 0 || !$loop->parent->first)
+    <div class="page-break"></div>
+    @endif
 
+    <div class="page-container">
+        {{-- Info halaman jika lebih dari 1 page --}}
+        @if (count($valuex['pages']) > 1)
+        <div class="page-info">
+            Halaman {{ $pageData['page_number'] }} dari {{ $pageData['total_pages'] }}
+        </div>
+        @endif
+
+        <div class="main-table-container">
+            <table>
+                {{-- ==================== HEADER ==================== --}}
+                <thead>
                     <tr>
-                        <td></td>
+                        <td style="width: 5px;"></td>
                         <td rowspan="4" colspan="2">
                             <div>
                                 @if (defaultIconPT($valuex['tanggal_penerimaan']))
@@ -55,353 +135,246 @@
                                 @endif
                             </div>
                         </td>
-                        <td colspan="16" style="text-align:center; border-left:1px solid black;border-right: 1px solid black;height: 40px;font-weight:bold;font-size:14px">
+                        <td colspan="16" class="text-center border-left border-right font-bold" style="height: 40px; font-size:14px">
                             @php
                             $pt = defaultPTname($valuex['tanggal_penerimaan']);
                             @endphp
-                            {{$pt['nama']}}
+                            {{ $pt['nama'] }}
                         </td>
                     </tr>
                     <tr>
-                        <th></th>
-                        <td colspan="16" style="text-align:center; border-left:1px solid black;border-right: 1px solid black;height: 40px;font-size:14px;font-weight:bold">
-                            {{$pt['nama_lab']}}
+                        <th style="width: 5px;"></th>
+                        <td colspan="16" class="text-center border-left border-right font-bold" style="height: 40px; font-size:14px">
+                            {{ $pt['nama_lab'] }}
                         </td>
                     </tr>
                     <tr>
-                        <th></th>
-                        <td colspan="16" style="border: 1px solid black;text-align:center">Formulir</td>
+                        <th style="width: 5px;"></th>
+                        <td colspan="16" class="border-full text-center">Formulir</td>
                     </tr>
                     <tr>
-                        <th></th>
-                        <td colspan="16" style="border: 1px solid black;text-align:center">
+                        <th style="width: 5px;"></th>
+                        <td colspan="16" class="border-full text-center">
                             @if($valuex['formulir'] != null)
-                            {{$valuex['formulir']}}
+                            {{ $valuex['formulir'] }}
                             @else
-                            Kaji Ulang Permintaa, Tender dan Kontrak Sampel
-                            {{$valuex['jenis_kupa'] ?? 0}}
+                            Kaji Ulang Permintaan, Tender dan Kontrak Sampel {{ $valuex['jenis_kupa'] ?? '' }}
                             @endif
-
                         </td>
                     </tr>
                     <tr>
-                        <th></th>
-                        <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
-                            No.Dokumen
-                        </th>
-                        <th colspan="5" style="border: 1px solid black;text-align:center;">
-                            Revisi
-                        </th>
-                        <th colspan="6" style="border: 1px solid black;text-align:center;">
-                            Berlaku Efektif
-                        </th>
-                        <th colspan="5" style="border: 1px solid black;text-align:center;">
-                            Halaman
-                        </th>
+                        <th style="width: 5px;"></th>
+                        <th colspan="2" class="border-no-left">No.Dokumen</th>
+                        <th colspan="5" class="border-full text-center">Revisi</th>
+                        <th colspan="6" class="border-full text-center">Berlaku Efektif</th>
+                        <th colspan="5" class="border-full text-center">Halaman</th>
                     </tr>
                     <tr>
-                        <th></th>
-                        <th colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
-                            @if($valuex['doc'] != null)
-                            {{$valuex['doc']}}
-                            @else
-                            FR.7.1-12
-                            @endif
-
+                        <th style="width: 5px;"></th>
+                        <th colspan="2" class="border-no-left">
+                            {{ $valuex['doc'] ?? 'FR.7.1-12' }}
                         </th>
-                        <th colspan="5" style="border: 1px solid black;text-align:center;">
-                            {{$pt['revisi']}}
-                        </th>
-                        <th colspan="6" style="border: 1px solid black;text-align:center;">
-                            {{$pt['tanggal_berlaku']}}
-                        </th>
-                        <th colspan="5" style="border: 1px solid black;text-align:center;">
-                            1 dari 1
-                        </th>
+                        <th colspan="5" class="border-full text-center">{{ $pt['revisi'] }}</th>
+                        <th colspan="6" class="border-full text-center">{{ $pt['tanggal_berlaku'] }}</th>
+                        <th colspan="5" class="border-full text-center">1 dari 1</th>
                     </tr>
                     <tr>
-                        <th></th>
-                        <th colspan="2">
-                            Tanggal Penerimaan
-                        </th>
-                        <th colspan="5" style="text-align:left;">
-                            : {{$valuex['tanggal_penerimaan'] ?? 0}}
-                        </th>
-                        <th colspan="6" style="text-align:center;">
-
-                        </th>
-                        <th colspan="2" style="text-align:left;">
-                            Jenis Sampel
-                        </th>
-                        <th colspan="3" style="text-align:left;">
-                            : {{$valuex['jenis_kupa'] ?? 0}}
-                        </th>
+                        <th style="width: 5px;"></th>
+                        <th colspan="2">Tanggal Penerimaan</th>
+                        <th colspan="5" class="text-left">: {{ $valuex['tanggal_penerimaan'] ?? '' }}</th>
+                        <th colspan="6"></th>
+                        <th colspan="2" class="text-left">Jenis Sampel</th>
+                        <th colspan="3" class="text-left">: {{ $valuex['jenis_kupa'] ?? '' }}</th>
                     </tr>
                     <tr>
-                        <th></th>
-                        <th colspan="2">
-                            No. Kaji Ulang
-                        </th>
-                        <th colspan="5" style="text-align:left;">
-                            : {{$valuex['no_kupa'] ?? 0}}
-                        </th>
-                        <th colspan="6" style="text-align:center;">
-
-                        </th>
-                        <th colspan="2" style="text-align:left;">
-                            Nama Pelanggan
-                        </th>
-                        <th colspan="3" style="text-align:left;">
-                            : {{$valuex['nama_pengirim'] ?? 0}}
-                        </th>
+                        <th style="width: 5px;"></th>
+                        <th colspan="2">No. Kaji Ulang</th>
+                        <th colspan="5" class="text-left">: {{ $valuex['no_kupa'] ?? '' }}</th>
+                        <th colspan="6"></th>
+                        <th colspan="2" class="text-left">Nama Pelanggan</th>
+                        <th colspan="3" class="text-left">: {{ $valuex['nama_pengirim'] ?? '' }}</th>
                     </tr>
                     <tr>
-                        <th></th>
-                        <th colspan="2">
+                        <th style="width: 5px;"></th>
+                        <th colspan="2"></th>
+                        <th colspan="5"></th>
+                        <th colspan="6"></th>
+                        <th colspan="2" class="text-left">Departemen</th>
+                        <th colspan="3" class="text-left">: {{ $valuex['departemen'] ?? '' }}</th>
+                    </tr>
 
-                        </th>
-                        <th colspan="5" style="text-align:left;">
-
-                        </th>
-                        <th colspan="6" style="text-align:center;">
-
-                        </th>
-                        <th colspan="2" style="text-align:left;">
-                            Departemen
-                        </th>
-                        <th colspan="3" style="text-align:left;">
-                            : {{$valuex['departemen'] ?? 0}}
-                        </th>
+                    {{-- Column Headers --}}
+                    <tr>
+                        <th style="width: 5px;"></th>
+                        <th rowspan="2" class="border-no-left text-center">No. Surat Pelanggan</th>
+                        <th rowspan="2" class="border-full text-center">Kemasan Sampel</th>
+                        <th rowspan="2" class="border-full text-center">Jumlah Sampel</th>
+                        <th rowspan="2" class="border-full text-center">Nomor Laboratorium</th>
+                        <th rowspan="2" colspan="2" class="border-full text-center">Parameter Analisis</th>
+                        <th rowspan="2" class="border-full text-center">Metode Analisis</th>
+                        <th rowspan="2" class="border-full text-center">Satuan</th>
+                        <th colspan="3" class="border-full text-center">Sumber Daya Laboratorium</th>
+                        <th colspan="3" class="border-full text-center">Biaya Analisa (Rp)</th>
+                        <th class="border-full text-center">Konfirmasi</th>
+                        <th colspan="2" class="border-full text-center">Kondisi Sampel</th>
+                        <th rowspan="2" class="border-full text-center">Tanggal Penyelesaian Analisa</th>
                     </tr>
                     <tr>
-                        <th></th>
-                        <th rowspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none;">
-                            No. Surat Pelanggan
-                        </th>
-                        <th rowspan="2" style="border: 1px solid black;text-align:center;">
-                            Kemasan Sampel
-                        </th>
-                        <th rowspan="2" style="border: 1px solid black;text-align:center;">
-                            Jumlah Sampel
-                        </th>
-                        <th rowspan="2" style="border: 1px solid black;text-align:center;">
-                            Nomor Laboratorium
-                        </th>
-                        <th rowspan="2" colspan="2" style="border: 1px solid black;text-align:center;">
-                            Parameter Analisis
-                        </th>
-                        <th rowspan="2" style="border: 1px solid black;text-align:center;">
-                            Metode Analisis
-                        </th>
-                        <th rowspan="2" style="border: 1px solid black;text-align:center;">
-                            Satuan
-                        </th>
-                        <th colspan="3" style="border: 1px solid black;text-align:center;">
-                            Sumber Daya Laboratorium
-                        </th>
-
-                        <th colspan="3" style="border: 1px solid black;text-align:center;">
-                            Biaya Analisa (Rp)
-                        </th>
-                        <th style="border: 1px solid black;text-align:center;">
-                            Konfirmasi
-                        </th>
-                        <th colspan="2" style="border: 1px solid black;text-align:center;">
-                            Kondisi Sampel
-                        </th>
-
-                        <th rowspan="2" style="border: 1px solid black;text-align:center;">
-                            Tanggal Penyelesaian Analisa
-                        </th>
-
+                        <th style="width: 5px;"></th>
+                        <th class="border-full text-center" style="font-size:9px">Personel (Tersedia dan Kompeten)</th>
+                        <th class="border-full text-center" style="font-size:9px">Alat (Tersedia dan Baik)</th>
+                        <th class="border-full text-center" style="font-size:9px">Bahan Kimia (Tersedia dan Baik)</th>
+                        <th class="border-full text-center">Jumlah Sampel</th>
+                        <th class="border-full text-center">Harga Per Sampel</th>
+                        <th class="border-full text-center">Sub Total</th>
+                        <th class="border-full text-center" style="font-size:9px">Langsung / Telepon / Email</th>
+                        <th class="border-full text-center">Normal</th>
+                        <th class="border-full text-center">Abnormal</th>
                     </tr>
-                    <tr>
-                        <th></th>
-
-                        <th style="border: 1px solid black;text-align:center;">
-                            Personel (Tersedia dan Kompeten)
-                        </th>
-
-                        <th style="border: 1px solid black;text-align:center;">
-                            Alat (Tersedia dan Baik)
-                        </th>
-                        <th style="border: 1px solid black;text-align:center;">
-                            Bahan Kimia (Tersedia dan Baik)
-                        </th>
-                        <th style="border: 1px solid black;text-align:center;">
-                            Jumlah Sampel
-                        </th>
-                        <th style="border: 1px solid black;text-align:center;">
-                            Harga Per Sampel
-                        </th>
-                        <th style="border: 1px solid black;text-align:center;">
-                            Sub Total
-                        </th>
-                        {{-- <th style="border: 1px solid black;text-align:center;">
-                    ppn 11%
-                </th>
-                <th style="border: 1px solid black;text-align:center;">
-                    Total
-                </th> --}}
-                        <th style="border: 1px solid black;text-align:center;">
-                            Langsung / Telepon / Email
-                        </th>
-                        <th style="border: 1px solid black;text-align:center;">
-                            Normal
-                        </th>
-                        <th style="border: 1px solid black;text-align:center;">
-                            Abnormal
-                        </th>
-
-
-                    </tr>
-
                 </thead>
-                <tbody>
-                    @foreach ($valuex['data'] as $key => $items)
-                    <tr>
-                        <td></td>
-                        @if ($key == 0)
-                        <td rowspan="{{ $valuex['total_row'] }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: left">{{ $items['no_surat'] }}</td>
-                        <td rowspan="{{ $valuex['total_row'] }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: left">{{ $items['kemasan'] }}</td>
-                        <td rowspan="{{ $valuex['total_row'] }}" style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: top; text-align: center">{{ $items['jum_sampel'] }}</td>
-                        @endif
 
-                        @if ($key == 0)
-                        <td rowspan="{{ $valuex['total_row']  }}" style="border: 1px solid black; vertical-align: center; text-align: left;">
-                            <span style="width: 100%;">{{ $valuex['labkiri'] }}</span><br>
-                            <span style="width: 100%;display:block;border-top: 1px solid black;">{{ $valuex['labkanan'] }}</span>
+                {{-- ==================== BODY ==================== --}}
+                <tbody>
+                    @foreach ($pageData['data'] as $rowIndex => $items)
+                    <tr>
+                        <td style="width: 5px;"></td>
+
+                        {{-- Kolom dengan ROWSPAN FULL PAGE: No Surat, Kemasan, Jum Sampel, Nomor Lab --}}
+                        @if ($items['show_main_cols'])
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-no-left v-top text-left">{{ $items['no_surat'] }}</td>
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-no-left v-top text-left">{{ $items['kemasan'] }}</td>
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-no-left v-top text-center">{{ $items['jum_sampel'] }}</td>
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-center text-left">
+                            <span style="width: 100%; display: block;">{{ $valuex['labkiri'] }}</span>
+                            @if ($valuex['labkanan'])
+                            <span style="width: 100%; display: block; border-top: 1px solid black; margin-top: 2px; padding-top: 2px;">{{ $valuex['labkanan'] }}</span>
+                            @endif
                         </td>
                         @endif
 
+                        {{-- Parameter Analisis (selalu tampil) --}}
+                        <td class="border-full v-center text-left">{{ $items['Parameter_Analisis'] }}</td>
+                        <td class="border-full v-center text-center">{{ $items['mark'] }}</td>
+                        <td class="border-full v-center text-left">{{ $items['Metode_Analisis'] }}</td>
+                        <td class="border-full v-center text-center">{{ $items['satuan'] }}</td>
 
-                        <td style="border: 1px solid black; vertical-align: center; text-align: left">{{ $items['Parameter_Analisis'] }}</td>
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center">{{ $items['mark'] }}</td>
-                        <td style="border: 1px solid black; vertical-align: center; text-align: left">{{ $items['Metode_Analisis'] }}</td>
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center">{{ $items['satuan'] }}</td>
-
-                        @if ($items['cols'] != 0)
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['Personel'] }}</td>
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['alat'] }}</td>
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['bahan'] }}</td>
-                        @endif
-
-                        @if ($items['jum_data'] != 0)
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['jum_data'] }}</td>
-                        @endif
-
-                        @if ($items['jum_harga'] != 0)
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">@money($items['jum_harga'], 'IDR','True')</td>
-                        @endif
-
-                        @if ($items['jum_sub_total'] != 0)
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">@money($items['jum_sub_total'], 'IDR','True')</td>
-                        @endif
-
-                        @if ($items['cols'] != 0)
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['Konfirmasi'] }}</td>
+                        {{-- Kolom dengan ROWSPAN GROUP: Personel, Alat, Bahan, Biaya, Konfirmasi, Kondisi --}}
+                        @if ($items['show_group_cols'])
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">{{ $items['Personel'] }}</td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">{{ $items['alat'] }}</td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">{{ $items['bahan'] }}</td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">{{ $items['jum_data'] ?: '' }}</td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">
+                            @if ($items['jum_harga'])
+                            @money($items['jum_harga'], 'IDR', 'True')
+                            @endif
+                        </td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">
+                            @if ($items['jum_sub_total'])
+                            @money($items['jum_sub_total'], 'IDR', 'True')
+                            @endif
+                        </td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">{{ $items['Konfirmasi'] }}</td>
                         @if ($items['kondisi_sampel'] === 'Normal')
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">✔</td>
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}"></td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">✔</td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center"></td>
                         @else
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}"></td>
-                        <td style="border: 1px solid black; vertical-align: center; text-align: center" rowspan="{{ $items['cols'] }}">{{ $items['kondisi_sampel'] }}</td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center"></td>
+                        <td rowspan="{{ $items['cols'] }}" class="border-full v-center text-center">{{ $items['kondisi_sampel'] }}</td>
                         @endif
                         @endif
 
-                        @if ($key == 0)
-                        <td rowspan="{{ $valuex['total_row'] }}" style="border: 1px solid black; vertical-align: top; text-align: center">{{ $items['estimasi'] }} </td>
+                        {{-- Estimasi (ROWSPAN FULL PAGE) --}}
+                        @if ($items['show_main_cols'])
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-top text-center">{{ $items['estimasi'] }}</td>
                         @endif
                     </tr>
                     @endforeach
 
-                    @foreach ($valuex['result_total'] as $datas)
+                    {{-- ==================== TOTAL (hanya di halaman terakhir) ==================== --}}
+                    @if ($pageData['is_last_page'])
+                    @foreach ($valuex['result_total'] as $totalRow)
                     <tr>
-                        @foreach ($datas as $index => $item)
-                        @if ($index == 0)
+                        @foreach ($totalRow as $colIndex => $item)
+                        @if ($colIndex == 0)
                         <td>{{ $item }}</td>
+                        @elseif ($colIndex == 5)
+                        <td colspan="4" class="border-no-left v-center text-center font-bold">{{ $item }}</td>
                         @else
-                        @if ($index == 5)
-                        <td style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: center; text-align: center" colspan="4">{{ $item }}</td>
-                        @else
-                        <td style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-left: none; vertical-align: center; text-align: center">{{ $item }}</td>
-                        @endif
+                        <td class="border-no-left v-center text-center">{{ $item }}</td>
                         @endif
                         @endforeach
                     </tr>
                     @endforeach
-
+                    @endif
                 </tbody>
-
             </table>
         </div>
+
+        {{-- ==================== FOOTER (hanya di halaman terakhir) ==================== --}}
+        @if ($pageData['is_last_page'])
         <div class="footer-table-container">
             <table style="width:100%">
                 <thead>
                     <tr>
-                        <th style="border: 1px solid black; width:15%;">Dibuat Oleh</th>
-                        <th style="border: 1px solid black; width:15%;">Diketahui Oleh</th>
-                        <th style="border: 1px solid black; width:15%;">Disetujui Oleh</th>
-                        <th style="border: 1px solid black; width:40%;">Catatan Khusus</th>
+                        <th class="border-full" style="width:15%;">Dibuat Oleh</th>
+                        <th class="border-full" style="width:15%;">Diketahui Oleh</th>
+                        <th class="border-full" style="width:15%;">Disetujui Oleh</th>
+                        <th class="border-full" style="width:40%;">Catatan Khusus</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none;">&NonBreakingSpace;</td>
-                        <td rowspan="6" style="text-align: left; vertical-align:top; border:1px solid black;">{{$valuex['catatan']}}</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
+                        <td rowspan="6" class="text-left v-top border-full">{{ $valuex['catatan'] }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: center; border: 1px solid black; border-bottom: none; border-top: none;">
-
+                        <td class="text-center border-left border-right">
                             @if ($valuex['approval'] == 'Draft' || $valuex['approval'] == 'Waiting Admin Approval')
                             <span>CREATED</span><br>
-                            <span>{{$valuex['memo_created']}}</span>
+                            <span>{{ $valuex['memo_created'] }}</span>
                             @else
-                            <span style="color: blue;font-size: 20px;">APPROVED</span><br>
-                            <span>{{$valuex['verifikasi_admin_timestamp']}}</span>
+                            <span style="color: blue; font-size: 16px; font-weight: bold;">APPROVED</span><br>
+                            <span>{{ $valuex['verifikasi_admin_timestamp'] }}</span>
                             @endif
-
                         </td>
-
-                        <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">
-                            @if ($valuex['isVerifiedByHead'] == True)
-                            <span style="color: blue;font-size: 20px;">APPROVED</span><br>
-                            <span>{{$valuex['verifikasi_head_timestamp']}}</span>
+                        <td class="text-center border-left border-right">
+                            @if ($valuex['isVerifiedByHead'])
+                            <span style="color: blue; font-size: 16px; font-weight: bold;">APPROVED</span><br>
+                            <span>{{ $valuex['verifikasi_head_timestamp'] }}</span>
                             @endif
-
                         </td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
                     </tr>
                     <tr>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
                     </tr>
                     <tr>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none; border-top:none;">&NonBreakingSpace;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
+                        <td class="text-center border-left border-right">&nbsp;</td>
                     </tr>
                     <tr>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none;">{{$valuex['petugas_penerima_sampel']}}</td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none;">Budi Umbara</td>
-                        <td style="text-align: center; border:1px solid black; border-bottom:none;">{{$valuex['nama_pengirim']}}</td>
+                        <td class="text-center border-left border-right border-bottom">{{ $valuex['petugas_penerima_sampel'] }}</td>
+                        <td class="text-center border-left border-right border-bottom">Budi Umbara</td>
+                        <td class="text-center border-left border-right border-bottom">{{ $valuex['nama_pengirim'] }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: center; border:1px solid black;">Petugas Penerima Sampel</td>
-                        <td style="text-align: center; border:1px solid black;">Manager Laboratorium</td>
-                        <td style="text-align: center; border:1px solid black;">Pelanggan</td>
+                        <td class="text-center border-full">Petugas Penerima Sampel</td>
+                        <td class="text-center border-full">Manager Laboratorium</td>
+                        <td class="text-center border-full">Pelanggan</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        @if (!$loop->first)
+        @endif
     </div>
-    @endif
     @endforeach
-
+    @endforeach
 
 </body>
 

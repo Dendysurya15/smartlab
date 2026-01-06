@@ -298,11 +298,16 @@ class HistoryKupaController extends Controller
         return $pdf->download($filename . '.pdf');
     }
 
+
+    /**
+     * Export KUPA PDF dengan pagination yang benar untuk rowspan
+     * Ganti method export_kupa_pdf di controller dengan kode ini
+     */
+
     public function export_kupa_pdf($id, $filename)
     {
+        $MAX_ROWS_PER_PAGE = 10; // Maksimal row per halaman
 
-
-        // $idsc = '71$69';
         $idsArray = explode('$', $id);
         $queries = TrackSampel::whereIn('id', $idsArray)
             ->with(['trackParameters', 'progressSampel', 'jenisSampel'])
@@ -312,36 +317,31 @@ class HistoryKupaController extends Controller
             return redirect('/404');
         }
 
-
-        // dd($id, $filename, $queries);
         $petugas = ExcelManagement::where('status', 1)->get();
         $petugas = $petugas->groupBy(['jabatan']);
         $petugas = json_decode($petugas, true);
-        // dd($petugas);
-        // dd($queries);
+
         $result = [];
         $result_total = [];
-        $inc = 1;
+
+        // Helper functions
         function transformArray($list_row)
         {
             $result = [];
             $total = 0;
-
             foreach ($list_row as $valuxe) {
                 $result[$total] = $valuxe;
                 $total += $valuxe;
             }
-
             return $result;
         }
+
         function combineKeysAndValues($keys, $values)
         {
             $result = [];
-
             foreach ($keys as $index => $key) {
                 $result[$key] = $values[$index];
             }
-
             return $result;
         }
 
@@ -411,6 +411,7 @@ class HistoryKupaController extends Controller
                     $list_satuan[] = $param['satuan'];
                 }
             }
+
             $harga_total_dengan_ppn = Money::IDR(hitungPPN($harga_total_per_sampel), true);
             $totalppn_harga = $harga_total_dengan_ppn->add(Money::IDR($harga_total_per_sampel, true));
 
@@ -420,11 +421,6 @@ class HistoryKupaController extends Controller
 
             $year = substr($value->lab_label_tahun, -2);
             $nolab = explode('$', $value->nomor_lab);
-            // $year = Carbon::parse($value->tanggal_terima)->format('y');
-            $kode_sampel = $value->jenisSampel->kode;
-
-            $nolab = explode('$', $value->nomor_lab);
-            // $year = Carbon::parse($value->tanggal_terima)->format('y');
             $kode_sampel = $value->jenisSampel->kode;
 
             $labkiri = $year . $kode_sampel . '.' . formatLabNumber($nolab[0]);
@@ -436,12 +432,23 @@ class HistoryKupaController extends Controller
             $list_jumlah_sampel = combineKeysAndValues($keys_default, $list_jumlah_sampel);
             $list_harga = combineKeysAndValues($keys_default, $list_harga);
             $sub_total = combineKeysAndValues($keys_default, $sub_total);
-            for ($i = 0; $i < $total_row; $i++) {
 
-                $result[$key][$i] = [
+            // ============================================================
+            // BAGIAN BARU: Build data dengan tracking group untuk rowspan
+            // ============================================================
+            $all_rows = [];
+            $current_group_id = 0;
+
+            for ($i = 0; $i < $total_row; $i++) {
+                // Cek apakah ini start group baru (cols != 0)
+                $is_group_start = isset($colspandata[$i]);
+                if ($is_group_start) {
+                    $current_group_id++;
+                }
+
+                $all_rows[$i] = [
                     'no_surat' => ($i == 0) ? $value->nomor_surat : '',
                     'kemasan' => ($i == 0) ? $value->kemasan_sampel : '',
-                    'colspan' => ($i == 0) ? $total_row : 0,
                     'jum_sampel' => ($i == 0) ? $value->jumlah_sampel : '',
                     'nolab' => ($i == 0) ? $labkiri : (($i == 1) ? $labkanan : ''),
                     'Parameter_Analisis' => $list_unsur[$i] ?? '',
@@ -451,36 +458,42 @@ class HistoryKupaController extends Controller
                     'Personel' => ($value->personel == 1) ? '✔' : '',
                     'alat' => ($value->alat == 1) ? '✔' : '',
                     'bahan' => ($value->bahan == 1) ? '✔' : '',
-                    'cols' => isset($colspandata[$i]) ? $colspandata[$i] : 0,
+                    'original_cols' => isset($colspandata[$i]) ? $colspandata[$i] : 0,
                     'jum_data' => isset($list_jumlah_sampel[$i]) ? $list_jumlah_sampel[$i] : 0,
                     'jum_harga' => isset($list_harga[$i]) ? $list_harga[$i] : 0,
                     'jum_sub_total' => isset($sub_total[$i]) ? $sub_total[$i] : 0,
                     'Konfirmasi' => ($value->konfirmasi == 1) ? '✔' : '',
                     'kondisi_sampel' => $value->kondisi_sampel,
                     'estimasi' => ($i == 0) ? Carbon::parse($value->estimasi)->locale('id')->translatedFormat('d F Y') : '',
+                    'group_id' => $current_group_id,
+                    'is_group_start' => $is_group_start,
+                    'original_index' => $i,
                 ];
             }
 
+            // ============================================================
+            // SPLIT DATA KE PAGES DAN RECALCULATE ROWSPAN
+            // ============================================================
+            $pages = $this->splitDataToPages($all_rows, $MAX_ROWS_PER_PAGE, $labkiri, $labkanan, $value);
+
+            // Build result_total
             $titles = ["Total Per Parameter", "PPn 11%", "Diskon", "Total"];
             $values_title = [Money::IDR($harga_total_per_sampel, true), $harga_total_dengan_ppn, $discount, $total_akhir];
 
             for ($i = 0; $i < 4; $i++) {
-                // Initialize the array with empty strings
                 $result_total[$i] = array_fill(0, 16, '');
-
-                // Set the specific value at index 5
                 $result_total[$i][5] = $titles[$i];
                 $result_total[$i][11] = $values_title[$i];
             }
+
+            // Get other data
             $catatan = $value->catatan;
             $nama_pengirim = $value->nama_pengirim;
             $status = $value->status;
             $memo_created = $value->tanggal_memo;
             $verif = explode(',', $value->status_timestamp);
-
             $verifikasi_admin_timestamp = $verif[0];
             $verifikasi_head_timestamp = $verif[1] ?? '-';
-
             $approveby_head = $value->approveby_head;
             $petugas_penerima_sampel = User::where('id', $value->created_by)->pluck('name')->first();
             $jenis_kupa = $value->jenis_pupuk ?? $value->jenisSampel->nama;
@@ -489,11 +502,12 @@ class HistoryKupaController extends Controller
             $departemen = $value->departemen;
             $formulir = $value->formulir;
             $doc = $value->no_doc;
+
             $data[$key] = [
-                'data' => $result[$key],
+                'pages' => $pages, // Array of pages, each with recalculated rowspans
                 'total_row' => $total_row,
-                "result_total" => $result_total,
-                "catatan" =>   $value->catatan,
+                'result_total' => $result_total,
+                'catatan' => $catatan,
                 'nama_pengirim' => $nama_pengirim,
                 'petugas_penerima_sampel' => $petugas_penerima_sampel,
                 'approval' => $status,
@@ -509,18 +523,17 @@ class HistoryKupaController extends Controller
                 'labkiri' => $labkiri,
                 'labkanan' => $labkanan,
                 'doc' => $doc,
-                'img' => asset('images/Logo_CBI_2.png'), // Correctly generate the image URL
+                'img' => asset('images/Logo_CBI_2.png'),
             ];
+
             $jenis_sampel[] = $value->jenisSampel->nama;
             $date[] = Carbon::parse($value->tanggal_terima)->locale('id')->translatedFormat('F Y');
         }
-        // dd($queries);
+
         if ($filename === 'bulk') {
             $uniqueArray = array_unique($jenis_sampel);
             $uniquedate = array_unique($date);
-            // dd($uniquedate);
-
-            $newfilename =  'Kupa_' . implode('_', $uniqueArray) . '_Date_' . implode('_', $uniquedate);
+            $newfilename = 'Kupa_' . implode('_', $uniqueArray) . '_Date_' . implode('_', $uniquedate);
         } else {
             $newfilename = $filename;
         }
@@ -529,20 +542,89 @@ class HistoryKupaController extends Controller
 
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
-        $options->set('isRemoteEnabled', true); // Enable loading of remote resources
+        $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
 
+        // Gunakan view baru yang support pagination
         $view = view('pdfview.export_kupa', ['data' => $data])->render();
         $dompdf->loadHtml($view);
-
-        // Set paper size and orientation
         $dompdf->setPaper('A2', 'landscape');
-
-        // Render the PDF
         $dompdf->render();
-
-
         $dompdf->stream($newfilename, ["Attachment" => false]);
+    }
+
+    /**
+     * Split data ke pages dan recalculate rowspan untuk setiap page
+     */
+    private function splitDataToPages($all_rows, $max_per_page, $labkiri, $labkanan, $value)
+    {
+        $pages = [];
+        $total_rows = count($all_rows);
+        $chunks = array_chunk($all_rows, $max_per_page, false);
+        $total_pages = count($chunks);
+
+        foreach ($chunks as $pageIndex => $chunk) {
+            $page_rows = [];
+            $chunk = array_values($chunk); // Reset keys
+            $chunk_count = count($chunk);
+
+            // Track groups yang ada di page ini
+            $groups_in_page = [];
+            foreach ($chunk as $row) {
+                $groups_in_page[$row['group_id']] = ($groups_in_page[$row['group_id']] ?? 0) + 1;
+            }
+
+            // Track group yang sudah di-render start-nya di page ini
+            $rendered_groups = [];
+
+            foreach ($chunk as $i => $row) {
+                $new_row = $row;
+
+                // === HANDLE KOLOM DENGAN ROWSPAN FULL PAGE (no_surat, kemasan, jum_sampel, nolab, estimasi) ===
+                if ($i == 0) {
+                    // Row pertama di setiap page
+                    $new_row['main_rowspan'] = $chunk_count;
+                    $new_row['show_main_cols'] = true;
+
+                    // Untuk page selanjutnya, tampilkan "(lanjutan)" atau kosong
+                    if ($pageIndex > 0) {
+                        $new_row['no_surat'] = '(lanjutan)';
+                        $new_row['kemasan'] = '';
+                        $new_row['jum_sampel'] = '';
+                    }
+                } else {
+                    $new_row['show_main_cols'] = false;
+                }
+
+                // === HANDLE KOLOM DENGAN ROWSPAN GROUP (Personel, Alat, Bahan, Biaya, Konfirmasi, Kondisi) ===
+                $group_id = $row['group_id'];
+                $rows_in_this_group_this_page = $groups_in_page[$group_id];
+
+                if (!isset($rendered_groups[$group_id])) {
+                    // Ini adalah row pertama dari group ini di page ini
+                    $new_row['cols'] = $rows_in_this_group_this_page;
+                    $new_row['show_group_cols'] = true;
+                    $rendered_groups[$group_id] = true;
+                } else {
+                    // Group sudah di-render, tidak perlu tampilkan lagi
+                    $new_row['cols'] = 0;
+                    $new_row['show_group_cols'] = false;
+                }
+
+                $page_rows[] = $new_row;
+            }
+
+            $pages[] = [
+                'data' => $page_rows,
+                'total_row' => $chunk_count,
+                'page_number' => $pageIndex + 1,
+                'total_pages' => $total_pages,
+                'is_first_page' => ($pageIndex === 0),
+                'is_last_page' => ($pageIndex === $total_pages - 1),
+            ];
+        }
+
+        return $pages;
     }
 
     public function export_pr_pdf($id, $filename)
