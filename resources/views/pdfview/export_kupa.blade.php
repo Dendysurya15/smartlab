@@ -28,31 +28,6 @@
         body {
             font-family: DejaVu Sans, sans-serif;
         }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            page-break-inside: auto;
-        }
-
-        thead {
-            display: table-header-group;
-        }
-
-        tbody {
-            display: table-row-group;
-        }
-
-        /* Prevent page break inside rows that contain rowspan cells */
-        tbody tr:first-child {
-            page-break-inside: avoid;
-        }
-
-        /* Style for rowspan cells to ensure they don't break */
-        td[rowspan] {
-            page-break-inside: avoid;
-            vertical-align: top;
-        }
     </style>
 
 </head>
@@ -360,7 +335,6 @@
 
             </table>
         </div>
-        @if (isset($valuex['is_last_page']) && $valuex['is_last_page'])
         <div class="footer-table-container">
             <table style="width:100%">
                 <thead>
@@ -423,7 +397,6 @@
                 </tbody>
             </table>
         </div>
-        @endif
         @if (!$loop->first)
     </div>
     @endif
