@@ -15,7 +15,8 @@
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 11px;
+            font-size: 30px;
+            margin: 15mm 10mm 15mm 10mm;
         }
 
         .page-container {
@@ -125,8 +126,8 @@
                 {{-- ==================== HEADER ==================== --}}
                 <thead>
                     <tr>
-                        <td style="width: 5px;"></td>
-                        <td rowspan="4" colspan="2">
+
+                        <td rowspan="4" colspan="2" class="border-full text-left">
                             <div>
                                 @if (defaultIconPT($valuex['tanggal_penerimaan']))
                                 <img src="{{ asset('images/Logo_CBI_2.png') }}" style="height:60px;margin-left:50px">
@@ -135,7 +136,7 @@
                                 @endif
                             </div>
                         </td>
-                        <td colspan="16" class="text-center border-left border-right font-bold" style="height: 40px; font-size:14px">
+                        <td colspan="16" class="text-center border-full font-bold" style="height: 40px; font-size:14px">
                             @php
                             $pt = defaultPTname($valuex['tanggal_penerimaan']);
                             @endphp
@@ -143,17 +144,17 @@
                         </td>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
+
                         <td colspan="16" class="text-center border-left border-right font-bold" style="height: 40px; font-size:14px">
                             {{ $pt['nama_lab'] }}
                         </td>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
+
                         <td colspan="16" class="border-full text-center">Formulir</td>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
+
                         <td colspan="16" class="border-full text-center">
                             @if($valuex['formulir'] != null)
                             {{ $valuex['formulir'] }}
@@ -163,15 +164,15 @@
                         </td>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
-                        <th colspan="2" class="border-no-left">No.Dokumen</th>
+
+                        <th colspan="2" class="border-full text-left">No.Dokumen</th>
                         <th colspan="5" class="border-full text-center">Revisi</th>
                         <th colspan="6" class="border-full text-center">Berlaku Efektif</th>
                         <th colspan="5" class="border-full text-center">Halaman</th>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
-                        <th colspan="2" class="border-no-left">
+
+                        <th colspan="2" class="border-full text-left">
                             {{ $valuex['doc'] ?? 'FR.7.1-12' }}
                         </th>
                         <th colspan="5" class="border-full text-center">{{ $pt['revisi'] }}</th>
@@ -179,34 +180,33 @@
                         <th colspan="5" class="border-full text-center">1 dari 1</th>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
-                        <th colspan="2">Tanggal Penerimaan</th>
+
+                        <th colspan="2" class="border-left text-left">Tanggal Penerimaan</th>
                         <th colspan="5" class="text-left">: {{ $valuex['tanggal_penerimaan'] ?? '' }}</th>
                         <th colspan="6"></th>
                         <th colspan="2" class="text-left">Jenis Sampel</th>
-                        <th colspan="3" class="text-left">: {{ $valuex['jenis_kupa'] ?? '' }}</th>
+                        <th colspan="3" class="border-right text-left">: {{ $valuex['jenis_kupa'] ?? '' }}</th>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
-                        <th colspan="2">No. Kaji Ulang</th>
+
+                        <th colspan="2" class="border-left text-left">No. Kaji Ulang</th>
                         <th colspan="5" class="text-left">: {{ $valuex['no_kupa'] ?? '' }}</th>
                         <th colspan="6"></th>
                         <th colspan="2" class="text-left">Nama Pelanggan</th>
-                        <th colspan="3" class="text-left">: {{ $valuex['nama_pengirim'] ?? '' }}</th>
+                        <th colspan="3" class="border-right text-left">: {{ $valuex['nama_pengirim'] ?? '' }}</th>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
-                        <th colspan="2"></th>
+
+                        <th colspan="2" class="border-left text-left"></th>
                         <th colspan="5"></th>
                         <th colspan="6"></th>
                         <th colspan="2" class="text-left">Departemen</th>
-                        <th colspan="3" class="text-left">: {{ $valuex['departemen'] ?? '' }}</th>
+                        <th colspan="3" class="border-right text-left">: {{ $valuex['departemen'] ?? '' }}</th>
                     </tr>
 
                     {{-- Column Headers --}}
                     <tr>
-                        <th style="width: 5px;"></th>
-                        <th rowspan="2" class="border-no-left text-center">No. Surat Pelanggan</th>
+                        <th rowspan="2" class="border-full text-center" style="border-left: 1px solid black !important;">No. Surat Pelanggan</th>
                         <th rowspan="2" class="border-full text-center">Kemasan Sampel</th>
                         <th rowspan="2" class="border-full text-center">Jumlah Sampel</th>
                         <th rowspan="2" class="border-full text-center">Nomor Laboratorium</th>
@@ -220,7 +220,6 @@
                         <th rowspan="2" class="border-full text-center">Tanggal Penyelesaian Analisa</th>
                     </tr>
                     <tr>
-                        <th style="width: 5px;"></th>
                         <th class="border-full text-center" style="font-size:9px">Personel (Tersedia dan Kompeten)</th>
                         <th class="border-full text-center" style="font-size:9px">Alat (Tersedia dan Baik)</th>
                         <th class="border-full text-center" style="font-size:9px">Bahan Kimia (Tersedia dan Baik)</th>
@@ -237,13 +236,11 @@
                 <tbody>
                     @foreach ($pageData['data'] as $rowIndex => $items)
                     <tr>
-                        <td style="width: 5px;"></td>
-
                         {{-- Kolom dengan ROWSPAN FULL PAGE: No Surat, Kemasan, Jum Sampel, Nomor Lab --}}
                         @if ($items['show_main_cols'])
-                        <td rowspan="{{ $pageData['total_row'] }}" class="border-no-left v-top text-left">{{ $items['no_surat'] }}</td>
-                        <td rowspan="{{ $pageData['total_row'] }}" class="border-no-left v-top text-left">{{ $items['kemasan'] }}</td>
-                        <td rowspan="{{ $pageData['total_row'] }}" class="border-no-left v-top text-center">{{ $items['jum_sampel'] }}</td>
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-top text-left" style="border-left: 1px solid black !important;">{{ $items['no_surat'] }}</td>
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-top text-left">{{ $items['kemasan'] }}</td>
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-top text-center">{{ $items['jum_sampel'] }}</td>
                         <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-center text-left">
                             <span style="width: 100%; display: block;">{{ $valuex['labkiri'] }}</span>
                             @if ($valuex['labkanan'])
@@ -295,15 +292,25 @@
                     @if ($pageData['is_last_page'])
                     @foreach ($valuex['result_total'] as $totalRow)
                     <tr>
-                        @foreach ($totalRow as $colIndex => $item)
-                        @if ($colIndex == 0)
-                        <td>{{ $item }}</td>
-                        @elseif ($colIndex == 5)
-                        <td colspan="4" class="border-no-left v-center text-center font-bold">{{ $item }}</td>
-                        @else
-                        <td class="border-no-left v-center text-center">{{ $item }}</td>
-                        @endif
-                        @endforeach
+                        {{-- Index 0: colspan 5 untuk kolom 1-5 (No. Surat, Kemasan, Jumlah, Nomor Lab, Parameter pertama) --}}
+                        <td colspan="5" class="border-full">{{ $totalRow[0] }}</td>
+                        {{-- Index 5: colspan 2 untuk kolom 6-7 (Parameter Analisis) --}}
+                        <td colspan="2" class="border-full v-center text-center font-bold">{{ $totalRow[5] }}</td>
+                        {{-- Index 6-10: kolom 8-12 (Metode, Satuan, Personel, Alat, Bahan) --}}
+                        <td class="border-full v-center text-center">{{ $totalRow[6] }}</td>
+                        <td class="border-full v-center text-center">{{ $totalRow[7] }}</td>
+                        <td class="border-full v-center text-center">{{ $totalRow[8] }}</td>
+                        <td class="border-full v-center text-center">{{ $totalRow[9] }}</td>
+                        <td class="border-full v-center text-center">{{ $totalRow[10] }}</td>
+                        {{-- Index 11: kolom 13 (Sub Total) - ini berisi nilai --}}
+                        <td class="border-full v-center text-center">{{ $totalRow[11] }}</td>
+                        {{-- Index 12-15: kolom 14-17 (Harga Per Sampel, Konfirmasi, Normal, Abnormal) --}}
+                        <td class="border-full v-center text-center">{{ $totalRow[12] }}</td>
+                        <td class="border-full v-center text-center">{{ $totalRow[13] }}</td>
+                        <td class="border-full v-center text-center">{{ $totalRow[14] }}</td>
+                        <td class="border-full v-center text-center">{{ $totalRow[15] }}</td>
+                        {{-- Kolom 18 (Tanggal) - kosong karena tidak ada di result_total --}}
+                        <td class="border-full v-center text-center"></td>
                     </tr>
                     @endforeach
                     @endif

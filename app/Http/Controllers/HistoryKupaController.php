@@ -306,7 +306,7 @@ class HistoryKupaController extends Controller
 
     public function export_kupa_pdf($id, $filename)
     {
-        $MAX_ROWS_PER_PAGE = 10; // Maksimal row per halaman
+        $MAX_ROWS_PER_PAGE = 20; // Maksimal row per halaman
 
         $idsArray = explode('$', $id);
         $queries = TrackSampel::whereIn('id', $idsArray)
