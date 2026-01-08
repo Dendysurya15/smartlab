@@ -15,7 +15,7 @@
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 30px;
+            font-size: 14px;
             margin: 15mm 10mm 15mm 10mm;
         }
 
@@ -42,7 +42,6 @@
         td,
         th {
             padding: 4px 6px;
-            font-size: 11px;
         }
 
         .border-full {
@@ -220,13 +219,13 @@
                         <th rowspan="2" class="border-full text-center">Tanggal Penyelesaian Analisa</th>
                     </tr>
                     <tr>
-                        <th class="border-full text-center" style="font-size:9px">Personel (Tersedia dan Kompeten)</th>
-                        <th class="border-full text-center" style="font-size:9px">Alat (Tersedia dan Baik)</th>
-                        <th class="border-full text-center" style="font-size:9px">Bahan Kimia (Tersedia dan Baik)</th>
+                        <th class="border-full text-center">Personel (Tersedia dan Kompeten)</th>
+                        <th class="border-full text-center">Alat (Tersedia dan Baik)</th>
+                        <th class="border-full text-center">Bahan Kimia (Tersedia dan Baik)</th>
                         <th class="border-full text-center">Jumlah Sampel</th>
                         <th class="border-full text-center">Harga Per Sampel</th>
                         <th class="border-full text-center">Sub Total</th>
-                        <th class="border-full text-center" style="font-size:9px">Langsung / Telepon / Email</th>
+                        <th class="border-full text-center">Langsung / Telepon / Email</th>
                         <th class="border-full text-center">Normal</th>
                         <th class="border-full text-center">Abnormal</th>
                     </tr>
@@ -241,7 +240,7 @@
                         <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-top text-left" style="border-left: 1px solid black !important;">{{ $items['no_surat'] }}</td>
                         <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-top text-left">{{ $items['kemasan'] }}</td>
                         <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-top text-center">{{ $items['jum_sampel'] }}</td>
-                        <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-center text-left">
+                        <td rowspan="{{ $pageData['total_row'] }}" class="border-full v-top text-left">
                             <span style="width: 100%; display: block;">{{ $valuex['labkiri'] }}</span>
                             @if ($valuex['labkanan'])
                             <span style="width: 100%; display: block; border-top: 1px solid black; margin-top: 2px; padding-top: 2px;">{{ $valuex['labkanan'] }}</span>
